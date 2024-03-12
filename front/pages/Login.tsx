@@ -1,15 +1,8 @@
 import { View, Button, Text, TextInput, StyleSheet, useWindowDimensions } from 'react-native';
 import { useState, useRef } from 'react';
-import logo from '../assets/images/logo_origin.png';
 import AutoHeightImage from 'react-native-auto-height-image';
+import { colors } from '../assets/colors.tsx'
 
-
-const colors = {
-  gray: "#DEDEDE",
-  black: "#000000",
-  white: "#FFFFFF",
-  point: "#FF6161"
-};
 const styles = StyleSheet.create({
   container: {
     margin: 12
@@ -33,7 +26,7 @@ const styles = StyleSheet.create({
     fontSize: 60,
   },
   login: {
-    color: colors.black
+    color: colors.gray8
   },
   fit_content: {
     flexDirection: 'row', 
@@ -72,13 +65,13 @@ const Start = () => {
   return (
     <View style={styles.container}>
       <View style={styles.image}>
-       <AutoHeightImage width={width * 0.6} source={logo}/>
+       <AutoHeightImage width={width * 0.6} source={require('../assets/images/logo_origin.png')}/>
       </View>
       <View>
         <Text style={styles.login}>이메일 주소</Text>
         <TextInput 
           style={[styles.input, styles.margin]} 
-          placeholderTextColor={colors.gray}
+          placeholderTextColor={colors.gray5}
           value={userData.email}
           returnKeyType='next'
           onSubmitEditing={() => {passwordRef.current?.focus();}}
@@ -95,7 +88,7 @@ const Start = () => {
           returnKeyType='send'
           onSubmitEditing={handleSubmit}
           onChangeText={text => handleChangeText("password", text)}
-          placeholderTextColor={colors.gray}
+          placeholderTextColor={colors.gray5}
           placeholder='Password'/>
         <View style={[styles.button, styles.margin]}>
           <Button color={colors.point} title="로그인" onPress={handleSubmit}/> 
