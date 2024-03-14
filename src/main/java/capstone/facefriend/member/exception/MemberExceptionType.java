@@ -1,7 +1,7 @@
 package capstone.facefriend.member.exception;
 
-import capstone.back.common.exception.ExceptionType;
-import capstone.back.common.exception.Status;
+import capstone.facefriend.common.exception.ExceptionType;
+import capstone.facefriend.common.exception.Status;
 
 public enum MemberExceptionType implements ExceptionType {
 

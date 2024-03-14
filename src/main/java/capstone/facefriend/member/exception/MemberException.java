@@ -1,7 +1,7 @@
 package capstone.facefriend.member.exception;
 
-import capstone.back.common.exception.BaseException;
-import capstone.back.common.exception.ExceptionType;
+import capstone.facefriend.common.exception.BaseException;
+import capstone.facefriend.common.exception.ExceptionType;
 
 public class MemberException extends BaseException {
 

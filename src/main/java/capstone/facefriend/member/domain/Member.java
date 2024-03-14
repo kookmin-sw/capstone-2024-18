@@ -1,6 +1,6 @@
 package capstone.facefriend.member.domain;
 
-import capstone.back.common.domain.BaseEntity;
+import capstone.facefriend.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
