@@ -29,7 +29,6 @@ public class JwtProvider implements TokenProvider {
     private int expirationPeriod;
     private Key key;
 
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000 * 60 * 30L; // 30 minutes
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7L; // 7 days
 
     @PostConstruct

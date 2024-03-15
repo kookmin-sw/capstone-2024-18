@@ -43,11 +43,18 @@ public class RestTemplateOAuthRequester implements OAuthRequester {
         OAuthProviderProperty providerProperties = oAuthProviderProperties.getProviderProperties(provider);
         return UriComponentsBuilder.fromUriString(providerProperties.getLoginUrl())
                 .queryParam(CLIENT_ID, providerProperties.getId())
-                .queryParam(REDIRECT_URI, redirectUri) // need to fill query parameter
+                .queryParam(REDIRECT_URI, redirectUri) // should register redirectUri in google cloud
                 .queryParam(RESPONSE_TYPE, CODE)
                 .queryParam(SCOPE, providerProperties.getScope())
                 .build()
                 .toString();
+    }
+
+    @Override
+    public OAuthTokenResponse accessToken(OAuthLoginRequest request, String requestProvider) {
+        Provider provider = Provider.from(requestProvider);
+        OAuthProviderProperty property = oAuthProviderProperties.getProviderProperties(provider);
+        return getAccessToken(property, request);
     }
 
     @Override
@@ -88,7 +95,6 @@ public class RestTemplateOAuthRequester implements OAuthRequester {
             throw new AuthException(AuthExceptionType.BAD_REQUEST_TO_PROVIDER);
         }
     }
-
 
     private Map<String, Object> getUserAttributes(OAuthProviderProperty property, OAuthTokenResponse tokenResponse) {
         HttpHeaders headers = headerWithToken(tokenResponse);
