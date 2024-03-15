@@ -26,6 +26,10 @@ dependencies {
 	// postgresql
 	implementation 'org.postgresql:postgresql'
 
+	// redis
+	implementation "org.springframework.boot:spring-boot-starter-data-redis"
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.10.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.10.5'
