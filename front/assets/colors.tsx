@@ -1,4 +1,5 @@
 export const colors = {
+    transparent: "#00000000",
     white: "#FFFFFF",
     point: "#FF7269",
     pastel_point: "#FFD0CD",
@@ -9,5 +10,6 @@ export const colors = {
     gray5: "#A9ABB8",
     gray6: "#858899",
     gray7: "#525463",
-    gray8: "#2B2D36",
+    gray8: "#505050",
+    gray9: "#2B2D36",
 }

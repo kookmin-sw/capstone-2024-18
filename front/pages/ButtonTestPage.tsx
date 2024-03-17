@@ -1,19 +1,21 @@
-import { View, Text, StyleSheet, useWindowDimensions, TextInput as RNTextInput, Image } from 'react-native';
-import { useRef, useState } from 'react';
+import { View, Text, StyleSheet, useWindowDimensions, TextInput as RNTextInput } from 'react-native';
+import { useState } from 'react';
 import AutoHeightImage from 'react-native-auto-height-image';
 import { colors } from '../assets/colors.tsx';
-import { TextInput} from 'react-native-paper';
 import CustomButton from '../components/CustomButton.tsx';
 import CustomText from '../components/CustomText.tsx';
 
-const Login = () => {
-  const [ userData, setUserData ] = useState({
-    email: '',
-    password: ''
-  })
-  const passwordRef = useRef<RNTextInput | null>(null);
-  const [ secure, setSecure ] = useState(true);
-
+/**
+ * 기능 테스트 하고 싶다면, App.tsx에 다음 코드를 넣기
+ * import ButtonTestPage from './pages/ButtonTestPage.tsx';
+ * 
+ * function App() {
+ *    return (<ButtonTestPage />);
+ * }
+ * 
+ * export default App;
+ */
+const ButtonTestPage = () => {
   // google button 크기 조정을 위한 코드
   const [parentWidth, setParentWidth] = useState(0);
   const onLayout = (event: any) => {
@@ -32,60 +34,6 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      <AutoHeightImage
-        width={parentWidth}
-        style={{alignSelf:"center", margin: 80}}
-        source={require('../assets/images/logo_origin.png')}
-      />
-
-      <CustomText style={{alignSelf: "center", fontSize: 24, color: colors.point, paddingBottom: 30}}>
-        LOGIN
-      </CustomText>
-
-      <TextInput
-        value={userData.email}
-        onChangeText={(text) => {setUserData({...userData, "email": text})}}
-        keyboardType='email-address'
-
-        returnKeyType='next'
-        onSubmitEditing={() => {passwordRef.current?.focus()}}
-
-        placeholder='이메일을 입력해주세요'
-        left={
-          <TextInput.Icon
-            icon={() => 
-              <Image style={{width: 30, height: 30}} source={require('../assets/images/email.png')}/>
-            }
-          />
-        }
-      />
-      <TextInput
-        value={userData.password}
-        onChangeText={(text) => {setUserData({...userData, "password": text})}}
-
-        ref={passwordRef}
-        
-        placeholder='비밀번호를 입력해주세요'
-        secureTextEntry={secure}
-        left={
-          <TextInput.Icon
-            icon={() => 
-              <Image style={{width: 20, height: 20}} source={require('../assets/images/pw.png')}/>
-            }
-          />
-        }
-        right={
-          <TextInput.Icon
-            icon={() => 
-              (secure) ? 
-                <Image source={require('../assets/images/eye-off.png')}/> : 
-                <Image source={require('../assets/images/eye.png')}/>
-            }
-            onPress={() => {setSecure(!secure)}}
-          />
-        }
-      />
-
       {/* 이메일 찾기, 비밀번호 찾기 */}
       <View style={[styles.fit_content, {marginBottom: 40}]}>
         <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
@@ -139,14 +87,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5
   }, 
   // button font style
-  small_button_text: {
-    fontSize: 14,
-    color: colors.gray7
-  },
   button_text: {
     fontSize: 18,
     color: colors.white
   }, 
+  small_button_text: {
+    fontSize: 14,
+    color: colors.gray7
+  },
 });
 
-export default Login;
+export default ButtonTestPage;
