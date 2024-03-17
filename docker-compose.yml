@@ -1,0 +1,49 @@
+version: "3"
+services:
+  database:
+    env_file:
+      - ./.env
+    image: postgres
+    container_name: facefriend-db-test
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    expose:
+      - ${DB_PORT}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - ./db/initial_setup.sql:/docker-entrypoint-initdb.d/initial_setup.sql
+      - postgres_data:/var/lib/postgresql/data/
+
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    depends_on:
+      - database
+    ports:
+      - 8080:8080
+    container_name: facefriend-app-test
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
+  redis:
+    image: redis:alpine
+    command: redis-server --port 6379
+    container_name: redis_boot
+    hostname: redis_boot
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 6379:6379
+
+volumes:
+  postgres_data:
