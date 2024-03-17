@@ -43,6 +43,7 @@ const Login = () => {
       </CustomText>
 
       <TextInput
+        style={{backgroundColor: colors.gray1, height: 50, fontSize: 16, color: colors.gray8, marginVertical: 5}}
         value={userData.email}
         onChangeText={(text) => {setUserData({...userData, "email": text})}}
         keyboardType='email-address'
@@ -60,6 +61,7 @@ const Login = () => {
         }
       />
       <TextInput
+        style={{backgroundColor: colors.gray1, height: 50, fontSize: 16, color: colors.gray8, marginVertical: 5}}
         value={userData.password}
         onChangeText={(text) => {setUserData({...userData, "password": text})}}
 
