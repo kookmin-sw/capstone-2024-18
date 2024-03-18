@@ -1,6 +1,7 @@
 package capstone.facefriend.auth.service;
 
 
+import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.OAuthMember;
 import capstone.facefriend.auth.domain.Provider;
 import capstone.facefriend.auth.domain.TokenProvider;
@@ -25,7 +26,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String generateToken(OAuthMember oAuthMember) {
+    public TokenResponse generateTokens(OAuthMember oAuthMember) {
         Member newMember = Member.builder()
                 .email(oAuthMember.email())
                 .name(oAuthMember.nickname())
@@ -34,6 +35,17 @@ public class AuthService {
                 .build();
         Member member = memberRepository.findByEmail(oAuthMember.email())
                 .orElseGet(() -> memberRepository.save(newMember));
-        return tokenProvider.create(member.getId());
+
+        return new TokenResponse(getAccessToken(member), getRefreshToken(member));
+    }
+
+    private String getAccessToken(Member member) {
+        String accessToken = tokenProvider.createAccessToken(member.getId());
+        return accessToken;
+    }
+
+    private String getRefreshToken(Member member) {
+        String refreshToken = tokenProvider.createRefreshToken(member.getId());
+        return refreshToken;
     }
 }

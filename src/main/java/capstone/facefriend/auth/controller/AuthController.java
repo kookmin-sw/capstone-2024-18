@@ -4,7 +4,6 @@ package capstone.facefriend.auth.controller;
 import capstone.facefriend.auth.controller.dto.LoginUriResponse;
 import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.OAuthMember;
-import capstone.facefriend.auth.infrastructure.dto.OAuthTokenResponse;
 import capstone.facefriend.auth.service.AuthService;
 import capstone.facefriend.auth.service.OAuthRequester;
 import capstone.facefriend.auth.service.dto.OAuthLoginRequest;
@@ -28,21 +27,18 @@ public class AuthController {
         return ResponseEntity.ok(new LoginUriResponse(loginUri));
     }
 
-    @PostMapping("/oauth/{provider}/accessToken")
-    public ResponseEntity<OAuthTokenResponse> accessToken(
-            @RequestBody OAuthLoginRequest request,
-            @PathVariable String provider
-    ) {
-        return ResponseEntity.ok(oAuthRequester.accessToken(request, provider));
-    }
-
     @PostMapping("/oauth/{provider}/login")
-    public ResponseEntity<TokenResponse> login(
+    public ResponseEntity login(
             @RequestBody OAuthLoginRequest request,
             @PathVariable String provider
     ) {
         OAuthMember oAuthMember = oAuthRequester.login(request, provider);
-        String token = authService.generateToken(oAuthMember);
-        return ResponseEntity.ok(new TokenResponse(token));
+        TokenResponse tokens = authService.generateTokens(oAuthMember);
+        return ResponseEntity.ok(tokens);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("과연?");
     }
 }

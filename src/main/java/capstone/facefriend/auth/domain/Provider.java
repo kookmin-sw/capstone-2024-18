@@ -27,7 +27,9 @@ public enum Provider {
                 .orElseThrow(() -> new AuthException(AuthExceptionType.INVALID_AUTH_PROVIDER));
     }
 
-    public OAuthMember getOAuthProvider(Map<String, Object> body) {
+    public OAuthMember getOAuthMember(Map<String, Object> body) {
         return function.apply(body);
+        // function 은 GoogleMember 의 생성자를 의미
+        // GoogleMember 생성자의 파라미터에 request body (=Map<String, Object>) 넣어서 OAuthMember 객체 반환
     }
 }

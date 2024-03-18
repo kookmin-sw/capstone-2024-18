@@ -18,7 +18,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ExceptionResponse> handleException(BaseException e) {
         log.warn(e.getMessage(), e);
-
         ExceptionType exceptionType = e.getExceptionType();
         ExceptionStatus exceptionStatus = ExceptionStatus.from(exceptionType.status());
 

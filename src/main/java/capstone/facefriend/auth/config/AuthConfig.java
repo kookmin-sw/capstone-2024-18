@@ -5,6 +5,7 @@ import capstone.facefriend.auth.controller.interceptor.LoginCheckInterceptor;
 import capstone.facefriend.auth.controller.interceptor.LoginInterceptor;
 import capstone.facefriend.auth.controller.interceptor.PathMatchInterceptor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -18,11 +19,12 @@ import static capstone.facefriend.auth.controller.interceptor.HttpMethod.OPTIONS
 
 @RequiredArgsConstructor
 @Configuration
+@Slf4j
 public class AuthConfig implements WebMvcConfigurer {
 
     private final AuthArgumentResolver authArgumentResolver;
-    private final LoginInterceptor loginInterceptor;
     private final LoginCheckInterceptor loginCheckInterceptor;
+    private final LoginInterceptor loginInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -32,12 +34,15 @@ public class AuthConfig implements WebMvcConfigurer {
 
     private HandlerInterceptor loginCheckInterceptor() {
         return new PathMatchInterceptor(loginCheckInterceptor)
-                .addExcludePathPattern("/**", OPTIONS);
+                .addExcludePathPattern("/**", OPTIONS)
+                .addIncludePathPattern("/test", ANY) // test 용도
+                .addExcludePathPattern("/favicon.ico", ANY);
     }
 
     private HandlerInterceptor loginInterceptor() {
         return new PathMatchInterceptor(loginInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
+                .addIncludePathPattern("/test", ANY) // test 용도
                 .addIncludePathPattern("/admin/**", ANY)
                 .addIncludePathPattern("/members/**", ANY);
     }
