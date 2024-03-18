@@ -4,8 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-// PathMatchInterceptor 가 LoginCheckInterceptor, LoginInterceptor 를 호출하는 방식
-// AuthConfig 참고
 public class PathMatchInterceptor implements HandlerInterceptor {
 
     private final HandlerInterceptor handlerInterceptor;

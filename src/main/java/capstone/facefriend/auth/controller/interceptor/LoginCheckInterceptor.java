@@ -6,11 +6,13 @@ import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
     private final LoginInterceptor loginInterceptor;
@@ -18,7 +20,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (AuthenticationExtractor.extractAuth(request).isEmpty()) {
+        // 액세스 토큰이 없을 경우를 위한 인터셉터
+        if (AuthenticationExtractor.extractAccessToken(request).isEmpty()) {
             authenticationContext.setAnonymous();
             return true;
         }
