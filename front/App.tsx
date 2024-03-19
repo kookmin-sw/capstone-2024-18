@@ -7,7 +7,7 @@ function App() {
   return (
     <NativeRouter>
       <Routes>
-        <Route path={"/test1"} element={<Test1/>}/>
+        <Route path={"/"} element={<Test1/>}/>
         <Route path={"/test2"} element={<Test2/>}/>
         <Route path={"/test3"} element={<Test3/>}/>
       </Routes>

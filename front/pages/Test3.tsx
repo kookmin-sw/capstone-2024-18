@@ -8,7 +8,7 @@ const Test3 = () => {
   return (
     <View style={{margin: 100, alignSelf: 'center'}}>
       <Text style={{fontSize: 20}}>Test3창</Text>
-      <Button title={"Test1"} onPress={() => {navigate("/test1")}}/>
+      <Button title={"Test1"} onPress={() => {navigate("/")}}/>
     </View>
   );
 };
