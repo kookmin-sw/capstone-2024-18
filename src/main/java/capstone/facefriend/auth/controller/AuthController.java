@@ -37,8 +37,8 @@ public class AuthController {
         return ResponseEntity.ok(tokens);
     }
 
-    @GetMapping("/test")
+    @GetMapping("/oauth/google/test")
     public ResponseEntity<String> test() {
-        return ResponseEntity.ok("과연?");
+        return ResponseEntity.ok("[ OAuthController ] 과연?");
     }
 }
