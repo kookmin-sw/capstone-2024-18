@@ -21,6 +21,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 액세스 토큰이 없을 경우를 위한 인터셉터
+        log.info("[ LoginCheckInterceptor ]");
         if (AuthenticationExtractor.extractAccessToken(request).isEmpty()) {
             authenticationContext.setAnonymous();
             return true;
