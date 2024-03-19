@@ -28,21 +28,10 @@ public class TokenInterceptor implements HandlerInterceptor {
         String accessToken = AuthenticationExtractor.extractAccessToken(request)
                 .orElseThrow(() -> new AuthException(EXPIRED_TOKEN));
 
-        Long memberId = tokenProvider.extractId(accessToken);
-
-        boolean hasValueOfRefreshToken = redisDao.hasValueOfRefreshToken(String.valueOf(memberId));
-        log.info("[ TokenInterceptor ] hasValueOfRefreshToken = {}", hasValueOfRefreshToken);
         boolean isKeyOfAccessTokenInBlackList = redisDao.isKeyOfAccessTokenInBlackList(accessToken);
-        log.info("[ TokenInterceptor ] isKeyOfAccessTokenInBlackList = {}", isKeyOfAccessTokenInBlackList);
-
         boolean isAccessTokenAlive = tokenProvider.validateExpiration(accessToken);
-        log.info("[ TokenInterceptor ] isAccessTokenAlive = {}", isAccessTokenAlive);
         boolean isAccessTokenIntact = tokenProvider.validateIntegrity(accessToken);
-        log.info("[ TokenInterceptor ] isAccessTokenIntact = {}", isAccessTokenIntact);
 
-        return hasValueOfRefreshToken
-                && isAccessTokenAlive
-                && isAccessTokenIntact
-                && !isKeyOfAccessTokenInBlackList;
+        return isAccessTokenAlive && isAccessTokenIntact && !isKeyOfAccessTokenInBlackList;
     }
 }

@@ -27,8 +27,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        // 액세스 토큰이 존재할 경우를 위한 인터셉터
-        log.info("[ LoginInterceptor ]");
         String accessToken = AuthenticationExtractor.extractAccessToken(request)
                 .orElseThrow(() -> new AuthException(UNAUTHORIZED));
 
