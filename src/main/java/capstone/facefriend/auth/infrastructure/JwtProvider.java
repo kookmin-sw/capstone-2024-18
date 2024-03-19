@@ -1,6 +1,7 @@
 package capstone.facefriend.auth.infrastructure;
 
 
+import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.auth.exception.AuthException;
 import capstone.facefriend.redis.RedisDao;
@@ -41,6 +42,12 @@ public class JwtProvider implements TokenProvider {
         key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
+    public TokenResponse createTokens(Long memberId) {
+        String accessToken = createAccessToken(memberId);
+        String refreshToken = createRefreshToken(memberId);
+        return new TokenResponse(accessToken, refreshToken);
+    }
+
     @Override
     public String createAccessToken(Long id) {
         Claims claims = Jwts.claims();
@@ -55,7 +62,6 @@ public class JwtProvider implements TokenProvider {
 
         String refreshToken = refreshToken(claims);
         redisDao.setRefreshToken(String.valueOf(id), refreshToken, REFRESH_TOKEN_EXPIRATION_TIME);
-
         return refreshToken;
     }
 

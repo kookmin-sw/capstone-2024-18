@@ -2,7 +2,6 @@ package capstone.facefriend.redis;
 
 
 import capstone.facefriend.member.exception.MemberException;
-import capstone.facefriend.member.exception.MemberExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-import static capstone.facefriend.member.exception.MemberExceptionType.*;
+import static capstone.facefriend.member.exception.MemberExceptionType.ALREADY_SIGN_OUT_ACCESS_TOKEN;
 
 @Component
 @RequiredArgsConstructor
@@ -30,10 +29,6 @@ public class RedisDao {
 
     public void deleteRefreshToken(String memberId) {
         redisTemplate.delete(memberId);
-    }
-
-    public boolean hasValueOfRefreshToken(String memberId) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(memberId));
     }
 
     public void setAccessTokenSignOut(String accessToken, Long minute) {

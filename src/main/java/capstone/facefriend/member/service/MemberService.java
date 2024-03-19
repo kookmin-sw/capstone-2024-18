@@ -1,7 +1,6 @@
 package capstone.facefriend.member.service;
 
 import capstone.facefriend.auth.controller.dto.TokenResponse;
-import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
@@ -59,7 +58,6 @@ public class MemberService {
 
     @Transactional
     public TokenResponse signIn(SignInRequest request) {
-
         String email = request.email();
         String password = request.password();
 
@@ -69,29 +67,21 @@ public class MemberService {
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new MemberException(WRONG_PASSWORD);
         }
-
-        return generateTokens(member.getId());
+        return tokenProvider.createTokens(member.getId());
     }
 
     @Transactional
-    public TokenResponse generateTokens(Long memberId) {
-        return new TokenResponse(getAccessToken(memberId), getRefreshToken(memberId));
-    }
-
-    private String getAccessToken(Long memberId) {
-        String accessToken = tokenProvider.createAccessToken(memberId);
-        return accessToken;
-    }
-
-    private String getRefreshToken(Long memberId) {
-        String refreshToken = tokenProvider.createRefreshToken(memberId);
-        return refreshToken;
-    }
-
-    @Transactional
-    public String signOut(@AuthMember Long memberId, String accessToken) {
+    public String signOut(Long memberId, String accessToken) {
         redisDao.deleteRefreshToken(String.valueOf(memberId));
         redisDao.setAccessTokenSignOut(accessToken, SIGN_OUT_MINUTE);
         return SIGN_OUT_SUCCESS_MESSAGE;
+    }
+
+    public TokenResponse reissueTokens(Long memberId, String refreshTokenInput) {
+        String refreshToken = redisDao.getRefreshToken(String.valueOf(memberId));
+        if (!refreshToken.equals(refreshTokenInput)) {
+            throw new MemberException(INVALID_REFRESH_TOKEN);
+        }
+        return tokenProvider.createTokens(memberId);
     }
 }

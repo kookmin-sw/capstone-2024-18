@@ -6,6 +6,7 @@ import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
 import capstone.facefriend.member.exception.MemberException;
 import capstone.facefriend.member.service.MemberService;
+import capstone.facefriend.member.service.dto.ReissueRequest;
 import capstone.facefriend.member.service.dto.SignInRequest;
 import capstone.facefriend.member.service.dto.SignUpRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,8 +33,9 @@ public class MemberController {
     }
 
     @GetMapping("/members/reissue")
-    public ResponseEntity<TokenResponse> reissueTokens(@AuthMember Long memberId) {
-        return ResponseEntity.ok(memberService.generateTokens(memberId));
+    public ResponseEntity<TokenResponse> reissueTokens(@RequestBody ReissueRequest request, @AuthMember Long memberId) {
+        String refreshToken = request.refreshToken();
+        return ResponseEntity.ok(memberService.reissueTokens(memberId, refreshToken));
     }
 
     @DeleteMapping("/members/signout")
