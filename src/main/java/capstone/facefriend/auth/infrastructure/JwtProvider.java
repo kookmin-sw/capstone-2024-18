@@ -8,7 +8,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,7 @@ public class JwtProvider implements TokenProvider {
 
     private final RedisDao redisDao;
 
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 2L; // 2분 // 1000 * 60 * 60 * 3L; // 3시간
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 5L; // 5분 // 1000 * 60 * 60 * 3L; // 3시간
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7L; // 7일
 
     @PostConstruct
