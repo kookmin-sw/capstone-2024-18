@@ -3,12 +3,14 @@ package capstone.facefriend.auth.infrastructure;
 
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.auth.exception.AuthException;
+import capstone.facefriend.redis.RedisDao;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,13 +24,15 @@ import static capstone.facefriend.auth.exception.AuthExceptionType.*;
 
 @Getter
 @Component
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class JwtProvider implements TokenProvider {
 
     @Value("${jwt.secret}")
     private String secret;
     private Key key;
+
+    private final RedisDao redisDao;
 
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 2L; // 2분 // 1000 * 60 * 60 * 3L; // 3시간
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7L; // 7일
@@ -49,7 +53,11 @@ public class JwtProvider implements TokenProvider {
     public String createRefreshToken(Long id) {
         Claims claims = Jwts.claims();
         claims.put("id", id);
-        return refreshToken(claims);
+
+        String refreshToken = refreshToken(claims);
+        redisDao.setRefreshToken(String.valueOf(id), refreshToken, REFRESH_TOKEN_EXPIRATION_TIME);
+
+        return refreshToken;
     }
 
     private String accessToken(Claims claims) {
@@ -107,7 +115,7 @@ public class JwtProvider implements TokenProvider {
     }
 
     @Override
-    public Boolean validateExpiration(String token) {
+    public boolean validateExpiration(String token) {
         try {
             Date expiration = Jwts.parser()
                     .setSigningKey(secret.getBytes())
@@ -129,7 +137,7 @@ public class JwtProvider implements TokenProvider {
     }
 
     @Override
-    public Boolean validateIntegrity(String token) {
+    public boolean validateIntegrity(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
