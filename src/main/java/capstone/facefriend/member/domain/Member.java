@@ -18,13 +18,19 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String password;
+
     private String imageUrl;
+
+    @Column(unique = true)
+    private String phone;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
