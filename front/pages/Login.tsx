@@ -34,7 +34,7 @@ const Login = () => {
     <View style={styles.container}>
       <AutoHeightImage
         width={parentWidth}
-        style={{alignSelf:"center", margin: 80}}
+        style={{alignSelf:"center", marginHorizontal: 80}}
         source={require('../assets/images/logo_origin.png')}
       />
 
@@ -125,7 +125,9 @@ const Login = () => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: "14%"
+    marginHorizontal: "14%",
+    flex: 1,
+    justifyContent: 'center'
   },
   // 클릭 가능한 text를 위한 설정(custom button 파일 사용)
   fit_content: {
