@@ -1,37 +1,12 @@
-import { useState } from 'react';
 import SubTest1 from './SubTest1';
 import SubTest2 from './SubTest2';
-import { BottomNavigation, Icon, PaperProvider } from "react-native-paper";
+import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 
 const Tab = createMaterialBottomTabNavigator();
 
 const Test1 = () => {
-  const [ state, setState ] = useState({
-    index: 0,
-    routes: [
-      { key: 'sub1', title: 'sub page1', icon: 'history', color: '#FFB8B3'},
-      { key: 'sub2', title: 'sub page2', icon: 'album', color: '#FFB8B3'},
-    ],
-  });
-
-  const _handleIndexChange = (index: number) => {
-    setState({...state, "index": index });
-  };
-
-  const _renderScene = BottomNavigation.SceneMap({
-    sub1: SubTest1,
-    sub2: SubTest2,
-  });
-  const _renderIcon = ({route}: any) => {
-    switch (route.key) {
-      case 'sub1':
-      case 'sub2':
-        return <Icon size={30} color={route.color} source={require('../assets/images/eye.png')}/>;
-    }
-  }
-
   return (
     <NavigationContainer>
       <PaperProvider theme={{version: 2}}>
