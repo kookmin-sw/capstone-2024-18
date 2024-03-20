@@ -1,10 +1,7 @@
 package capstone.facefriend.auth.config;
 
 import capstone.facefriend.auth.controller.AuthArgumentResolver;
-import capstone.facefriend.auth.controller.interceptor.LoginCheckInterceptor;
-import capstone.facefriend.auth.controller.interceptor.LoginInterceptor;
-import capstone.facefriend.auth.controller.interceptor.PathMatchInterceptor;
-import capstone.facefriend.auth.controller.interceptor.TokenInterceptor;
+import capstone.facefriend.auth.controller.interceptor.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +26,8 @@ public class AuthConfig implements WebMvcConfigurer {
 
     private final LoginCheckInterceptor loginCheckInterceptor;
     private final LoginInterceptor loginInterceptor;
-    private final TokenInterceptor tokenInterceptor;
+    private final TokenReissueInterceptor tokenReissueInterceptor;
+    private final TokenBlackListInterceptor tokenBlackListInterceptor;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -40,31 +38,40 @@ public class AuthConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginCheckInterceptor());
         registry.addInterceptor(loginInterceptor());
-        registry.addInterceptor(tokenInterceptor());
+        registry.addInterceptor(tokenReissueInterceptor());
+        registry.addInterceptor(tokenBlackListInterceptor());
     }
 
     private HandlerInterceptor loginCheckInterceptor() {
         return new PathMatchInterceptor(loginCheckInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
-                .addIncludePathPattern("/oauth/google/test", ANY)
-                .addIncludePathPattern("/members/test", ANY)
+                .addExcludePathPattern("/members/reissue", POST)
+                .addIncludePathPattern("/oauth/google/test", GET)
+                .addIncludePathPattern("/members/test", GET)
                 .addIncludePathPattern("/members/signout", DELETE);
     }
 
+    // ExpiredJwtException 를 catch 하고 토큰 재발급을 할 수 있도록 예외를 터트리는 인터셉터
     private HandlerInterceptor loginInterceptor() {
         return new PathMatchInterceptor(loginInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
-                .addIncludePathPattern("/oauth/google/test", ANY)
-                .addIncludePathPattern("/members/test", ANY)
+                .addExcludePathPattern("/members/reissue", POST) // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
+                .addIncludePathPattern("/oauth/google/test", GET)
+                .addIncludePathPattern("/members/test", GET)
                 .addIncludePathPattern("/members/signout", DELETE);
     }
 
-    private HandlerInterceptor tokenInterceptor() {
-        return new PathMatchInterceptor(tokenInterceptor)
+    // ExpiredJwtException 를 catch 하고 memberId 를 추출하기 위한 인터셉터
+    private HandlerInterceptor tokenReissueInterceptor() {
+        return new PathMatchInterceptor(tokenReissueInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
-                .addIncludePathPattern("/oauth/google/test", ANY)
-                .addIncludePathPattern("/members/test", ANY)
-                .addIncludePathPattern("/members/signout", DELETE);
+                .addIncludePathPattern("/members/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채야 합니다.
+    }
+
+    private HandlerInterceptor tokenBlackListInterceptor() {
+        return new PathMatchInterceptor(tokenBlackListInterceptor)
+                .addExcludePathPattern("/**", OPTIONS)
+                .addIncludePathPattern("/members/test", GET);
     }
 
     @Override

@@ -11,11 +11,13 @@ import capstone.facefriend.member.service.dto.SignInRequest;
 import capstone.facefriend.member.service.dto.SignUpRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static capstone.facefriend.member.exception.MemberExceptionType.UNAUTHORIZED;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -32,9 +34,10 @@ public class MemberController {
         return ResponseEntity.ok(memberService.signIn(request));
     }
 
-    @GetMapping("/members/reissue")
+    @PostMapping("/members/reissue")
     public ResponseEntity<TokenResponse> reissueTokens(@RequestBody ReissueRequest request, @AuthMember Long memberId) {
         String refreshToken = request.refreshToken();
+
         return ResponseEntity.ok(memberService.reissueTokens(memberId, refreshToken));
     }
 

@@ -9,7 +9,5 @@ public interface TokenProvider {
     String createRefreshToken(Long id);
 
     Long extractId(String token);
-
-    boolean validateExpiration(String token);
-    boolean validateIntegrity(String token);
+    Long extractIdIgnoringExpiration(String token);
 }

@@ -34,7 +34,7 @@ public class JwtProvider implements TokenProvider {
 
     private final RedisDao redisDao;
 
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 5L; // 5분 // 1000 * 60 * 60 * 3L; // 3시간
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 2L; // 5분 // 1000 * 60 * 60 * 3L; // 3시간
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7L; // 7일
 
     @PostConstruct
@@ -95,23 +95,23 @@ public class JwtProvider implements TokenProvider {
 
     private Date refreshTokenExpiredAt() {
         LocalDateTime now = LocalDateTime.now();
-        return Date.from(now.plusHours(REFRESH_TOKEN_EXPIRATION_TIME).atZone(ZoneId.systemDefault()).toInstant());
+        return Date.from(now.plusSeconds(REFRESH_TOKEN_EXPIRATION_TIME).atZone(ZoneId.systemDefault()).toInstant());
     }
 
     @Override
     public Long extractId(String token) {
         try {
-            return Jwts.parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(secret.getBytes())
                     .parseClaimsJws(token)
-                    .getBody()
-                    .get("id", Long.class);
+                    .getBody();
+            return claims.get("id", Long.class);
+        } catch (ExpiredJwtException e) {
+            throw new AuthException(EXPIRED_TOKEN);
         } catch (SecurityException e) {
             throw new AuthException(SIGNATURE_NOT_FOUND);
         } catch (MalformedJwtException e) {
             throw new AuthException(MALFORMED_TOKEN);
-        } catch (ExpiredJwtException e) {
-            throw new AuthException(EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
             throw new AuthException(UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
@@ -120,38 +120,20 @@ public class JwtProvider implements TokenProvider {
     }
 
     @Override
-    public boolean validateExpiration(String token) {
+    public Long extractIdIgnoringExpiration(String token) {
         try {
-            Date expiration = Jwts.parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(secret.getBytes())
                     .parseClaimsJws(token)
-                    .getBody()
-                    .getExpiration();
-            return expiration.after(new Date());
+                    .getBody();
+            return claims.get("id", Long.class);
+        } catch (ExpiredJwtException e) {
+            Claims expiredClaims = e.getClaims(); // 만료된 토큰일 경우 catch 후 id 를 반환해야만 합니다.
+            return expiredClaims.get("id", Long.class);
         } catch (SecurityException e) {
             throw new AuthException(SIGNATURE_NOT_FOUND);
         } catch (MalformedJwtException e) {
             throw new AuthException(MALFORMED_TOKEN);
-        } catch (ExpiredJwtException e) {
-            throw new AuthException(EXPIRED_TOKEN);
-        } catch (UnsupportedJwtException e) {
-            throw new AuthException(UNSUPPORTED_TOKEN);
-        } catch (IllegalArgumentException e) {
-            throw new AuthException(INVALID_TOKEN);
-        }
-    }
-
-    @Override
-    public boolean validateIntegrity(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (SecurityException e) {
-            throw new AuthException(SIGNATURE_NOT_FOUND);
-        } catch (MalformedJwtException e) {
-            throw new AuthException(MALFORMED_TOKEN);
-        } catch (ExpiredJwtException e) {
-            throw new AuthException(EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
             throw new AuthException(UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
