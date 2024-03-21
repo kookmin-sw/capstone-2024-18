@@ -21,7 +21,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (AuthenticationExtractor.extractAccessToken(request).isEmpty()) {
-            authenticationContext.setAnonymous();
+            authenticationContext.setNotAuthenticated();
             return true;
         }
         return loginInterceptor.preHandle(request, response, handler);
