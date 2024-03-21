@@ -1,12 +1,19 @@
-import { View, Text, StyleSheet, TextInput as RNTextInput } from 'react-native';
 import { useRef, useState } from 'react';
+import { View, Text, StyleSheet, TextInput as RNTextInput } from 'react-native';
+import { useNavigate } from "react-router-native";
 import AutoHeightImage from 'react-native-auto-height-image';
-import { colors } from '../assets/colors.tsx';
+
 import CustomButton from '../components/CustomButton.tsx';
 import CustomText from '../components/CustomText.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
 
+import { colors } from '../assets/colors.tsx';
+
 const Login = () => {
+  const develop_mode = true; // 개발자 모드로 로그인하기 위한 변수
+
+  const navigate = useNavigate();
+  
   const [ email, setEmail ] = useState('');
   const [ pw, setPw ] = useState('');
 
@@ -21,12 +28,26 @@ const Login = () => {
   }
 
   // 로그인 버튼 클릭
-  const TryLogin = (develop_mode=false) => {
+  const TryLogin = () => {
     if (develop_mode) {
       // 개발자용 id, password로 로그인
     }
 
     console.log("Login");
+    navigate('/main');
+  }
+  // 로그인 버튼 클릭
+  const TryGoogleLogin = () => {
+    if (develop_mode) {
+      // 개발자용 id, password로 로그인
+    }
+
+    console.log("Google Login");
+    navigate('/main');
+  }
+
+  const NavigateToSignUp = () => {
+    navigate('/signup');
   }
 
   return (
@@ -82,10 +103,7 @@ const Login = () => {
           <CustomButton onPress={TryLogin} styles={{backgroundColor: colors.point, marginVertical: 5}}>
             <CustomText style={styles.button_text}>로그인</CustomText>
           </CustomButton>
-          {/* <CustomButton onPress={() => {TryLogin(true)}} styles={{backgroundColor: colors.point, marginVertical: 5}} >
-            <CustomText style={styles.button_text}>개빌지 로그인</CustomText>
-          </CustomButton> */}
-          <CustomButton onPress={() => {}} styles={{backgroundColor: colors.white, marginVertical: 5, padding: 0}} >
+          <CustomButton onPress={TryGoogleLogin} styles={{backgroundColor: colors.white, marginVertical: 5, padding: 0}} >
             <AutoHeightImage width={parentWidth} source={require('../assets/images/signin-assets/Android/png@4x/neutral/sq_ctn.png')}/>
           </CustomButton>
         </View>
@@ -93,7 +111,7 @@ const Login = () => {
         {/* 회원가입 */}
         <View style={[styles.fit_content]}>
           <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
-          <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
+          <CustomButton onPress={NavigateToSignUp} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
             <CustomText style={{...styles.small_button_text, ...styles.underline}}>회원가입</CustomText>
           </CustomButton>
         </View>

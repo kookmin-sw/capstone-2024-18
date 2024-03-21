@@ -1,6 +1,7 @@
 import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import { View } from "react-native";
 import SubTest1 from './SubTest1.tsx';
 import SubTest2 from './SubTest2.tsx';
 import eye from '../../assets/images/eye.png';
@@ -10,6 +11,7 @@ const Tab = createMaterialBottomTabNavigator();
 
 const Test1 = () => {
   return (
+    <View style={{height: "100%"}}>
     <NavigationContainer>
       <PaperProvider theme={{version: 2}}>
         <Tab.Navigator 
@@ -38,6 +40,7 @@ const Test1 = () => {
         </Tab.Navigator>
       </PaperProvider>
     </NavigationContainer>
+    </View>
   );
 };
 

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, Text, Pressable, ScrollView, TextInput } from "react-native";
 import { Icon } from 'react-native-paper';
+import { useNavigate } from "react-router-native";
 
 import IconText from "../components/IconText.tsx";
 import CustomTextInput from "../components/CustomTextInput.tsx";
@@ -9,6 +10,8 @@ import CustomButton from "../components/CustomButton.tsx";
 import { colors } from '../assets/colors.tsx'
 
 const Signup = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [emailStatus, setEmailStatus] = useState("NOT_CHECKED");
 
@@ -67,7 +70,10 @@ const Signup = () => {
   } 
 
   const handleSubmit = () => {
-    if (isFormValid) console.log(email, pwInput[0], nickname);
+    if (isFormValid) {
+      console.log(email, pwInput[0], nickname);
+      navigate('/main');
+    }
   }
 
   useEffect(() => {
