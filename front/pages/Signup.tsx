@@ -4,6 +4,7 @@ import { Icon } from 'react-native-paper';
 
 import IconText from "../Components/IconText.tsx";
 import CustomTextInput from "../Components/CustomTextInput.tsx";
+import CustomButton from "../Components/CustomButton.tsx";
 
 import { colors } from '../assets/colors.tsx'
 
@@ -105,11 +106,9 @@ const Signup = () => {
             />
           </View>
           <View style={styles.grayButtonContainer}>
-            <Pressable onPress={handleEmailValidation}>
-              <View style={styles.grayButton}>
-                <Text style={styles.grayButtonText}>이메일 중복 확인</Text>
-              </View>
-            </Pressable>
+            <CustomButton onPress={handleEmailValidation} styles={styles.grayButton}>
+              <Text style={styles.grayButtonText}>이메일 중복 확인</Text>
+            </CustomButton>
             {emailStatus === "NOT_CHECKED" ? "" 
             : emailStatus === "INVALID" ? 
               <IconText icon={{source: "close-circle"}} containerStyle={{ marginLeft: 10 }}>올바른 이메일 주소가 아닙니다</IconText>
@@ -207,11 +206,9 @@ const Signup = () => {
               <Text style={styles.subagreementToggleText}>전체</Text>
             </View>
           </>}
-          <Pressable onPress={handleSubmit}>
-            <View style={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}>
-              <Text style={styles.pointButtonText}>회원가입하기</Text>
-            </View>
-          </Pressable>
+          <CustomButton onPress={handleSubmit} styles={StyleSheet.flatten([styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }])}>
+            <Text style={styles.pointButtonText}>회원가입하기</Text>
+          </CustomButton>
         </View>
       </View>
     </ScrollView>
@@ -271,6 +268,8 @@ const styles = StyleSheet.create({
     height: 30, 
     borderRadius: 6, 
     justifyContent: "center",
+    padding: 0,
+    flex: 0,
   },
   grayButtonText: {
     color: colors.white, 
