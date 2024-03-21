@@ -1,12 +1,11 @@
-import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Signup from './pages/Signup';
+import Login from './pages/Login.tsx';
 
-const App = () => {
+function App() {
   return (
     <SafeAreaView>
-      <Signup />
-    </SafeAreaView>
+      <Login />
+    </SafeAreaView>  
   );
 }
 
