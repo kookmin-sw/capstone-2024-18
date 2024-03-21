@@ -24,32 +24,38 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    // 일반 유저 인증 인가
     @PostMapping("/members/signup")
     public ResponseEntity<String> signUp(@RequestBody SignUpRequest request) {
         return ResponseEntity.ok(memberService.signUp(request));
     }
 
+    // 일반 유저 인증 인가
     @PostMapping("/members/signin")
     public ResponseEntity<TokenResponse> signIn(@RequestBody SignInRequest request) {
         return ResponseEntity.ok(memberService.signIn(request));
     }
 
-    @PostMapping("/members/reissue")
+    // 구글 유저, 일반 유저 공통 로직
+    @PostMapping("/reissue")
     public ResponseEntity<TokenResponse> reissueTokens(@RequestBody ReissueRequest request, @AuthMember Long memberId) {
         String refreshToken = request.refreshToken();
-
         return ResponseEntity.ok(memberService.reissueTokens(memberId, refreshToken));
     }
 
-    @DeleteMapping("/members/signout")
+    // 구글 유저, 일반 유저 공통 로직
+    @DeleteMapping("/signout")
     public ResponseEntity<String> signOut(HttpServletRequest request, @AuthMember Long memberId) {
         String accessToken = AuthenticationExtractor.extractAccessToken(request)
                 .orElseThrow(() -> new MemberException(UNAUTHORIZED));
         return ResponseEntity.ok(memberService.signOut(memberId, accessToken));
     }
 
-    @GetMapping("/members/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("[ MemberController ] 과연?");
+    // 구글 유저, 일반 유저 공통 로직 (테스트용)
+    @GetMapping("/test")
+    public ResponseEntity<String> test(HttpServletRequest request, @AuthMember Long memberId) {
+        String accessToken = AuthenticationExtractor.extractAccessToken(request)
+                .orElseThrow(() -> new MemberException(UNAUTHORIZED));
+        return ResponseEntity.ok("토큰 = " + accessToken + " memberId = " + memberId);
     }
 }

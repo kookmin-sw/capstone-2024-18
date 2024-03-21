@@ -32,6 +32,9 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private String phone;
 
+    @Column
+    private Boolean isVerified;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -53,7 +56,11 @@ public class Member extends BaseEntity {
         return this.email.charAt(0) + "*".repeat(EMAIL_MASKING_LENGTH) + this.email.substring(EMAIL_MASKING_LENGTH + 1);
     }
 
-    public void updateRole(Role role) {
+    public void setRole(Role role) {
         this.role = role;
+    }
+
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
     }
 }
