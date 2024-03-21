@@ -2,11 +2,12 @@ package capstone.facefriend.auth.controller.support;
 
 
 import capstone.facefriend.auth.exception.AuthException;
-import capstone.facefriend.auth.exception.AuthExceptionType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.Objects;
+
+import static capstone.facefriend.auth.exception.AuthExceptionType.UNAUTHORIZED;
 
 @RequestScope
 @Component
@@ -19,14 +20,14 @@ public class AuthenticationContext {
         this.memberId = memerId;
     }
 
-    public Long getPrincipal() {
+    public Long getAuthentication() {
         if (Objects.isNull(this.memberId)) {
-            throw new AuthException(AuthExceptionType.UNAUTHORIZED);
+            throw new AuthException(UNAUTHORIZED);
         }
         return memberId;
     }
 
-    public void setAnonymous() {
+    public void setNotAuthenticated() {
         this.memberId = ANONYMOUS_MEMBER;
     }
 }

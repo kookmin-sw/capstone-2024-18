@@ -34,7 +34,7 @@ public class JwtProvider implements TokenProvider {
 
     private final RedisDao redisDao;
 
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 2L; // 5분 // 1000 * 60 * 60 * 3L; // 3시간
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 5L; // 5분 // 1000 * 60 * 60 * 3L; // 3시간
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7L; // 7일
 
     @PostConstruct
@@ -98,6 +98,7 @@ public class JwtProvider implements TokenProvider {
         return Date.from(now.plusSeconds(REFRESH_TOKEN_EXPIRATION_TIME).atZone(ZoneId.systemDefault()).toInstant());
     }
 
+    // 일반적인 경우에 사용합니다.
     @Override
     public Long extractId(String token) {
         try {
@@ -119,6 +120,7 @@ public class JwtProvider implements TokenProvider {
         }
     }
 
+    // 재발급 시에만 사용합니다.
     @Override
     public Long extractIdIgnoringExpiration(String token) {
         try {
@@ -128,7 +130,7 @@ public class JwtProvider implements TokenProvider {
                     .getBody();
             return claims.get("id", Long.class);
         } catch (ExpiredJwtException e) {
-            Claims expiredClaims = e.getClaims(); // 만료된 토큰일 경우 catch 후 id 를 반환해야만 합니다.
+            Claims expiredClaims = e.getClaims(); // catch 후 id 를 반환하고 이를 사용해 액세스 토큰을 추출할 수 있습니다.
             return expiredClaims.get("id", Long.class);
         } catch (SecurityException e) {
             throw new AuthException(SIGNATURE_NOT_FOUND);

@@ -37,9 +37,4 @@ public class AuthController {
         TokenResponse tokens = authService.generateTokens(oAuthMember);
         return ResponseEntity.ok(tokens);
     }
-
-    @GetMapping("/oauth/google/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("[ OAuthController ] 과연?");
-    }
 }
