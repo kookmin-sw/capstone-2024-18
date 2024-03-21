@@ -30,71 +30,73 @@ const Login = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <AutoHeightImage
-        width={parentWidth}
-        style={{alignSelf:"center", marginHorizontal: 80}}
-        source={require('../assets/images/logo_origin.png')}
-      />
-
-      <CustomText style={{alignSelf: "center", fontSize: 24, color: colors.point, paddingTop: 30, paddingBottom: 10}}>
-        LOGIN
-      </CustomText>
-
-      <View style={styles.textInputContainer}>
-        <CustomTextInput
-          leftIcon={{source: "email"}} 
-          placeholder="이메일을 입력해주세요" 
-          onChangeText={(text) => setEmail(text)}
-          keyboardType='email-address'
-          returnKeyType='next'
-          onSubmitEditing={() => {passwordRef.current?.focus()}}
-          textInputStyle={{paddingLeft: 10, marginVertical: 3}}
+    <View style={{height: '100%'}}>
+      <View style={styles.container}>
+        <AutoHeightImage
+          width={parentWidth}
+          style={{alignSelf:"center", marginHorizontal: 80}}
+          source={require('../assets/images/logo_origin.png')}
         />
-      </View>
-      <View style={styles.textInputContainer}>
-        <CustomTextInput
-          leftIcon={{source: "lock"}} 
-          rightIcon={{source: secure ?  "eye-off-outline" : "eye-outline"}}
-          rightPressable={{ onPress: () => setSecure(!secure) }}
-          placeholder="비밀번호를 입력해주세요" 
-          onChangeText={(text) => setPw(text)}
-          secureTextEntry={secure}
-          ref={passwordRef}
-          textInputStyle={{paddingLeft: 10, marginVertical: 3}}
-        />
-      </View>
 
-      {/* 이메일 찾기, 비밀번호 찾기 */}
-      <View style={[styles.fit_content, {marginBottom: 40}]}>
-        <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
-          <CustomText style={styles.small_button_text}>이메일 찾기</CustomText>
-        </CustomButton>
-        <View style={{borderWidth: 0.5, marginHorizontal: 10, marginVertical: 10}}/>
-        <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
-          <CustomText style={styles.small_button_text}>비밀번호 찾기</CustomText>
-        </CustomButton>
-      </View>
+        <CustomText style={{alignSelf: "center", fontSize: 24, color: colors.point, paddingTop: 30, paddingBottom: 10}}>
+          LOGIN
+        </CustomText>
 
-      {/* 로그인, 개발자 로그인, 구글 로그인 버튼 */}
-      <View style={{marginHorizontal: 30}} onLayout={onLayout}>
-        <CustomButton onPress={TryLogin} styles={{backgroundColor: colors.point, marginVertical: 5}}>
-          <CustomText style={styles.button_text}>로그인</CustomText>
-        </CustomButton>
-        {/* <CustomButton onPress={() => {TryLogin(true)}} styles={{backgroundColor: colors.point, marginVertical: 5}} >
-          <CustomText style={styles.button_text}>개빌지 로그인</CustomText>
-        </CustomButton> */}
-        <CustomButton onPress={() => {}} styles={{backgroundColor: colors.white, marginVertical: 5, padding: 0}} >
-          <AutoHeightImage width={parentWidth} source={require('../assets/images/signin-assets/Android/png@4x/neutral/sq_ctn.png')}/>
-        </CustomButton>
-      </View>
+        <View style={styles.textInputContainer}>
+          <CustomTextInput
+            leftIcon={{source: "email"}} 
+            placeholder="이메일을 입력해주세요" 
+            onChangeText={(text) => setEmail(text)}
+            keyboardType='email-address'
+            returnKeyType='next'
+            onSubmitEditing={() => {passwordRef.current?.focus()}}
+            textInputStyle={{paddingLeft: 10, marginVertical: 3}}
+          />
+        </View>
+        <View style={styles.textInputContainer}>
+          <CustomTextInput
+            leftIcon={{source: "lock"}} 
+            rightIcon={{source: secure ?  "eye-off-outline" : "eye-outline"}}
+            rightPressable={{ onPress: () => setSecure(!secure) }}
+            placeholder="비밀번호를 입력해주세요" 
+            onChangeText={(text) => setPw(text)}
+            secureTextEntry={secure}
+            ref={passwordRef}
+            textInputStyle={{paddingLeft: 10, marginVertical: 3}}
+          />
+        </View>
 
-      {/* 회원가입 */}
-      <View style={[styles.fit_content]}>
-        <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
-        <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
-          <CustomText style={{...styles.small_button_text, ...styles.underline}}>회원가입</CustomText>
-        </CustomButton>
+        {/* 이메일 찾기, 비밀번호 찾기 */}
+        <View style={[styles.fit_content, {marginBottom: 40}]}>
+          <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
+            <CustomText style={styles.small_button_text}>이메일 찾기</CustomText>
+          </CustomButton>
+          <View style={{borderWidth: 0.5, marginHorizontal: 10, marginVertical: 10}}/>
+          <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
+            <CustomText style={styles.small_button_text}>비밀번호 찾기</CustomText>
+          </CustomButton>
+        </View>
+
+        {/* 로그인, 개발자 로그인, 구글 로그인 버튼 */}
+        <View style={{marginHorizontal: 30}} onLayout={onLayout}>
+          <CustomButton onPress={TryLogin} styles={{backgroundColor: colors.point, marginVertical: 5}}>
+            <CustomText style={styles.button_text}>로그인</CustomText>
+          </CustomButton>
+          {/* <CustomButton onPress={() => {TryLogin(true)}} styles={{backgroundColor: colors.point, marginVertical: 5}} >
+            <CustomText style={styles.button_text}>개빌지 로그인</CustomText>
+          </CustomButton> */}
+          <CustomButton onPress={() => {}} styles={{backgroundColor: colors.white, marginVertical: 5, padding: 0}} >
+            <AutoHeightImage width={parentWidth} source={require('../assets/images/signin-assets/Android/png@4x/neutral/sq_ctn.png')}/>
+          </CustomButton>
+        </View>
+
+        {/* 회원가입 */}
+        <View style={[styles.fit_content]}>
+          <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
+          <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
+            <CustomText style={{...styles.small_button_text, ...styles.underline}}>회원가입</CustomText>
+          </CustomButton>
+        </View>
       </View>
     </View>
   );
@@ -105,9 +107,6 @@ const styles = StyleSheet.create({
     marginHorizontal: "14%",
     flex: 1,
     justifyContent: 'center'
-  },
-  login_text: {
-    
   },
   // 클릭 가능한 text를 위한 설정(custom button 파일 사용)
   fit_content: {
@@ -121,7 +120,8 @@ const styles = StyleSheet.create({
   },
   // font style - 밑줄
   underline: {
-    borderBottomWidth: 0.5
+    borderBottomWidth: 0.6,
+    color: colors.gray7
   }, 
   // button font style
   small_button_text: {

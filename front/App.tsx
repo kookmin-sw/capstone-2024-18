@@ -1,11 +1,13 @@
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Login from './pages/Login.tsx';
 
 function App() {
   return (
-    <SafeAreaView>
-      <Login />
-    </SafeAreaView>  
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <Login />
+      </SafeAreaView>
+    </SafeAreaProvider>  
   );
 }
 
