@@ -1,16 +1,15 @@
-import { View, Text, StyleSheet, useWindowDimensions, TextInput as RNTextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput as RNTextInput } from 'react-native';
 import { useRef, useState } from 'react';
 import AutoHeightImage from 'react-native-auto-height-image';
 import { colors } from '../assets/colors.tsx';
-import { TextInput} from 'react-native-paper';
 import CustomButton from '../components/CustomButton.tsx';
 import CustomText from '../components/CustomText.tsx';
+import CustomTextInput from '../components/CustomTextInput.tsx';
 
 const Login = () => {
-  const [ userData, setUserData ] = useState({
-    email: '',
-    password: ''
-  })
+  const [ email, setEmail ] = useState('');
+  const [ pw, setPw ] = useState('');
+
   const passwordRef = useRef<RNTextInput | null>(null);
   const [ secure, setSecure ] = useState(true);
 
@@ -19,7 +18,7 @@ const Login = () => {
   const onLayout = (event: any) => {
     const {width} = event.nativeEvent.layout;
     setParentWidth(width);
-  };
+  }
 
   // 로그인 버튼 클릭
   const TryLogin = (develop_mode=false) => {
@@ -38,55 +37,33 @@ const Login = () => {
         source={require('../assets/images/logo_origin.png')}
       />
 
-      <CustomText style={{alignSelf: "center", fontSize: 24, color: colors.point, paddingBottom: 30}}>
+      <CustomText style={{alignSelf: "center", fontSize: 24, color: colors.point, paddingTop: 30, paddingBottom: 10}}>
         LOGIN
       </CustomText>
 
-      <TextInput
-        style={{backgroundColor: colors.gray1, height: 50, fontSize: 16, color: colors.gray8, marginVertical: 5}}
-        value={userData.email}
-        onChangeText={(text) => {setUserData({...userData, "email": text})}}
-        keyboardType='email-address'
-
-        returnKeyType='next'
-        onSubmitEditing={() => {passwordRef.current?.focus()}}
-
-        placeholder='이메일을 입력해주세요'
-        left={
-          <TextInput.Icon
-            icon={() => 
-              <Image style={{width: 30, height: 30}} source={require('../assets/images/email.png')}/>
-            }
-          />
-        }
-      />
-      <TextInput
-        style={{backgroundColor: colors.gray1, height: 50, fontSize: 16, color: colors.gray8, marginVertical: 5}}
-        value={userData.password}
-        onChangeText={(text) => {setUserData({...userData, "password": text})}}
-
-        ref={passwordRef}
-        
-        placeholder='비밀번호를 입력해주세요'
-        secureTextEntry={secure}
-        left={
-          <TextInput.Icon
-            icon={() => 
-              <Image style={{width: 20, height: 20}} source={require('../assets/images/pw.png')}/>
-            }
-          />
-        }
-        right={
-          <TextInput.Icon
-            icon={() => 
-              (secure) ? 
-                <Image source={require('../assets/images/eye-off.png')}/> : 
-                <Image source={require('../assets/images/eye.png')}/>
-            }
-            onPress={() => {setSecure(!secure)}}
-          />
-        }
-      />
+      <View style={styles.textInputContainer}>
+        <CustomTextInput
+          leftIcon={{source: "email"}} 
+          placeholder="이메일을 입력해주세요" 
+          onChangeText={(text) => setEmail(text)}
+          keyboardType='email-address'
+          returnKeyType='next'
+          onSubmitEditing={() => {passwordRef.current?.focus()}}
+          textInputStyle={{paddingLeft: 10, marginVertical: 3}}
+        />
+      </View>
+      <View style={styles.textInputContainer}>
+        <CustomTextInput
+          leftIcon={{source: "lock"}} 
+          rightIcon={{source: secure ?  "eye-off-outline" : "eye-outline"}}
+          rightPressable={{ onPress: () => setSecure(!secure) }}
+          placeholder="비밀번호를 입력해주세요" 
+          onChangeText={(text) => setPw(text)}
+          secureTextEntry={secure}
+          ref={passwordRef}
+          textInputStyle={{paddingLeft: 10, marginVertical: 3}}
+        />
+      </View>
 
       {/* 이메일 찾기, 비밀번호 찾기 */}
       <View style={[styles.fit_content, {marginBottom: 40}]}>
@@ -113,7 +90,7 @@ const Login = () => {
       </View>
 
       {/* 회원가입 */}
-      <View style={[styles.fit_content, {marginTop: 10}]}>
+      <View style={[styles.fit_content]}>
         <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
         <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
           <CustomText style={{...styles.small_button_text, ...styles.underline}}>회원가입</CustomText>
@@ -129,8 +106,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center'
   },
+  login_text: {
+    
+  },
   // 클릭 가능한 text를 위한 설정(custom button 파일 사용)
   fit_content: {
+    paddingTop: 10,
     flexDirection: 'row', 
     alignSelf: 'center'
   },
@@ -151,6 +132,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colors.white
   }, 
+
+  text_input: {
+    marginVertical: 5
+  },
+  textInputContainer: {
+    marginTop: 10,
+  },
 });
 
 export default Login;
