@@ -53,9 +53,7 @@ public class MemberController {
 
     // 구글 유저, 일반 유저 공통 로직 (테스트용)
     @GetMapping("/test")
-    public ResponseEntity<String> test(HttpServletRequest request, @AuthMember Long memberId) {
-        String accessToken = AuthenticationExtractor.extractAccessToken(request)
-                .orElseThrow(() -> new MemberException(UNAUTHORIZED));
-        return ResponseEntity.ok("토큰 = " + accessToken + " memberId = " + memberId);
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("[ MemberController ] 테스트");
     }
 }

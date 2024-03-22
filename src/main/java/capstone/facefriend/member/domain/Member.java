@@ -3,6 +3,7 @@ package capstone.facefriend.member.domain;
 import capstone.facefriend.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Builder
@@ -10,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Slf4j
 public class Member extends BaseEntity {
 
     private static final int EMAIL_MASKING_LENGTH = 2;
@@ -27,13 +29,16 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String name;
+
     private String imageUrl;
 
     @Column(unique = true)
     private String phone;
 
     @Column
-    private Boolean isVerified;
+    private boolean isVerified;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -60,7 +65,13 @@ public class Member extends BaseEntity {
         this.role = role;
     }
 
-    public void setIsVerified(Boolean isVerified) {
+    public void setIsVerified(boolean isVerified) {
+        log.info("[ Member ] 현재 isVerified = {}", this.isVerified);
+        log.info("[ Member ] 들어온 isVerified = {}", isVerified);
         this.isVerified = isVerified;
+    }
+
+    public boolean isVerified() {
+        return this.isVerified == true;
     }
 }

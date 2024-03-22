@@ -16,10 +16,15 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class TokenBlackListInterceptor implements HandlerInterceptor {
 
     private final RedisDao redisDao;
+    private final static String SIGN_OUT_VALUE = "SIGN_OUT_VALUE";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String accessToken = AuthenticationExtractor.extractAccessToken(request).get();
-        return !redisDao.isKeyOfAccessTokenInBlackList(accessToken); // 액세스 토큰이 블랙리스트에 등록되었다면 false 반환해야 합니다.
+
+        if (accessToken != null && accessToken.equals(SIGN_OUT_VALUE)) {
+            return !redisDao.isKeyOfAccessTokenInBlackList(accessToken); // 액세스 토큰이 블랙리스트에 등록되었다면 false 반환해야 합니다.
+        }
+        return true;
     }
 }

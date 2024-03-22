@@ -49,7 +49,7 @@ public class MemberService {
                 .email(email)
                 .password(encodedPassword)
                 .name(request.name())
-                .isVerified(false) //
+                .isVerified(false)
                 .role(USER)
                 .build();
         memberRepository.save(member);

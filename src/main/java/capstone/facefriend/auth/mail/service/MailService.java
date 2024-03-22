@@ -31,6 +31,7 @@ public class MailService {
 
     private final RedisDao redisDao;
     private final JavaMailSender mailSender;
+    private final MemberRepository memberRepository;
 
     public String sendCode(String mail) {
         String code = createCode(); // 코드 생성
@@ -70,7 +71,7 @@ public class MailService {
         return message;
     }
 
-    public Boolean verifyCode(String mail, String codeInput) {
+    public boolean verifyCode(String mail, String codeInput) {
         String code = redisDao.getCode(mail);
         return code.equals(codeInput);
     }

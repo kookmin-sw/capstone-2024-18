@@ -40,12 +40,12 @@ public class VerificationInterceptor implements HandlerInterceptor {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
 
-        Boolean isVerified = member.getIsVerified();
+        boolean isVerified = member.isVerified();
+
+        log.info("[ VerificationInterceptor ] isVerified = {}", isVerified);
         verificationContext.setIsVerified(isVerified);
 
-        if (isVerified == null) {
-            throw new VerificationException(NOT_VERIFIED);
-        }
+        if (!isVerified) throw new VerificationException(NOT_VERIFIED);
 
         return true;
     }

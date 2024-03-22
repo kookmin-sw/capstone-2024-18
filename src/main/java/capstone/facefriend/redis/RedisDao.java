@@ -17,7 +17,7 @@ import static capstone.facefriend.member.exception.MemberExceptionType.ALREADY_S
 public class RedisDao {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private final String SIGN_OUT_VALUE = "signOut";
+    private final String SIGN_OUT_VALUE = "SIGN_OUT_VALUE";
 
     public void setRefreshToken(String memberId, String refreshToken, long refreshTokenTime) {
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
