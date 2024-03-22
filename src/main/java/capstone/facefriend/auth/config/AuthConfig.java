@@ -45,8 +45,6 @@ public class AuthConfig implements WebMvcConfigurer {
         registry.addInterceptor(verificationInterceptor());
     }
 
-    // 회원가입하지 않은 사용자 id 를 -1 로 저장하기 위한 인터셉터입니다.
-    // * 해당 인터셉터는 로그인 시점을 포함한 그 이후의 메서드들을 호출할 때 사용됩니다.
     private HandlerInterceptor loginCheckInterceptor() {
         return new PathMatchInterceptor(loginCheckInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
@@ -60,11 +58,6 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/test", GET);
     }
 
-    // 회원가입한 사용자의 id 를 추출하기 위한 인터셉터입니다.
-    // (1) 토큰이 만료된 경우 (2) 토큰이 위조된 경우
-    // (3) 토큰이 블랙리스트에 등록된 경우 (4) 로그인하는 경우
-    // 예외를 터트려 재로그인 또는 토큰 재발급을 강제하기 위한 인터셉터입니다.
-    // * 해당 인터셉터는 로그인 시점을 포함한 그 이후의 메서드들을 호출할 때 사용됩니다.
     private HandlerInterceptor loginInterceptor() {
         return new PathMatchInterceptor(loginInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)

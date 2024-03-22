@@ -49,12 +49,9 @@ public class MailController {
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
 
         boolean isVerified = mailService.verifyCode(mail, code);
-        log.info("[ MailService ] isVerified = {}", isVerified);
 
         member.setIsVerified(isVerified);
         memberRepository.save(member);
-
-        log.info("[ MailService ] member.getIsVerified = {}", member.isVerified());
 
         return ResponseEntity.ok(new MailVerificationResponse(isVerified));
     }
