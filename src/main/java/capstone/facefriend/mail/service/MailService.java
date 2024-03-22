@@ -1,6 +1,6 @@
-package capstone.facefriend.auth.mail.service;
+package capstone.facefriend.mail.service;
 
-import capstone.facefriend.auth.mail.exception.MailException;
+import capstone.facefriend.mail.exception.MailException;
 import capstone.facefriend.member.domain.MemberRepository;
 import capstone.facefriend.redis.RedisDao;
 import jakarta.transaction.Transactional;
@@ -15,8 +15,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import static capstone.facefriend.auth.mail.exception.MailExceptionType.NO_SUCH_ALGORITHM;
-import static capstone.facefriend.auth.mail.exception.MailExceptionType.UNABLE_TO_SEND_MAIL;
+import static capstone.facefriend.mail.exception.MailExceptionType.NO_SUCH_ALGORITHM;
+import static capstone.facefriend.mail.exception.MailExceptionType.UNABLE_TO_SEND_MAIL;
 
 @Slf4j
 @Service

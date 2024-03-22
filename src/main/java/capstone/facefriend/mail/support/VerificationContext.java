@@ -1,14 +1,12 @@
-package capstone.facefriend.auth.mail.support;
+package capstone.facefriend.mail.support;
 
 
-import capstone.facefriend.auth.mail.exception.VerificationException;
-import capstone.facefriend.auth.mail.exception.VerificationExceptionType;
+import capstone.facefriend.mail.exception.VerificationException;
+import capstone.facefriend.mail.exception.VerificationExceptionType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.Objects;
-
-import static capstone.facefriend.auth.mail.exception.VerificationExceptionType.*;
 
 @RequestScope
 @Component
@@ -23,7 +21,7 @@ public class VerificationContext {
 
     public Boolean getIsVerified() {
         if (Objects.isNull(this.isVerified)) {
-            throw new VerificationException(NOT_VERIFIED);
+            throw new VerificationException(VerificationExceptionType.NOT_VERIFIED);
         }
         return isVerified;
     }

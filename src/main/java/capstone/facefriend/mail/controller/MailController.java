@@ -1,10 +1,10 @@
-package capstone.facefriend.auth.mail.controller;
+package capstone.facefriend.mail.controller;
 
 import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.auth.exception.AuthException;
-import capstone.facefriend.auth.mail.controller.dto.MailVerificationResponse;
-import capstone.facefriend.auth.mail.service.MailService;
+import capstone.facefriend.mail.controller.dto.MailVerificationResponse;
+import capstone.facefriend.mail.service.MailService;
 import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
 import capstone.facefriend.member.exception.MemberException;

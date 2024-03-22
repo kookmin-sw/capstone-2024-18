@@ -1,4 +1,4 @@
-package capstone.facefriend.auth.mail.exception;
+package capstone.facefriend.mail.exception;
 
 import capstone.facefriend.common.exception.BaseException;
 import capstone.facefriend.common.exception.ExceptionType;

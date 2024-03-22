@@ -1,4 +1,4 @@
-package capstone.facefriend.auth.mail.config;
+package capstone.facefriend.mail.config;
 
 
 import org.springframework.beans.factory.annotation.Value;

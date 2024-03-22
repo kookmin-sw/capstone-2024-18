@@ -2,7 +2,7 @@ package capstone.facefriend.auth.config;
 
 import capstone.facefriend.auth.controller.AuthArgumentResolver;
 import capstone.facefriend.auth.controller.interceptor.*;
-import capstone.facefriend.auth.mail.controller.interceptor.VerificationInterceptor;
+import capstone.facefriend.mail.controller.interceptor.VerificationInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -48,25 +48,24 @@ public class AuthConfig implements WebMvcConfigurer {
     private HandlerInterceptor loginCheckInterceptor() {
         return new PathMatchInterceptor(loginCheckInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
-                .addExcludePathPattern("/reissue", POST) // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
 
                 .addIncludePathPattern("/oauth/google/login", POST)
                 .addIncludePathPattern("/members/signin", POST)
 
                 .addIncludePathPattern("/signout", DELETE)
-
-                .addIncludePathPattern("/test", GET);
+                .addIncludePathPattern("/test", GET)
+        
+                .addExcludePathPattern("/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
     private HandlerInterceptor loginInterceptor() {
         return new PathMatchInterceptor(loginInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addExcludePathPattern("/reissue", POST) // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
-
                 .addIncludePathPattern("/signout", DELETE)
+                .addIncludePathPattern("/test", GET)
 
-                .addIncludePathPattern("/test", GET);
+                .addExcludePathPattern("/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
     private HandlerInterceptor tokenReissueInterceptor() {
@@ -88,10 +87,6 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addExcludePathPattern("/**", OPTIONS)
 
                 .addIncludePathPattern("/test", GET);
-
-//                .addExcludePathPattern("/mail/*", POST) // 인증 코드 발송 요청 시에는 해당 요청을 가로채지 않아야 합니다.
-//                .addExcludePathPattern("/mail/*", GET); // 인증 코드 발송 요청 시에는 해당 요청을 가로채지 않아야 합니다.
-
     }
 
     @Override

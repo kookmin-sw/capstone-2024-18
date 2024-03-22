@@ -1,4 +1,4 @@
-package capstone.facefriend.auth.mail.controller.dto;
+package capstone.facefriend.mail.controller.dto;
 
 public record MailVerificationResponse(
     boolean isVerified
