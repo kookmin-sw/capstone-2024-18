@@ -54,7 +54,7 @@ public class AuthConfig implements WebMvcConfigurer {
 
                 .addIncludePathPattern("/signout", DELETE)
                 .addIncludePathPattern("/test", GET)
-        
+
                 .addExcludePathPattern("/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
