@@ -41,9 +41,9 @@ public class VerificationInterceptor implements HandlerInterceptor {
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
 
         boolean isVerified = member.isVerified();
-        verificationContext.setIsVerified(isVerified);
-
         if (!isVerified) throw new VerificationException(NOT_VERIFIED);
+
+        verificationContext.setIsVerified(isVerified);
 
         return true;
     }
