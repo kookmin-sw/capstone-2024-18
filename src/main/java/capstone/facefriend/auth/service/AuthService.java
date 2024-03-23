@@ -9,6 +9,7 @@ import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
 import capstone.facefriend.member.domain.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,7 @@ public class AuthService {
                 .name(oAuthMember.nickname())
                 .password(TEMPORARY_GOOGLE_PASSWORD)
                 .imageUrl(oAuthMember.imageUrl())
+                .isVerified(true)
                 .role(USER)
                 .build();
         Member member = memberRepository.findByEmail(oAuthMember.email())

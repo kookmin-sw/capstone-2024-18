@@ -14,7 +14,9 @@ public enum MemberExceptionType implements ExceptionType {
     EXPIRED_ACCESS_TOKEN(Status.BAD_REQUEST, 3008, "만료된 액세스 토큰이므로 재발급해야 합니다."),
     INVALID_ACCESS_TOKEN(Status.BAD_REQUEST, 3009, "유효하지 않은 액세스 토큰이므로 재발급해야 합니다."),
     INVALID_REFRESH_TOKEN(Status.BAD_REQUEST, 3010, "유효하지 않은 리프레시 토큰입니다. 토큰 재발급이 불가능합니다."),
-    ALREADY_SIGN_OUT_ACCESS_TOKEN(Status.BAD_REQUEST, 3011, "액세스 토큰이 이미 로그아웃 처리되었습니다. 재로그인하시기 바랍니다.");
+    ACCESS_TOKEN_IS_IN_BLACKLIST(Status.BAD_REQUEST, 3011, "액세스 토큰이 로그아웃 처리되었습니다. 재로그인하시기 바랍니다."),
+    NOT_VERIFIED(Status.BAD_REQUEST, 3012, "본인 인증을 먼저 완료해야 합니다.")
+    ;
 
     private final Status status;
     private final int exceptionCode;

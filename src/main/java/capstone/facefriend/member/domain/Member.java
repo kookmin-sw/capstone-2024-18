@@ -31,9 +31,6 @@ public class Member extends BaseEntity {
 
     private String imageUrl;
 
-    @Column(unique = true)
-    private String phone;
-
     @Column
     private boolean isVerified;
 
@@ -63,8 +60,6 @@ public class Member extends BaseEntity {
     }
 
     public void setIsVerified(boolean isVerified) {
-        log.info("[ Member ] 현재 isVerified = {}", this.isVerified);
-        log.info("[ Member ] 들어온 isVerified = {}", isVerified);
         this.isVerified = isVerified;
     }
 

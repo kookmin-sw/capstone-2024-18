@@ -2,9 +2,12 @@ package capstone.facefriend.member.service;
 
 import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.TokenProvider;
+import capstone.facefriend.email.controller.dto.EmailVerificationResponse;
+import capstone.facefriend.email.service.EmailService;
 import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
 import capstone.facefriend.member.exception.MemberException;
+import capstone.facefriend.member.service.dto.FindEmailResponse;
 import capstone.facefriend.member.service.dto.SignInRequest;
 import capstone.facefriend.member.service.dto.SignUpRequest;
 import capstone.facefriend.redis.RedisDao;
@@ -13,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 import static capstone.facefriend.member.domain.Role.USER;
 import static capstone.facefriend.member.exception.MemberExceptionType.*;
@@ -27,6 +28,7 @@ public class MemberService {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     private final RedisDao redisDao;
 
@@ -35,25 +37,34 @@ public class MemberService {
     private static final Long SIGN_OUT_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
 
     @Transactional
-    public String signUp(SignUpRequest request) {
-        String email = request.email();
-
-        Optional<Member> isPresent = memberRepository.findByEmail(email);
-        if (isPresent.isPresent()) {
+    public String sendCode(String email) {
+        if (memberRepository.findByEmail(email).isPresent()) {
             throw new MemberException(DUPLICATED_EMAIL);
         }
+        return emailService.sendCode(email);
+    }
 
-        String encodedPassword = passwordEncoder.encode(request.password());
+    @Transactional
+    public EmailVerificationResponse verifyCode(String email, String code) {
+        boolean isVerified = emailService.verifyCode(email, code);
+        return new EmailVerificationResponse(email, isVerified);
+    }
 
-        Member member = Member.builder()
-                .email(email)
-                .password(encodedPassword)
-                .name(request.name())
-                .isVerified(false)
-                .role(USER)
-                .build();
-        memberRepository.save(member);
-
+    @Transactional
+    public String signUp(SignUpRequest request, boolean isVerified) {
+        if (isVerified) {
+            String encodedPassword = passwordEncoder.encode(request.password());
+            Member member = Member.builder()
+                    .email(request.email())
+                    .password(encodedPassword)
+                    .name(request.name())
+                    .isVerified(true)
+                    .role(USER)
+                    .build();
+            memberRepository.save(member);
+        } else {
+            throw new MemberException(NOT_VERIFIED);
+        }
         return SIGN_UP_SUCCESS_MESSAGE;
     }
 
@@ -84,5 +95,18 @@ public class MemberService {
             throw new MemberException(INVALID_REFRESH_TOKEN);
         }
         return tokenProvider.createTokens(memberId);
+    }
+
+    public FindEmailResponse findEmail(String nameInput, String emailInput, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND));
+
+        String name = member.getName();
+        String email = member.getEmail();
+
+        if (name.equals(nameInput) && email.equals(emailInput)) {
+            return new FindEmailResponse(email, true);
+        }
+        return new FindEmailResponse(email, false);
     }
 }

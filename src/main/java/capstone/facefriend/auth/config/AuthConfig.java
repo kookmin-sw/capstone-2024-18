@@ -2,7 +2,7 @@ package capstone.facefriend.auth.config;
 
 import capstone.facefriend.auth.controller.AuthArgumentResolver;
 import capstone.facefriend.auth.controller.interceptor.*;
-import capstone.facefriend.mail.controller.interceptor.VerificationInterceptor;
+import capstone.facefriend.email.controller.interceptor.VerificationInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -49,9 +49,7 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(loginCheckInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/oauth/google/login", POST)
-                .addIncludePathPattern("/members/signin", POST)
-
+                .addIncludePathPattern("/find-email", POST)
                 .addIncludePathPattern("/signout", DELETE)
                 .addIncludePathPattern("/test", GET)
 
@@ -62,6 +60,7 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(loginInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
+                .addIncludePathPattern("/find-email", POST)
                 .addIncludePathPattern("/signout", DELETE)
                 .addIncludePathPattern("/test", GET)
 
@@ -79,6 +78,7 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(tokenBlackListInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
+                .addIncludePathPattern("/find-email", POST)
                 .addIncludePathPattern("/test", GET);
     }
 

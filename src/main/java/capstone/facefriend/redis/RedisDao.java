@@ -7,9 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
+
 import java.util.concurrent.TimeUnit;
 
-import static capstone.facefriend.member.exception.MemberExceptionType.ALREADY_SIGN_OUT_ACCESS_TOKEN;
+import static capstone.facefriend.member.exception.MemberExceptionType.ACCESS_TOKEN_IS_IN_BLACKLIST;
 
 @Component
 @Slf4j
@@ -40,7 +41,7 @@ public class RedisDao {
     public boolean isKeyOfAccessTokenInBlackList(String accessToken) {
         String signOutValue = redisTemplate.opsForValue().get(accessToken);
         if (signOutValue.equals(SIGN_OUT_VALUE)) {
-            throw new MemberException(ALREADY_SIGN_OUT_ACCESS_TOKEN);
+            throw new MemberException(ACCESS_TOKEN_IS_IN_BLACKLIST);
         }
         return false;
     }
