@@ -34,6 +34,7 @@ public class MemberService {
 
     private static final String SIGN_UP_SUCCESS_MESSAGE = "회원가입 성공";
     private static final String SIGN_OUT_SUCCESS_MESSAGE = "로그아웃 성공";
+    private static final String RESET_PASSWORD_SUCCESS_MESSAGE = "비밀번호 재설정 성공";
     private static final Long SIGN_OUT_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
 
     @Transactional
@@ -47,7 +48,11 @@ public class MemberService {
     @Transactional
     public EmailVerificationResponse verifyCode(String email, String code) {
         boolean isVerified = emailService.verifyCode(email, code);
-        return new EmailVerificationResponse(email, isVerified);
+
+        if (isVerified) {
+            return new EmailVerificationResponse(email, true);
+        }
+        return new EmailVerificationResponse(email, false);
     }
 
     @Transactional
@@ -82,6 +87,7 @@ public class MemberService {
         return tokenProvider.createTokens(member.getId());
     }
 
+
     @Transactional
     public String signOut(Long memberId, String accessToken) {
         redisDao.deleteRefreshToken(String.valueOf(memberId));
@@ -97,8 +103,9 @@ public class MemberService {
         return tokenProvider.createTokens(memberId);
     }
 
-    public FindEmailResponse findEmail(String nameInput, String emailInput, Long memberId) {
-        Member member = memberRepository.findById(memberId)
+    public FindEmailResponse findEmail(String nameInput, String emailInput) {
+
+        Member member = memberRepository.findByEmail(emailInput)
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
 
         String name = member.getName();
@@ -108,5 +115,31 @@ public class MemberService {
             return new FindEmailResponse(email, true);
         }
         return new FindEmailResponse(email, false);
+    }
+
+    @Transactional
+    public String sendTemporaryPassword(String email) {
+        if (!memberRepository.findByEmail(email).isPresent()) {
+            throw new MemberException(NOT_FOUND);
+        }
+        return emailService.sendTemporaryPassword(email);
+    }
+
+    @Transactional
+    public String verifyTemporaryPassword(String email, String temporaryPassword, String newPassword) {
+        boolean isVerified = emailService.verifyTemporaryPassword(email, temporaryPassword);
+
+        if (isVerified) {
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new MemberException(NOT_FOUND));
+
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            member.setPassword(encodedPassword);
+            memberRepository.save(member);
+        } else {
+            throw new MemberException(WRONG_TEMPORARY_PASSWORD);
+        }
+        return RESET_PASSWORD_SUCCESS_MESSAGE;
+
     }
 }

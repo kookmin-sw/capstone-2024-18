@@ -25,17 +25,27 @@ public class EmailService {
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
-    private static final String MAIL_TITLE = "[ FACE FRIEND ] 본인 인증을 위한 코드가 도착했어요! \uD83D\uDE0E";
-    private static final String MAIL_SUCCESS = "이메일로 코드를 전송했습니다.";
+    private static final String EMAIL_TITLE_OF_VERIFICATION = "[ FACE FRIEND ] 본인 인증을 위한 코드가 도착했어요! \uD83D\uDE0E";
+    private static final String EMAIL_TITLE_OF_RESET_PASSWORD = "[ FACE FRIEND ] 임시 비밀번호가 도착했어요! \uD83E\uDD13";
+    private static final String EMAIL_SUCCESS_OF_VERIFICATION = "이메일로 인증코드를 전송했습니다.";
+    private static final String EMAIL_SUCCESS_OF_RESET_PASSWORD = "이메일로 임시 비밀번호를 전송했습니다.";
+
 
     private final RedisDao redisDao;
     private final JavaMailSender emailSender;
 
     public String sendCode(String email) {
-        String code = createCode(); // 코드 생성
-        sendEmail(email, MAIL_TITLE, code); // 메일로 코드 보내기
-        redisDao.setCode(email, code, authCodeExpirationMillis); // 코드 레디스 저장
-        return MAIL_SUCCESS;
+        String code = createCode();
+        sendEmail(email, EMAIL_TITLE_OF_VERIFICATION, code);
+        redisDao.setCode(email, code, authCodeExpirationMillis);
+        return EMAIL_SUCCESS_OF_VERIFICATION;
+    }
+
+    public String sendTemporaryPassword(String email) {
+        String code = createCode();
+        sendEmail(email, EMAIL_TITLE_OF_RESET_PASSWORD, code);
+        redisDao.setCode(email, code, authCodeExpirationMillis);
+        return EMAIL_SUCCESS_OF_RESET_PASSWORD;
     }
 
     private String createCode() {
@@ -73,6 +83,15 @@ public class EmailService {
         try {
             String code = redisDao.getCode(email);
             return code.equals(codeInput);
+        } catch (NullPointerException e) {
+            throw new EmailException(WRONG_EMAIL);
+        }
+    }
+
+    public boolean verifyTemporaryPassword(String email, String temporaryPassword) {
+        try {
+            String code = redisDao.getCode(email);
+            return code.equals(temporaryPassword);
         } catch (NullPointerException e) {
             throw new EmailException(WRONG_EMAIL);
         }

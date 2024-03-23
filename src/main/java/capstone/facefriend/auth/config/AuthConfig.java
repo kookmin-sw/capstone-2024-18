@@ -60,7 +60,6 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(loginInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/find-email", POST)
                 .addIncludePathPattern("/signout", DELETE)
                 .addIncludePathPattern("/test", GET)
 
@@ -78,7 +77,6 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(tokenBlackListInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/find-email", POST)
                 .addIncludePathPattern("/test", GET);
     }
 

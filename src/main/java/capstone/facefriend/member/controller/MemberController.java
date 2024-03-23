@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static capstone.facefriend.member.exception.MemberExceptionType.PASSWORDS_NOT_EQUAL;
 import static capstone.facefriend.member.exception.MemberExceptionType.UNAUTHORIZED;
 
 @Slf4j
@@ -36,7 +37,6 @@ public class MemberController {
         return ResponseEntity.ok(memberService.verifyCode(email, code));
     }
 
-    // 일반 유저 인증 인가
     @PostMapping("/members/signup")
     public ResponseEntity<String> signUp(
             @RequestBody SignUpRequest request,
@@ -44,14 +44,16 @@ public class MemberController {
         return ResponseEntity.ok(memberService.signUp(request, isVerified));
     }
 
-    // 일반 유저 인증 인가
     @PostMapping("/members/signin")
     public ResponseEntity<TokenResponse> signIn(
             @RequestBody SignInRequest request) {
         return ResponseEntity.ok(memberService.signIn(request));
     }
 
-    // 구글 유저, 일반 유저 공통 로직
+
+
+
+
     @PostMapping("/reissue")
     public ResponseEntity<TokenResponse> reissueTokens(
             @RequestBody ReissueRequest request,
@@ -60,7 +62,6 @@ public class MemberController {
         return ResponseEntity.ok(memberService.reissueTokens(memberId, refreshToken));
     }
 
-    // 구글 유저, 일반 유저 공통 로직
     @DeleteMapping("/signout")
     public ResponseEntity<String> signOut(
             HttpServletRequest request,
@@ -71,15 +72,33 @@ public class MemberController {
     }
 
     @PostMapping("/find-email")
-    public ResponseEntity<FindEmailResponse> findMail(
-            @RequestBody FindEmailRequest request,
-            @AuthMember Long memberId) {
-        String name = request.name();
-        String email = request.email();
-        return ResponseEntity.ok(memberService.findEmail(name, email, memberId));
+    public ResponseEntity<FindEmailResponse> findEmail(
+            @RequestBody FindEmailRequest request) {
+        return ResponseEntity.ok(memberService.findEmail(request.name(), request.email()));
     }
 
-    // 구글 유저, 일반 유저 공통 로직 (테스트용)
+    @PostMapping("/send-temporary-password")
+    public ResponseEntity<String> sendTemporaryPassword(
+            @RequestParam("email") String email) {
+        return ResponseEntity.ok(memberService.sendTemporaryPassword(email));
+    }
+
+    @PostMapping("/verify-temporary-password")
+    public ResponseEntity<String> resetNewPassword(
+            @RequestParam("email") String email,
+            @RequestParam("temporaryPassword") String temporaryPassword,
+            @RequestBody ResetPasswordRequest request
+    ) {
+        String newPassword = request.newPassword();
+        String newPassword2 = request.newPassword2();
+
+        if (!newPassword.equals(newPassword2)) {
+            throw new MemberException(PASSWORDS_NOT_EQUAL)    ;
+        }
+        return ResponseEntity.ok(memberService.verifyTemporaryPassword(email, temporaryPassword, newPassword));
+    }
+
+
     @GetMapping("/test")
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("[ MemberController ] 테스트");
