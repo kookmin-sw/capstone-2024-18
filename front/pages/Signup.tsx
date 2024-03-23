@@ -2,9 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, Text, Pressable, ScrollView, TextInput } from "react-native";
 import { Icon } from 'react-native-paper';
 
-import IconText from "../Components/IconText.tsx";
-import CustomTextInput from "../Components/CustomTextInput.tsx";
-import CustomButton from "../Components/CustomButton.tsx";
+import IconText from "../components/IconText.tsx";
+import CustomTextInput from "../components/CustomTextInput.tsx";
+import CustomButton from "../components/CustomButton.tsx";
 
 import { colors } from '../assets/colors.tsx'
 
