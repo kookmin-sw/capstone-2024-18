@@ -1,4 +1,4 @@
-package capstone.facefriend.mail.support;
+package capstone.facefriend.email.support;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

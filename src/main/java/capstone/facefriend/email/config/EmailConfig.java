@@ -1,4 +1,4 @@
-package capstone.facefriend.mail.config;
+package capstone.facefriend.email.config;
 
 
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +10,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @Configuration
-public class MailConfig {
+public class EmailConfig {
 
     @Value("${spring.mail.host}")
     private String host;

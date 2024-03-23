@@ -1,8 +1,8 @@
-package capstone.facefriend.mail.support;
+package capstone.facefriend.email.support;
 
 
-import capstone.facefriend.mail.exception.VerificationException;
-import capstone.facefriend.mail.exception.VerificationExceptionType;
+import capstone.facefriend.email.exception.VerificationException;
+import capstone.facefriend.email.exception.VerificationExceptionType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 

@@ -1,11 +1,11 @@
-package capstone.facefriend.mail.exception;
+package capstone.facefriend.email.exception;
 
 import capstone.facefriend.common.exception.BaseException;
 import capstone.facefriend.common.exception.ExceptionType;
 
-public class MailException extends BaseException {
+public class EmailException extends BaseException {
 
-    public MailException(ExceptionType exceptionType) {
+    public EmailException(ExceptionType exceptionType) {
         super(exceptionType);
     }
 }

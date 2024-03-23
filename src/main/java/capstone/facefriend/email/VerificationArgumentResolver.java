@@ -1,7 +1,7 @@
-package capstone.facefriend.mail;
+package capstone.facefriend.email;
 
-import capstone.facefriend.mail.support.VerifiedMember;
-import capstone.facefriend.mail.support.VerificationContext;
+import capstone.facefriend.email.support.VerifiedMember;
+import capstone.facefriend.email.support.VerificationContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

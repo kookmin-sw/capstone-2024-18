@@ -1,11 +1,10 @@
-package capstone.facefriend.mail.controller.interceptor;
+package capstone.facefriend.email.controller.interceptor;
 
 import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.auth.exception.AuthException;
-import capstone.facefriend.mail.exception.VerificationException;
-import capstone.facefriend.mail.exception.VerificationExceptionType;
-import capstone.facefriend.mail.support.VerificationContext;
+import capstone.facefriend.email.exception.VerificationException;
+import capstone.facefriend.email.support.VerificationContext;
 import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
 import capstone.facefriend.member.exception.MemberException;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import static capstone.facefriend.auth.exception.AuthExceptionType.UNAUTHORIZED;
-import static capstone.facefriend.mail.exception.VerificationExceptionType.*;
+import static capstone.facefriend.email.exception.VerificationExceptionType.*;
 import static capstone.facefriend.member.exception.MemberExceptionType.NOT_FOUND;
 
 

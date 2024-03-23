@@ -1,7 +1,7 @@
-package capstone.facefriend.mail.service;
+package capstone.facefriend.email.service;
 
-import capstone.facefriend.mail.exception.MailException;
-import capstone.facefriend.member.domain.MemberRepository;
+import capstone.facefriend.email.exception.EmailException;
+import capstone.facefriend.email.exception.EmailExceptionType;
 import capstone.facefriend.redis.RedisDao;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +15,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import static capstone.facefriend.mail.exception.MailExceptionType.NO_SUCH_ALGORITHM;
-import static capstone.facefriend.mail.exception.MailExceptionType.UNABLE_TO_SEND_MAIL;
+import static capstone.facefriend.email.exception.EmailExceptionType.*;
 
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MailService {
+public class EmailService {
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
@@ -30,13 +29,12 @@ public class MailService {
     private static final String MAIL_SUCCESS = "이메일로 코드를 전송했습니다.";
 
     private final RedisDao redisDao;
-    private final JavaMailSender mailSender;
-    private final MemberRepository memberRepository;
+    private final JavaMailSender emailSender;
 
-    public String sendCode(String mail) {
+    public String sendCode(String email) {
         String code = createCode(); // 코드 생성
-        sendMail(mail, MAIL_TITLE, code); // 메일로 코드 보내기
-        redisDao.setCode(mail, code, authCodeExpirationMillis); // 코드 레디스 저장
+        sendEmail(email, MAIL_TITLE, code); // 메일로 코드 보내기
+        redisDao.setCode(email, code, authCodeExpirationMillis); // 코드 레디스 저장
         return MAIL_SUCCESS;
     }
 
@@ -50,29 +48,33 @@ public class MailService {
             }
             return sb.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new MailException(NO_SUCH_ALGORITHM);
+            throw new EmailException(NO_SUCH_ALGORITHM);
         }
     }
 
-    private void sendMail(String mail, String title, String text) {
-        SimpleMailMessage emailForm = createMailForm(mail, title, text);
+    private void sendEmail(String email, String title, String text) {
+        SimpleMailMessage emailForm = createEmailForm(email, title, text);
         try {
-            mailSender.send(emailForm);
+            emailSender.send(emailForm);
         } catch (RuntimeException e) {
-            throw new MailException(UNABLE_TO_SEND_MAIL);
+            throw new EmailException(UNABLE_TO_SEND_EMAIL);
         }
     }
 
-    private SimpleMailMessage createMailForm(String mail, String title, String text) {
+    private SimpleMailMessage createEmailForm(String email, String title, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(mail);
+        message.setTo(email);
         message.setSubject(title);
         message.setText(text);
         return message;
     }
 
-    public boolean verifyCode(String mail, String codeInput) {
-        String code = redisDao.getCode(mail);
-        return code.equals(codeInput);
+    public boolean verifyCode(String email, String codeInput) {
+        try {
+            String code = redisDao.getCode(email);
+            return code.equals(codeInput);
+        } catch (NullPointerException e) {
+            throw new EmailException(WRONG_EMAIL);
+        }
     }
 }
