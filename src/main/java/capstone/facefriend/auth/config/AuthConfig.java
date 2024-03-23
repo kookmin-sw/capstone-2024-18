@@ -49,7 +49,6 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(loginCheckInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/find-email", POST)
                 .addIncludePathPattern("/signout", DELETE)
                 .addIncludePathPattern("/test", GET)
 
