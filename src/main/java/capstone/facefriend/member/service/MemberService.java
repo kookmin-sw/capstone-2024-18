@@ -32,10 +32,19 @@ public class MemberService {
 
     private final RedisDao redisDao;
 
+    private static final String SIGN_UP_VALID_EMAIL = "사용 가능한 이메일입니다.";
     private static final String SIGN_UP_SUCCESS_MESSAGE = "회원가입 성공";
     private static final String SIGN_OUT_SUCCESS_MESSAGE = "로그아웃 성공";
     private static final String RESET_PASSWORD_SUCCESS_MESSAGE = "비밀번호 재설정 성공";
     private static final Long SIGN_OUT_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
+
+    @Transactional
+    public String verifyDuplication(String email) {
+        if(memberRepository.findByEmail(email).isPresent()) {
+            throw new MemberException(DUPLICATED_EMAIL);
+        }
+        return SIGN_UP_VALID_EMAIL;
+    }
 
     @Transactional
     public String sendCode(String email) {

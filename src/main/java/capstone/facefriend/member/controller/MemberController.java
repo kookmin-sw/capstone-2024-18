@@ -24,40 +24,56 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    /**
+     * 일반 유저 고유 로직
+     */
+    @PostMapping("/members/verify-duplication")
+    public ResponseEntity<String> verifyDuplication(
+            @RequestParam("email") String email
+    ) {
+        return ResponseEntity.ok(memberService.verifyDuplication(email));
+    }
+
+
     @PostMapping("/members/send-code")
     public ResponseEntity<String> sendCode(
-            @RequestParam("email") String email) {
+            @RequestParam("email") String email
+    ) {
         return ResponseEntity.ok(memberService.sendCode(email));
     }
 
     @GetMapping("/members/verify-code")
     public ResponseEntity<EmailVerificationResponse> verifyCode(
             @RequestParam("email") String email,
-            @RequestParam("code") String code) {
+            @RequestParam("code") String code
+    ) {
         return ResponseEntity.ok(memberService.verifyCode(email, code));
     }
 
     @PostMapping("/members/signup")
     public ResponseEntity<String> signUp(
             @RequestBody SignUpRequest request,
-            @RequestParam("isVerified") boolean isVerified) {
+            @RequestParam("isVerified") boolean isVerified
+    ) {
         return ResponseEntity.ok(memberService.signUp(request, isVerified));
     }
 
     @PostMapping("/members/signin")
     public ResponseEntity<TokenResponse> signIn(
-            @RequestBody SignInRequest request) {
+            @RequestBody SignInRequest request
+    ) {
         return ResponseEntity.ok(memberService.signIn(request));
     }
 
 
-
-
-
+    /**
+     * 구글 유저, 일반 유저 공통 로직
+     */
     @PostMapping("/reissue")
     public ResponseEntity<TokenResponse> reissueTokens(
             @RequestBody ReissueRequest request,
-            @AuthMember Long memberId) {
+            @AuthMember Long memberId
+    ) {
         String refreshToken = request.refreshToken();
         return ResponseEntity.ok(memberService.reissueTokens(memberId, refreshToken));
     }
@@ -65,7 +81,8 @@ public class MemberController {
     @DeleteMapping("/signout")
     public ResponseEntity<String> signOut(
             HttpServletRequest request,
-            @AuthMember Long memberId) {
+            @AuthMember Long memberId
+    ) {
         String accessToken = AuthenticationExtractor.extractAccessToken(request)
                 .orElseThrow(() -> new MemberException(UNAUTHORIZED));
         return ResponseEntity.ok(memberService.signOut(memberId, accessToken));
@@ -73,13 +90,15 @@ public class MemberController {
 
     @PostMapping("/find-email")
     public ResponseEntity<FindEmailResponse> findEmail(
-            @RequestBody FindEmailRequest request) {
+            @RequestBody FindEmailRequest request
+    ) {
         return ResponseEntity.ok(memberService.findEmail(request.name(), request.email()));
     }
 
     @PostMapping("/send-temporary-password")
     public ResponseEntity<String> sendTemporaryPassword(
-            @RequestParam("email") String email) {
+            @RequestParam("email") String email
+    ) {
         return ResponseEntity.ok(memberService.sendTemporaryPassword(email));
     }
 
@@ -97,7 +116,6 @@ public class MemberController {
         }
         return ResponseEntity.ok(memberService.verifyTemporaryPassword(email, temporaryPassword, newPassword));
     }
-
 
     @GetMapping("/test")
     public ResponseEntity<String> test() {
