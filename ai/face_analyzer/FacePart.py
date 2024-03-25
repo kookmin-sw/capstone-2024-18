@@ -24,7 +24,7 @@ class FacePart(FaceComponent):
     def analyze(self, landmarks):
         result = {}
         for name, faceComponent in self.faceComponents.items():
-            result[name]=faceComponent.analyze(landmarks))
+            result[name]=faceComponent.analyze(landmarks)
         return result
 
     def __str__(self):
