@@ -4,6 +4,6 @@ public record SignUpRequest(
     String email,
     String password,
     String password2,
-    String name
+    boolean isVerified
 ) {
 }

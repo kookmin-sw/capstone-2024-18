@@ -65,13 +65,14 @@ public class MemberService {
     }
 
     @Transactional
-    public String signUp(SignUpRequest request, boolean isVerified) {
+    public String signUp(SignUpRequest request) {
+        boolean isVerified = request.isVerified();
+
         if (isVerified) {
             String encodedPassword = passwordEncoder.encode(request.password());
             Member member = Member.builder()
                     .email(request.email())
                     .password(encodedPassword)
-                    .name(request.name())
                     .isVerified(true)
                     .role(USER)
                     .build();
@@ -112,15 +113,14 @@ public class MemberService {
         return tokenProvider.createTokens(memberId);
     }
 
-    public FindEmailResponse findEmail(String nameInput, String emailInput) {
+    public FindEmailResponse findEmail(String emailInput) {
 
         Member member = memberRepository.findByEmail(emailInput)
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
 
-        String name = member.getName();
         String email = member.getEmail();
 
-        if (name.equals(nameInput) && email.equals(emailInput)) {
+        if (email.equals(emailInput)) {
             return new FindEmailResponse(email, true);
         }
         return new FindEmailResponse(email, false);

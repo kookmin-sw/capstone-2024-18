@@ -8,11 +8,11 @@ import java.util.TimeZone;
 
 @EnableJpaAuditing
 @SpringBootApplication
-public class FaceFriendApplication {
+public class FacefriendApplication {
 
 	public static void main(String[] args) {
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-		SpringApplication.run(FaceFriendApplication.class, args);
+		SpringApplication.run(FacefriendApplication.class, args);
 	}
 
 }

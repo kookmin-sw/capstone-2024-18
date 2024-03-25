@@ -4,6 +4,7 @@ import capstone.facefriend.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.DynamicInsert;
 
 @Getter
 @Builder
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Slf4j
+@DynamicInsert
 public class Member extends BaseEntity {
 
     private static final int EMAIL_MASKING_LENGTH = 2;
@@ -23,8 +25,8 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String name;
+    @Column
+    private String nickname;
 
     @Column(nullable = false)
     private String password;
@@ -37,6 +39,10 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @OneToOne
+    @JoinColumn(name = "BASIC_INFO_ID")
+    private BasicInfo basicInfo;
 
     public Member(String email) {
         this.email = email;

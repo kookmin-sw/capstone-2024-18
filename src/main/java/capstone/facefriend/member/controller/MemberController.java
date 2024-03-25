@@ -52,10 +52,9 @@ public class MemberController {
 
     @PostMapping("/members/signup")
     public ResponseEntity<String> signUp(
-            @RequestBody SignUpRequest request,
-            @RequestParam("isVerified") boolean isVerified
+            @RequestBody SignUpRequest request
     ) {
-        return ResponseEntity.ok(memberService.signUp(request, isVerified));
+        return ResponseEntity.ok(memberService.signUp(request));
     }
 
     @PostMapping("/members/signin")
@@ -92,7 +91,7 @@ public class MemberController {
     public ResponseEntity<FindEmailResponse> findEmail(
             @RequestBody FindEmailRequest request
     ) {
-        return ResponseEntity.ok(memberService.findEmail(request.name(), request.email()));
+        return ResponseEntity.ok(memberService.findEmail(request.email()));
     }
 
     @PostMapping("/send-temporary-password")
