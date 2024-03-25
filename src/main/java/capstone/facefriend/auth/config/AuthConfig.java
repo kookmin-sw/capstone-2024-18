@@ -49,41 +49,39 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(loginCheckInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/signout", DELETE)
                 .addIncludePathPattern("/test", GET)
+                .addIncludePathPattern("/members/**", ANY)
 
-                .addExcludePathPattern("/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
+                .addExcludePathPattern("/members/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
     private HandlerInterceptor loginInterceptor() {
         return new PathMatchInterceptor(loginInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/signout", DELETE)
-                .addIncludePathPattern("/test", GET)
-
-                .addExcludePathPattern("/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
+                .addIncludePathPattern("/members/**", ANY)
+                .addExcludePathPattern("/members/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
     private HandlerInterceptor tokenReissueInterceptor() {
         return new PathMatchInterceptor(tokenReissueInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채야 합니다.
+                .addIncludePathPattern("/members/**", ANY);
     }
 
     private HandlerInterceptor tokenBlackListInterceptor() {
         return new PathMatchInterceptor(tokenBlackListInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/test", GET);
+                .addIncludePathPattern("/members/**", ANY);
     }
 
     private HandlerInterceptor verificationInterceptor() {
         return new PathMatchInterceptor(verificationInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/test", GET);
+                .addIncludePathPattern("/members/**", ANY);
     }
 
     @Override

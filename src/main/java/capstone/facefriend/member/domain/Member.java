@@ -65,8 +65,8 @@ public class Member extends BaseEntity {
         this.role = role;
     }
 
-    public void setIsVerified(boolean isVerified) {
-        this.isVerified = isVerified;
+    public void setBasicInfo(BasicInfo basicInfo) {
+        this.basicInfo = basicInfo;
     }
 
     public boolean isVerified() {
