@@ -61,9 +61,9 @@ class FacePart(FaceComponent):
         return self.description
     
     def analyze(self, landmarks):
-        result = []
+        result = {}
         for name, faceComponent in self.faceComponents.items():
-            result.append(faceComponent.analyze(landmarks))
+            result[name]=faceComponent.analyze(landmarks)
         return result
 
     def __str__(self):
