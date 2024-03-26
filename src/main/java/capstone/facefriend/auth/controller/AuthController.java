@@ -1,7 +1,6 @@
 package capstone.facefriend.auth.controller;
 
 
-import capstone.facefriend.auth.controller.dto.CodeResponse;
 import capstone.facefriend.auth.controller.dto.LoginUriResponse;
 import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.OAuthMember;
@@ -34,27 +33,21 @@ public class AuthController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<CodeResponse> loginUri(
+    public ResponseEntity<TokenResponse> login(
             @RequestParam("code") String code,
             @RequestParam("scope") String scope,
             @RequestParam("authuser") String authuser,
             @RequestParam("prompt") String prompt
     ) {
+        OAuthLoginRequest request = new OAuthLoginRequest("http://localhost:8080", code);
+        OAuthMember oAuthMember = oAuthRequester.login(request, "google");
+        TokenResponse tokens = authService.generateTokens(oAuthMember);
+
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("facefriend://"));
+        headers.setLocation(URI.create("facefriend"));
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
                 .headers(headers)
-                .body(new CodeResponse(code));
-    }
-
-    @PostMapping("/oauth/{provider}/login")
-    public ResponseEntity login(
-            @RequestBody OAuthLoginRequest request,
-            @PathVariable String provider
-    ) {
-        OAuthMember oAuthMember = oAuthRequester.login(request, provider);
-        TokenResponse tokens = authService.generateTokens(oAuthMember);
-        return ResponseEntity.ok(tokens);
+                .body(tokens);
     }
 }
