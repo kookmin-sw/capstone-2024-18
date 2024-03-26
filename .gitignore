@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Created by https://www.toptal.com/developers/gitignore/api/java,intellij,gradle,macos,windows,intellij+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,intellij,gradle,macos,windows,intellij+all
 
@@ -287,4 +288,6 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+front/node_modules/
+node_modules/
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,gradle,macos,windows,intellij+all
