@@ -8,6 +8,33 @@ import { useState } from 'react';
 
 const SelfProduce = () => {
   const [ edit, setEdit ] = useState(false);
+  const [ categories, setCategories ] = useState([
+    {text: "운동", selected: true},
+    {text: "음식", selected: false},
+    {text: "영화", selected: false},
+    {text: "패션", selected: true},
+    {text: "공부", selected: true},
+    {text: "연애", selected: true},
+    {text: "음악", selected: true},
+    {text: "자유", selected: true},
+  ])
+  const selectedColor = colors.point;
+  const unselectedColor = "#9E9E9E";
+
+  function handleCategorySelect(changeIdx: number) {
+    const nextCategory = categories.map((category, idx) => {
+      if (idx === changeIdx) {
+        return {
+          ...category,
+          selected: !category.selected,
+        };
+      } else {
+        return category;
+      }
+    });
+    // Re-render with the new array
+    setCategories(nextCategory);
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -73,25 +100,28 @@ const SelfProduce = () => {
           </View>
 
           <Text>카테고리</Text>
+          <View style={{flexDirection: "row", flexWrap: "wrap"}}>
           {
-            ["운동"].map((item, idx) => {
+            categories.map((item, idx) => {
               return (
-                <View style={{
-                  margin: 5,
-                  flexWrap: 'wrap',
-                  }}>
-                  <Chip 
-                    style={{backgroundColor: colors.white, borderColor: colors.point, borderWidth: 2, height: 30}} 
-                    mode='outlined'
-                    key={idx}
-                    closeIcon={() => <Icon source={"close"} size={15}/>}
-                    onClose={edit ? () => {} : undefined}
-                    textStyle={{ color: colors.point, fontSize: 15, marginTop: 0 }}
-                    children={item}/>
-                </View>
+                (edit || item.selected) ? 
+                  <View style={{
+                    margin: 5,
+                    flexWrap: 'wrap',
+                    }}>
+                    <Chip 
+                      style={{backgroundColor: colors.white, borderColor: item.selected ? selectedColor : unselectedColor, borderWidth: 2, height: 30}} 
+                      mode='outlined'
+                      key={idx}
+                      onPress={() => {handleCategorySelect(idx);}}
+                      textStyle={{ color: item.selected ? selectedColor : unselectedColor, fontSize: 15, marginTop: 0 }}
+                      children={item.text}/>
+                  </View> :
+                  <></>
               );
             })
           }
+          </View>
 
           <Text>내용</Text>
           <View style={{backgroundColor: colors.gray2, marginVertical: 10, padding: 15, borderRadius: 15}}>
