@@ -10,21 +10,33 @@ import CustomTextInput from '../components/CustomTextInput.tsx';
 const SelfProduce = () => {
   const [ edit, setEdit ] = useState(false);
   const [ categories, setCategories ] = useState([
-    {text: "운동", selected: true},
-    {text: "음식", selected: false},
-    {text: "영화", selected: false},
-    {text: "패션", selected: true},
-    {text: "공부", selected: true},
-    {text: "연애", selected: true},
-    {text: "음악", selected: true},
-    {text: "자유", selected: true},
+    {id: 0, text: "운동", selected: true},
+    {id: 1, text: "음식", selected: false},
+    {id: 2, text: "영화", selected: false},
+    {id: 3, text: "패션", selected: true},
+    {id: 4, text: "공부", selected: true},
+    {id: 5, text: "연애", selected: true},
+    {id: 6, text: "음악", selected: true},
+    {id: 7, text: "자유", selected: true},
+  ])
+  const [ basic, setBasic ] = useState([
+    {id: 0, text: "여"},
+    {id: 1, text: "20대 중반"},
+    {id: 2, text: "170cm 중반"},
+    {id: 3, text: "서울 강북"}
+  ])
+  const [ face, setFace ] = useState([
+    {id: 0, text: "머리가 빼어남"},
+    {id: 1, text: "담대한"},
+    {id: 2, text: "모험심이 강함"},
+    {id: 3, text: "영리함"}
   ])
   const selectedColor = colors.point;
   const unselectedColor = "#9E9E9E";
 
   function handleCategorySelect(changeIdx: number) {
-    const nextCategory = categories.map((category, idx) => {
-      if (idx === changeIdx) {
+    const nextCategory = categories.map((category) => {
+      if (category.id === changeIdx) {
         return {
           ...category,
           selected: !category.selected,
@@ -63,17 +75,13 @@ const SelfProduce = () => {
           
           <View style={{flexDirection: "row", flexWrap: "wrap"}}>
             {
-              ["여", "20대 중반", "170cm 중반", "서울 강북"].map((item, idx) => {
+              basic.map((item, idx) => {
                 return (
-                  <View style={{
-                    margin: 5,
-                    flexWrap: 'wrap',
-                    }}>
+                  <View key={item.id} style={{margin: 5, flexWrap: 'wrap'}}>
                     <Chip 
                       style={{backgroundColor: colors.pastel_point, height: 30}} 
-                      key={idx}
                       textStyle={{ color: colors.point, fontSize: 15 }}
-                      children={item}/>
+                      children={item.text}/>
                   </View>
                 );
               })
@@ -83,17 +91,13 @@ const SelfProduce = () => {
           <Text>관상 정보</Text>
           <View style={{flexDirection: "row", flexWrap: "wrap"}}>
             {
-              ["머리가 빼어남", "담대함", "모험심이 강함", "영리함"].map((item, idx) => {
+              face.map((item) => {
                 return (
-                  <View style={{
-                    margin: 5,
-                    flexWrap: 'wrap',
-                    }}>
+                  <View key={item.id} style={{margin: 5, flexWrap: 'wrap'}}>
                     <Chip 
                       style={{backgroundColor: colors.pastel_point, height: 30}} 
-                      key={idx}
                       textStyle={{ color: colors.point, fontSize: 15 }}
-                      children={item}/>
+                      children={item.text}/>
                   </View>
                 );
               })
@@ -103,22 +107,16 @@ const SelfProduce = () => {
           <Text>카테고리</Text>
           <View style={{flexDirection: "row", flexWrap: "wrap"}}>
           {
-            categories.map((item, idx) => {
+            categories.map((item) => {
               return (
-                (edit || item.selected) ? 
-                  <View style={{
-                    margin: 5,
-                    flexWrap: 'wrap',
-                    }}>
-                    <Chip 
-                      style={{backgroundColor: colors.white, borderColor: item.selected ? selectedColor : unselectedColor, borderWidth: 2, height: 30}} 
-                      mode='outlined'
-                      key={idx}
-                      onPress={() => {handleCategorySelect(idx);}}
-                      textStyle={{ color: item.selected ? selectedColor : unselectedColor, fontSize: 15, marginTop: 0 }}
-                      children={item.text}/>
-                  </View> :
-                  <></>
+                <View key={item.id} style={{margin: 5, flexWrap: 'wrap', display: (edit || item.selected) ? 'flex': 'none'}}>
+                  <Chip 
+                    style={{backgroundColor: colors.white, borderColor: item.selected ? selectedColor : unselectedColor, borderWidth: 2, height: 30}} 
+                    mode='outlined'
+                    onPress={() => {handleCategorySelect(item.id);}}
+                    textStyle={{ color: item.selected ? selectedColor : unselectedColor, fontSize: 15, marginTop: 0 }}
+                    children={item.text}/>
+                </View> 
               );
             })
           }
@@ -130,8 +128,7 @@ const SelfProduce = () => {
             style={{flex: 1}} multiline={true}
             textColor={"#000000"}
             editable={edit ? true : false}
-            placeholderTextColor={"#000000"}
-            >
+            placeholderTextColor={"#000000"}>
             안녕하세요! 저는 Anna 이에요!
             저는 판교 소재의 IT 회사에서 근무하고 있어요.
             저는 주말에 테니스를 같이 칠 사람을 구하고 있어요. 장소는 서울이면 좋겠어요. 성남에는 좋은 테니스장이 없더라구요~
