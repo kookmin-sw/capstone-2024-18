@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { ImageSlider } from "react-native-image-slider-banner";
 import { Card, Icon, Chip } from 'react-native-paper';
 import { colors } from '../assets/colors.tsx'
@@ -32,7 +32,11 @@ const SelfProduce = () => {
     {id: 3, text: "영리함"}
   ])
   const selectedColor = colors.point;
-  const unselectedColor = "#9E9E9E";
+  const unselectedColor = colors.white;
+  const selectedFontColor = colors.white;
+  const unselectedFontColor = "#9E9E9E";
+  const selectedBorderColor = colors.point;
+  const unselectedBorderColor = "#9E9E9E";
 
   function handleCategorySelect(changeIdx: number) {
     const nextCategory = categories.map((category) => {
@@ -63,93 +67,156 @@ const SelfProduce = () => {
         closeIconColor="#fff"
         caroselImageStyle={{height: 268}}
       />
-      <View style={{padding: 20}}>
+      <View style={styles.container}>
         <Card.Title 
           left={(props) => <Icon {...props} source="folder"/>} 
           title="Anna"
           style={{backgroundColor: colors.gray4}}
           />
-
-        <View style={{paddingVertical: 20, height: "100%"}}>
-          <Text>기본 정보</Text>
-          
+        <View style={styles.section}>
+          <View style={styles.sectionTop}>
+            <Text style={styles.sectionText}>기본 정보</Text>
+            <Icon source={'progress-question'} size={20}/>
+            <Text style={{...styles.sectionHintText, display: edit ? 'flex' : 'none'}}>프로필에서 수정 가능해요</Text>
+          </View>
           <View style={{flexDirection: "row", flexWrap: "wrap"}}>
             {
               basic.map((item, idx) => {
                 return (
                   <View key={item.id} style={{margin: 5, flexWrap: 'wrap'}}>
                     <Chip 
-                      style={{backgroundColor: colors.pastel_point, height: 30}} 
-                      textStyle={{ color: colors.point, fontSize: 15 }}
+                      style={styles.uneditableTag} textStyle={styles.uneditableText}
                       children={item.text}/>
                   </View>
                 );
               })
             }
           </View>
-          
-          <Text>관상 정보</Text>
+        </View>
+        <View style={styles.section}>
+          <View style={styles.sectionTop}>
+            <Text style={styles.sectionText}>관상 정보</Text>
+            <Icon source={'progress-question'} size={20}/>
+            <Text style={{...styles.sectionHintText, display: edit ? 'flex' : 'none'}}>프로필에서 수정 가능해요</Text>
+          </View>
           <View style={{flexDirection: "row", flexWrap: "wrap"}}>
             {
               face.map((item) => {
                 return (
                   <View key={item.id} style={{margin: 5, flexWrap: 'wrap'}}>
                     <Chip 
-                      style={{backgroundColor: colors.pastel_point, height: 30}} 
-                      textStyle={{ color: colors.point, fontSize: 15 }}
+                      style={styles.uneditableTag} textStyle={styles.uneditableText}
                       children={item.text}/>
                   </View>
                 );
               })
             }
           </View>
-
-          <Text>카테고리</Text>
+        </View>
+        <View style={{paddingTop: 20}}>
+          <View style={styles.sectionTop}>
+            <Text style={styles.sectionText}>카테고리</Text>
+          </View>
           <View style={{flexDirection: "row", flexWrap: "wrap"}}>
           {
             categories.map((item) => {
               return (
                 <View key={item.id} style={{margin: 5, flexWrap: 'wrap', display: (edit || item.selected) ? 'flex': 'none'}}>
                   <Chip 
-                    style={{backgroundColor: colors.white, borderColor: item.selected ? selectedColor : unselectedColor, borderWidth: 2, height: 30}} 
+                    style={{...styles.editableTag, 
+                      backgroundColor: item.selected ? selectedColor : unselectedColor,
+                      borderColor: item.selected ? selectedBorderColor : unselectedBorderColor
+                    }} 
+                    textStyle={{ 
+                      ...styles.editableText,
+                      color: item.selected ? selectedFontColor : unselectedFontColor, 
+                    }}
                     mode='outlined'
                     onPress={() => {handleCategorySelect(item.id);}}
-                    textStyle={{ color: item.selected ? selectedColor : unselectedColor, fontSize: 15, marginTop: 0 }}
                     children={item.text}/>
                 </View> 
               );
             })
           }
           </View>
-
-          <Text>내용</Text>
+        </View>
+        <View style={styles.section}>
+          <View style={styles.sectionTop}>
+            <Text style={styles.sectionText}>내용</Text>
+          </View>
           <CustomTextInput 
             containerStyle={{backgroundColor: colors.gray2, marginVertical: 10, marginHorizontal:0, padding: 15, borderRadius: 15}} 
-            style={{flex: 1}} multiline={true}
-            textColor={"#000000"}
+            style={{flex: 1, color: colors.gray9}} multiline={true}
             editable={edit ? true : false}
+            onChangeText={(text) => {console.log(text.split('\n'))}}
             placeholderTextColor={"#000000"}>
-            안녕하세요! 저는 Anna 이에요!
-            저는 판교 소재의 IT 회사에서 근무하고 있어요.
-            저는 주말에 테니스를 같이 칠 사람을 구하고 있어요. 장소는 서울이면 좋겠어요. 성남에는 좋은 테니스장이 없더라구요~
-            테니스 친 이후에는 가볍게 맥주 한잔 정도는 괜찮은 것 같아요!
+            안녕하세요! 저는 Anna 이에요!{'\n'}
+            저는 서울 소재 대학교에서 4학년 재학 중인 Jenny에요!{'\n'}
+            저는 평일에 학교 근처에서 복싱장을 같이 다닐 사람을 구하고 있어요! 혼자 다니면 금방 질려서 그만두게 되더라구요.{'\n'}
+            복싱장을 다녀온 이후에는 가볍게 맥주 한잔 정도는 괜찮은 것 같아요!{'\n'}
+            {'\n'}
             대화를 나눠보고 찐친이 될 가능성이 보인다면 AI 관상을 지울게요~~
           </CustomTextInput>
-
-          <View style={{flexDirection: 'row', width: "50%"}}>
-            <CustomButton styles={{backgroundColor: colors.point}} onPress={() => {}}><Text>삭제하기</Text></CustomButton>
-            <CustomButton styles={{backgroundColor: colors.point}} onPress={() => {setEdit(!edit)}}>
-              {
-                edit ? 
-                  <Text>저장하기</Text> : 
-                  <Text>수정하기</Text>
-              }
-            </CustomButton>
-          </View>
         </View>
+
+      <View style={{...styles.section, flexDirection: 'row'}}>
+        <View style={{width: "50%", display: edit ? 'none' : 'flex'}}>
+          <CustomButton styles={{backgroundColor: colors.gray4, marginHorizontal: 5}} onPress={() => {}}><Text style={{color: colors.white}}>삭제하기</Text></CustomButton>
+        </View>
+        <View style={{width: edit ? "100%" : "50%"}}>
+          <CustomButton styles={{backgroundColor: colors.point, marginHorizontal: 5}} onPress={() => {setEdit(!edit)}}>
+            {
+              edit ? 
+                <Text style={{color: colors.white}}>완료</Text> : 
+                <Text style={{color: colors.white}}>수정하기</Text>
+            }
+          </CustomButton>
+        </View>
+      </View>
       </View>
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    margin: "8%",
+    flex: 1,
+  },
+  uneditableTag: {
+    borderWidth: 2, 
+    borderColor: colors.point,
+    backgroundColor: colors.white,
+    alignItems: 'center'
+  },
+  editableTag: {
+    borderWidth: 2, 
+    alignItems: 'center'
+  },
+  uneditableText: {
+    color: colors.point, 
+    fontSize: 14
+  },
+  editableText: {
+    fontSize: 14
+  },
+  section: {
+    paddingTop: 20
+  },
+  sectionTop: {
+    flexDirection: "row", flexWrap: "wrap",
+    margin: 5
+  }, 
+  sectionText: {
+    fontSize: 14,
+    color: colors.gray9,
+    paddingRight: 7
+  }, 
+  sectionHintText: {
+    fontSize: 14,
+    color: colors.gray6,
+    paddingLeft: 5
+  }
+});
 
 export default SelfProduce;
