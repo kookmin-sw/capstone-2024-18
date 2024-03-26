@@ -7,13 +7,12 @@ import capstone.facefriend.auth.domain.Provider;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
-import capstone.facefriend.member.domain.Role;
 import lombok.RequiredArgsConstructor;
-import org.springframework.expression.ExpressionException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static capstone.facefriend.member.domain.Role.*;
+import static capstone.facefriend.member.domain.Role.USER;
 
 
 @RequiredArgsConstructor
@@ -30,6 +29,7 @@ public class AuthService {
         return oAuthRequester.loginUri(Provider.from(provider), redirectUri);
     }
 
+    @Async
     @Transactional
     public TokenResponse generateTokens(OAuthMember oAuthMember) {
         Member newMember = Member.builder()

@@ -1,6 +1,6 @@
 package capstone.facefriend.auth.controller.dto;
 
-public record LoginUriResponse(
-    String loginUri
+public record CodeResponse(
+    String code
 ) {
 }
