@@ -4,6 +4,7 @@ import { Card, Icon, Chip } from 'react-native-paper';
 import { colors } from '../assets/colors.tsx'
 import CustomButton from '../components/CustomButton';
 import { useState } from 'react';
+import CustomTextInput from '../components/CustomTextInput.tsx';
 
 
 const SelfProduce = () => {
@@ -124,15 +125,19 @@ const SelfProduce = () => {
           </View>
 
           <Text>내용</Text>
-          <View style={{backgroundColor: colors.gray2, marginVertical: 10, padding: 15, borderRadius: 15}}>
-            <Text>
-              안녕하세요! 저는 Anna 이에요!
-              저는 판교 소재의 IT 회사에서 근무하고 있어요.
-              저는 주말에 테니스를 같이 칠 사람을 구하고 있어요. 장소는 서울이면 좋겠어요. 성남에는 좋은 테니스장이 없더라구요~
-              테니스 친 이후에는 가볍게 맥주 한잔 정도는 괜찮은 것 같아요!
-              대화를 나눠보고 찐친이 될 가능성이 보인다면 AI 관상을 지울게요~~
-            </Text>
-          </View>
+          <CustomTextInput 
+            containerStyle={{backgroundColor: colors.gray2, marginVertical: 10, marginHorizontal:0, padding: 15, borderRadius: 15}} 
+            style={{flex: 1}} multiline={true}
+            textColor={"#000000"}
+            editable={edit ? true : false}
+            placeholderTextColor={"#000000"}
+            >
+            안녕하세요! 저는 Anna 이에요!
+            저는 판교 소재의 IT 회사에서 근무하고 있어요.
+            저는 주말에 테니스를 같이 칠 사람을 구하고 있어요. 장소는 서울이면 좋겠어요. 성남에는 좋은 테니스장이 없더라구요~
+            테니스 친 이후에는 가볍게 맥주 한잔 정도는 괜찮은 것 같아요!
+            대화를 나눠보고 찐친이 될 가능성이 보인다면 AI 관상을 지울게요~~
+          </CustomTextInput>
 
           <View style={{flexDirection: 'row', width: "50%"}}>
             <CustomButton styles={{backgroundColor: colors.point}} onPress={() => {}}><Text>삭제하기</Text></CustomButton>
