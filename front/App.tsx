@@ -1,15 +1,20 @@
+import Config from 'react-native-config';
+
 import axios from 'axios';
 import { Linking } from 'react-native';
 import { useEffect } from 'react';
 import 'react-native-url-polyfill/auto';
 import GoogleLogin from './pages/test';
 
-const LOCALHOST = 'http://192.168.123.106:8080/';
-const LOCALHOST2 = "https://04ba-115-138-61-136.ngrok-free.app";
+const LOCALHOST = Config.LOCALHOST;
+
+// ngrok http 8080
+const LOCALHOST2 = "https://7bf8-115-138-61-136.ngrok-free.app";
 
 const getLoginPage = async () => {
   try {
     console.log("getLoginPage");
+
     const endpoint = LOCALHOST + "oauth/google/login-uri?redirect-uri=" + LOCALHOST2;
     const response = await axios.get(endpoint);
     const loginUri = response.data.loginUri;
@@ -18,7 +23,7 @@ const getLoginPage = async () => {
     // https://accounts.google.com/o/oauth2/v2/auth?client_id=256579802647-p9jbn251b364onlpt0qohqjpfot5lcse.apps.googleusercontent.com&redirect_uri=http://192.168.123.106:8080/&response_type=code&scope=email profile 
     
     // https://accounts.google.com/o/oauth2/v2/auth?client_id=256579802647-p9jbn251b364onlpt0qohqjpfot5lcse.apps.googleusercontent.com&redirect_uri=https://0744-115-138-61-136.ngrok-free.app&response_type=code&scope=email profile
-    return loginUri;
+    linkLoginPage(loginUri);
   } 
   catch (e) {
     console.log(e);
@@ -63,22 +68,51 @@ const googleLogin = async () => {
   }
 }
 
-const email = async () => {
+const emailSignin = async () => {
   console.log("email1");
   try {
     // const response = await axios.post("http://localhost:8080/members/send-code?email=nanana3679");
     // const response = await axios.post("http://10.0.2.2:8080/members/send-code?email=nanana3679");
 
-    const response = await axios.post(LOCALHOST + "send-temporary-password?email=nanana3679");
+    const response = await axios.post(LOCALHOST + "auth/signup", {
+      "email":"nanana3678",
+      "password":"123",
+      "password2":"123",
+      "isVerified":"true"
+    });
+
     
-    console.log(response);
+    console.log(response.data);
   } catch (e) {
     console.log(e);
   }
 }
 
-// 콘솔에서 테스트하는 명령어 
-// adb shell am start -W -a android.intent.action.VIEW -d "facefriend://redirect?code=12345"
+const sendCode = async () => {
+  console.log("sendCode");
+  try {
+    // const response = await axios.post("http://localhost:8080/members/send-code?email=nanana3679");
+    // const response = await axios.post("http://10.0.2.2:8080/members/send-code?email=nanana3679");
+
+    const response = await axios.post(LOCALHOST + "auth/send-code?email=nanana3679@gmail.com");
+    console.log(response.data);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+const verifyCode = async () => {
+  console.log("verifyCode");
+  try {
+    const response = await axios.post(LOCALHOST + "auth/verify-code?email=nanana3679@gmail.com&code=081646");
+    console.log(response.data);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+// // 콘솔에서 테스트하는 명령어 
+// // adb shell am start -W -a android.intent.action.VIEW -d "facefriend://redirect?code=12345"
 const useDeepLinkCode = () => {
   useEffect(() => {
     const subscription = Linking.addEventListener('url', handleDeepLink);
@@ -101,11 +135,15 @@ const extractCodeFromUrl = (url: URL): string | null => {
   }
 };
 
-function App() {
+const App = () => {
   useDeepLinkCode();
-  // const loginUri = await getLoginPage();
-  // linkLoginPage(loginUri);
-  googleLogin();
+  // getLoginPage();
+  // linkLoginPage("https://accounts.google.com/o/oauth2/v2/auth?client_id=256579802647-p9jbn251b364onlpt0qohqjpfot5lcse.apps.googleusercontent.com&redirect_uri=bce7-115-138-61-136.ngrok-free.app&response_type=code&scope=email profile");
+  // googleLogin();
+  // email();
+  // sendCode();
+  // verifyCode();
+  console.log(Config.LOCALHOST);
 
   return (
     <GoogleLogin/>

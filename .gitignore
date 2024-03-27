@@ -290,4 +290,5 @@ gradle-app.setting
 
 front/node_modules/
 node_modules/
+front/.env
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,gradle,macos,windows,intellij+all
