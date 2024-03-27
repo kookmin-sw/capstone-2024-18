@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { ImageSlider } from "react-native-image-slider-banner";
 import { Card, Icon, Chip } from 'react-native-paper';
 import { colors } from '../assets/colors.tsx'
@@ -8,6 +8,7 @@ import CustomTextInput from '../components/CustomTextInput.tsx';
 
 
 const SelfProduce = () => {
+  const { width } = Dimensions.get('window');
   const [ edit, setEdit ] = useState(false);
   const [ categories, setCategories ] = useState([
     {id: 0, text: "운동", selected: true},
@@ -20,7 +21,7 @@ const SelfProduce = () => {
     {id: 7, text: "자유", selected: true},
   ])
   const [ basic, setBasic ] = useState([
-    {id: 0, text: "여"},
+    {id: 0, text: "여성"},
     {id: 1, text: "20대 중반"},
     {id: 2, text: "170cm 중반"},
     {id: 3, text: "서울 강북"}
@@ -54,29 +55,27 @@ const SelfProduce = () => {
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
       {/* ImageSlider 아직 디자인이 fix 안 되었기 때문에, 아무 slider와 이미지 씁니다 */}
       <ImageSlider 
         data={[
-          {img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5a5uCP-n4teeW2SApcIqUrcQApev8ZVCJkA&usqp=CAU'},
-          {img: 'https://thumbs.dreamstime.com/b/environment-earth-day-hands-trees-growing-seedlings-bokeh-green-background-female-hand-holding-tree-nature-field-gra-130247647.jpg'},
-          {img: 'https://cdn.pixabay.com/photo/2015/04/19/08/32/marguerite-729510__340.jpg'}
+          {img: require('../assets/images/imageTest1.png')},
+          {img: require('../assets/images/imageTest1.png')},
+          {img: require('../assets/images/imageTest1.png')},
         ]}
-        autoPlay={false}
-        onItemChanged={(item) => console.log("item", item)}
-        closeIconColor="#fff"
-        caroselImageStyle={{height: 268}}
+        localImg={true}
+        caroselImageStyle={{ resizeMode: 'cover', height: width}}
       />
-      <View style={styles.container}>
-        <Card.Title 
-          left={(props) => <Icon {...props} source="folder"/>} 
-          title="Anna"
-          style={{backgroundColor: colors.gray4}}
-          />
+      <View style={styles.container} >
+        <View style={styles.sectionTop}>
+          <Icon size={60} source={require('../assets/images/Jenny_image.png')}/>
+          <Text style={{marginLeft: 15, fontSize: 15, color: '#000000', alignSelf: 'center'}}>Jenny</Text>
+        </View>
+
         <View style={styles.section}>
           <View style={styles.sectionTop}>
             <Text style={styles.sectionText}>기본 정보</Text>
-            <Icon source={'progress-question'} size={20}/>
+            <Icon source={'progress-question'} size={20} color={colors.pastel_point}/>
             <Text style={{...styles.sectionHintText, display: edit ? 'flex' : 'none'}}>프로필에서 수정 가능해요</Text>
           </View>
           <View style={{flexDirection: "row", flexWrap: "wrap"}}>
@@ -96,7 +95,7 @@ const SelfProduce = () => {
         <View style={styles.section}>
           <View style={styles.sectionTop}>
             <Text style={styles.sectionText}>관상 정보</Text>
-            <Icon source={'progress-question'} size={20}/>
+            <Icon source={'progress-question'} size={20} color={colors.pastel_point}/>
             <Text style={{...styles.sectionHintText, display: edit ? 'flex' : 'none'}}>프로필에서 수정 가능해요</Text>
           </View>
           <View style={{flexDirection: "row", flexWrap: "wrap"}}>
@@ -184,17 +183,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   uneditableTag: {
-    borderWidth: 2, 
+    borderWidth: 1.6, 
     borderColor: colors.point,
     backgroundColor: colors.white,
-    alignItems: 'center'
+    alignItems: 'center',
+    borderRadius: 20
   },
   editableTag: {
     borderWidth: 2, 
-    alignItems: 'center'
+    alignItems: 'center',
+    borderRadius: 20
   },
   uneditableText: {
-    color: colors.point, 
+    color: colors.gray7, 
     fontSize: 14
   },
   editableText: {
