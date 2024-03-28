@@ -92,21 +92,21 @@ export const verifyCode = async (email: string, code: string) => {
   }
 }
 
-  // 9. OK
-  const signup = async (email: string, password: string, password2: string, isVerified: boolean) => {
-    const endpoint =  `${LOCALHOST}/auth/signup`;
-    const body = {
-      email,
-      password,
-      password2,
-      isVerified,
-    }
-
-    try {
-      const response = await axios.post(endpoint, body);
-      console.log(response.data);
-    }
-    catch (e) {
-      console.log(e);
-    }
+// 9. OK
+export const signup = async (email: string, password: string, password2: string, isVerified: boolean) => {
+  const endpoint =  `${LOCALHOST}/auth/signup`;
+  const body = {
+    email,
+    password,
+    password2,
+    isVerified,
   }
+
+  try {
+    const response = await axios.post(endpoint, body);
+    console.log(response.data);
+  }
+  catch (e) {
+    console.log(e);
+  }
+}
