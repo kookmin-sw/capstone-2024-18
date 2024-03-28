@@ -1,6 +1,7 @@
 package capstone.facefriend.auth.service;
 
 
+import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.OAuthMember;
 import capstone.facefriend.auth.domain.Provider;
 import capstone.facefriend.auth.domain.TokenProvider;
@@ -8,8 +9,11 @@ import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
 import capstone.facefriend.member.domain.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static capstone.facefriend.member.domain.Role.*;
 
 
 @RequiredArgsConstructor
@@ -20,20 +24,36 @@ public class AuthService {
     private final OAuthRequester oAuthRequester;
     private final MemberRepository memberRepository;
 
+    private static final String TEMPORARY_GOOGLE_PASSWORD = "google";
+
     public String loginUri(String redirectUri, String provider) {
         return oAuthRequester.loginUri(Provider.from(provider), redirectUri);
     }
 
     @Transactional
-    public String generateToken(OAuthMember oAuthMember) {
+    public TokenResponse generateTokens(OAuthMember oAuthMember) {
         Member newMember = Member.builder()
                 .email(oAuthMember.email())
-                .name(oAuthMember.nickname())
+                .nickname(oAuthMember.nickname())
+                .password(TEMPORARY_GOOGLE_PASSWORD)
                 .imageUrl(oAuthMember.imageUrl())
-                .role(Role.USER)
+                .isVerified(true)
+                .role(USER)
                 .build();
         Member member = memberRepository.findByEmail(oAuthMember.email())
                 .orElseGet(() -> memberRepository.save(newMember));
-        return tokenProvider.create(member.getId());
+
+        Long memberId = member.getId();
+        return new TokenResponse(getAccessToken(memberId), getRefreshToken(memberId));
+    }
+
+    private String getAccessToken(Long memberId) {
+        String accessToken = tokenProvider.createAccessToken(memberId);
+        return accessToken;
+    }
+
+    private String getRefreshToken(Long memberId) {
+        String refreshToken = tokenProvider.createRefreshToken(memberId);
+        return refreshToken;
     }
 }

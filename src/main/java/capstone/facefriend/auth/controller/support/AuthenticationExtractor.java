@@ -10,15 +10,15 @@ public class AuthenticationExtractor {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER = "Bearer";
 
-    public static Optional<String> extractAuth(HttpServletRequest request) {
+    public static Optional<String> extractAccessToken(HttpServletRequest request) {
         String header = request.getHeader(AUTHORIZATION_HEADER);
         if (!StringUtils.hasText(header)) {
             return Optional.empty();
         }
-        return extractToken(header.split(" "));
+        return splitAuthorizationHeader(header.split(" "));
     }
 
-    private static Optional<String> extractToken(String[] parts) {
+    private static Optional<String> splitAuthorizationHeader(String[] parts) {
         if (parts.length == 2 && parts[0].equals(BEARER)) {
             return Optional.ofNullable(parts[1]);
         }

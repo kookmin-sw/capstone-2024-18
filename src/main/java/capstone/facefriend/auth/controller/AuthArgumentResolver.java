@@ -28,6 +28,6 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) {
-        return authenticationContext.getPrincipal();
+        return authenticationContext.getAuthentication();
     }
 }

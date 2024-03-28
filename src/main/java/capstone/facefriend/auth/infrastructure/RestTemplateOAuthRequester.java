@@ -51,25 +51,18 @@ public class RestTemplateOAuthRequester implements OAuthRequester {
     }
 
     @Override
-    public OAuthTokenResponse accessToken(OAuthLoginRequest request, String requestProvider) {
-        Provider provider = Provider.from(requestProvider);
-        OAuthProviderProperty property = oAuthProviderProperties.getProviderProperties(provider);
-        return getAccessToken(property, request);
-    }
-
-    @Override
     public OAuthMember login(OAuthLoginRequest request, String requestProvider) {
         Provider provider = Provider.from(requestProvider);
         OAuthProviderProperty property = oAuthProviderProperties.getProviderProperties(provider);
-        OAuthTokenResponse token = getAccessToken(property, request);
-        return provider.getOAuthProvider(getUserAttributes(property, token));
+        OAuthTokenResponse token = getOAuthToken(property, request);
+        return provider.getOAuthMember(getUserAttributes(property, token));
     }
 
-    private OAuthTokenResponse getAccessToken(OAuthProviderProperty property, OAuthLoginRequest loginRequest) {
+    private OAuthTokenResponse getOAuthToken(OAuthProviderProperty property, OAuthLoginRequest loginRequest) {
         HttpHeaders headers = headerWithProviderSecret(property);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
         URI tokenUri = getTokenUri(property, loginRequest);
-        return requestAccessToken(tokenUri, request);
+        return requestOAuthToken(tokenUri, request);
     }
 
     private HttpHeaders headerWithProviderSecret(OAuthProviderProperty property) {
@@ -88,7 +81,7 @@ public class RestTemplateOAuthRequester implements OAuthRequester {
                 .toUri();
     }
 
-    private OAuthTokenResponse requestAccessToken(URI tokenUri, HttpEntity<MultiValueMap<String, String>> request) {
+    private OAuthTokenResponse requestOAuthToken(URI tokenUri, HttpEntity<MultiValueMap<String, String>> request) {
         try {
             return restTemplate.postForEntity(tokenUri, request, OAuthTokenResponse.class).getBody();
         } catch (Exception e) {
