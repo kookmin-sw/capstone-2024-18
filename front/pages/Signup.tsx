@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { View, StyleSheet, Text, Pressable, ScrollView, TextInput } from "react-native";
+import { View, StyleSheet, Text, Pressable, ScrollView, TextInput, Modal } from "react-native";
 import { Icon } from 'react-native-paper';
 
 import IconText from "../components/IconText.tsx";
@@ -7,10 +7,15 @@ import CustomTextInput from "../components/CustomTextInput.tsx";
 import CustomButton from "../components/CustomButton.tsx";
 
 import { colors } from '../assets/colors.tsx'
+import { signup, verifyDuplicationEmail } from "../util/auth.tsx";
+import VerifyEmailModal from "./VerifyEmailModal.tsx";
 
 const Signup = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [email, setEmail] = useState("");
   const [emailStatus, setEmailStatus] = useState("NOT_CHECKED");
+  const [emailMessage, setEmailMessage] = useState("");
 
   const [pwInput, setPwInput] = useState(["", ""]);
   const [pwStatus, setPwStatus] = useState("NOT_CHECKED");
@@ -29,14 +34,28 @@ const Signup = () => {
   const passwordConfirmInputRef = useRef<TextInput>(null);
   const nicknameInputRef = useRef<TextInput>(null);
 
+  const handleModalOpen = () => {
+    setModalVisible(true);
+  }
+
   const handleEmailInputChange = (value: string) => {
     setEmail(value);
   }
 
-  const handleEmailValidation = () => {
+  const handleEmailInputOnBlur = async () => {
     const emaliRegex = /^[\w.-]+@[\w.-]+\.\w+$/;
-    if (emaliRegex.test(email)) setEmailStatus("VALID");
-    else setEmailStatus("INVALID");
+    if (emaliRegex.test(email)) {
+      const message = await verifyDuplicationEmail(email);
+      if (message == "사용 가능한 이메일입니다.") {
+        setEmailStatus("VALID");
+      } else {
+        setEmailStatus("INVALID");
+      }
+      setEmailMessage(message);
+    } else {
+      setEmailMessage("이메일 형식이 아닙니다.");
+      setEmailStatus("INVALID");
+    }
   }
 
   const handlePwInputChage = (value: string, index: number) => {
@@ -66,8 +85,8 @@ const Signup = () => {
     else setIsChecked([...isChecked].fill(true));
   } 
 
-  const handleSubmit = () => {
-    if (isFormValid) console.log(email, pwInput[0], nickname);
+  const handleSubmit = async () => {
+    signup(email, pwInput[0], pwInput[1], isFormValid);
   }
 
   useEffect(() => {
@@ -81,12 +100,13 @@ const Signup = () => {
   }, [pwInput])
 
   useEffect(() => {
-    if (emailStatus === "VALID" && pwStatus === "VALID" && nickname && isCheckedAll) setIsFormValid(true);
+    if (emailStatus === "CHECKED" && pwStatus === "VALID" && nickname && isCheckedAll) setIsFormValid(true);
     else setIsFormValid(false);
   }, [emailStatus, pwStatus, nickname, isCheckedAll, setIsFormValid, isFormValid])
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
+      {modalVisible && <VerifyEmailModal setModalVisible={setModalVisible} email={email} setEmailStatus={setEmailStatus} setEmailMessage={setEmailMessage}/>}
       <View style={styles.container}>
         <View style={styles.sectionContainer}>
           <View style={styles.titleContainer}>
@@ -103,19 +123,22 @@ const Signup = () => {
               returnKeyType="next"
               onSubmitEditing={() => passwordInputRef.current?.focus()}
               blurOnSubmit={false}
+              onBlur={handleEmailInputOnBlur}
             />
           </View>
           <View style={styles.grayButtonContainer}>
-            <CustomButton onPress={handleEmailValidation} styles={styles.grayButton}>
-              <Text style={styles.grayButtonText}>이메일 중복 확인</Text>
+            <CustomButton onPress={handleModalOpen} styles={styles.grayButton}>
+              <Text style={styles.grayButtonText}>이메일 인증하기</Text>
             </CustomButton>
             {emailStatus === "NOT_CHECKED" ? "" 
+            : emailStatus === "CHECKED" ? 
+              <IconText icon={{source: "check-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
             : emailStatus === "INVALID" ? 
-              <IconText icon={{source: "close-circle"}} containerStyle={{ marginLeft: 10 }}>올바른 이메일 주소가 아닙니다</IconText>
+              <IconText icon={{source: "close-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
             : emailStatus === "VALID" ? 
-              <IconText icon={{source: "check-circle"}} containerStyle={{ marginLeft: 10 }}>확인되었습니다</IconText>            
+              <IconText icon={{source: "check-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>            
             : // emailStatus === "INVALID"
-              <IconText icon={{source: "close-circle"}} containerStyle={{ marginLeft: 10 }}>중복 이메일입니다</IconText>
+              <IconText icon={{source: "close-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
             }
           </View>
         </View>

@@ -16,7 +16,7 @@ interface ButtonProps {
 const CustomButton = ({ children, onPress, styles} : ButtonProps) => {
   return (
     <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-      <TouchableOpacity onPress={onPress} style={[{alignItems: "center", borderRadius: 10, padding: 14.5, flex: 1}, styles]}>
+      <TouchableOpacity onPress={onPress} style={[{alignItems: "center", borderRadius: 10, height: 29, flex: 1}, styles]}>
         {children}
       </TouchableOpacity>
   </View>);

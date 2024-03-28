@@ -1,11 +1,16 @@
-import { findEmail } from './util/auth';
+import AuthContextProvider from './store/auth-context';
+import Signup from './pages/Signup';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { colors } from './assets/colors';
 
 function App() {
-  const myEmail = "nanana3679@gmail.com";
-  findEmail(myEmail);
 
   return (
-      <></>
+    <AuthContextProvider>
+      <SafeAreaProvider style={{ backgroundColor: colors.white }}>
+        <Signup/>
+      </SafeAreaProvider>
+    </AuthContextProvider>
   );
 }
 
