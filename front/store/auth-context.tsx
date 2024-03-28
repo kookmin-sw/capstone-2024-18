@@ -1,19 +1,20 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import {createContext, useState} from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import { removeRefreshToken, saveRefreshToken, loadRefreshToken } from '../util/encryptedStorage';
 
 interface AuthContextType {
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
-  authenticate: (token: string) => void;
-  logout: () => void;
+  authenticate: (accessToken: string, refreshToken: string) => Promise<void>;
+  deauthenticate: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
-  token: '',
+  accessToken: null,
+  refreshToken: null,
   isAuthenticated: false,
-  authenticate: token => {},
-  logout: () => {},
+  authenticate: async () => {},
+  deauthenticate: async () => {},
 });
 
 interface AuthProviderProps {
@@ -21,23 +22,37 @@ interface AuthProviderProps {
 }
 
 const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-  const authenticate = (token: string) => {
-    setAuthToken(token);
-    AsyncStorage.setItem('token', token);
+  const authenticate = async (newAccessToken: string, newRefreshToken: string) => {
+    setAccessToken(newAccessToken);
+    setRefreshToken(newRefreshToken);
+    saveRefreshToken(newRefreshToken);
   };
 
-  const logout = () => {
-    setAuthToken(null);
-    AsyncStorage.removeItem('token');
+  const deauthenticate = async () => {
+    setAccessToken(null);
+    setRefreshToken(null);
+    removeRefreshToken();
   };
+
+  useEffect(() => {
+    const loadInitialToken = async () => {
+      const storedRefreshToken = await loadRefreshToken();
+      if (storedRefreshToken) {
+        setRefreshToken(storedRefreshToken);
+      }
+    };
+    loadInitialToken();
+  }, []);
 
   const value = {
-    token: authToken,
-    isAuthenticated: !!authToken,
-    authenticate: authenticate,
-    logout: logout,
+    accessToken,
+    refreshToken,
+    isAuthenticated: !!accessToken,
+    authenticate,
+    deauthenticate,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
