@@ -1,12 +1,15 @@
 import { View, Text, StyleSheet, TextInput as RNTextInput } from 'react-native';
-import { useRef, useState } from 'react';
+import { useRef, useState, useContext } from 'react';
 import AutoHeightImage from 'react-native-auto-height-image';
 import { colors } from '../assets/colors.tsx';
 import CustomButton from '../components/CustomButton.tsx';
 import CustomText from '../components/CustomText.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
+import { AuthContext } from '../store/auth-context.tsx';
 
 const Login = () => {
+  const authCtx = useContext(AuthContext);
+
   const [ email, setEmail ] = useState('');
   const [ pw, setPw ] = useState('');
 
@@ -21,12 +24,9 @@ const Login = () => {
   }
 
   // 로그인 버튼 클릭
-  const TryLogin = (develop_mode=false) => {
-    if (develop_mode) {
-      // 개발자용 id, password로 로그인
-    }
-
-    console.log("Login");
+  const TryLogin = async () => {
+    const response = await authCtx.signin(email, pw);
+    console.log(response);
   }
 
   return (

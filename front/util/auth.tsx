@@ -1,4 +1,6 @@
 import axios, { AxiosError } from 'axios';
+import { useContext } from "react";
+import AuthContext from "../store/auth-context";
 
 const LOCALHOST = "https://1308-115-138-61-136.ngrok-free.app";
 
@@ -90,76 +92,21 @@ export const verifyCode = async (email: string, code: string) => {
   }
 }
 
-// 9. OK
-export const signup = async (email: string, password: string, password2: string, isVerified: boolean) => {
-  const endpoint =  `${LOCALHOST}/auth/signup`;
-  const body = {
-    email,
-    password,
-    password2,
-    isVerified,
-  }
-
-  try {
-    const response = await axios.post(endpoint, body);
-    console.log(response.data);
-  }
-  catch (e) {
-    console.log(e);
-  }
-}
-
-// 10. 토큰 로직
-export const signin = async (email: string, password: string) => {
-  const endpoint =  `${LOCALHOST}/auth/signin`;
-  const body = {
-    email,
-    password,
-  }
-
-  try {
-    const response = await axios.post(endpoint, body);
-    const { accessToken, refreshToken } = response.data;
-    // token 다루는 로직
-    console.log(accessToken, refreshToken);
-  }
-  catch (e) {
-    const axiosError = e as AxiosError;
-    if (axiosError.response && axiosError.response.status === 400) {
-      console.log("이메일 또는 비밀번호가 잘못되었습니다.");
+  // 9. OK
+  const signup = async (email: string, password: string, password2: string, isVerified: boolean) => {
+    const endpoint =  `${LOCALHOST}/auth/signup`;
+    const body = {
+      email,
+      password,
+      password2,
+      isVerified,
     }
-    else console.log(e);
-  }
-}
 
-// 11. OK
-export const signout = async (accessToken: string) => {
-  const endpoint =  `${LOCALHOST}/members/signout`;
-  const config = { 
-    headers: { Authorization: 'Bearer ' + accessToken } 
-  };
-  try {
-    const response = await axios.delete(endpoint, config);
-    console.log(response.data);
-    // token 삭제 로직
+    try {
+      const response = await axios.post(endpoint, body);
+      console.log(response.data);
+    }
+    catch (e) {
+      console.log(e);
+    }
   }
-  catch (e) {
-    console.log(e);
-  }
-}
-
-// 12. 토큰 구현
-export const reissue = async (accessToken: string, refreshToken: string) => {
-  const endpoint =  `${LOCALHOST}/members/reissue`;
-  const body = { refreshToken };
-  const config = { 
-    headers: { Authorization: 'Bearer ' + accessToken } 
-  };
-  try {
-    const response = await axios.post(endpoint, body, config);
-    const { receivedAccessToken, receivedRefreshToken } = response.data;
-  }
-  catch (e) {
-    console.log(e);
-  }
-}
