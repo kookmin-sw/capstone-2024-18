@@ -46,11 +46,13 @@ export const verifyDuplicationEmail = async (email: string) => {
   try {
     const response = await axios.post(endpoint);
     console.log(response.data);
+    return response.data;
   }
   catch (e) {
     const axiosError = e as AxiosError;
     if (axiosError.response && axiosError.response.status === 400) {
       console.log("이미 사용중인 이메일입니다.");
+      return "이미 사용중인 이메일입니다.";
     }
     else console.log(e);
   }
@@ -61,14 +63,17 @@ export const sendCode = async (email: string) => {
   const endpoint = `${LOCALHOST}/auth/send-code?email=${email}`;
   try {
     const response = await axios.post(endpoint);
-    console.log(response.data);
+    return "이메일로 인증코드를 전송했습니다.";
   }
   catch (e) {
     const axiosError = e as AxiosError;
     if (axiosError.response && axiosError.response.status === 400) {
-      console.log("이미 사용중인 이메일입니다.");
+      return "이미 사용중인 이메일입니다.";
     }
-    else console.log(e);
+    else {
+      console.log(e);
+      return e;
+    }
   }
 }
 
@@ -86,7 +91,7 @@ export const verifyCode = async (email: string, code: string) => {
 }
 
 // 9. OK
-export const signup = async (email: string, password: string, password2: string, isVerified: true) => {
+export const signup = async (email: string, password: string, password2: string, isVerified: boolean) => {
   const endpoint =  `${LOCALHOST}/auth/signup`;
   const body = {
     email,
