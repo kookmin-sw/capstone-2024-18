@@ -1,7 +1,7 @@
-package capstone.facefriend.auth.controller;
+package capstone.facefriend.email;
 
-import capstone.facefriend.auth.controller.support.AuthMember;
-import capstone.facefriend.auth.controller.support.AuthenticationContext;
+import capstone.facefriend.email.support.VerifiedMember;
+import capstone.facefriend.email.support.VerificationContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -12,14 +12,14 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @RequiredArgsConstructor
 @Component
-public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
+public class VerificationArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final AuthenticationContext authenticationContext;
+    private final VerificationContext verificationContext;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthMember.class) &&
-                parameter.getParameterType().equals(Long.class);
+        return parameter.hasParameterAnnotation(VerifiedMember.class) &&
+                parameter.getParameterType().equals(Boolean.class);
     }
 
     @Override
@@ -28,6 +28,6 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) {
-        return authenticationContext.getAuthentication();
+        return verificationContext.getIsVerified();
     }
 }
