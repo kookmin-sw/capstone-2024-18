@@ -14,4 +14,4 @@ public class FaceFriendApplication {
 		SpringApplication.run(FaceFriendApplication.class, args);
 	}
 
-}g
+}
