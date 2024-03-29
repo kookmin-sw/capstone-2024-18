@@ -84,7 +84,7 @@ export const verifyCode = async (email: string, code: string) => {
   const endpoint = `${LOCALHOST}/auth/verify-code?email=${email}&code=${code}`;
 
   try {
-    const response = await axios.post(endpoint);
+    const response = await axios.get(endpoint);
     console.log(response.data);
   }
   catch (e) {
