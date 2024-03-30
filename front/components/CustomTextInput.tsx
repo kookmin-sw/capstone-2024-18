@@ -73,12 +73,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gray1, 
     flexDirection: "row",
     alignItems: "center",
+    height: 40,
+    borderWidth: 1,
+    borderColor: colors.gray1,
   },
   textInput: {
     color: colors.gray7, 
-    height: 40,
     fontFamily: "Pretendard-Regular",
-    fontSize: 16,
+    fontSize: 14,
     flex: 1,
+    height: 44,
   },
 })
