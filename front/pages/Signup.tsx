@@ -14,7 +14,7 @@ const Signup = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [email, setEmail] = useState("");
-  const [emailStatus, setEmailStatus] = useState("NOT_CHECKED");
+  const [emailStatus, setEmailStatus] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
 
   const [pwInput, setPwInput] = useState(["", ""]);
@@ -43,6 +43,9 @@ const Signup = () => {
   }
 
   const handleEmailInputOnBlur = async () => {
+    if (email === '') {
+      setEmailStatus("");
+    }
     const emaliRegex = /^[\w.-]+@[\w.-]+\.\w+$/;
     if (emaliRegex.test(email)) {
       const message = await verifyDuplicationEmail(email);
@@ -124,21 +127,22 @@ const Signup = () => {
               onSubmitEditing={() => passwordInputRef.current?.focus()}
               blurOnSubmit={false}
               onBlur={handleEmailInputOnBlur}
+              isValid={emailStatus === "VALID" || emailStatus === "CHECKED" || emailStatus === ""}
             />
           </View>
           <View style={styles.grayButtonContainer}>
             <CustomButton onPress={handleModalOpen} styles={styles.grayButton}>
               <Text style={styles.grayButtonText}>이메일 인증하기</Text>
             </CustomButton>
-            {emailStatus === "NOT_CHECKED" ? "" 
+            {emailStatus === "" ? "" 
             : emailStatus === "CHECKED" ? 
               <IconText icon={{source: "check-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
-            : emailStatus === "INVALID" ? 
-              <IconText icon={{source: "close-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
+            : emailStatus === "NOT_CHECKED" ? 
+                <IconText icon={{source: "close-circle", color: colors.point }} containerStyle={{ marginLeft: 10 }} textStyle={{ color: colors.point }}>{emailMessage}</IconText>
             : emailStatus === "VALID" ? 
-              <IconText icon={{source: "check-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>            
+              <IconText icon={{source: "check-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>          
             : // emailStatus === "INVALID"
-              <IconText icon={{source: "close-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
+              <IconText icon={{source: "close-circle", color: colors.point }} containerStyle={{ marginLeft: 10 }} textStyle={{ color: colors.point }}>{emailMessage}</IconText>
             }
           </View>
         </View>
