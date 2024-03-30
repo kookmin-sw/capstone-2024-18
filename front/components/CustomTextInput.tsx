@@ -36,6 +36,7 @@ interface Props extends TextInputProps {
   rightPressable?: PressableProps
   containerStyle?: StyleProp<ViewStyle>
   textInputStyle?: StyleProp<ViewStyle>
+  isValid?: boolean
 }
 
 const CustomTextInput = forwardRef<TextInput | null, Props>(({ 
@@ -45,14 +46,14 @@ const CustomTextInput = forwardRef<TextInput | null, Props>(({
   rightPressable, 
   containerStyle, 
   textInputStyle, 
+  isValid = true,
   ...textInputProps 
 }: Props, ref) => {
-
   const defaultIconProps = { size: 20, color: colors.gray6 }
   const defalutTextInputProps = { placeholderTextColor: colors.gray5 }
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={[styles.container, containerStyle, isValid ? {borderColor: colors.gray1} : {borderColor: colors.point}]}>
       {leftIcon && <Pressable {...leftPressable}>
         <Icon {...defaultIconProps} {...leftIcon} />
       </Pressable>}
@@ -77,7 +78,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 40,
     borderWidth: 1,
-    borderColor: colors.gray1,
   },
   scrollContainer: {
     flex: 1,
