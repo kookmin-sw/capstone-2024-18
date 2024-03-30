@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { View, StyleSheet, TextInput, StyleProp, ViewStyle, Pressable, PressableProps } from "react-native";
+import { View, ScrollView, StyleSheet, TextInput, StyleProp, ViewStyle, Pressable, PressableProps } from "react-native";
 import { Icon, TextInputProps } from 'react-native-paper';
 
 import { colors } from '../assets/colors.tsx'
@@ -56,7 +56,9 @@ const CustomTextInput = forwardRef<TextInput | null, Props>(({
       {leftIcon && <Pressable {...leftPressable}>
         <Icon {...defaultIconProps} {...leftIcon} />
       </Pressable>}
-      <TextInput ref={ref} style={[styles.textInput, textInputStyle]} {...defalutTextInputProps} {...textInputProps} />
+      <ScrollView contentContainerStyle={styles.scrollContainer} horizontal={true}>
+        <TextInput ref={ref} style={[styles.textInput, textInputStyle]} {...defalutTextInputProps} {...textInputProps} />
+      </ScrollView>
       {rightIcon && <Pressable {...rightPressable}>
         <Icon {...defaultIconProps} {...rightIcon} />
       </Pressable>}
@@ -77,11 +79,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.gray1,
   },
+  scrollContainer: {
+    flex: 1,
+  },
   textInput: {
     color: colors.gray7, 
     fontFamily: "Pretendard-Regular",
     fontSize: 14,
     flex: 1,
-    height: 44,
+    height: 25,
+    padding: 0,
   },
 })
