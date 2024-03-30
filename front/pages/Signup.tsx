@@ -102,10 +102,10 @@ const Signup = () => {
   }, [emailStatus, pwStatus, isCheckedAll, setIsFormValid, isFormValid])
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45 }}>
       {modalVisible && <VerifyEmailModal setModalVisible={setModalVisible} email={email} setEmailStatus={setEmailStatus} setEmailMessage={setEmailMessage}/>}
       <View style={styles.container}>
-        <View style={styles.sectionContainer}>
+        <View style={[styles.sectionContainer, { borderTopWidth: 0 }]}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>SIGN UP</Text>
           </View>
@@ -184,7 +184,7 @@ const Signup = () => {
             <IconText icon={{source: "close-circle"}} containerStyle={styles.hintContainer}>영문 숫자 특수문자 혼합 8-16자여야 합니다</IconText>
           }
         </View>
-        <View style={[styles.sectionContainer, { borderBottomWidth: 0 }]}>
+        <View style={[styles.sectionContainer, { borderBottomWidth: 0, marginTop: 'auto' }]}>
           <View style={styles.agreementContainer}>
             <Pressable onPress={handleCheckAll}>
               <Icon source={isCheckedAll ? "checkbox-marked" : "checkbox-outline"} color={colors.gray6} size={18} /> 
@@ -226,8 +226,8 @@ export default Signup;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 45,
     flex: 1,
+    justifyContent: 'flex-start',
   },
   title: {
     fontSize: 24, 
@@ -286,8 +286,8 @@ const styles = StyleSheet.create({
     letterSpacing: -12 * 0.02,
   },
   sectionContainer: {
-    borderBottomColor: colors.gray3,
-    borderBottomWidth: 1,
+    borderTopColor: colors.gray3,
+    borderTopWidth: 1,
     paddingHorizontal: 12,
     paddingTop: 9,
     paddingBottom: 12,
