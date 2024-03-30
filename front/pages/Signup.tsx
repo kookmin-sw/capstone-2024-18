@@ -21,8 +21,6 @@ const Signup = () => {
   const [pwStatus, setPwStatus] = useState("NOT_CHECKED");
   const [pwVisible, setPwVisible] = useState([false, false]);
 
-  const [nickname, setNickname] = useState("");
-
   const [isChecked, setIsChecked] = useState([false, false]);
   const isCheckedAll = isChecked.every(checked => checked === true);
 
@@ -32,7 +30,6 @@ const Signup = () => {
 
   const passwordInputRef = useRef<TextInput>(null);
   const passwordConfirmInputRef = useRef<TextInput>(null);
-  const nicknameInputRef = useRef<TextInput>(null);
 
   const handleModalOpen = () => {
     setModalVisible(true);
@@ -70,10 +67,6 @@ const Signup = () => {
     setPwVisible(pwVisible.map((item, i) => i === index ? !item : item));
   }
 
-  const handleNicknameInputChage = (value: string) => {
-    setNickname(value);
-  }
-
   const handleAgreementToggle = () => {
     setAgreementToggle(!agreementToggle);
   }
@@ -104,9 +97,9 @@ const Signup = () => {
   }, [pwInput])
 
   useEffect(() => {
-    if (emailStatus === "CHECKED" && pwStatus === "VALID" && nickname && isCheckedAll) setIsFormValid(true);
+    if (emailStatus === "CHECKED" && pwStatus === "VALID" && isCheckedAll) setIsFormValid(true);
     else setIsFormValid(false);
-  }, [emailStatus, pwStatus, nickname, isCheckedAll, setIsFormValid, isFormValid])
+  }, [emailStatus, pwStatus, isCheckedAll, setIsFormValid, isFormValid])
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -133,7 +126,7 @@ const Signup = () => {
           </View>
           <View style={styles.grayButtonContainer}>
             <CustomButton onPress={handleModalOpen} styles={styles.grayButton}>
-              <Text style={styles.grayButtonText}>이메일 인증하기</Text>
+              <Text style={styles.grayButtonText}>본인인증</Text>
             </CustomButton>
             {emailStatus === "" ? "" 
             : emailStatus === "CHECKED" ? 
@@ -178,9 +171,7 @@ const Signup = () => {
               rightIcon={{ source: pwVisible[1] ? "eye-off-outline" : "eye-outline" }} 
               rightPressable={{ onPress: togglePwVisibility.bind(this, 1) }}
               ref={passwordConfirmInputRef}
-              returnKeyType="next"
-              onSubmitEditing={() => nicknameInputRef.current?.focus()}
-              blurOnSubmit={false}
+              returnKeyType="done"
             />
           </View>
           {pwStatus === "NOT_CHECKED" ? 
@@ -192,18 +183,6 @@ const Signup = () => {
           : // pwStatus === "INVALID"
             <IconText icon={{source: "close-circle"}} containerStyle={styles.hintContainer}>영문 숫자 특수문자 혼합 8-16자여야 합니다</IconText>
           }
-        </View>
-        <View style={[styles.sectionContainer, { minHeight: 145 }]}>
-          <View style={styles.textContainer}>
-            <Text style={styles.inputLabel}>닉네임</Text>
-            <Text style={styles.inputLabelStar}> *</Text>
-          </View>
-          <View style={styles.textInputContainer}>
-            <CustomTextInput
-              ref={nicknameInputRef}
-              placeholder="예) Anna" onChangeText={handleNicknameInputChage}  
-            />
-          </View>
         </View>
         <View style={[styles.sectionContainer, { borderBottomWidth: 0 }]}>
           <View style={styles.agreementContainer}>
