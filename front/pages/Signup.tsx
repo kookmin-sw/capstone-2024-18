@@ -45,6 +45,7 @@ const Signup = () => {
   const handleEmailInputOnBlur = async () => {
     if (email === '') {
       setEmailStatus("");
+      return;
     }
     const emaliRegex = /^[\w.-]+@[\w.-]+\.\w+$/;
     if (emaliRegex.test(email)) {
