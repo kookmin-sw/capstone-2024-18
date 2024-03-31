@@ -32,7 +32,9 @@ const Signup = () => {
   const passwordConfirmInputRef = useRef<TextInput>(null);
 
   const handleModalOpen = () => {
-    setModalVisible(true);
+    if (emailStatus === "VALID") {
+      setModalVisible(true);
+    }
   }
 
   const handleEmailInputChange = (value: string) => {
@@ -44,6 +46,8 @@ const Signup = () => {
       setEmailStatus("");
       return;
     }
+    setEmailStatus("LOADING");
+    setEmailMessage("중복 확인 중입니다.");
     const emaliRegex = /^[\w.-]+@[\w.-]+\.\w+$/;
     if (emaliRegex.test(email)) {
       const message = await verifyDuplicationEmail(email);
@@ -129,14 +133,12 @@ const Signup = () => {
               <Text style={styles.grayButtonText}>본인인증</Text>
             </CustomButton>
             {emailStatus === "" ? "" 
-            : emailStatus === "CHECKED" ? 
+            : emailStatus === "CHECKED" || emailStatus === "VALID" ? 
               <IconText icon={{source: "check-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
-            : emailStatus === "NOT_CHECKED" ? 
+            : emailStatus === "NOT_CHECKED" || emailStatus === "INVALID" ? 
                 <IconText icon={{source: "close-circle", color: colors.point }} containerStyle={{ marginLeft: 10 }} textStyle={{ color: colors.point }}>{emailMessage}</IconText>
-            : emailStatus === "VALID" ? 
-              <IconText icon={{source: "check-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>          
-            : // emailStatus === "INVALID"
-              <IconText icon={{source: "close-circle", color: colors.point }} containerStyle={{ marginLeft: 10 }} textStyle={{ color: colors.point }}>{emailMessage}</IconText>
+            : // emailStatus === "LOADING" 
+                <IconText icon={{source: "loading" }} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
             }
           </View>
         </View>
@@ -271,7 +273,7 @@ const styles = StyleSheet.create({
   },
   grayButton: {
     backgroundColor: colors.gray6, 
-    width: 110, 
+    width: 80, 
     height: 30, 
     borderRadius: 6, 
     justifyContent: "center",
