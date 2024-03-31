@@ -1,8 +1,7 @@
 import axios, { AxiosError } from 'axios';
-import { useContext } from "react";
-import AuthContext from "../store/auth-context";
+import Config from 'react-native-config';
 
-const LOCALHOST = "https://1308-115-138-61-136.ngrok-free.app";
+const LOCALHOST = Config.LOCALHOST;
 
 // 3. OK
 export const findEmail = async (email: string) => {
@@ -44,6 +43,7 @@ export const verifyTemporaryPassword = async (email: string, temPassword: string
 
 // 6. OK
 export const verifyDuplicationEmail = async (email: string) => {
+  console.log(Config.LOCALHOST);
   const endpoint = `${LOCALHOST}/auth/verify-duplication?email=${email}`;
   try {
     const response = await axios.post(endpoint);
@@ -79,7 +79,7 @@ export const sendCode = async (email: string) => {
   }
 }
 
-// 8. X
+// 8. OK
 export const verifyCode = async (email: string, code: string) => {
   const endpoint = `${LOCALHOST}/auth/verify-code?email=${email}&code=${code}`;
 

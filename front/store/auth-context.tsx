@@ -1,8 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { removeRefreshToken, saveRefreshToken, loadRefreshToken } from '../util/encryptedStorage';
 import axios, { AxiosError } from 'axios';
+import Config from 'react-native-config';
 
-const LOCALHOST = "https://1308-115-138-61-136.ngrok-free.app";
+const LOCALHOST = Config.LOCALHOST;
 
 interface AuthContextType {
   accessToken: string | null;
