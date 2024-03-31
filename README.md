@@ -1,76 +1,34 @@
-# Welcome to GitHub
+# Face Friend
 
-캡스톤 팀 생성을 축하합니다.
+## 프로젝트 소개
 
-## 팀소개 및 페이지를 꾸며주세요.
+Face Friend 에서는 사용자의 얼굴을 기반으로 관상 이미지를 생성하고, 이를 분석하여 관상에 대한 정보를 제공합니다. <br><br>
+사용자는 얼굴 노출에 대한 부담을 느끼지 않고, 상대방에 대한 전반적인 분위기와 성격을 유추해보는 즐거움을 느낄 수 있습니다. <br><br>
+관상 이미지를 사용하여 자기소개서를 작성할 수 있으며, 마음에 드는 자기소개서를 읽고 상대방에게 DM 을 보낼 수 있습니다. <br><br>
+채팅을 하며 상대방과 친밀해졌다고 판단될 때 사용자는 서로 얼굴을 공개 여부를 결정할 수 있습니다. <br><br>
+얼굴 노출의 부담은 줄이고, 인간관계에서 얻는 즐거움은 챙긴 Face Friend 의 출시를 기대해주세요!
 
-- 프로젝트 소개
-  - 프로젝트 설치방법 및 데모, 사용방법, 프리뷰등을 readme.md에 작성.
-  - Api나 사용방법등 내용이 많을경우 wiki에 꾸미고 링크 추가.
+<br>
+<br>
 
-- 팀페이지 꾸미기
-  - 프로젝트 소개 및 팀원 소개
-  - index.md 예시보고 수정.
+## 소개 영상
 
-- GitHub Pages 리파지토리 Settings > Options > GitHub Pages 
-  - Source를 marster branch
-  - Theme Chooser에서 태마선택
-  - 수정후 팀페이지 확인하여 점검.
+<img src="https://github.com/kookmin-sw/capstone-2024-18/assets/102044895/11968e87-d9ea-4de9-983d-f22ef14e75f1" alt="이미지 설명" width="300" height="600">
 
-**팀페이지 주소** -> https://kookmin-sw.github.io/ '{{자신의 리파지토리 아이디}}'
+<br>
+<br>
 
-**예시)** 2023년 0조  https://kookmin-sw.github.io/capstone-2023-00/
+## 팀 소개
 
+| 파트    | 이름   | 역할       |
+|--------|--------|------------|
+| AI      | 이시현 | 관상 이미지 생성 |
+| AI      | 박민희 | 관상 분석 및 관상 정보 제공 |
+| FrontEnd| 고명섭 | API 연동, 퍼블리싱 |
+| FrontEnd| 윤민지 | API 연동, 퍼블리싱 |
+| BackEnd | 임장혁 | 인프라 구축, API 개발 |
+| BackEnd | 김찬진 | API 개발 |
 
-## 내용에 아래와 같은 내용들을 추가하세요.
+<br>
+<br>
 
-### 1. 프로잭트 소개
-
-프로젝트
-
-### 2. 소개 영상
-
-프로젝트 소개하는 영상을 추가하세요
-
-### 3. 팀 소개
-
-팀을 소개하세요.
-
-팀원정보 및 담당이나 사진 및 SNS를 이용하여 소개하세요.
-
-### 4. 사용법
-
-소스코드제출시 설치법이나 사용법을 작성하세요.
-
-### 5. 기타
-
-추가적인 내용은 자유롭게 작성하세요.
-
-
-## Markdown을 사용하여 내용꾸미기
-
-Markdown은 작문을 스타일링하기위한 가볍고 사용하기 쉬운 구문입니다. 여기에는 다음을위한 규칙이 포함됩니다.
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-자세한 내용은 [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Support or Contact
-
-readme 파일 생성에 추가적인 도움이 필요하면 [도움말](https://help.github.com/articles/about-readmes/) 이나 [contact support](https://github.com/contact) 을 이용하세요.
