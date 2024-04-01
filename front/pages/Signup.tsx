@@ -26,6 +26,7 @@ const Signup = () => {
     status: "",
     visible: [false, false],
     message: "",
+    isFocused: false,
   });
   
   const [isChecked, setIsChecked] = useState([false, false]);
@@ -82,7 +83,15 @@ const Signup = () => {
       ...prevPassword,
       visible: prevPassword.visible.map((isVisible, i) => i === index ? !isVisible : isVisible)
     }));
-};
+  }
+
+  const handleOnFocus = () => {
+    setPassword({...password, isFocused: true});
+  }
+
+  const handleOnBlur = () => {
+    setPassword({...password, isFocused: false});
+  }
 
   const handleAgreementToggle = () => {
     setAgreementToggle(!agreementToggle);
@@ -104,7 +113,7 @@ const Signup = () => {
     const response = await signup(email.value, password.value[0], password.value[1], email.status === "VERIFIED");
     createAlertMessage(response.message);
   }
-
+  
   useEffect(() => {
     if (password.value[0] === "" || password.value[1] === "") {
       setPassword({...password, status: "", message: ""});
@@ -119,7 +128,7 @@ const Signup = () => {
       }
     }
     else setPassword({...password, status: "NOT_MATCH", message: "비밀번호가 일치하지 않습니다."});
-  }, [password.value])
+  }, [password.value, password.isFocused])
 
   useEffect(() => {
     console.log(email.status, password.status, isCheckedAll);
@@ -128,20 +137,29 @@ const Signup = () => {
   }, [email.status, password.status, isCheckedAll])
 
   const emailHintText = 
-    email.status === "" ? "" 
+    <View style={styles.hintContainer}>{
+      email.status === "" ? "" 
     : email.status === "VERIFIED" || email.status === "VALID" ? 
-      <IconText icon={{ source: "check-circle" }} containerStyle={{ marginLeft: 10 }}>{email.message}</IconText>
+      <IconText icon={{ source: "check-circle" }}>{email.message}</IconText>
     : email.status === "NOT_CHECKED" || email.status === "INVALID" ? 
-        <IconText icon={{ source: "close-circle", color: colors.point }} containerStyle={{ marginLeft: 10 }} textStyle={{ color: colors.point }}>{email.message}</IconText>
+        <IconText icon={{ source: "close-circle", color: colors.point }} textStyle={{ color: colors.point }}>{email.message}</IconText>
     : // email.status === "LOADING" 
-        <IconText icon={{ source: "loading" }} containerStyle={{ marginLeft: 10 }}>{email.message}</IconText>
+      <IconText icon={{ source: "loading" }}>{email.message}</IconText>
+    }</View>
 
   const passwordHintText = 
-    password.status === "" ? "" 
+    <View style={styles.hintContainer}>{
+      password.status === "" ? "" 
     : password.status === "VALID" ? 
-      <IconText icon={{source: "check-circle"}} containerStyle={styles.hintContainer}>{password.message}</IconText>
-    : // pwStatus === "INVALID || pwStatus === NOT_MATCH"
-      <IconText icon={{source: "close-circle"}} containerStyle={styles.hintContainer}>{password.message}</IconText>
+      <IconText icon={{ source: "check-circle" }}>{password.message}</IconText>
+    : // password.status === "INVALID || password.status === NOT_MATCH"
+      <IconText 
+        icon={{ source: "close-circle", color: password.isFocused ? colors.gray6 : colors.point }} 
+        textStyle={{ color: password.isFocused ? colors.gray6 : colors.point }}
+      >
+        {password.message}
+      </IconText>
+    }</View>
   
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45 }}>
@@ -189,7 +207,9 @@ const Signup = () => {
               returnKeyType="next"
               onSubmitEditing={() => passwordConfirmInputRef.current?.focus()}
               blurOnSubmit={false}
-              isValid={password.status === "" || password.status === "VALID"}
+              isValid={password.status === "" || password.status === "VALID" || password.isFocused}
+              onFocus={handleOnFocus}
+              onBlur={handleOnBlur}
             />
           </View>
           <IconText icon={{source: "information"}} containerStyle={styles.hintContainer}>영문 숫자 특수문자 혼합 8-16자</IconText>
@@ -206,7 +226,9 @@ const Signup = () => {
               rightPressable={{ onPress: togglePwVisibility.bind(this, 1) }}
               ref={passwordConfirmInputRef}
               returnKeyType="done"
-              isValid={password.status === "" || password.status === "VALID"}
+              isValid={password.status === "" || password.status === "VALID" || password.isFocused}
+              onFocus={handleOnFocus}
+              onBlur={handleOnBlur}
             />
           </View>
           {passwordHintText}
@@ -290,6 +312,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 8,
     marginBottom: 4,
+    height: 18,
   },
   grayButtonContainer: {
     marginTop: 8,
