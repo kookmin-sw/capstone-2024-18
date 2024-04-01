@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-native";
 import AutoHeightImage from 'react-native-auto-height-image';
 
 import CustomButton from '../components/CustomButton.tsx';
-import CustomText from '../components/CustomText.tsx';
+import ImageButton from '../components/ImageButton.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
 
 import { colors } from '../assets/colors.tsx';
@@ -59,9 +59,9 @@ const Login = () => {
           source={require('../assets/images/logo_origin.png')}
         />
 
-        <CustomText style={{alignSelf: "center", fontSize: 24, color: colors.point, paddingTop: 30, paddingBottom: 10}}>
+        <Text style={{alignSelf: "center", fontSize: 24, color: colors.point, paddingTop: 30, paddingBottom: 10}}>
           LOGIN
-        </CustomText>
+        </Text>
 
         <View style={styles.textInputContainer}>
           <CustomTextInput
@@ -89,30 +89,41 @@ const Login = () => {
 
         {/* 이메일 찾기, 비밀번호 찾기 */}
         <View style={[styles.fit_content, {marginBottom: 40}]}>
-          <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
-            <CustomText style={styles.small_button_text}>이메일 찾기</CustomText>
+          <CustomButton onPress={() => {}} 
+            type='fit-content'
+            containerStyle={{backgroundColor: colors.transparent}}
+            textStyle={styles.small_button_text}>
+            이메일 찾기
           </CustomButton>
-          <View style={{borderWidth: 0.5, marginHorizontal: 10, marginVertical: 10}}/>
-          <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
-            <CustomText style={styles.small_button_text}>비밀번호 찾기</CustomText>
+          <View style={{width: 1, height: '80%', alignSelf: 'center', marginHorizontal: 15, backgroundColor: colors.gray9 }}/>
+          <CustomButton onPress={() => {}} 
+            type='fit-content'
+            containerStyle={{backgroundColor: colors.transparent}}
+            textStyle={styles.small_button_text}>
+            비밀번호 찾기
           </CustomButton>
         </View>
 
         {/* 로그인, 개발자 로그인, 구글 로그인 버튼 */}
         <View style={{marginHorizontal: 30}} onLayout={onLayout}>
-          <CustomButton onPress={TryLogin} styles={{backgroundColor: colors.point, marginVertical: 5}}>
-            <CustomText style={styles.button_text}>로그인</CustomText>
+          <CustomButton onPress={TryLogin} 
+            containerStyle={{backgroundColor: colors.point, marginVertical: 5}}
+            textStyle={styles.button_text}>
+            로그인
           </CustomButton>
-          <CustomButton onPress={TryGoogleLogin} styles={{backgroundColor: colors.white, marginVertical: 5, padding: 0}} >
-            <AutoHeightImage width={parentWidth} source={require('../assets/images/signin-assets/Android/png@4x/neutral/sq_ctn.png')}/>
-          </CustomButton>
+          <ImageButton onPress={TryGoogleLogin} borderRadius={10}
+            imageProps={{width: parentWidth, source: require('../assets/images/signin-assets/Android/png@4x/neutral/sq_ctn.png')}}
+            containerStyle={{marginVertical: 5}}/>
         </View>
 
         {/* 회원가입 */}
         <View style={[styles.fit_content]}>
           <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
-          <CustomButton onPress={NavigateToSignUp} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
-            <CustomText style={{...styles.small_button_text, ...styles.underline}}>회원가입</CustomText>
+          <CustomButton onPress={NavigateToSignUp} 
+            type='fit-content'
+            containerStyle={{backgroundColor: colors.transparent}}
+            textStyle={{...styles.small_button_text, ...styles.underline}}>
+            회원가입
           </CustomButton>
         </View>
       </View>
@@ -132,10 +143,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignSelf: 'center'
   },
-  fit_button: {
-    padding: 5, 
-    flex: 0
-  },
   // font style - 밑줄
   underline: {
     borderBottomWidth: 0.6,
@@ -150,10 +157,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colors.white
   }, 
-
-  text_input: {
-    marginVertical: 5
-  },
   textInputContainer: {
     marginTop: 10,
   },
