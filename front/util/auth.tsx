@@ -7,7 +7,7 @@ interface errorResponse {
   method: string,
   status: number,
   exceptionCode?: number,
-  message?: string,
+  message: string,
 }
 
 const handleError = (error: unknown, method: string): errorResponse => {
@@ -224,7 +224,7 @@ export const signup = async (email: string, password: string, password2: string,
     const responseInfo = {
       method,
       status: response.status,
-      message: "로그인되었습니다.",
+      message: "회원가입이 완료되었습니다.",
     }
     console.log(responseInfo);
     return responseInfo;
