@@ -6,16 +6,21 @@ import { useState } from "react";
 import { IconButton } from "react-native-paper";
 import { sendCode, verifyCode } from "../util/auth";
 
-interface Props {
-  email: string;
-  setModalVisible: (visivle: boolean) => void;
-  setEmailStatus: (status: string) => void;
-  setEmailMessage: (message: string) => void;
+interface Email {
+  value: string;
+  status: string; 
+  message: string;
 }
 
-const VerifyEmailModal = ({email, setModalVisible, setEmailStatus, setEmailMessage}: Props) => {
+interface Props {
+  email: Email;
+  setModalVisible: (visivle: boolean) => void;
+  setEmail: (email: Email) => void;
+}
+
+const VerifyEmailModal = ({email, setModalVisible, setEmail}: Props) => {
   const [code, setCode] = useState('');
-  const [message, setMessage] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleVerifyCodeChange = (value: string) => {
     setCode(value);
@@ -23,16 +28,26 @@ const VerifyEmailModal = ({email, setModalVisible, setEmailStatus, setEmailMessa
 
   const isFormValid = code.length === 6;
 
-  const handleSendCode = () => {
-    setMessage(email+"로 인증번호가 발송되었습니다.");
-    sendCode(email);
+  const handleSendCode = async () => {
+    setModalMessage("인증번호를 발송 중입니다.");
+    const response = await sendCode(email.value);
+    setModalMessage(response.message);
   }
 
   const handleSubmit = async () => {
-    setEmailStatus("CHECKED");
-    setEmailMessage("인증되었습니다.");
-    setModalVisible(false);
-    const response = await verifyCode(email, code);
+    setEmail({...email, status: "LOADING", message: "인증 확인 중입니다."});
+    setModalMessage("인증 확인 중입니다.");
+    const response = await verifyCode(email.value, code);
+    if ("isVerified" in response)  {
+      if (response.isVerified) {
+        setEmail({...email, status: "VERIFIED", message: response.message});
+        setModalMessage(response.message);
+        setModalVisible(false);
+        return;
+      }
+    }
+    setEmail({...email, status: "INVALID", message: response.message});
+    setModalMessage(response.message);
   }
 
   const handleClose = () => {
@@ -51,7 +66,7 @@ const VerifyEmailModal = ({email, setModalVisible, setEmailStatus, setEmailMessa
           <View style={styles.sectionContainer}>
             <Text style={styles.title}>이메일 인증하기</Text>
             <View style={[styles.textContainer, {height: 50}]}>
-              <Text style={styles.inputLabel}>{message}</Text>
+              <Text style={styles.inputLabel}>{modalMessage}</Text>
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.inputLabel}>인증번호 입력</Text>

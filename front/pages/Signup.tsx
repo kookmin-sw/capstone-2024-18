@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { View, StyleSheet, Text, Pressable, ScrollView, TextInput, Modal } from "react-native";
+import { View, StyleSheet, Text, Pressable, ScrollView, TextInput } from "react-native";
 import { Icon } from 'react-native-paper';
 
 import IconText from "../components/IconText.tsx";
@@ -8,19 +8,26 @@ import CustomButton from "../components/CustomButton.tsx";
 
 import { colors } from '../assets/colors.tsx'
 import { signup, verifyDuplicationEmail } from "../util/auth.tsx";
+import { createAlertMessage } from "../util/alert.tsx";
+
 import VerifyEmailModal from "./VerifyEmailModal.tsx";
 
 const Signup = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [emailStatus, setEmailStatus] = useState("");
-  const [emailMessage, setEmailMessage] = useState("");
+  const [email, setEmail] = useState({
+    value: "",
+    status: "",
+    message: "",
+  });
 
-  const [pwInput, setPwInput] = useState(["", ""]);
-  const [pwStatus, setPwStatus] = useState("NOT_CHECKED");
-  const [pwVisible, setPwVisible] = useState([false, false]);
-
+  const [password, setPassword] = useState({
+    value: ["", ""],
+    status: "",
+    visible: [false, false],
+    message: "",
+  });
+  
   const [isChecked, setIsChecked] = useState([false, false]);
   const isCheckedAll = isChecked.every(checked => checked === true);
 
@@ -32,44 +39,50 @@ const Signup = () => {
   const passwordConfirmInputRef = useRef<TextInput>(null);
 
   const handleModalOpen = () => {
-    if (emailStatus === "VALID") {
+    if (email.status === "VALID") {
       setModalVisible(true);
     }
   }
 
   const handleEmailInputChange = (value: string) => {
-    setEmail(value);
+    setEmail({...email, value});
   }
 
   const handleEmailInputOnBlur = async () => {
-    if (email === '') {
-      setEmailStatus("");
+    if (email.value === "") {
+      setEmail({...email, status: ""});
       return;
     }
-    setEmailStatus("LOADING");
-    setEmailMessage("중복 확인 중입니다.");
+
+    setEmail({...email, status: "LOADING", message: "중복 확인 중입니다."});
+
     const emaliRegex = /^[\w.-]+@[\w.-]+\.\w+$/;
-    if (emaliRegex.test(email)) {
-      const message = await verifyDuplicationEmail(email);
-      if (message == "사용 가능한 이메일입니다.") {
-        setEmailStatus("VALID");
+    if (emaliRegex.test(email.value)) {
+      const response = await verifyDuplicationEmail(email.value);
+      if (response.status === 200) {
+        setEmail({...email, status: "VALID", message: response.message});
       } else {
-        setEmailStatus("INVALID");
+        setEmail({...email, status: "INVALID", message: response.message});
       }
-      setEmailMessage(message);
-    } else {
-      setEmailMessage("이메일 형식이 아닙니다.");
-      setEmailStatus("INVALID");
+    } 
+    else {
+      setEmail({...email, status: "INVALID", message: "이메일 형식이 아닙니다."});
     }
   }
 
   const handlePwInputChage = (value: string, index: number) => {
-    setPwInput(pwInput.map((item, i) => i === index ? value : item));
+    setPassword(prevPassword => ({
+      ...prevPassword, 
+      value: prevPassword.value.map((item, i) => i === index ? value : item)
+    }));
   }
 
   const togglePwVisibility = (index: number) => {
-    setPwVisible(pwVisible.map((item, i) => i === index ? !item : item));
-  }
+    setPassword(prevPassword => ({
+      ...prevPassword,
+      visible: prevPassword.visible.map((isVisible, i) => i === index ? !isVisible : isVisible)
+    }));
+};
 
   const handleAgreementToggle = () => {
     setAgreementToggle(!agreementToggle);
@@ -87,27 +100,52 @@ const Signup = () => {
   } 
 
   const handleSubmit = async () => {
-    signup(email, pwInput[0], pwInput[1], isFormValid);
+    if (!isFormValid) return;
+    const response = await signup(email.value, password.value[0], password.value[1], email.status === "VERIFIED");
+    createAlertMessage(response.message);
   }
 
   useEffect(() => {
-    if (pwInput[0] === "" || pwInput[1] === "") setPwStatus("NOT_CHECKED");
-    else if (pwInput[0] === pwInput[1]) {
-      const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*+=-])[A-Za-z\d!@#$%^&*+=-]{8,16}$/;
-      if (pwRegex.test(pwInput[0])) setPwStatus("VALID");
-      else setPwStatus("INVALID");
+    if (password.value[0] === "" || password.value[1] === "") {
+      setPassword({...password, status: "", message: ""});
     }
-    else setPwStatus("NOT_MATCH");
-  }, [pwInput])
+    else if (password.value[0] === password.value[1]) {
+      const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*+=-])[A-Za-z\d!@#$%^&*+=-]{8,16}$/;
+      if (pwRegex.test(password.value[0])) {
+        setPassword({...password, status: "VALID", message: "비밀번호가 일치합니다."});
+      }
+      else {
+        setPassword({...password, status: "INVALID", message: "비밀번호 형식을 만족하지 않습니다."});
+      }
+    }
+    else setPassword({...password, status: "NOT_MATCH", message: "비밀번호가 일치하지 않습니다."});
+  }, [password.value])
 
   useEffect(() => {
-    if (emailStatus === "CHECKED" && pwStatus === "VALID" && isCheckedAll) setIsFormValid(true);
+    console.log(email.status, password.status, isCheckedAll);
+    if (email.status === "VERIFIED" && password.status === "VALID" && isCheckedAll) setIsFormValid(true);
     else setIsFormValid(false);
-  }, [emailStatus, pwStatus, isCheckedAll, setIsFormValid, isFormValid])
+  }, [email.status, password.status, isCheckedAll])
 
+  const emailHintText = 
+    email.status === "" ? "" 
+    : email.status === "VERIFIED" || email.status === "VALID" ? 
+      <IconText icon={{ source: "check-circle" }} containerStyle={{ marginLeft: 10 }}>{email.message}</IconText>
+    : email.status === "NOT_CHECKED" || email.status === "INVALID" ? 
+        <IconText icon={{ source: "close-circle", color: colors.point }} containerStyle={{ marginLeft: 10 }} textStyle={{ color: colors.point }}>{email.message}</IconText>
+    : // email.status === "LOADING" 
+        <IconText icon={{ source: "loading" }} containerStyle={{ marginLeft: 10 }}>{email.message}</IconText>
+
+  const passwordHintText = 
+    password.status === "" ? "" 
+    : password.status === "VALID" ? 
+      <IconText icon={{source: "check-circle"}} containerStyle={styles.hintContainer}>{password.message}</IconText>
+    : // pwStatus === "INVALID || pwStatus === NOT_MATCH"
+      <IconText icon={{source: "close-circle"}} containerStyle={styles.hintContainer}>{password.message}</IconText>
+  
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45 }}>
-      {modalVisible && <VerifyEmailModal setModalVisible={setModalVisible} email={email} setEmailStatus={setEmailStatus} setEmailMessage={setEmailMessage}/>}
+      {modalVisible && <VerifyEmailModal setModalVisible={setModalVisible} email={email} setEmail={setEmail}/>}
       <View style={styles.container}>
         <View style={[styles.sectionContainer, { borderTopWidth: 0 }]}>
           <View style={styles.titleContainer}>
@@ -125,21 +163,14 @@ const Signup = () => {
               onSubmitEditing={() => passwordInputRef.current?.focus()}
               blurOnSubmit={false}
               onBlur={handleEmailInputOnBlur}
-              isValid={emailStatus === "VALID" || emailStatus === "CHECKED" || emailStatus === ""}
+              isValid={email.status === "VALID" || email.status === "VERIFIED" || email.status === "LOADING" || email.status === ""}
             />
           </View>
           <View style={styles.grayButtonContainer}>
             <CustomButton onPress={handleModalOpen} styles={styles.grayButton}>
               <Text style={styles.grayButtonText}>본인인증</Text>
             </CustomButton>
-            {emailStatus === "" ? "" 
-            : emailStatus === "CHECKED" || emailStatus === "VALID" ? 
-              <IconText icon={{source: "check-circle"}} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
-            : emailStatus === "NOT_CHECKED" || emailStatus === "INVALID" ? 
-                <IconText icon={{source: "close-circle", color: colors.point }} containerStyle={{ marginLeft: 10 }} textStyle={{ color: colors.point }}>{emailMessage}</IconText>
-            : // emailStatus === "LOADING" 
-                <IconText icon={{source: "loading" }} containerStyle={{ marginLeft: 10 }}>{emailMessage}</IconText>
-            }
+            {emailHintText}
           </View>
         </View>
         <View style={styles.sectionContainer}>
@@ -150,14 +181,15 @@ const Signup = () => {
           <View style={styles.textInputContainer}>
             <CustomTextInput 
               placeholder='비밀번호를 입력해주세요'
-              secureTextEntry={pwVisible[0]} 
+              secureTextEntry={password.visible[0]} 
               onChangeText={(newText) => handlePwInputChage(newText, 0)}
-              rightIcon={{ source: pwVisible[0] ? "eye-off-outline" : "eye-outline" }} 
+              rightIcon={{ source: password.visible[0] ? "eye-off-outline" : "eye-outline" }} 
               rightPressable={{ onPress: togglePwVisibility.bind(this, 0) }}
               ref={passwordInputRef}
               returnKeyType="next"
               onSubmitEditing={() => passwordConfirmInputRef.current?.focus()}
               blurOnSubmit={false}
+              isValid={password.status === "" || password.status === "VALID"}
             />
           </View>
           <IconText icon={{source: "information"}} containerStyle={styles.hintContainer}>영문 숫자 특수문자 혼합 8-16자</IconText>
@@ -168,23 +200,16 @@ const Signup = () => {
           <View style={styles.textInputContainer}>
             <CustomTextInput 
               placeholder='비밀번호를 입력해주세요'
-              secureTextEntry={pwVisible[1]} 
+              secureTextEntry={password.visible[1]} 
               onChangeText={(newText) => handlePwInputChage(newText, 1)}
-              rightIcon={{ source: pwVisible[1] ? "eye-off-outline" : "eye-outline" }} 
+              rightIcon={{ source: password.visible[1] ? "eye-off-outline" : "eye-outline" }} 
               rightPressable={{ onPress: togglePwVisibility.bind(this, 1) }}
               ref={passwordConfirmInputRef}
               returnKeyType="done"
+              isValid={password.status === "" || password.status === "VALID"}
             />
           </View>
-          {pwStatus === "NOT_CHECKED" ? 
-            <View style={[styles.hintContainer, {height: 12}]} />
-          : pwStatus === "NOT_MATCH" ? 
-            <IconText icon={{source: "close-circle"}} containerStyle={styles.hintContainer}>일치하지 않습니다</IconText>
-          : pwStatus === "VALID" ? 
-            <IconText icon={{source: "check-circle"}} containerStyle={styles.hintContainer}>일치합니다</IconText>
-          : // pwStatus === "INVALID"
-            <IconText icon={{source: "close-circle"}} containerStyle={styles.hintContainer}>영문 숫자 특수문자 혼합 8-16자여야 합니다</IconText>
-          }
+          {passwordHintText}
         </View>
         <View style={[styles.sectionContainer, { borderBottomWidth: 0, marginTop: 'auto' }]}>
           <View style={styles.agreementContainer}>
