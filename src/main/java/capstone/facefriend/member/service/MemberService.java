@@ -4,6 +4,8 @@ import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.email.controller.dto.EmailVerificationResponse;
 import capstone.facefriend.email.service.EmailService;
+import capstone.facefriend.member.domain.BasicInfo;
+import capstone.facefriend.member.domain.BasicInfoRepository;
 import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
 import capstone.facefriend.member.exception.MemberException;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static capstone.facefriend.member.domain.BasicInfo.*;
 import static capstone.facefriend.member.domain.Role.USER;
 import static capstone.facefriend.member.exception.MemberExceptionType.*;
 
@@ -27,6 +30,7 @@ public class MemberService {
 
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
+    private final BasicInfoRepository basicInfoRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
@@ -70,13 +74,26 @@ public class MemberService {
 
         if (isVerified) {
             String encodedPassword = passwordEncoder.encode(request.password());
+
+            BasicInfo basicInfo = builder()
+                    .nickname("")
+                    .gender(Gender.DEFAULT)
+                    .ageGroup(AgeGroup.DEFAULT)
+                    .ageDegree(AgeDegree.DEFAULT)
+                    .heightGroup(HeightGroup.DEFAULT)
+                    .region(Region.DEFAULT)
+                    .build();
+            basicInfoRepository.save(basicInfo);
+
             Member member = Member.builder()
                     .email(request.email())
                     .password(encodedPassword)
                     .isVerified(true)
                     .role(USER)
+                    .basicInfo(basicInfo)
                     .build();
             memberRepository.save(member);
+
         } else {
             throw new MemberException(NOT_VERIFIED);
         }

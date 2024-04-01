@@ -18,14 +18,6 @@ public class BasicInfoController {
 
     private final BasicInfoService basicInfoService;
 
-    @PostMapping("/basic-info")
-    public ResponseEntity<BasicInfoResponse> setBasicInfo(
-            @AuthMember Long memberId,
-            @RequestBody BasicInfoRequest request
-    ) {
-        return ResponseEntity.ok(basicInfoService.setBasicInfo(memberId, request));
-    }
-
     @GetMapping("/basic-info")
     public ResponseEntity<BasicInfoResponse> getBasicInfo(
             @AuthMember Long memberId

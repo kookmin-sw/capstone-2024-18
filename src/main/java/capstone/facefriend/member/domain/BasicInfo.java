@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,6 +40,7 @@ public class BasicInfo {
     private Region region;
 
     public enum Gender {
+        DEFAULT(""),
         MALE("남자"),
         FEMALE("여자");
 
@@ -54,6 +56,7 @@ public class BasicInfo {
     }
 
     public enum AgeGroup {
+        DEFAULT(""),
         TWENTIES("20 대"),
         THIRTIES("30 대"),
         FORTIES("40 대"),
@@ -72,6 +75,7 @@ public class BasicInfo {
     }
 
     public enum AgeDegree {
+        DEFAULT(""),
         EARLY("초반"),
         MIDDLE("중반"),
         LATE("후반");
@@ -88,6 +92,7 @@ public class BasicInfo {
     }
 
     public enum HeightGroup {
+        DEFAULT(""),
         FIFTIES("150cm 대"),
         SIXTIES("160cm 대"),
         SEVENTIES("170cm 대"),
@@ -106,6 +111,7 @@ public class BasicInfo {
     }
 
     public enum Region {
+        DEFAULT(""),
         GANGNAM_SEOCHO_YANGJAE("강남, 서초, 양재"),
         JAMSIL_SONGPA_GANGDONG("잠실, 송파, 강동"),
         DONGJAK_GWANAK_SADANG("동작, 관악, 사당"),
