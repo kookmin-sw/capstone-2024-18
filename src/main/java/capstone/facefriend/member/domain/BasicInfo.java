@@ -93,11 +93,11 @@ public class BasicInfo {
 
     public enum HeightGroup {
         DEFAULT(""),
-        FIFTIES("150cm 대"),
+        FIFTIES("150cm 대 이하"),
         SIXTIES("160cm 대"),
         SEVENTIES("170cm 대"),
         EIGHTIES("180cm 대"),
-        NINETIES("190cm 대");
+        NINETIES("190cm 대 이상");
 
         private final String value;
 
