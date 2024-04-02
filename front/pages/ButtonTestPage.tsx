@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, useWindowDimensions, TextInput as RNTextInput } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, TextInput as RNTextInput, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { colors } from '../assets/colors.tsx';
 import CustomButton from '../components/CustomButton.tsx';
@@ -31,22 +31,21 @@ const ButtonTestPage = () => {
     <View style={styles.container}>
       {/* 이메일 찾기, 비밀번호 찾기 */}
       <View style={[styles.fit_content, {marginBottom: 40}]}>
-        <CustomButton onPress={() => {}} type='fit-content'
-          containerStyle={{backgroundColor: colors.transparent}}
-          textStyle={styles.small_button_text}>이메일 찾기
-        </CustomButton>
+        <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent}}>
+          <Text style={styles.small_button_text}>이메일 찾기</Text>
+        </TouchableOpacity>
         <View style={{width: 1, height: '80%', alignSelf: 'center', marginHorizontal: 15, backgroundColor: colors.gray9 }}/>
-        <CustomButton onPress={() => {}} type='fit-content'
-          containerStyle={{backgroundColor: colors.transparent}}
-          textStyle={styles.small_button_text}>비밀번호 찾기
-        </CustomButton>
+        <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent}}>
+          <Text style={styles.small_button_text}>비밀번호 찾기</Text>
+        </TouchableOpacity>
       </View>
 
       {/* 로그인, 개발자 로그인, 구글 로그인 버튼 */}
       <View style={{marginHorizontal: 30}} onLayout={onLayout}>
         <CustomButton onPress={TryLogin} 
           containerStyle={{marginVertical: 5}}
-          textStyle={styles.button_text}>로그인
+          textStyle={styles.button_text}>
+          로그인
         </CustomButton>
         <ImageButton onPress={() => {}} 
           containerStyle={{marginVertical: 5}}
@@ -56,10 +55,9 @@ const ButtonTestPage = () => {
       {/* 회원가입 */}
       <View style={[styles.fit_content, {marginTop: 10}]}>
         <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
-        <CustomButton onPress={() => {}} type='fit-content'
-          containerStyle={{backgroundColor: colors.transparent, height: 17.25}}
-          textStyle={[styles.small_button_text, styles.underline]}>회원가입
-        </CustomButton>
+        <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent, height: 17.25, marginLeft: 5}}>
+          <Text style={[styles.small_button_text, styles.underline]}>회원가입</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
