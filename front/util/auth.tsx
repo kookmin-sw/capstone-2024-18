@@ -3,14 +3,20 @@ import Config from 'react-native-config';
 
 const LOCALHOST = Config.LOCALHOST;
 
-interface errorResponse {
+export interface validResponse {
+  method: string;
+  status: number,
+  message: string;
+}
+
+export interface errorResponse {
   method: string,
   status: number,
   exceptionCode?: number,
   message: string,
 }
 
-const handleError = (error: unknown, method: string): errorResponse => {
+export const handleError = (error: unknown, method: string): errorResponse => {
   let errorInfo;
 
   if (axios.isAxiosError(error)) {
@@ -64,12 +70,6 @@ const handleError = (error: unknown, method: string): errorResponse => {
   
   console.log(JSON.stringify(errorInfo));
   return errorInfo;
-}
-
-interface validResponse {
-  method: string;
-  status: number,
-  message: string;
 }
 
 interface findEmailResponse extends validResponse {

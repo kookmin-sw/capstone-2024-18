@@ -1,7 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { removeRefreshToken, saveRefreshToken, loadRefreshToken } from '../util/encryptedStorage';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import Config from 'react-native-config';
+
+import { validResponse, errorResponse, handleError } from '../util/auth';
 
 const LOCALHOST = Config.LOCALHOST;
 
@@ -9,18 +11,24 @@ interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  signin: (accessToken: string, refreshToken: string) => Promise<void>;
-  signout: () => Promise<void>;
-  reissue: () => Promise<void>;
+  signin: (accessToken: string, refreshToken: string) => Promise<validResponse | errorResponse>;
+  signout: () => Promise<validResponse | errorResponse>;
+  reissue: () => Promise<validResponse | errorResponse>;
 }
+
+const exampleResponse = {
+  method: "",
+  status: 0,
+  message: "",
+};
 
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
-  signin: async (email: string, password: string) => {},
-  signout: async () => {},
-  reissue: async () => {},
+  signin: async (email: string, password: string): Promise<validResponse | errorResponse> => exampleResponse,
+  signout: async (): Promise<validResponse | errorResponse> => exampleResponse,
+  reissue: async (): Promise<validResponse | errorResponse> => exampleResponse,
 });
 
 interface AuthProviderProps {
@@ -33,6 +41,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // 10. OK
   const signin = async (email: string, password: string) => {
+    const method = "signin";
     const endpoint =  `${LOCALHOST}/auth/signin`;
     const body = {
       email,
@@ -42,40 +51,50 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await axios.post(endpoint, body);
       const { accessToken, refreshToken } = response.data;
-      console.log(accessToken, refreshToken);
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
       saveRefreshToken(refreshToken);
-    }
-    catch (e) {
-      const axiosError = e as AxiosError;
-      if (axiosError.response && axiosError.response.status === 400) {
-        console.log("이메일 또는 비밀번호가 잘못되었습니다.");
+      const responseInfo = {
+        method,
+        status: response.status,
+        message: "로그인 되었습니다.",
       }
-      else console.log(e);
+      console.log(responseInfo);
+      return responseInfo;
+    }
+    catch (error) {
+      return handleError(error, method);
     }
   }
 
   // 11. OK
-  const signout = async () => {
+  const signout = async (): Promise<validResponse | errorResponse>  => {
+    const method = "signout";
     const endpoint =  `${LOCALHOST}/members/signout`;
     const config = { 
       headers: { Authorization: 'Bearer ' + accessToken } 
     };
     try {
       const response = await axios.delete(endpoint, config);
-      console.log(response.data);
       setAccessToken('');
       setRefreshToken('');
       removeRefreshToken();
+      const responseInfo = {
+        method,
+        status: response.status,
+        message: "로그아웃 되었습니다.",
+      }
+      console.log(responseInfo);
+      return responseInfo;
     }
-    catch (e) {
-      console.log(e);
+    catch (error) {
+      return handleError(error, method);
     }
   }
 
   // 12. OK
-  const reissue = async () => {
+  const reissue = async (): Promise<validResponse | errorResponse>  => {
+    const method = "reissue";
     const endpoint =  `${LOCALHOST}/members/reissue`;
     const body = { refreshToken };
     const config = { 
@@ -87,9 +106,16 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setAccessToken(newAccessToken);
       setRefreshToken(newRefreshToken);
       saveRefreshToken(newRefreshToken);
+      const responseInfo = {
+        method,
+        status: response.status,
+        message: "액세스토큰을 재발급했습니다.",
+      }
+      console.log(responseInfo);
+      return responseInfo;
     }
-    catch (e) {
-      console.log(e);
+    catch (error) {
+      return handleError(error, method);
     }
   }
 
