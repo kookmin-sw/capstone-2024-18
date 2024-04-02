@@ -1,1 +1,10 @@
 .DS_Store
+.gradle/
+build/
+src/
+bin/
+node_modules/
+db/
+.env
+docker-compose.yml
+Dockerfile
