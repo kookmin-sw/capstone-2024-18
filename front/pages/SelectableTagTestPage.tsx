@@ -10,7 +10,16 @@ const SelectableTagTestPage = () => {
     {id: 0, text: 'test', selected: true},
     {id: 1, text: 'test', selected: true},
     {id: 2, text: 'test', selected: false},
-    {id: 3, text: 'test', selected: true}
+    {id: 3, text: 'test', selected: true},
+    {id: 4, text: 'test', selected: true},
+    {id: 5, text: 'test', selected: true},
+    {id: 6, text: 'test', selected: false},
+    {id: 7, text: 'test', selected: true},
+    {id: 8, text: 'test', selected: true},
+    {id: 9, text: 'test', selected: false},
+    {id: 10, text: 'test', selected: true},
+    {id: 11, text: 'test', selected: true},
+    {id: 12, text: 'test', selected: false}
   ]);
   function handleCategorySelect(changeIdx: number) {
     const nextCategory = categories.map((category) => {
@@ -35,54 +44,42 @@ const SelectableTagTestPage = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      {/* 기본 카테고리 */}
+      {/* 기본 태그 */}
       <View style={styles.container}>
-        <Text>기본 카테고리 Test</Text>
+        <Text>기본 태그 Test</Text>
         <SelectableTag children="test"/>
+        <SelectableTag>test</SelectableTag>
       </View>
 
-      {/* 기본 카테고리와 색깔 지정 */}
+      {/* 기본 태그와 색깔 지정 */}
       <View style={styles.container}>
-        <Text>기본 카테고리+color Test</Text>
-        <SelectableTag color={colors.point} children="test"/>
+        <Text>기본 태그+color Test</Text>
+        <SelectableTag children="test" color={colors.point}/>
       </View>
 
-      {/* 카테고리의 크기 및 style 지정 */}
+      {/* 태그의 크기 및 style 지정 */}
       {/* width 지정 시, textStyle을 이렇게 설정해야 글씨가 가로 중앙 정렬 됩니다 */}
       <View style={styles.container}>
-        <Text>카테고리의 크기 및 style Test</Text>
+        <Text>태그의 크기 및 style Test</Text>
         <SelectableTag
-          containerStyle={{width: 200, height: 100}}
+          height={100}
+          containerStyle={{width: 200}}
           textStyle={{flex: 1, textAlign: 'center'}} 
           color={colors.point} children="test"/>
       </View>
 
-      {/* 카테고리의 텍스트 크기 지정 */}
-      {/* 주의 
-        fontSize 파라미터를 이용하는 것이 아닌, 
-        textStyle을 이용해서 fontSize를 조절할 경우,
-        lineHeight를 직접 조절해야합니다. 
-       */}
+      {/* 태그 여러 개를 사용하고 싶은 경우 */}
       <View style={styles.container}>
-        <Text>카테고리의 fontSize Test</Text>
-        <PaperProvider theme={theme}>
-          <SelectableTag color={colors.point} fontSize={50}
-            children={'style'}/>
-        </PaperProvider>
-      </View>
-
-      {/* 카테고리 여러 개를 사용하고 싶은 경우 */}
-      <View style={styles.container}>
-        <Text>카테고리 여러 개 Test</Text>
+        <Text>태그 여러 개 Test</Text>
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
-          <SelectableTag children="test"/>
+          <SelectableTag children="Test"/>
           <SelectableTag children="test"/>
           <SelectableTag children="test"/>
           <SelectableTag children="test"/>
         </View>
       </View>
 
-      {/* 카테고리 선택 기능을 사용하고 싶은 경우 */}
+      {/* 태그 선택 기능을 사용하고 싶은 경우 */}
       <View style={styles.container}>
         <Text>select 기능 Test</Text>
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
@@ -103,14 +100,13 @@ const SelectableTagTestPage = () => {
           categories.map((item) => {
             return (
               <SelectableTag children={item.text} key={item.id}
+                onPress={() => handleCategorySelect(item.id)}
                 selectable={{
                   select: item.selected,
                   showSelectedOnly: !edit,
                   selectedStyle: {backgroundColor: colors.point, borderColor: colors.point}, unselectedStyle: {backgroundColor: colors.gray5, borderColor: colors.gray5},
                   selectedTextStyle: {color: colors.white}, unselectedTextStyle: {color: colors.white}
-                }}
-                onPress={() => handleCategorySelect(item.id)}
-                />
+                }}/>
             )
           })
         }

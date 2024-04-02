@@ -1,4 +1,4 @@
-import { StyleSheet, View, StyleProp, ViewStyle, TextStyle, Text } from 'react-native';
+import { StyleSheet, View, StyleProp, ViewStyle, TextStyle, Text, DimensionValue } from 'react-native';
 import { Chip, ChipProps } from 'react-native-paper';
 import { colors } from '../assets/colors.tsx'
 
@@ -21,45 +21,55 @@ interface SelectableProp {
 }
 
 /**
- * @param color :string. style 없이 간단하게 카테고리의 border, text color 전달. 
- * @param fontSize :number. style 없이 간단하게 카테고리 text의 fontSize 전달. 
+ * @param color :string. style 없이 간단하게 태그의 border, text color 전달. 
+ * @param borderRadius :number | undefined. tag와 터치 영역의 borderRadius 전달
+ * @param height :number | undefined. style 없이 간단하게 태그의 height 전달. 
  * @param selectable :SelectableProp. 선택 가능한 기능 설정시 필요한 style 전달
- * @param containerStyle :StyleProp<ViewStyle>. 카테고리 컨테이너에 부여할 style
+ * @param touchAreaStyle :StyleProp<ViewStyle>. 태그 터치 영역에 부여할 style
+ * @param containerStyle :StyleProp<ViewStyle>. 태그 컨테이너에 부여할 style
  * @param textStyle :StyleProp<TextStyle>. 텍스트에 부여할 style
  */
 interface Props extends ChipProps {
   color?: string
-  fontSize?: number
+  borderRadius?: number | undefined
+  /** 
+   * Chip component는 자동으로 text height, lineHeight를 안 늘려줘서, 
+   * height parameter를 이용하여, 직접 text lineHeight, height 수정
+  */
+  height?: number | undefined
   selectable?: SelectableProp
+  touchAreaStyle?: StyleProp<ViewStyle>
   containerStyle?: StyleProp<ViewStyle>
   textStyle?: StyleProp<TextStyle>
 }
 
 const SelectableTag = ({ 
   color = colors.gray9,
-  fontSize = 14,
+  borderRadius = 20,
+  height = 25, 
   selectable,
+  touchAreaStyle,
   containerStyle,
   textStyle,
   ...chipProps
 }: Props) => {
-  const defaultHeight = Math.max(25, fontSize);
+  const defaultFontSize = 14;
+  const defaultHeight = height; 
+  const defaultBorderRadius = borderRadius;
 
   return (
-    <View style={[styles.wrapper, {display: (!selectable?.showSelectedOnly || selectable?.select) ? 'flex' : 'none'}]}>
+    <View style={[styles.wrapper, {borderRadius: defaultBorderRadius}, touchAreaStyle, 
+      {display: (!selectable?.showSelectedOnly || selectable?.select) ? 'flex' : 'none'}]}>
       <Chip
-        style={[styles.defaultTag, {borderColor: color, height: defaultHeight}, containerStyle, 
-          (selectable)&&((selectable.select) ? selectable.selectedStyle : selectable.unselectedStyle)
-        ]} 
+        {...chipProps}
+        style={[styles.defaultTag, {borderRadius: defaultBorderRadius, borderColor: color, height: defaultHeight}, 
+          containerStyle, (selectable)&&((selectable.select) ? selectable.selectedStyle : selectable.unselectedStyle)
+        ]}
         textStyle={[styles.defaultText, {color: color}, textStyle, 
-          {fontSize: fontSize, lineHeight: fontSize + 3, height: fontSize + 3},
+          {fontSize: defaultFontSize, lineHeight: defaultHeight, height: defaultHeight},
           (selectable)&&((selectable.select) ? selectable.selectedTextStyle : selectable.unselectedTextStyle)]}
-        disabled={selectable?.showSelectedOnly} 
-        mode='outlined' 
-        {...chipProps}>
-        </Chip>
+        disabled={selectable?.showSelectedOnly}/>
     </View>
-    
   );
 };
 
@@ -68,8 +78,6 @@ export default SelectableTag;
 const styles = StyleSheet.create({
   defaultTag: {
     borderWidth: 2, 
-    margin: 5,
-    borderRadius: 10,
     borderColor: colors.gray9,
     backgroundColor: colors.white,
     justifyContent: 'center',
@@ -79,5 +87,7 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     flexWrap: 'wrap', 
+    marginRight: 5, 
+    marginBottom: 5,
   }
 })
