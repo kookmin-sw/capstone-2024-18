@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import SelectableCategory from "../components/SelectableCategory";
+import SelectableTag from "../components/SelectableTag";
 import { colors } from "../assets/colors";
 import { Button, PaperProvider, useTheme } from "react-native-paper";
 import { useState } from "react";
 
 
-const SelectableCategoryTestPage = () => {
+const SelectableTagTestPage = () => {
   const [ categories, setCategories ] = useState([
     {id: 0, text: 'test', selected: true},
     {id: 1, text: 'test', selected: true},
@@ -38,21 +38,21 @@ const SelectableCategoryTestPage = () => {
       {/* 기본 카테고리 */}
       <View style={styles.container}>
         <Text>기본 카테고리 Test</Text>
-        <SelectableCategory children="test"/>
+        <SelectableTag children="test"/>
       </View>
 
       {/* 기본 카테고리와 색깔 지정 */}
       <View style={styles.container}>
         <Text>기본 카테고리+color Test</Text>
-        <SelectableCategory color={colors.point} children="test"/>
+        <SelectableTag color={colors.point} children="test"/>
       </View>
 
       {/* 카테고리의 크기 및 style 지정 */}
       {/* width 지정 시, textStyle을 이렇게 설정해야 글씨가 가로 중앙 정렬 됩니다 */}
       <View style={styles.container}>
         <Text>카테고리의 크기 및 style Test</Text>
-        <SelectableCategory 
-          style={{width: 200, height: 100}}
+        <SelectableTag
+          containerStyle={{width: 200, height: 100}}
           textStyle={{flex: 1, textAlign: 'center'}} 
           color={colors.point} children="test"/>
       </View>
@@ -66,7 +66,7 @@ const SelectableCategoryTestPage = () => {
       <View style={styles.container}>
         <Text>카테고리의 fontSize Test</Text>
         <PaperProvider theme={theme}>
-          <SelectableCategory color={colors.point} fontSize={50}
+          <SelectableTag color={colors.point} fontSize={50}
             children={'style'}/>
         </PaperProvider>
       </View>
@@ -75,10 +75,10 @@ const SelectableCategoryTestPage = () => {
       <View style={styles.container}>
         <Text>카테고리 여러 개 Test</Text>
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
-          <SelectableCategory children="test"/>
-          <SelectableCategory children="test"/>
-          <SelectableCategory children="test"/>
-          <SelectableCategory children="test"/>
+          <SelectableTag children="test"/>
+          <SelectableTag children="test"/>
+          <SelectableTag children="test"/>
+          <SelectableTag children="test"/>
         </View>
       </View>
 
@@ -86,7 +86,7 @@ const SelectableCategoryTestPage = () => {
       <View style={styles.container}>
         <Text>select 기능 Test</Text>
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
-          <SelectableCategory children="test" onPress={() => setSelect(!select)}
+          <SelectableTag children="test" onPress={() => setSelect(!select)}
             selectable={{
               select: select,
               selectedStyle: {backgroundColor: colors.point, borderColor: colors.point}, unselectedStyle: {backgroundColor: colors.gray5, borderColor: colors.gray5},
@@ -102,7 +102,7 @@ const SelectableCategoryTestPage = () => {
         {
           categories.map((item) => {
             return (
-              <SelectableCategory children={item.text} key={item.id}
+              <SelectableTag children={item.text} key={item.id}
                 selectable={{
                   select: item.selected,
                   showSelectedOnly: !edit,
@@ -126,7 +126,7 @@ const SelectableCategoryTestPage = () => {
   )
 }
 
-export default SelectableCategoryTestPage;
+export default SelectableTagTestPage;
 
 const styles = StyleSheet.create({
   container: {

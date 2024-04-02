@@ -21,37 +21,38 @@ interface SelectableProp {
 }
 
 /**
- * @param selectable :SelectableProp. tag를 선택했을 경우, 색깔이 바뀌는 flag, 그리고 tag를 선택, 안 선택했을 때, 적용되는 view, font style 전달
  * @param color :string. style 없이 간단하게 카테고리의 border, text color 전달. 
  * @param fontSize :number. style 없이 간단하게 카테고리 text의 fontSize 전달. 
+ * @param selectable :SelectableProp. 선택 가능한 기능 설정시 필요한 style 전달
  * @param containerStyle :StyleProp<ViewStyle>. 카테고리 컨테이너에 부여할 style
  * @param textStyle :StyleProp<TextStyle>. 텍스트에 부여할 style
  */
-
 interface Props extends ChipProps {
-  selectable?: SelectableProp
   color?: string
   fontSize?: number
-  style?: StyleProp<ViewStyle>
+  selectable?: SelectableProp
+  containerStyle?: StyleProp<ViewStyle>
   textStyle?: StyleProp<TextStyle>
 }
 
-const SelectableCategory = ({ 
-  selectable,
+const SelectableTag = ({ 
   color = colors.gray9,
   fontSize = 14,
-  style,
+  selectable,
+  containerStyle,
   textStyle,
   ...chipProps
 }: Props) => {
+  const defaultHeight = Math.max(25, fontSize);
+
   return (
     <View style={[styles.wrapper, {display: (!selectable?.showSelectedOnly || selectable?.select) ? 'flex' : 'none'}]}>
       <Chip
-        style={[styles.defaultTag, {borderColor: color}, style, 
+        style={[styles.defaultTag, {borderColor: color, height: defaultHeight}, containerStyle, 
           (selectable)&&((selectable.select) ? selectable.selectedStyle : selectable.unselectedStyle)
         ]} 
         textStyle={[styles.defaultText, {color: color}, textStyle, 
-          {fontSize: fontSize, lineHeight: fontSize, height: fontSize},
+          {fontSize: fontSize, lineHeight: fontSize + 3, height: fontSize + 3},
           (selectable)&&((selectable.select) ? selectable.selectedTextStyle : selectable.unselectedTextStyle)]}
         disabled={selectable?.showSelectedOnly} 
         mode='outlined' 
@@ -62,14 +63,13 @@ const SelectableCategory = ({
   );
 };
 
-export default SelectableCategory;
+export default SelectableTag;
 
 const styles = StyleSheet.create({
   defaultTag: {
     borderWidth: 2, 
     margin: 5,
-    padding: 2,
-    borderRadius: 20,
+    borderRadius: 10,
     borderColor: colors.gray9,
     backgroundColor: colors.white,
     justifyContent: 'center',
