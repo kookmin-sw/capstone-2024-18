@@ -35,7 +35,7 @@ export default ImageButton;
 const styles = StyleSheet.create({
   defaultContainerStyle: {
     alignSelf: 'center',
-    backgroundColor: colors.pastel_point,
+    backgroundColor: colors.transparent,
     borderRadius: 10,
     marginVertical: 5
   },

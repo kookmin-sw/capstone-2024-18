@@ -1,28 +1,18 @@
-import { TouchableOpacity, ViewStyle, TouchableOpacityProps, StyleProp, TextStyle, Text, StyleSheet, DimensionValue, ColorValue } from 'react-native';
+import { TouchableOpacity, ViewStyle, TouchableOpacityProps, StyleProp, TextStyle, Text, StyleSheet } from 'react-native';
 import { colors } from '../assets/colors';
-
-
-interface BtnContainerStyle extends ViewStyle {
-  height: DimensionValue | undefined
-  backgroundColor: ColorValue | undefined;
-}
-
-interface BtnTextStyle extends TextStyle {
-  fontSize: number | undefined;
-}
 
 
 interface Props extends TouchableOpacityProps {
   type?: 'default' | 'fit-content'
   children: string
-  containerStyle: StyleProp<BtnContainerStyle>,
-  textStyle: StyleProp<BtnTextStyle>
+  containerStyle?: StyleProp<ViewStyle>
+  textStyle?: StyleProp<TextStyle>
 }
 
 /**
  * @param type :'default'|'fit-content'. 버튼의 type을 지정
  * @param children :string. 버튼의 text
- * @param containerStyle :StyleProp<BtnViewStyle>. container에 부여할 style
+ * @param containerStyle :StyleProp<ViewStyle>. container에 부여할 style
  * @param textStyle :StyleProp<TextStyle>. text에 부여할 style
  */
 const CustomButton = ({ 
@@ -32,13 +22,16 @@ const CustomButton = ({
   textStyle,
   ...touchableOpacityProps
 } : Props) => {
-  const defaultFontSize = 14;
+  const defaultFontSize = 18;
+  const defaultBackgroundColor = colors.point;
+  const defaultHeight = (type == 'default') ? 50 : 17;
 
   if (type == 'default') {
     return (
       <TouchableOpacity style={[styles.defaultContainerStyle, 
+        {backgroundColor: defaultBackgroundColor, height: defaultHeight},
         containerStyle]}>
-        <Text style={[styles.defaultTextStyle,  textStyle]}>
+        <Text style={[styles.defaultTextStyle, {fontSize: defaultFontSize}, textStyle]}>
           {children}
         </Text>
       </TouchableOpacity>
@@ -47,8 +40,8 @@ const CustomButton = ({
   else { // fit-content button. 클릭할 수 있는 text button type
     return (
       <TouchableOpacity style={[styles.fitContentContainerStyle, 
-        containerStyle]}>
-        <Text style={[styles.fitContentTextStyle, textStyle]}>
+        {backgroundColor: defaultBackgroundColor, height: defaultHeight}, containerStyle]}>
+        <Text style={[styles.fitContentTextStyle, {fontSize: defaultFontSize}, textStyle]}>
           {children}
         </Text>
       </TouchableOpacity>
@@ -62,13 +55,11 @@ const styles = StyleSheet.create({
   defaultContainerStyle: {
     flexDirection: 'row', 
     alignSelf: 'center', 
-    backgroundColor: colors.point,
     borderRadius: 10
   },
   fitContentContainerStyle: {
     borderRadius: 10, 
     paddingHorizontal: 5,
-    backgroundColor: colors.point,
     justifyContent: 'center'
   },
   defaultTextStyle: {

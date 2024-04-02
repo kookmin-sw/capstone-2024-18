@@ -32,12 +32,12 @@ const ButtonTestPage = () => {
       {/* 이메일 찾기, 비밀번호 찾기 */}
       <View style={[styles.fit_content, {marginBottom: 40}]}>
         <CustomButton onPress={() => {}} type='fit-content'
-          containerStyle={{backgroundColor: colors.transparent, height: 17}}
+          containerStyle={{backgroundColor: colors.transparent}}
           textStyle={styles.small_button_text}>이메일 찾기
         </CustomButton>
         <View style={{width: 1, height: '80%', alignSelf: 'center', marginHorizontal: 15, backgroundColor: colors.gray9 }}/>
         <CustomButton onPress={() => {}} type='fit-content'
-          containerStyle={{backgroundColor: colors.transparent, height: 17}}
+          containerStyle={{backgroundColor: colors.transparent}}
           textStyle={styles.small_button_text}>비밀번호 찾기
         </CustomButton>
       </View>
@@ -45,11 +45,11 @@ const ButtonTestPage = () => {
       {/* 로그인, 개발자 로그인, 구글 로그인 버튼 */}
       <View style={{marginHorizontal: 30}} onLayout={onLayout}>
         <CustomButton onPress={TryLogin} 
-          containerStyle={{backgroundColor: colors.point, height: 50, marginVertical: 5}}
+          containerStyle={{marginVertical: 5}}
           textStyle={styles.button_text}>로그인
         </CustomButton>
         <ImageButton onPress={() => {}} 
-          containerStyle={{backgroundColor: colors.white, height: 50, marginVertical: 5}}
+          containerStyle={{marginVertical: 5}}
           imageProps={{width: parentWidth, source: require('../assets/images/signin-assets/Android/png@4x/neutral/sq_ctn.png')}}/>
       </View>
 
@@ -58,7 +58,7 @@ const ButtonTestPage = () => {
         <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
         <CustomButton onPress={() => {}} type='fit-content'
           containerStyle={{backgroundColor: colors.transparent, height: 17.25}}
-          textStyle={{...styles.small_button_text, ...styles.underline}}>회원가입
+          textStyle={[styles.small_button_text, styles.underline]}>회원가입
         </CustomButton>
       </View>
     </View>
