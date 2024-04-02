@@ -199,9 +199,9 @@ const Signup = () => {
           <View style={styles.textInputContainer}>
             <CustomTextInput 
               placeholder='비밀번호를 입력해주세요'
-              secureTextEntry={password.visible[0]} 
+              secureTextEntry={!password.visible[0]} 
               onChangeText={(newText) => handlePwInputChage(newText, 0)}
-              rightIcon={{ source: password.visible[0] ? "eye-off-outline" : "eye-outline" }} 
+              rightIcon={{ source: !password.visible[0] ? "eye-off-outline" : "eye-outline" }} 
               rightPressable={{ onPress: togglePwVisibility.bind(this, 0) }}
               ref={passwordInputRef}
               returnKeyType="next"
@@ -220,9 +220,9 @@ const Signup = () => {
           <View style={styles.textInputContainer}>
             <CustomTextInput 
               placeholder='비밀번호를 입력해주세요'
-              secureTextEntry={password.visible[1]} 
+              secureTextEntry={!password.visible[1]} 
               onChangeText={(newText) => handlePwInputChage(newText, 1)}
-              rightIcon={{ source: password.visible[1] ? "eye-off-outline" : "eye-outline" }} 
+              rightIcon={{ source: !password.visible[1] ? "eye-off-outline" : "eye-outline" }} 
               rightPressable={{ onPress: togglePwVisibility.bind(this, 1) }}
               ref={passwordConfirmInputRef}
               returnKeyType="done"
