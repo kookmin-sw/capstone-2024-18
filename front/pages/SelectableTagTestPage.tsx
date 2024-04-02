@@ -72,10 +72,10 @@ const SelectableTagTestPage = () => {
       <View style={styles.container}>
         <Text>태그 여러 개 Test</Text>
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
-          <SelectableTag children="Test"/>
-          <SelectableTag children="test"/>
-          <SelectableTag children="test"/>
-          <SelectableTag children="test"/>
+          <SelectableTag children="Test" touchAreaStyle={styles.tag}/>
+          <SelectableTag children="test" touchAreaStyle={styles.tag}/>
+          <SelectableTag children="test" touchAreaStyle={styles.tag}/>
+          <SelectableTag children="test" touchAreaStyle={styles.tag}/>
         </View>
       </View>
 
@@ -101,6 +101,7 @@ const SelectableTagTestPage = () => {
             return (
               <SelectableTag children={item.text} key={item.id}
                 onPress={() => handleCategorySelect(item.id)}
+                touchAreaStyle={styles.tag}
                 selectable={{
                   select: item.selected,
                   showSelectedOnly: !edit,
@@ -131,5 +132,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10, 
     paddingVertical: 20, 
     borderRadius: 20
+  }, 
+  tag: {
+    marginRight: 5, 
+    marginBottom: 5,
   }
 });

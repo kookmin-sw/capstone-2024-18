@@ -87,7 +87,5 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     flexWrap: 'wrap', 
-    marginRight: 5, 
-    marginBottom: 5,
   }
 })
