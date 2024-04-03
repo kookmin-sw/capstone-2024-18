@@ -9,7 +9,7 @@ import cv2
 
 class FaceDetector(object):
     def __init__(self):
-        self.model_path = r'model/FaceDetector.onnx'
+        self.model_path = r'landmark_model/model/FaceDetector.onnx'
         self.onnx_model = onnx.load(self.model_path)
         onnx.checker.check_model(self.onnx_model)
         self.ort_session = onnxruntime.InferenceSession(self.model_path)
@@ -41,8 +41,8 @@ class FaceDetector(object):
             if self.vis_threshold > d[4]:
                 continue
             image = cv2.rectangle(image, (int(d[0]), int(d[1])), (int(d[2]), int(d[3])), (0, 0, 255), 2)
-        cv2.imshow('', image)
-        cv2.waitKey(1)
+        #cv2.imshow('', image)
+        #cv2.waitKey(1)
 
     def preprocess(self, image):
         image = cv2.resize(image, self.image_size)

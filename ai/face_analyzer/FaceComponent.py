@@ -22,5 +22,5 @@ class FaceComponent(metaclass=ABCMeta):
     def getDescription(self) -> str:
         raise NotImplementedError("This function is not yet implemented")
     
-    def analyze(self, landmarks):
+    def analyze(self, landmarks_mash,landmark_1000):
         raise NotImplementedError("This function is not yet implemented")

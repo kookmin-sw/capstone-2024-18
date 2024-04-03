@@ -9,7 +9,7 @@ import sys
 
 class FaceLandmark(object):
     def __init__(self):
-        self.model_path = r'model/FaceLandmark.onnx'
+        self.model_path = r'landmark_model/model/FaceLandmark.onnx'
         self.onnx_model = onnx.load(self.model_path)
         onnx.checker.check_model(self.onnx_model)
         self.ort_session = onnxruntime.InferenceSession(self.model_path)

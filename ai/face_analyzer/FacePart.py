@@ -21,10 +21,10 @@ class FacePart(FaceComponent):
     def getDescription(self) -> str:
         return self.description
     
-    def analyze(self, landmarks):
+    def analyze(self,landmarks_mash,landmark_1000):
         result = {}
         for name, faceComponent in self.faceComponents.items():
-            result[name]=faceComponent.analyze(landmarks)
+            result[name]=faceComponent.analyze(landmarks_mash,landmark_1000)
         return result
 
     def __str__(self):
