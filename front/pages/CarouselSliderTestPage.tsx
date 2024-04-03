@@ -72,7 +72,7 @@ const CarouselSliderTestPage = () => {
     if (item.type == 'image') {
       return (
         <ImageWithIconOverlay
-          source={item.source} borderRadius={15}
+          source={item.source} borderRadius={15} key={item.id}
           containerStyle={defaultContainerStyle}
           rightIcon={{source: require('../assets/images/Icon.png')}} 
           rightPressable={{onPress: () => {console.log("right press")}}}
@@ -81,7 +81,7 @@ const CarouselSliderTestPage = () => {
     } else{
       return (
         <ImageWithIconOverlay
-          borderRadius={15}
+          borderRadius={15} key={item.id}
           containerStyle={[defaultContainerStyle, {backgroundColor: colors.gray2}]}
           centerIcon={{size: 80, source: 'plus'}} centerPressable={{onPress: () => {}, style:{alignSelf: 'center'}}}/>
       );
