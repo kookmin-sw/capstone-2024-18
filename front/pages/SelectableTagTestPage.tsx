@@ -47,7 +47,7 @@ const SelectableTagTestPage = () => {
       {/* 기본 태그 */}
       <View style={styles.container}>
         <Text>기본 태그 Test</Text>
-        <SelectableTag children="test"/>
+        <SelectableTag children="운동"/>
         <SelectableTag>test</SelectableTag>
       </View>
 
@@ -58,13 +58,11 @@ const SelectableTagTestPage = () => {
       </View>
 
       {/* 태그의 크기 및 style 지정 */}
-      {/* width 지정 시, textStyle을 이렇게 설정해야 글씨가 가로 중앙 정렬 됩니다 */}
       <View style={styles.container}>
         <Text>태그의 크기 및 style Test</Text>
         <SelectableTag
-          height={100}
-          containerStyle={{width: 200}}
-          textStyle={{flex: 1, textAlign: 'center'}} 
+          height={100} width={200} borderRadius={20}
+          textStyle={{fontSize: 30}} 
           color={colors.point} children="test"/>
       </View>
 
@@ -72,10 +70,10 @@ const SelectableTagTestPage = () => {
       <View style={styles.container}>
         <Text>태그 여러 개 Test</Text>
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
-          <SelectableTag children="Test" touchAreaStyle={styles.tag}/>
-          <SelectableTag children="test" touchAreaStyle={styles.tag}/>
-          <SelectableTag children="test" touchAreaStyle={styles.tag}/>
-          <SelectableTag children="test" touchAreaStyle={styles.tag}/>
+          <SelectableTag children="운동" touchAreaStyle={styles.tag}/>
+          <SelectableTag children="연애" touchAreaStyle={styles.tag}/>
+          <SelectableTag children="음식" touchAreaStyle={styles.tag}/>
+          <SelectableTag children="영화" touchAreaStyle={styles.tag}/>
         </View>
       </View>
 
