@@ -22,9 +22,9 @@ interface SelectableProp {
 
 /**
  * @param color :string. style 없이 간단하게 태그의 border, text color 전달
- * @param borderRadius :number | undefined. tag와 터치 영역의 borderRadius 전달
- * @param height :number | undefined. style 없이 간단하게 태그의 height 전달
- * @param width :number | undefined. style 없이 간단하게 태그의 width 전달
+ * @param borderRadius :number. tag와 터치 영역의 borderRadius 전달
+ * @param height :number. style 없이 간단하게 태그의 height 전달
+ * @param width :number. style 없이 간단하게 태그의 width 전달
  * @param selectable :SelectableProp. 선택 가능한 기능 설정시 필요한 style 전달
  * @param touchAreaStyle :StyleProp<ViewStyle>. 태그 터치 영역에 부여할 style
  * @param containerStyle :StyleProp<ViewStyle>. 태그 컨테이너에 부여할 style
@@ -32,17 +32,17 @@ interface SelectableProp {
  */
 interface Props extends ChipProps {
   color?: string
-  borderRadius?: number | undefined
+  borderRadius?: number
   /** 
    * Chip component는 자동으로 text height, lineHeight를 안 늘려줘서, 
    * height parameter를 이용하여, 직접 text lineHeight, height 수정
   */
-  height?: number | undefined
+  height?: number
   /** 
    * width 파라미터 대신, containerStyle로 width를 설정할 경우, 
    * text가 중앙 정렬이 안됩니다. 
   */
-  width?: number | undefined
+  width?: number
   selectable?: SelectableProp
   touchAreaStyle?: StyleProp<ViewStyle>
   containerStyle?: StyleProp<ViewStyle>
@@ -60,21 +60,18 @@ const SelectableTag = ({
   textStyle,
   ...chipProps
 }: Props) => {
-  const defaultHeight = height; 
-  const defaultBorderRadius = borderRadius;
-
   return (
-    <View style={[styles.wrapper, {borderRadius: defaultBorderRadius}, touchAreaStyle, 
+    <View style={[styles.wrapper, {borderRadius: borderRadius}, touchAreaStyle, 
       {display: (!selectable?.showSelectedOnly || selectable?.select) ? 'flex' : 'none'}]}>
       <Chip
         {...chipProps}
         style={[styles.defaultTag, 
-          {borderRadius: defaultBorderRadius, borderColor: color, height: defaultHeight}, 
+          {borderRadius: borderRadius, borderColor: color, height: height}, 
           width ? {width: width} : {}, containerStyle, 
           (selectable)&&((selectable.select) ? selectable.selectedStyle : selectable.unselectedStyle)
         ]}
         textStyle={[styles.defaultText, 
-          {color: color, lineHeight: defaultHeight, height: defaultHeight}, 
+          {color: color, lineHeight: height, height: height}, 
           width ? {flex: 1} : {}, textStyle, 
           (selectable)&&((selectable.select) ? selectable.selectedTextStyle : selectable.unselectedTextStyle)]}
         disabled={selectable?.showSelectedOnly}/>
