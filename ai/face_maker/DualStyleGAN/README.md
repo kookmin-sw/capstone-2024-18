@@ -1,4 +1,4 @@
-## 아래 링크를 통해 checkpoint 폴더를 다운받아 주신 후 해당 폴더 안에 checkpoint 파일을 넣어주세요.
+## 아래 링크를 통해 checkpoint 폴더를 다운받아 주신 후 DualStyleGAN 폴더 아래에 checkpoint 폴더를 위치시켜주세요.
 https://mega.nz/folder/VjECkKgD#zK6TD0ndP04IpXYIRW-e-g
 
 
