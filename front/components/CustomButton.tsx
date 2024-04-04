@@ -24,7 +24,7 @@ const CustomButton = ({
   const defaultHeight = 50;
 
   return (
-    <TouchableOpacity style={[styles.defaultContainerStyle, 
+    <TouchableOpacity {...touchableOpacityProps} style={[styles.defaultContainerStyle, 
       {backgroundColor: defaultBackgroundColor, height: defaultHeight}, containerStyle]}>
       <Text style={[styles.defaultTextStyle, {fontSize: defaultFontSize}, textStyle]}>
         {children}
