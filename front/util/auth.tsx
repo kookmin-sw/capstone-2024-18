@@ -83,7 +83,7 @@ export const findEmail = async (email: string): Promise<findEmailResponse | erro
   const endpoint = `${LOCALHOST}/auth/find-email?email=${email}`;
   try {
     const response = await axios.post(endpoint);
-    const { receivedEmail, isRegistered } = response.data;
+    const { email: receivedEmail, isRegistered } = response.data;
     if (email !== receivedEmail) {
       throw new Error(`${method}에서 예상치 못한 에러 발생 ${JSON.stringify(response.data)}`);
     }
