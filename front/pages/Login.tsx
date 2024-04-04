@@ -1,19 +1,17 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TextInput as RNTextInput } from 'react-native';
-import { useNavigate } from "react-router-native";
 import AutoHeightImage from 'react-native-auto-height-image';
-
+import { useNavigate } from "react-router-native";
 import CustomButton from '../components/CustomButton.tsx';
 import ImageButton from '../components/ImageButton.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
+import { AuthContext } from '../store/auth-context.tsx';
 
 import { colors } from '../assets/colors.tsx';
 
 const Login = () => {
-  const develop_mode = true; // 개발자 모드로 로그인하기 위한 변수
-
+  const authCtx = useContext(AuthContext);
   const navigate = useNavigate();
-  
   const [ email, setEmail ] = useState('');
   const [ pw, setPw ] = useState('');
 
@@ -28,21 +26,8 @@ const Login = () => {
   }
 
   // 로그인 버튼 클릭
-  const TryLogin = () => {
-    if (develop_mode) {
-      // 개발자용 id, password로 로그인
-    }
-
-    console.log("Login");
-    navigate('/main');
-  }
-  // 로그인 버튼 클릭
-  const TryGoogleLogin = () => {
-    if (develop_mode) {
-      // 개발자용 id, password로 로그인
-    }
-
-    console.log("Google Login");
+  const TryLogin = async () => {
+    const response = await authCtx.signin(email, pw);
     navigate('/main');
   }
 

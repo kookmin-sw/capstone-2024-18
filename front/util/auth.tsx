@@ -1,0 +1,235 @@
+import axios from 'axios';
+import Config from 'react-native-config';
+
+const LOCALHOST = Config.LOCALHOST;
+
+export interface validResponse {
+  method: string;
+  status: number,
+  message: string;
+}
+
+export interface errorResponse {
+  method: string,
+  status: number,
+  exceptionCode?: number,
+  message: string,
+}
+
+export const handleError = (error: unknown, method: string): errorResponse => {
+  let errorInfo;
+
+  if (axios.isAxiosError(error)) {
+
+    // 요청이 전송되었고, 서버는 2xx 외의 상태 코드로 응답했습니다.
+    if (error.response) {
+      const httpErrorCode = error.response.status;
+      const errorDetails = error.response?.data ? { ...error.response.data } : {};  
+      errorInfo = {
+        method,
+        status: httpErrorCode,
+        ...errorDetails, // exceptionCode, message
+      };
+    }
+
+    // 요청이 전송되었지만, 응답이 수신되지 않았습니다.
+    else if (error.request) { 
+      errorInfo = {
+        method,
+        status: 0,
+        message: "서버로부터 응답이 없습니다.",
+      };
+    }
+
+    // 요청을 설정하는 동안 문제가 발생했습니다.
+    else {
+      errorInfo = {
+        method,
+        status: -1,
+        message: "요청을 설정하는 동안 문제가 발생했습니다.",
+      }
+    }
+    
+  } 
+  
+  else if (error instanceof Error) {
+    errorInfo = {
+        method,
+        status: -2,
+        message: `${method}에서 예상치 못한 에러 발생: ${error.message}`,
+      }
+  } 
+  
+  else {
+    errorInfo = {
+      method,
+      status: -3,
+      message: `${method}에서 처리할 수 없는 예상치 못한 에러 발생`,
+    }
+  }
+  
+  console.log(JSON.stringify(errorInfo));
+  return errorInfo;
+}
+
+interface findEmailResponse extends validResponse {
+  receivedEmail: string; 
+  isRegistered: boolean; 
+}
+
+// 3. OK
+export const findEmail = async (email: string): Promise<findEmailResponse | errorResponse> => {
+  const method = "findEmail";
+  const endpoint = `${LOCALHOST}/auth/find-email?email=${email}`;
+  try {
+    const response = await axios.post(endpoint);
+    const { receivedEmail, isRegistered } = response.data;
+    if (email !== receivedEmail) {
+      throw new Error(`${method}에서 예상치 못한 에러 발생 ${JSON.stringify(response.data)}`);
+    }
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "가입된 이메일입니다.",
+      receivedEmail,
+      isRegistered,
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 4. OK
+export const sendTemporaryPassword = async (email: string): Promise<validResponse | errorResponse> => {
+  const method = "sendTemporaryPassword";
+  const endpoint = `${LOCALHOST}/auth/send-temporary-password?email=${email}`;
+  try {
+    const response = await axios.post(endpoint);
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "이메일로 임시 비밀번호를 전송했습니다."
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 5. OK
+export const verifyTemporaryPassword = async (email: string, temPassword: string, newPassword: string, newPassword2: string): Promise<validResponse | errorResponse> => {
+  const method = "verifyTemporaryPassword";
+  const endpoint = `${LOCALHOST}/auth/verify-temporary-password?email=${email}&temporaryPassword=${temPassword}`;
+  const body = { newPassword, newPassword2, }
+  try {
+    const response = await axios.post(endpoint, body);
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "비밀번호가 재설정되었습니다."
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 6. OK
+export const verifyDuplicationEmail = async (email: string): Promise<validResponse | errorResponse> => {
+  const method = "verifyDuplicationEmail";
+  const endpoint = `${LOCALHOST}/auth/verify-duplication?email=${email}`;
+  try {
+    const response = await axios.post(endpoint);
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "사용 가능한 이메일입니다."
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 7. OK
+export const sendCode = async (email: string): Promise<validResponse | errorResponse> => {
+  const method = "sendCode";
+  const endpoint = `${LOCALHOST}/auth/send-code?email=${email}`;
+  try {
+    const response = await axios.post(endpoint);
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "이메일로 인증코드를 전송했습니다.",
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 8. OK
+interface verifyCodeResponse extends validResponse{
+  email: string; 
+  isVerified: boolean; 
+}
+
+export const verifyCode = async (email: string, code: string): Promise<verifyCodeResponse | errorResponse> => {
+  const method = "verifyCode";
+  const endpoint = `${LOCALHOST}/auth/verify-code?email=${email}&code=${code}`;
+  try {
+    const response = await axios.get(endpoint);
+    const { email: receivedEmail, isVerified } = response.data;
+    if (email !== receivedEmail) {
+      throw new Error(`${method}에서 예상치 못한 에러 발생 ${JSON.stringify(response.data)}`);
+    }
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: isVerified ? "인증되었습니다." : "인증번호가 일치하지 않습니다.",
+      email: receivedEmail,
+      isVerified,
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 9. OK
+export const signup = async (email: string, password: string, password2: string, isVerified: boolean): Promise<validResponse | errorResponse> => {
+  const method = "signup";
+  const endpoint =  `${LOCALHOST}/auth/signup`;
+  const body = {
+    email,
+    password,
+    password2,
+    isVerified,
+  }
+  try {
+    const response = await axios.post(endpoint, body);
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "회원가입이 완료되었습니다.",
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}

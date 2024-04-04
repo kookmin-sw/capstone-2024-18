@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, StyleProp, ViewStyle } from "react-native";
+import { View, StyleSheet, Text, StyleProp, ViewStyle, TextStyle } from "react-native";
 import { colors } from '../assets/colors.tsx'
 import { Icon } from 'react-native-paper';
 
@@ -21,14 +21,14 @@ interface IconProp {
 /**
  * @param icon :IconProp. 왼쪽에 삽입될 아이콘
  * @param containerStyle: StyleProp<ViewStyle>. container에 부여할 style
- * @param textStyle :StyleProp<ViewStyle>. text에 부여할 style
+ * @param textStyle :StyleProp<TextStyle>. text에 부여할 style
  * @param children :any. 표시될 텍스트 내용
  */
 
 interface Props {
   icon: IconProp
   containerStyle?: StyleProp<ViewStyle>
-  textStyle?: StyleProp<ViewStyle>
+  textStyle?: StyleProp<TextStyle>
   children?: any
 }
 
