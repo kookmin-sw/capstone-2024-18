@@ -1,25 +1,50 @@
-import { TouchableOpacity, View, ViewStyle } from 'react-native';
+import { TouchableOpacity, ViewStyle, TouchableOpacityProps, StyleProp, TextStyle, Text, StyleSheet } from 'react-native';
+import { colors } from '../assets/colors';
 
 
-interface ButtonProps {
-  children: React.ReactNode
-  onPress(): void
-  styles?: ViewStyle
+interface Props extends TouchableOpacityProps {
+  children: string
+  containerStyle?: StyleProp<ViewStyle>
+  textStyle?: StyleProp<TextStyle>
 }
 
 /**
- * 
- * @param children :React.ReactNode. 버튼 안에 표시할 내용물. ex) Text, Image
- * @param onPress :function. 버튼 클릭 시 실행 할 함수
- * @param styles :ViewStyle. 추가하고 싶은 style이 있을 경우 추가
+ * @param children :string. 버튼의 text
+ * @param containerStyle :StyleProp<ViewStyle>. container에 부여할 style
+ * @param textStyle :StyleProp<TextStyle>. text에 부여할 style
  */
-const CustomButton = ({ children, onPress, styles} : ButtonProps) => {
+const CustomButton = ({ 
+  children, 
+  containerStyle,
+  textStyle,
+  ...touchableOpacityProps
+} : Props) => {
+  const defaultFontSize = 18;
+  const defaultBackgroundColor = colors.point;
+  const defaultHeight = 50;
+
   return (
-    <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-      <TouchableOpacity onPress={onPress} style={[{alignItems: "center", borderRadius: 10, padding: 14.5, flex: 1}, styles]}>
+    <TouchableOpacity style={[styles.defaultContainerStyle, 
+      {backgroundColor: defaultBackgroundColor, height: defaultHeight}, containerStyle]}>
+      <Text style={[styles.defaultTextStyle, {fontSize: defaultFontSize}, textStyle]}>
         {children}
-      </TouchableOpacity>
-  </View>);
+      </Text>
+    </TouchableOpacity>
+    );
 }
 
 export default CustomButton;
+
+const styles = StyleSheet.create({
+  defaultContainerStyle: {
+    flexDirection: 'row', 
+    alignSelf: 'center', 
+    borderRadius: 10
+  },
+  defaultTextStyle: {
+    flex: 1, 
+    textAlign: 'center', 
+    textAlignVertical: 'center',
+    color: colors.gray6
+  },
+});
