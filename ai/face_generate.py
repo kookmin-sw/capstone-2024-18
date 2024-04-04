@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, make_response
 import json
 import sys
 import os
@@ -33,10 +33,16 @@ def generate_image():
     # move to beginning of file so `send_file()` it will read from start
     file_object.seek(0)
 
+    response = make_response(file_object)
+
+    response.headers.set('Content-Type', 'image/jpeg')
+    response.headers.set(
+        'Content-Disposition', 'attachment', filename='generated_image')
+    
     #remove temp jpg file
     os.remove(file_path)
     
-    return send_file(file_object, mimetype='image/jpeg')
+    return response #send_file(file_object, mimetype='image/jpeg')
 
 if __name__ == '__main__':
     face_maker = StyleTransfer()
