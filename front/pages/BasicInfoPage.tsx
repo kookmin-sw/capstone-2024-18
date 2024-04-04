@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { Card } from "react-native-paper";
 
@@ -8,11 +8,15 @@ import CustomTextInput from "../components/CustomTextInput";
 import CustomButton from "../components/CustomButton";
 import CustomSlider from "../components/CustomSlider";
 import CustomProgressBar from "../components/CustomProgressBar";
+import { AuthContext } from "../store/auth-context";
 
 import { colors } from "../assets/colors";
 import { ageDegree, ageGroup, heightGroup, region, gender, HeightGroup, Gender, AgeGroup, AgeDegree, Region } from "../util/basicInfoFormat";
+import { putBasicInfo } from "../util/auth";
 
 const BasicInfoPage = () => {
+  const authCtx = useContext(AuthContext);
+
   interface BasicInfo {
     nickname: string;
     gender: string;
@@ -91,8 +95,24 @@ const BasicInfoPage = () => {
     }
   }
 
-  const submitForm = () => {
+  const submitForm = async () => {
     console.log("submit:" + JSON.stringify(basicInfo));
+    if (authCtx.accessToken) {
+      const response = await putBasicInfo(
+        authCtx.accessToken,
+        basicInfo.nickname,
+        basicInfo.gender,
+        basicInfo.age[0],
+        basicInfo.age[1],
+        basicInfo.height,
+        basicInfo.region,
+      );  
+    }
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+
+    
   }
 
   const contents = [
