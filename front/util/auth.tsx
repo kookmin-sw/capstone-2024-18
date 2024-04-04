@@ -247,8 +247,11 @@ interface basicInfoResponse extends validResponse {
 export const getBasicInfo = async (accessToken: string): Promise<basicInfoResponse | errorResponse> => {
   const method = "getBasicInfo";
   const endpoint =  `${LOCALHOST}/members/basic-info`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken } 
+  };
   try {
-    const response = await axios.get(endpoint);
+    const response = await axios.get(endpoint, config);
     const { nickname, gender, ageGroup, ageDegree, heightGroup, region } = response.data;
     const responseInfo = {
       method,
