@@ -5,7 +5,7 @@ import { colors } from "../assets/colors"
 
 interface Props {
   values: string[];
-  setValue: (value: string) => void;
+  setValue: (index: number) => void;
 }
 
 const CustomSlider = ({ values, setValue }: Props) => {
@@ -20,11 +20,11 @@ const CustomSlider = ({ values, setValue }: Props) => {
           minimumTrackTintColor={colors.gray4}
           maximumTrackTintColor={colors.gray4}
           thumbTintColor={colors.pastel_point}
-          onValueChange={(sliderValue) => setValue(values[sliderValue[0]])}
+          onValueChange={(sliderValue) => setValue(sliderValue[0])}
         />
       </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between"}}>
-          {values.map( value => <Text key={value} style={{color: colors.gray7}}>{value}</Text>)}
+          {values.map( value => <Text key={value} style={{color: colors.gray7, textAlign: "center"}}>{value}</Text>)}
         </View>  
     </View>
   )
