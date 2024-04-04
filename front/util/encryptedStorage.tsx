@@ -1,34 +1,34 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 // 리프레시 토큰 저장하기
-export const saveRefreshToken = async (refreshToken: string) => {
+export const saveToken = async (tokenType: "accessToken" | "refreshToken", refreshToken: string) => {
     try {
-        await EncryptedStorage.setItem("refreshToken", refreshToken);
-        console.log("Refresh token safely stored");
+        await EncryptedStorage.setItem(tokenType, refreshToken);
+        console.log(tokenType + "저장 성공");
     } catch (error) {
-        console.log("Saving refresh token failed", error);
+        console.log(tokenType + "저장 실패", error);
     }
 };
 
 // 리프레시 토큰 불러오기
-export const loadRefreshToken = async () => {
+export const loadToken = async (tokenType: "accessToken" | "refreshToken") => {
     try {
-        const refreshToken = await EncryptedStorage.getItem("refreshToken");
-        if (refreshToken !== undefined) {
-            console.log("Refresh token loaded", refreshToken);
-            return refreshToken;
+        const token = await EncryptedStorage.getItem(tokenType);
+        if (token !== undefined) {
+            console.log(tokenType + "로딩 성공", token);
+            return token;
         }
     } catch (error) {
-        console.log("Loading refresh token failed", error);
+        console.log(tokenType + "로딩 실패", error);
     }
 };
 
 // 리프레시 토큰 삭제하기
-export const removeRefreshToken = async () => {
+export const removeToken = async (tokenType: "accessToken" | "refreshToken") => {
     try {
-        await EncryptedStorage.removeItem("refreshToken");
-        console.log("Refresh token removed");
+        await EncryptedStorage.removeItem(tokenType);
+        console.log(tokenType + "삭제 성공");
     } catch (error) {
-        console.log("Removing refresh token failed", error);
+        console.log(tokenType + "삭제 실패", error);
     }
 };

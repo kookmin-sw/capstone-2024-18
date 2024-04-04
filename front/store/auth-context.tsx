@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { removeRefreshToken, saveRefreshToken, loadRefreshToken } from '../util/encryptedStorage';
+import { removeToken, saveToken, loadToken } from '../util/encryptedStorage';
 import axios from 'axios';
 import Config from 'react-native-config';
 
@@ -53,7 +53,8 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { accessToken, refreshToken } = response.data;
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      saveRefreshToken(refreshToken);
+      saveToken("accessToken", refreshToken);
+      saveToken("refreshToken", refreshToken);
       const responseInfo = {
         method,
         status: response.status,
@@ -78,7 +79,8 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await axios.delete(endpoint, config);
       setAccessToken('');
       setRefreshToken('');
-      removeRefreshToken();
+      removeToken("accessToken");
+      removeToken("refreshToken");
       const responseInfo = {
         method,
         status: response.status,
@@ -100,12 +102,14 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const config = { 
       headers: { Authorization: 'Bearer ' + accessToken } 
     };
+    console.log("accesstoken:"+accessToken);
     try {
       const response = await axios.post(endpoint, body, config);
       const { newAccessToken, newRefreshToken } = response.data;
       setAccessToken(newAccessToken);
       setRefreshToken(newRefreshToken);
-      saveRefreshToken(newRefreshToken);
+      saveToken("accessToken", newAccessToken);
+      saveToken("refreshToken", newRefreshToken);
       const responseInfo = {
         method,
         status: response.status,
@@ -121,7 +125,11 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const loadInitialToken = async () => {
-      const storedRefreshToken = await loadRefreshToken();
+      const storedAccessToken = await loadToken("accessToken");
+      const storedRefreshToken = await loadToken("refreshToken");
+      if (storedAccessToken) {
+        setAccessToken(storedAccessToken);
+      }
       if (storedRefreshToken) {
         setRefreshToken(storedRefreshToken);
       }
