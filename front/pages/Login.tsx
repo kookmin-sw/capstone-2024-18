@@ -8,6 +8,7 @@ import CustomTextInput from '../components/CustomTextInput.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 
 import { colors } from '../assets/colors.tsx';
+import { isValidResponse } from '../util/auth.tsx';
 
 const Login = () => {
   const authCtx = useContext(AuthContext);
@@ -28,7 +29,9 @@ const Login = () => {
   // 로그인 버튼 클릭
   const TryLogin = async () => {
     const response = await authCtx.signin(email, pw);
-    navigate('/main');
+    if (isValidResponse(response)) {
+      navigate('/');
+    }
   }
 
   const NavigateToSignUp = () => {
