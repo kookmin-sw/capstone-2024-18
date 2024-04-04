@@ -1,0 +1,3 @@
+o/.gradle-instrumented.marker
+o/instrumented/gradle-tooling-extension-impl.jar
+o/original/gradle-tooling-extension-impl.jar

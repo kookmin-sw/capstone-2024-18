@@ -1,0 +1,3 @@
+o/.gradle-instrumented.marker
+o/instrumented/profiler-gradle-tooling.jar
+o/original/profiler-gradle-tooling.jar
