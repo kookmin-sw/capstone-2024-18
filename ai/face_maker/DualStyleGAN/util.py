@@ -26,6 +26,7 @@ def load_image(filename):
     ])
     
     img = Image.open(filename)
+    img = img.convert("RGB")
     img = transform(img)
     return img.unsqueeze(dim=0)   
 
