@@ -8,7 +8,7 @@ import CustomTextInput from "../components/CustomTextInput.tsx";
 import CustomButton from "../components/CustomButton.tsx";
 
 import { colors } from '../assets/colors.tsx'
-import { signup, verifyDuplicationEmail } from "../util/auth.tsx";
+import { isValidResponse, signup, verifyDuplicationEmail } from "../util/auth.tsx";
 import { createAlertMessage } from "../util/alert.tsx";
 
 import VerifyEmailModal from "./VerifyEmailModal.tsx";
@@ -16,7 +16,6 @@ import VerifyEmailModal from "./VerifyEmailModal.tsx";
 const Signup = () => {
   const navigate = useNavigate();
   const [modalVisible, setModalVisible] = useState(false);
-  const [emailStatus, setEmailStatus] = useState("NOT_CHECKED");
 
   const [email, setEmail] = useState({
     value: "",
@@ -114,8 +113,10 @@ const Signup = () => {
   const handleSubmit = async () => {
     if (!isFormValid) return;
     const response = await signup(email.value, password.value[0], password.value[1], email.status === "VERIFIED");
-    createAlertMessage(response.message);
-    navigate('/');
+    if (isValidResponse(response)) {
+      createAlertMessage(response.message);
+      navigate('/');
+    };
   }
   
   useEffect(() => {
