@@ -9,6 +9,8 @@ import eye from '../../assets/images/eye.png';
 import CustomButton from "../../components/CustomButton.tsx";
 import { AuthContext } from '../../store/auth-context.tsx';
 import { useNavigate } from "react-router-native";
+import { isValidResponse, putBasicInfo } from '../../util/auth.tsx';
+import { createAlertMessage } from '../../util/alert.tsx';
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -22,10 +24,24 @@ const Test1 = () => {
     navigate("/login");
   }
 
+  const handleResetBasicInfo = async () => {
+    const accessToken = authCtx.accessToken;
+    if (accessToken) {
+      const response = await putBasicInfo(accessToken, "", null, null, null, null, null);
+      if (isValidResponse(response)) {
+        navigate("/basic-info");
+      }
+      else {
+        createAlertMessage("초기화 실패");
+      }
+    }
+  }
+
   return (
     <View style={{height: "100%"}}>
     <NavigationContainer>
-      <CustomButton onPress={handleLogout}><Text>로그아웃</Text></CustomButton>
+      <CustomButton onPress={handleLogout}>로그아웃</CustomButton>
+      <CustomButton onPress={handleResetBasicInfo}>기본정보 초기화</CustomButton>
       <PaperProvider theme={{version: 2}}>
         <Tab.Navigator 
           shifting={true}

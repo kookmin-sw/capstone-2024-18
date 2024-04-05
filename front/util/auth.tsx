@@ -273,7 +273,15 @@ export const getBasicInfo = async (accessToken: string): Promise<basicInfoRespon
 }
 
 // 14.
-export const putBasicInfo = async (accessToken: string, nickname: string, gender: string, ageGroup: string, ageDegree: string, heightGroup: string, region: string): Promise<validResponse | errorResponse> => {
+export const putBasicInfo = async (
+    accessToken: string, 
+    nickname: string, 
+    gender: string | null, 
+    ageGroup: string | null, 
+    ageDegree: string | null, 
+    heightGroup: string | null, 
+    region: string | null 
+  ): Promise<validResponse | errorResponse> => {
   const method = "getBasicInfo";
   const endpoint =  `${LOCALHOST}/members/basic-info`;
   const config = { 
