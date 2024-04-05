@@ -1,9 +1,8 @@
-import { View, Text, StyleSheet, useWindowDimensions, TextInput as RNTextInput } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, TextInput as RNTextInput, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
-import AutoHeightImage from 'react-native-auto-height-image';
 import { colors } from '../assets/colors.tsx';
 import CustomButton from '../components/CustomButton.tsx';
-import CustomText from '../components/CustomText.tsx';
+import ImageButton from '../components/ImageButton.tsx';
 
 /**
  * 기능 테스트 하고 싶다면, App.tsx에 다음 코드를 넣기
@@ -24,11 +23,7 @@ const ButtonTestPage = () => {
   };
 
   // 로그인 버튼 클릭
-  const TryLogin = (develop_mode=false) => {
-    if (develop_mode) {
-      // 개발자용 id, password로 로그인
-    }
-
+  const TryLogin = () => {
     console.log("Login");
   }
 
@@ -36,34 +31,33 @@ const ButtonTestPage = () => {
     <View style={styles.container}>
       {/* 이메일 찾기, 비밀번호 찾기 */}
       <View style={[styles.fit_content, {marginBottom: 40}]}>
-        <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
-          <CustomText style={styles.small_button_text}>이메일 찾기</CustomText>
-        </CustomButton>
-        <View style={{borderWidth: 0.5, marginHorizontal: 10, marginVertical: 10}}/>
-        <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
-          <CustomText style={styles.small_button_text}>비밀번호 찾기</CustomText>
-        </CustomButton>
+        <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent}}>
+          <Text style={styles.small_button_text}>이메일 찾기</Text>
+        </TouchableOpacity>
+        <View style={{width: 1, height: '80%', alignSelf: 'center', marginHorizontal: 15, backgroundColor: colors.gray9 }}/>
+        <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent}}>
+          <Text style={styles.small_button_text}>비밀번호 찾기</Text>
+        </TouchableOpacity>
       </View>
 
       {/* 로그인, 개발자 로그인, 구글 로그인 버튼 */}
       <View style={{marginHorizontal: 30}} onLayout={onLayout}>
-        <CustomButton onPress={TryLogin} styles={{backgroundColor: colors.point, marginVertical: 5}}>
-          <CustomText style={styles.button_text}>로그인</CustomText>
+        <CustomButton onPress={TryLogin} 
+          containerStyle={{marginVertical: 5}}
+          textStyle={styles.button_text}>
+          로그인
         </CustomButton>
-        {/* <CustomButton onPress={() => {TryLogin(true)}} styles={{backgroundColor: colors.point, marginVertical: 5}} >
-          <CustomText style={styles.button_text}>개빌지 로그인</CustomText>
-        </CustomButton> */}
-        <CustomButton onPress={() => {}} styles={{backgroundColor: colors.white, marginVertical: 5, padding: 0}} >
-          <AutoHeightImage width={parentWidth} source={require('../assets/images/signin-assets/Android/png@4x/neutral/sq_ctn.png')}/>
-        </CustomButton>
+        <ImageButton onPress={() => {}} 
+          containerStyle={{marginVertical: 5}}
+          imageProps={{width: parentWidth, source: require('../assets/images/signin-assets/Android/png@4x/neutral/sq_ctn.png')}}/>
       </View>
 
       {/* 회원가입 */}
       <View style={[styles.fit_content, {marginTop: 10}]}>
         <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
-        <CustomButton onPress={() => {}} styles={{backgroundColor: colors.transparent, ...styles.fit_button}}>
-          <CustomText style={{...styles.small_button_text, ...styles.underline}}>회원가입</CustomText>
-        </CustomButton>
+        <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent, height: 17.25, marginLeft: 5}}>
+          <Text style={[styles.small_button_text, styles.underline]}>회원가입</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -76,10 +70,7 @@ const styles = StyleSheet.create({
   // 클릭 가능한 text를 위한 설정(custom button 파일 사용)
   fit_content: {
     flexDirection: 'row', 
-    alignSelf: 'center'
-  },
-  fit_button: {
-    padding: 5, 
+    alignSelf: 'center',
     flex: 0
   },
   // font style - 밑줄

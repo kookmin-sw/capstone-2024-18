@@ -74,11 +74,12 @@ const VerifyEmailModal = ({email, setModalVisible, setEmail}: Props) => {
             </View>
             <CustomTextInput placeholder="XXXXXX" onChangeText={handleVerifyCodeChange}/>
           </View>
-          <CustomButton onPress={handleSendCode} styles={styles.pointButton}>
-            <Text style={styles.pointButtonText}>인증번호 발송</Text>
+          <CustomButton onPress={handleSendCode} 
+            containerStyle={styles.pointButton}
+            textStyle={styles.pointButtonText}>인증번호 발송
           </CustomButton>
-          <CustomButton onPress={handleSubmit} styles={StyleSheet.flatten([styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }])}>
-            <Text style={styles.pointButtonText}>인증번호 입력</Text>
+          <CustomButton onPress={handleSubmit} containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
+            textStyle={styles.pointButtonText}>인증번호 입력
           </CustomButton>
         </View>
       </Modal>

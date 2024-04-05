@@ -190,8 +190,9 @@ const Signup = () => {
             />
           </View>
           <View style={styles.grayButtonContainer}>
-            <CustomButton onPress={handleModalOpen} styles={styles.grayButton}>
-              <Text style={styles.grayButtonText}>본인인증</Text>
+            <CustomButton onPress={handleModalOpen} 
+              containerStyle={styles.grayButton}
+              textStyle={styles.grayButtonText}>본인인증
             </CustomButton>
             {emailHintText}
           </View>
@@ -267,8 +268,9 @@ const Signup = () => {
               <Text style={styles.subagreementToggleText}>전체</Text>
             </View>
           </>}
-          <CustomButton onPress={handleSubmit} styles={StyleSheet.flatten([styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }])}>
-            <Text style={styles.pointButtonText}>회원가입하기</Text>
+          <CustomButton onPress={handleSubmit} 
+            containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
+            textStyle={styles.pointButtonText}>회원가입하기
           </CustomButton>
         </View>
       </View>
