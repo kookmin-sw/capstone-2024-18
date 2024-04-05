@@ -1,37 +1,34 @@
-## Welcome to GitHub Pages
+# Face Friend
 
-You can use the [editor on GitHub](https://github.com/kookmin-sw/cap-template/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+## 프로젝트 소개
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Face Friend 에서는 사용자의 얼굴을 기반으로 AI 가상 이미지를 생성하고, 얼굴 이미지를 분석하여 관상에 대한 정보를 제공합니다. <br><br>
+사용자는 얼굴 노출에 대한 부담을 느끼지 않고, 상대방에 대한 전반적인 분위기와 성격을 유추해보는 즐거움을 느낄 수 있습니다. <br><br>
+AI 가상 이미지를 사용하여 자기소개서를 작성할 수 있으며, 마음에 드는 자기소개서를 읽고 상대방에게 DM 을 보낼 수 있습니다. <br><br>
+채팅을 하며 상대방과 친밀해졌다고 판단될 때 사용자는 서로 얼굴을 공개 여부를 결정할 수 있습니다. <br><br>
+얼굴 노출의 부담은 줄이고, 인간관계에서 얻는 즐거움은 챙긴 Face Friend 의 출시를 기대해주세요!
 
-### Markdown
+<br>
+<br>
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## 소개 영상
 
-```markdown
-Syntax highlighted code block
+<img src="https://github.com/kookmin-sw/capstone-2024-18/assets/102044895/11968e87-d9ea-4de9-983d-f22ef14e75f1" alt="이미지 설명" width="300" height="600">
 
-# Header 1
-## Header 2
-### Header 3
+<br>
+<br>
 
-- Bulleted
-- List
+## 팀 소개
 
-1. Numbered
-2. List
+| 파트    | 이름   | 역할       |
+|--------|--------|------------|
+| AI      | 이시현 | 관상 이미지 생성 |
+| AI      | 박민희 | 관상 분석 및 관상 정보 제공 |
+| FrontEnd| 고명섭 | API 연동, 퍼블리싱 |
+| FrontEnd| 윤민지 | API 연동, 퍼블리싱 |
+| BackEnd | 임장혁 | 인프라 구축, API 개발 |
+| BackEnd | 김찬진 | API 개발 |
 
-**Bold** and _Italic_ and `Code` text
+<br>
+<br>
 
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/kookmin-sw/cap-template/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
