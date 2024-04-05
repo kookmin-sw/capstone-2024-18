@@ -1,34 +1,110 @@
-# Face Friend
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Friend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
 
-## 프로젝트 소개
+        #container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-Face Friend 에서는 사용자의 얼굴을 기반으로 AI 가상 이미지를 생성하고, 얼굴 이미지를 분석하여 관상에 대한 정보를 제공합니다. <br><br>
-사용자는 얼굴 노출에 대한 부담을 느끼지 않고, 상대방에 대한 전반적인 분위기와 성격을 유추해보는 즐거움을 느낄 수 있습니다. <br><br>
-AI 가상 이미지를 사용하여 자기소개서를 작성할 수 있으며, 마음에 드는 자기소개서를 읽고 상대방에게 DM 을 보낼 수 있습니다. <br><br>
-채팅을 하며 상대방과 친밀해졌다고 판단될 때 사용자는 서로 얼굴을 공개 여부를 결정할 수 있습니다. <br><br>
-얼굴 노출의 부담은 줄이고, 인간관계에서 얻는 즐거움은 챙긴 Face Friend 의 출시를 기대해주세요!
+        h1, h2, h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
 
-<br>
-<br>
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
 
-## 소개 영상
+        table {
+            width: 30%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
 
-<img src="https://github.com/kookmin-sw/capstone-2024-18/assets/102044895/11968e87-d9ea-4de9-983d-f22ef14e75f1" alt="이미지 설명" width="300" height="600">
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
 
-<br>
-<br>
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Face Friend</h1>
+        <br>
 
-## 팀 소개
+        <h2>프로젝트 소개</h2>
+        <p>Face Friend은 사용자의 얼굴을 기반으로 AI 가상 이미지를 생성하고, 얼굴 이미지를 분석하여 관상에 대한 정보를 제공합니다.</p>
+        <p>사용자는 얼굴 노출에 대한 부담을 느끼지 않고, 상대방에 대한 전반적인 분위기와 성격을 유추해보는 즐거움을 느낄 수 있습니다.</p>
+        <p>AI 가상 이미지를 사용하여 자기소개서를 작성할 수 있으며, 마음에 드는 자기소개서를 읽고 상대방에게 DM을 보낼 수 있습니다.</p>
+        <p>채팅을 하며 상대방과 친밀해졌다고 판단될 때 사용자는 서로 얼굴을 공개 여부를 결정할 수 있습니다.</p>
+        <p>얼굴 노출의 부담은 줄이고, 인간관계에서 얻는 즐거움은 챙긴 Face Friend의 출시를 기대해주세요!</p>
+        <br>
 
-| 파트    | 이름   | 역할       |
-|--------|--------|------------|
-| AI      | 이시현 | 관상 이미지 생성 |
-| AI      | 박민희 | 관상 분석 및 관상 정보 제공 |
-| FrontEnd| 고명섭 | API 연동, 퍼블리싱 |
-| FrontEnd| 윤민지 | API 연동, 퍼블리싱 |
-| BackEnd | 임장혁 | 인프라 구축, API 개발 |
-| BackEnd | 김찬진 | API 개발 |
-
-<br>
-<br>
-
+        <h2>소개 영상</h2>
+        <img src="https://github.com/kookmin-sw/capstone-2024-18/assets/102044895/11968e87-d9ea-4de9-983d-f22ef14e75f1" alt="Face Friend" width="300" height="600">
+        <br>
+        
+        <h2>팀 소개</h2>
+        <table>
+            <tr>
+                <th>파트</th>
+                <th>이름</th>
+                <th>역할</th>
+            </tr>
+            <tr>
+                <td>AI</td>
+                <td>이시현</td>
+                <td>관상 이미지 생성</td>
+            </tr>
+            <tr>
+                <td>AI</td>
+                <td>박민희</td>
+                <td>관상 분석 및 정보 제공</td>
+            </tr>
+            <tr>
+                <td>FrontEnd</td>
+                <td>고명섭</td>
+                <td>API 연동, 퍼블리싱</td>
+            </tr>
+            <tr>
+                <td>FrontEnd</td>
+                <td>윤민지</td>
+                <td>API 연동, 퍼블리싱</td>
+            </tr>
+            <tr>
+                <td>BackEnd</td>
+                <td>임장혁</td>
+                <td>인프라 구축, API 개발</td>
+            </tr>
+            <tr>
+                <td>BackEnd</td>
+                <td>김찬진</td>
+                <td>API 개발</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
