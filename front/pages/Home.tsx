@@ -34,27 +34,22 @@ const Home = () => {
       // 기본정보 체크
       const response = await getBasicInfo(authCtx.accessToken);
 
-      // 기본정보가 없으면 기본정보 입력 페이지로 이동
       if (isBasicInfoResponse(response)) {
-        if (response.nickname === "" || 
-        response.ageDegree === "DEFAULT" || 
-        response.ageGroup === "DEFAULT" || 
-        response.gender === "DEFAULT" ||
-        response.heightGroup === "DEFAULT" ||
-        response.region === "DEFAULT") {
+        // 기본정보 있음
+        console.log("기본정보 있음");
+        navigate("/main");
+      } 
+      else {
+        if (response.exceptionCode === 0) {
+          // 기본정보 없음
           console.log("기본정보 없음");
           navigate("/basic-info");
-        } else {
-          // 기본정보 있음
-          console.log("기본정보 있음");
-          navigate("/main");
-        } 
-      }
-      // 통신 실패
-      else {
-        console.log("통신 실패");
-        reload();
-      }
+        }
+        else {
+          console.log("통신 오류");
+          reload();
+        }
+      } 
     }
     // 엑세스토큰이 없지만 리프레시 토큰이 있는 경우
     else if (authCtx.refreshToken) {

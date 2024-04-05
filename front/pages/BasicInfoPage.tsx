@@ -278,7 +278,7 @@ const BasicInfoPage = () => {
     <View style={{ marginBottom: 12 }}/>
     <CustomProgressBar progress={(pageIndex + 1) / 6}/>
     <View style={styles.bottomContainer}>
-      <CustomButton styles={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} onPress={handleNextPage}><Text>완료</Text></CustomButton>
+      <CustomButton style={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} onPress={handleNextPage}>완료</CustomButton>
     </View>
   </View>
 }
