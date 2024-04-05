@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Card } from "react-native-paper";
 
 import IconText from "../components/IconText";
@@ -13,6 +13,7 @@ import { AuthContext } from "../store/auth-context";
 import { colors } from "../assets/colors";
 import { ageDegree, ageGroup, heightGroup, region, gender, HeightGroup, Gender, AgeGroup, AgeDegree, Region } from "../util/basicInfoFormat";
 import { putBasicInfo } from "../util/auth";
+import SelectableTag from "../components/SelectableTag";
 
 const BasicInfoPage = () => {
   const authCtx = useContext(AuthContext);
@@ -130,17 +131,17 @@ const BasicInfoPage = () => {
         <Text style={styles.subtitleText}>성별</Text>
       </View>
       <View style={styles.genderButtonContainer}>
-        <Pressable onPress={() => { handleSelectGender("MALE") }} style={{ flex: 1 }}>
-          <View style={basicInfo.gender === "MALE" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}>
-            <Text style={basicInfo.gender === "MALE" ? styles.selectedGenderButtonText : styles.genderButtonText }>남</Text>
-          </View>
-        </Pressable>
+        <CustomButton 
+          onPress={() => { handleSelectGender("MALE")}}
+          containerStyle={basicInfo.gender === "MALE" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+          textStyle={basicInfo.gender === "MALE" ? styles.selectedGenderButtonText : styles.genderButtonText}
+        >남</CustomButton>
         <View style={styles.genderButtonSeparator}/>
-        <Pressable onPress={() => { handleSelectGender("FEMALE") }} style={{ flex: 1 }}>
-          <View style={basicInfo.gender === "FEMALE" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}>
-            <Text style={basicInfo.gender === "FEMALE" ? styles.selectedGenderButtonText : styles.genderButtonText }>여</Text>
-          </View>
-        </Pressable>
+        <CustomButton 
+          onPress={() => { handleSelectGender("FEMALE")}}
+          containerStyle={basicInfo.gender === "FEMALE" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+          textStyle={basicInfo.gender === "FEMALE" ? styles.selectedGenderButtonText : styles.genderButtonText}
+        >여</CustomButton>
       </View>
     </>,
 
@@ -151,37 +152,37 @@ const BasicInfoPage = () => {
       </View>
       <View>
         <View style={styles.ageButtonContainer}>
-          <Pressable onPress={() => { handleSelectAge("TWENTIES") }} style={{ flex: 1 }}>
-            <View style={basicInfo.age[0] === "TWENTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}>
-              <Text style={basicInfo.age[0] === "TWENTIES" ? styles.selectedGenderButtonText : styles.genderButtonText }>20대</Text>
-            </View>
-          </Pressable>
+          <CustomButton 
+            onPress={() => { handleSelectAge("TWENTIES") }}
+            containerStyle={basicInfo.age[0] === "TWENTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.age[0] === "TWENTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+          >20대</CustomButton>
           <View style={styles.ageButtonSeparator}/>
-          <Pressable onPress={() => { handleSelectAge("THIRTIES") }} style={{ flex: 1 }}>
-            <View style={basicInfo.age[0] === "THIRTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}>
-              <Text style={basicInfo.age[0] === "THIRTIES" ? styles.selectedGenderButtonText : styles.genderButtonText }>30대</Text>
-            </View>
-          </Pressable>
+          <CustomButton 
+            onPress={() => { handleSelectAge("THIRTIES") }}
+            containerStyle={basicInfo.age[0] === "THIRTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.age[0] === "THIRTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+          >30대</CustomButton>
         </View>
         <View style={styles.ageButtonSeparator}/>
         <View style={styles.ageButtonContainer}>
-          <Pressable onPress={() => { handleSelectAge("FORTIES") }} style={{ flex: 1 }}>
-            <View style={basicInfo.age[0] === "FORTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}>
-              <Text style={basicInfo.age[0] === "FORTIES" ? styles.selectedGenderButtonText : styles.genderButtonText }>40대</Text>
-            </View>
-          </Pressable>
+          <CustomButton 
+            onPress={() => { handleSelectAge("FORTIES") }}
+            containerStyle={basicInfo.age[0] === "FORTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.age[0] === "FORTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+          >40대</CustomButton>
           <View style={styles.ageButtonSeparator}/>
-          <Pressable onPress={() => { handleSelectAge("FIFTIES") }} style={{ flex: 1 }}>
-            <View style={basicInfo.age[0] === "FIFTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}>
-              <Text style={basicInfo.age[0] === "FIFTIES" ? styles.selectedGenderButtonText : styles.genderButtonText }>50대</Text>
-            </View>
-          </Pressable>
+          <CustomButton 
+            onPress={() => { handleSelectAge("FIFTIES") }}
+            containerStyle={basicInfo.age[0] === "FIFTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.age[0] === "FIFTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+          >50대</CustomButton>
           <View style={styles.ageButtonSeparator}/>
-          <Pressable onPress={() => { handleSelectAge("SIXTIES") }} style={{ flex: 1 }}>
-            <View style={basicInfo.age[0] === "SIXTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}>
-              <Text style={basicInfo.age[0] === "SIXTIES" ? styles.selectedGenderButtonText : styles.genderButtonText }>60대</Text>
-            </View>
-          </Pressable>
+          <CustomButton 
+            onPress={() => { handleSelectAge("SIXTIES") }}
+            containerStyle={basicInfo.age[0] === "SIXTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.age[0] === "SIXTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+          >60대</CustomButton>
         </View>
       </View>
       <View style={{ height: 52 }}/>
@@ -202,11 +203,17 @@ const BasicInfoPage = () => {
         <Text style={styles.subtitleText}>지역</Text>
       </View>
       <View style={[styles.innerContainer, {flex: 0}]}>
-        <View style={styles.tagContainer}>
-          <View style={styles.primaryTag}>
-            <Text style={styles.primaryTagText}>서울</Text>
-          </View>
-        </View>
+        {<View style={styles.tagContainer}>
+          <SelectableTag 
+            selectable={{
+              select: false,
+              selectedStyle: styles.primaryTag,
+              unselectedStyle: styles.primaryTag,
+              selectedTextStyle: styles.primaryTagText,
+              unselectedTextStyle: styles.primaryTagText,
+            }}
+          >서울</SelectableTag>
+        </View>}
       </View>
       <View style={{ borderColor: colors.gray3, borderTopWidth: 1, width: "100%", marginBottom: 12 }}/>
       <ScrollView>
@@ -214,12 +221,18 @@ const BasicInfoPage = () => {
           <View style={styles.tagContainer}>
             {Object.entries(region.SEOUL).map(([key, value]) => {
               if (key === "DEFAULT") return null;
-              return <Pressable onPress={() => { handleSelectRegion(key) }} key={key}>
-                <View key={key} style={basicInfo.region === key ? styles.selectedTag : styles.tag}>
-                  <Text style={basicInfo.region === key ? styles.selectedTagText : styles.tagText}>{value}</Text>
-                </View>
-              </Pressable>}
-            )}
+              return (
+                <SelectableTag 
+                  onPress={() => { handleSelectRegion(key) }} key={key} selectable={{
+                    select: basicInfo.region === key, 
+                    selectedStyle: styles.selectedTag, 
+                    selectedTextStyle: styles.selectedTagText,
+                    unselectedStyle: styles.tag,
+                    unselectedTextStyle: styles.tagText,
+                  }}
+                >{value}</SelectableTag>  
+              )
+            })}
           </View>
         </View>
       </ScrollView>
@@ -278,7 +291,11 @@ const BasicInfoPage = () => {
     <View style={{ marginBottom: 12 }}/>
     <CustomProgressBar progress={(pageIndex + 1) / 6}/>
     <View style={styles.bottomContainer}>
-      <CustomButton style={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} onPress={handleNextPage}>완료</CustomButton>
+      <CustomButton 
+        containerStyle={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} 
+        onPress={handleNextPage}
+        textStyle={isFormValid() ? styles.activatedTextStyle : styles.disabledTextStyle}
+      >완료</CustomButton>
     </View>
   </View>
 }
@@ -324,9 +341,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.point,
     marginTop: 27,
   },
+  activatedTextStyle: {
+    fontSize: 18,
+    color: colors.white,
+  },
   disabledButtonStyle: {
     backgroundColor: colors.pastel_point,
     marginTop: 27,
+  },
+  disabledTextStyle: {
+    fontSize: 18,
+    color: colors.white,
   },
   genderButtonContainer: {
     flexDirection: "row", 
@@ -336,6 +361,7 @@ const styles = StyleSheet.create({
   },
   genderButtonStyle: {
     flex: 1,
+    backgroundColor: colors.white,
     borderColor: "#FFB8B3",
     borderWidth: 2,
     borderRadius: 10,
@@ -451,11 +477,12 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Medium",
     letterSpacing: -18 * 0.02,
     color: colors.white,
+    marginLeft: 0,
+    marginRight: 0,
   },
   selectedTag: {
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 12,
     marginBottom: 12,
     height: 33,
     backgroundColor: colors.pastel_point,
@@ -472,7 +499,6 @@ const styles = StyleSheet.create({
   tag: {
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 12,
     marginBottom: 12,
     height: 33,
     backgroundColor: colors.white,
