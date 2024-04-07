@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static capstone.facefriend.chat.domain.Room.builder;
-import static capstone.facefriend.member.exception.MemberExceptionType.NOT_FOUND;
+import capstone.facefriend.member.exception.MemberExceptionType;
 
 @Service
 @Slf4j
@@ -33,12 +32,12 @@ public class RoomService {
 
     private Member findMemberById(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
         return member;
     }
     @Transactional
     public Room setRoom(String name) {
-        Room room = builder()
+        Room room = Room.builder()
                         .name(name)
                         .status(Room.Status.open)
                         .isPublic(false)

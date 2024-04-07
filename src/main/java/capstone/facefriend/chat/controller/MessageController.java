@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,12 @@ public class MessageController {
 
     @Resource(name = "chatRedisTemplate")
     private final RedisTemplate redisTemplate;
+
+    @MessageMapping("/test")
+    @SendTo("/sub/test")
+    public String test() {
+        return "테스트 자동화 했다고 왜 안돼? 자동으로 되는 거 이제?";
+    }
 
     @MessageMapping("/chats/messages/{room-id}")
     public void message(@DestinationVariable("room-id") Long roomId, MessageDto messageDto) {

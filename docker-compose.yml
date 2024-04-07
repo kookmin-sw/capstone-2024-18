@@ -18,6 +18,11 @@ services:
     volumes:
       - ./db/initial_setup.sql:/docker-entrypoint-initdb.d/initial_setup.sql
       - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   app:
     build:
@@ -25,7 +30,8 @@ services:
       dockerfile: ./Dockerfile
     restart: always
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     ports:
       - 8080:8080
     container_name: facefriend-app-test
@@ -33,12 +39,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:${DB_PORT}/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-
+    volumes:
+      - .:/home/deploy/app
   redis:
     image: redis:alpine
     command: redis-server --port 6379
-    container_name: redis_bootd
-    hostname: redis_boot
+    container_name: redis_boot
+    hostname: redis
     labels:
       - "name=redis"
       - "mode=standalone"
