@@ -1,11 +1,13 @@
 from FaceComponent import FaceComponent
 
 class FacePart(FaceComponent):
-    def __init__(self, name='', description=''):
+    def __init__(self, name='', description='', policy=lambda x:x):
         self.name=name
         self.description=description
         self.faceComponents = {}
-        
+        self.last_result = {}
+        self.policy = policy
+
     def add(self,faceComponent: FaceComponent):
         self.faceComponents[faceComponent.getName()] = faceComponent
     
@@ -25,8 +27,13 @@ class FacePart(FaceComponent):
         result = {}
         for name, faceComponent in self.faceComponents.items():
             result[name]=faceComponent.analyze(landmarks_mash,landmark_1000)
+        self.last_result = result
         return result
-
+    
+    def chooseChildByPolicy(self):
+        child_name = self.policy(self.last_result)
+        return self.faceComponents[child_name]
+    
     def __str__(self):
         return self.name+": "+self.description
     

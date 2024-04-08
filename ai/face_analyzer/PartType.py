@@ -12,6 +12,10 @@ class PartType(FaceComponent):
     def getDescription(self) -> str:
         return self.description
 
+    def analyze(self, landmarks_mash, landmark_1000):
+        raise NotImplementedError("This function is not yet implemented")
+
     def _print(self):
         print(self.name+": "+self.description)
         return
+    

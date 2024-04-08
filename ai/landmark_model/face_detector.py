@@ -5,11 +5,13 @@ import numpy as np
 from itertools import product as product
 from math import ceil
 import cv2
-
+import os
 
 class FaceDetector(object):
     def __init__(self):
-        self.model_path = r'landmark_model/model/FaceDetector.onnx'
+        current_path = os.path.dirname(os.path.abspath(__file__))
+        print(current_path)
+        self.model_path = current_path + '/model/FaceDetector.onnx'
         self.onnx_model = onnx.load(self.model_path)
         onnx.checker.check_model(self.onnx_model)
         self.ort_session = onnxruntime.InferenceSession(self.model_path)

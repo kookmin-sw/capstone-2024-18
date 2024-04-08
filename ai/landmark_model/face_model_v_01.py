@@ -15,9 +15,8 @@ sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding = 'utf-8')
 
 
 
-def image_run():
+def image_run(image_path):
     #이미지 불러오기
-    image_path = 'test3.jpg'  # 얼굴 이미지 파일 경로 설정
     image = cv2.imread(image_path) # 이미지 읽어오기
     image = cv2.resize(image, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)  # 이미지를 2배로 확대
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -27,14 +26,15 @@ def image_run():
     face_landmark_handle = FaceLandmark()
     detections, _ = face_detector_handle.run(image)
 
-    face_detector_handle.show_result(image, detections)
+    # face_detector_handle.show_result(image, detections)
 
     if len(detections) == 0:
         return
 
     for detection in detections:
+
         model_1000_landmarks, states = face_landmark_handle.run(image, detection)
-        face_landmark_handle.show_result(image_path,image, model_1000_landmarks)
+        # face_landmark_handle.show_result(image_path,image, landmarks)
 
     # Mediapipe
     # MediaPipe FaceMesh 초기화
@@ -56,12 +56,11 @@ def image_run():
                 cv2.putText(image, str(idx), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)  # 랜드마크 번호 표시
 
     # 이미지 저장
-    output_image_path = 'result_'+ image_path
-    cv2.imwrite(output_image_path, image)
+    # output_image_path = 'result_'+ image_path
+    # cv2.imwrite(output_image_path, image)
 
-    # 이미지 출력
-    #display(Image(filename=output_image_path))
+
+    # # 이미지 출력
+    # display(Image(filename=output_image_path))
 
     return model_1000_landmarks,mediapipe_landmarks
-
-all_landmark_1000,all_landmark_mediapipe = image_run()

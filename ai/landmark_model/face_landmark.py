@@ -5,11 +5,12 @@ import onnx
 import onnxruntime
 import math
 import sys
-
+import os
 
 class FaceLandmark(object):
     def __init__(self):
-        self.model_path = r'landmark_model/model/FaceLandmark.onnx'
+        current_path = os.path.dirname(os.path.abspath(__file__))
+        self.model_path = current_path+'/model/FaceLandmark.onnx'
         self.onnx_model = onnx.load(self.model_path)
         onnx.checker.check_model(self.onnx_model)
         self.ort_session = onnxruntime.InferenceSession(self.model_path)

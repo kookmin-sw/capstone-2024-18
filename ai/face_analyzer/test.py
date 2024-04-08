@@ -1,23 +1,27 @@
+import sys
+import io
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+print(sys.path)
+
 import json
 from FaceComponent import FaceComponent
 from FacePart import FacePart
 from PartType import PartType
 import class_info
-import sys
-import io
-
-import os
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from landmark_model.face_model_v_01 import all_landmark_1000,all_landmark_mediapipe
+from landmark_model.face_model_v_01 import image_run
 
 sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding = 'utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding = 'utf-8')
 
 face: FaceComponent = FacePart("전체얼굴", "root")
 
-for part_name, types in class_info.face.items():
+for part_name, values in class_info.face.items():
     #print(part_name, types)
-    part: FaceComponent = FacePart(part_name, part_name)
+    types = values['types']
+    policy = values['policy']
+    part: FaceComponent = FacePart(part_name, part_name, policy)
+    
     for typeclass in types:
         parttype: PartType = typeclass()
         part.add(parttype)
@@ -25,13 +29,24 @@ for part_name, types in class_info.face.items():
 
 face._print()
 
+part_names = class_info.face.keys()
+
+
 #print(face.analyze(all_landmark_mediapipe,all_landmark_1000))
 
-def result_type(face,landmarkmodel1,landmarkmodel2):
-    result_every_type = {}
-    for face_type in face.analyze(landmarkmodel1,landmarkmodel2):
-        result_every_type[face_type] = (max(face.analyze(landmarkmodel1,landmarkmodel2)[face_type]))
-        
-    return result_every_type
+def getType(image_path):
+    model_1000_landmarks,mediapipe_landmarks = image_run(image_path)
 
-result_type(face,all_landmark_mediapipe,all_landmark_1000)
+    face.analyze(mediapipe_landmarks, model_1000_landmarks)
+    
+    result_objects = []
+    for part_name in part_names:
+        face_part = face.getChild(part_name)
+        child = face_part.chooseChildByPolicy()
+        result_objects.append(child)
+
+    return result_objects
+
+
+result = getType("temp.jpg")
+print(result)
