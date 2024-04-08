@@ -27,7 +27,10 @@ class FaceComponent(metaclass=ABCMeta):
     def getDescription(self) -> str:
         raise NotImplementedError("This function is not yet implemented")
     
-    def analyze(self, landmarks):
+    def analyze(self, landmarks_mash,landmark_1000):
+        raise NotImplementedError("This function is not yet implemented")
+    
+    def chooseChildByPolicy(self):
         raise NotImplementedError("This function is not yet implemented")
 ```
 
@@ -36,135 +39,25 @@ Inner 노드에 해당하는 클래스이고 자식 노드들은 딕셔너리로
 
 _print()함수와 analyze함수는 자식 노드들을 재귀적으로 호출합니다.
 
-```python
-from FaceComponent import FaceComponent
 
-class FacePart(FaceComponent):
-    def __init__(self, name='', description=''):
-        self.name=name
-        self.description=description
-        self.faceComponents = {}
-        
-    def add(self,faceComponent: FaceComponent):
-        self.faceComponents[faceComponent.getName()] = faceComponent
-    
-    def remove(self, faceComponent: FaceComponent):
-        del self.faceComponents[faceComponent.getName()]
-
-    def getChild(self, name) -> FaceComponent:
-        return self.faceComponents[name]
-
-    def getName(self) -> str:
-        return self.name
-
-    def getDescription(self) -> str:
-        return self.description
-    
-    def analyze(self, landmarks):
-        result = {}
-        for name, faceComponent in self.faceComponents.items():
-            result[name]=faceComponent.analyze(landmarks)
-        return result
-
-    def __str__(self):
-        return self.name+": "+self.description
-    
-    def _print(self):
-        print(self.name+": "+self.description)
-        for name, faceComponent in self.faceComponents.items():
-            faceComponent._print()
-
-```
 
 ### PartType 클래스
 Leaf 노드에 해당하는 클래스입니다. 앞으로 이 클래스를 상속받아 세부적인 유형 클래스들을 만들어야합니다. 
 
-```python
-from FaceComponent import FaceComponent
-
-class PartType(FaceComponent):
-    name = ''
-    description = ''
-
-    def __init__(self, name, description):
-        self.name=name
-        self.description=description
-    
-    def getName(self) -> str:
-        return self.name
-
-    def getDescription(self) -> str:
-        return self.description
-
-    def _print(self):
-        print(self.name+": "+self.description)
-        return
-```
 
 ### PartType 클래스를 상속 받는 세부유형 클래스
 담당하는 부위폴더(ex. 눈이면 eye 폴더)를 만들고 그 안에 세부 유형 클래스를 만듭니다. 이 때 PartType클래스를 상속받아 만들어줍니다. 세부유형 클래스는 analyze 메소드를 필수적으로 가지고 있어야 합니다. 또한 analyze 함수는 숫자하나를 리턴해야 합니다.
 
-```python
-import sys
-import os
-sys.path.append('../')
-# importing
-from PartType import PartType
-
-class EagleEye(PartType):
-    def __init__(self):
-        self.name="독수리눈"
-        self.description="독수리 눈은 ~~"
-
-
-    def analyze(self, landmarks):
-        #비율 계산? 어떤 방식으로든 하나의 숫자로 리턴 해야함
-        return 1.5
-```
 
 ### class_info.py 파일
 사용하고자 하는 세부 유형을 만들었다면 class_info.py 파일 안에 해당 클래스를 넣어주세요. (파일 이름을 넣으시면 안되고 클래스 이름을 넣어주셔야합니다. = 패키지를 넣으면 안되고 모듈을 넣어야합니다.) 
 예를 들어 독수리 눈 클래스를 만들었다면 눈을 담당하는 eye key값의 value 리스트에 EagleEye 클래스를 넣어주시면 됩니다.
+각각의 세부 유형을 어떤 정책으로 선택할지 선택할 함수를 policy key값의 value로 넣어주세요 policy함수는 딕셔너리를 입력으로 받아서 하나의 문자열을 리턴하는 함수입니다. 이 때 문자열은 입력으로 들어온
+딕셔너리의 key 값중 하나여야합니다.
 
-```python
-from eye import EagleEye
 
-face = {
-    "face_shape":[
-
-    ],
-    "eye":[
-        EagleEye.EagleEye
-    ]
-}
-
-```
-
-### test.py 파일
+### face_analyze.py 파일
 class_info.py 파일을 기반으로 트리 모양의 관계를 만드는 코드입니다. face 객체가 root 노드이고 해당 노드의 자식들은 부위를 나타내고 그 부위의 자식들은 세부유형을 나타냅니다.
 담당하는 부위의 관상분석을 하고 싶을 땐 face 객체의 faceComponents 딕셔너리를 이용하여 해당 노드를 가져와 사용하면 됩니다.
 
-```python
-import json
-from FaceComponent import FaceComponent
-from FacePart import FacePart
-from PartType import PartType
-import class_info
-
-
-face: FaceComponent = FacePart("전체얼굴", "root")
-
-for part_name, types in class_info.face.items():
-    #print(part_name, types)
-    part: FaceComponent = FacePart(part_name, part_name)
-    for typeclass in types:
-        parttype: PartType = typeclass()
-        part.add(parttype)
-    face.add(part)
-
-face._print()
-
-print(face.faceComponents['eye'].analyze([1,2,3]))
-print(face.analyze([1,2,3]))
-
-```
+getType 함수는 저장된 이미지 경로를 입력으로 주면 해당 이미지의 얼굴을 분석하여 세부유형 오브젝트들이 담긴 리스트를 반환합니다.
