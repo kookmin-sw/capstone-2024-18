@@ -48,5 +48,7 @@ def getType(image_path):
     return result_objects
 
 
-result = getType("temp.jpg")
-print(result)
+
+if __name__ == "__main__":
+    result = getType("temp.jpg")
+    print(result)
