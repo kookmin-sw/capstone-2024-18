@@ -1,4 +1,4 @@
-import { StyleSheet, View, StyleProp, ViewStyle, PressableProps, ImageBackground, Pressable, Dimensions, ImagePropsBase } from "react-native";
+import { StyleSheet, View, StyleProp, ViewStyle, PressableProps, ImageBackground, Pressable, Dimensions, ImageBackgroundProps } from "react-native";
 import { Icon } from 'react-native-paper';
 
 /**
@@ -25,12 +25,10 @@ interface IconProp {
  * @param leftPressable :PressableProps. 아이콘에 onPress 등 인자를 전달
  * @param rightPressable :PressableProps. 아이콘에 onPress 등 인자를 전달
  * @param centerPressable :PressableProps. 아이콘에 onPress 등 인자를 전달
- * @param image :ImagePropsBase. 보여줄 이미지의 source 등 설정
  * @param containerStyle :StyleProp<ViewStyle>. 이미지, 아이콘을 에 부여할 style
  */
 
-interface Props extends ImagePropsBase {
-  borderRadius?: number
+interface Props extends ImageBackgroundProps {
   leftIcon?: IconProp
   rightIcon?: IconProp
   centerIcon?: IconProp
@@ -42,7 +40,6 @@ interface Props extends ImagePropsBase {
 }
 
 const ImageWithIconOverlay = ({ 
-  borderRadius,
   leftIcon, 
   rightIcon, 
   centerIcon,
@@ -50,15 +47,16 @@ const ImageWithIconOverlay = ({
   rightPressable, 
   centerPressable,
   containerStyle,
-  ...imagePropsBase
+  children,
+  ...imageBackgroundProps
 }: Props) => {
   const { width } = Dimensions.get('window');
   const defaultIconProps = { size: 22 };
   const defaultSize = { height: width, width: width };
 
   return (
-    <ImageBackground {...imagePropsBase} borderRadius={borderRadius} resizeMode='cover' 
-      style={[defaultSize, {borderRadius: borderRadius}, containerStyle]}>
+    <ImageBackground {...imageBackgroundProps} resizeMode='cover' 
+      style={[defaultSize, containerStyle]}>
       <View style={styles.icons}>
         {leftIcon && <Pressable style={styles.icon} {...leftPressable}>
           <Icon {...defaultIconProps} {...leftIcon}/>
@@ -73,6 +71,7 @@ const ImageWithIconOverlay = ({
           <Icon {...defaultIconProps} {...centerIcon}/>
         </Pressable>}
       </View>
+      {children}
     </ImageBackground>
   );
 };
