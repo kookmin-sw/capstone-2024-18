@@ -38,16 +38,13 @@ public class Message extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "ROOM_ID")
-    private Room Room;
+    private Room room;
 
     public void setMember(Member sender) {
         this.sender = sender;
     }
 
     public void setRoom(Room Room) {
-        this.Room = Room;
+        this.room = Room;
     }
-
-    public boolean isRead() {return this.isRead == true;}
-
 }

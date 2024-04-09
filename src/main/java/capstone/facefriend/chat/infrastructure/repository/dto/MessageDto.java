@@ -1,14 +1,24 @@
 package capstone.facefriend.chat.infrastructure.repository.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-public record MessageDto(
-        Long ROOM_ID,
-        Long SENDER_ID,
-        @NotBlank String content,
-        LocalDateTime createdAt,
-        Boolean isRead
-) {
+@Getter
+@Setter
+public class MessageDto {
+
+    private Long roomId;
+
+    private Long senderId;
+
+    @NotBlank
+    private String content;
+
+    private LocalDateTime createdAt;
+
+    private Boolean isRead;
+
 }
