@@ -19,7 +19,7 @@ export interface GapProps {
  * @param autoScrollToNextPage: boolean. 자동으로 페이지 넘어가게 만들어주는 인자 전달
  * @param autoScrollToNextPageInterval: number. 자동으로 페이지 넘어가는 시간 Interval
  * @param onPageChange :(page: number) => void. page가 바뀔때마다 호출해야하는 함수 전달
- * @param renderItem: (item: any, containerStyle: StyleProp<any>) => JSX.Element. 기존 FlatList의 renderItem에 style 적용을 위한 함수 전달
+ * @param renderItem: (item: any, containerStyle: StyleProp<ViewStyle>) => JSX.Element. 기존 FlatList의 renderItem에 style 적용을 위한 함수 전달
  */
 interface Props extends Omit<FlatListProps<any>, 'renderItem'> {
   data: ArrayLike<any>
@@ -30,7 +30,7 @@ interface Props extends Omit<FlatListProps<any>, 'renderItem'> {
   autoScrollToNextPage?: boolean
   autoScrollToNextPageInterval?: number
   onPageChange?: (page: number) => void
-  renderItem: (item: any, containerStyle: StyleProp<any>) => JSX.Element
+  renderItem: (item: any, containerStyle: StyleProp<ViewStyle>) => JSX.Element
 }
 
 export const CarouselSlider = (({ 
