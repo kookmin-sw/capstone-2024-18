@@ -122,7 +122,7 @@ const BasicInfoPage = () => {
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>닉네임 설정</Text>
       </View>
-      <CustomTextInput placeholder="닉네임을 입력해주세요" onChangeText={handleNicknameOnChange}/>
+      <CustomTextInput placeholder="닉네임을 입력해주세요" value={basicInfo.nickname} onChangeText={handleNicknameOnChange}/>
     </>,
 
     // 성별 설정 페이지
