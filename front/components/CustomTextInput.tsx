@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { View, StyleSheet, TextInput, StyleProp, ViewStyle, Pressable, PressableProps } from "react-native";
+import { View, ScrollView, StyleSheet, TextInput, StyleProp, ViewStyle, Pressable, PressableProps } from "react-native";
 import { Icon, TextInputProps } from 'react-native-paper';
 
 import { colors } from '../assets/colors.tsx'
@@ -36,6 +36,7 @@ interface Props extends TextInputProps {
   rightPressable?: PressableProps
   containerStyle?: StyleProp<ViewStyle>
   textInputStyle?: StyleProp<ViewStyle>
+  isValid?: boolean
 }
 
 const CustomTextInput = forwardRef<TextInput | null, Props>(({ 
@@ -45,18 +46,20 @@ const CustomTextInput = forwardRef<TextInput | null, Props>(({
   rightPressable, 
   containerStyle, 
   textInputStyle, 
+  isValid = true,
   ...textInputProps 
 }: Props, ref) => {
-
   const defaultIconProps = { size: 20, color: colors.gray6 }
   const defalutTextInputProps = { placeholderTextColor: colors.gray5 }
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={[styles.container, containerStyle, isValid ? {borderColor: colors.gray1} : {borderColor: colors.point}]}>
       {leftIcon && <Pressable {...leftPressable}>
         <Icon {...defaultIconProps} {...leftIcon} />
       </Pressable>}
-      <TextInput ref={ref} style={[styles.textInput, textInputStyle]} {...defalutTextInputProps} {...textInputProps} />
+      <ScrollView contentContainerStyle={styles.scrollContainer} horizontal={true}>
+        <TextInput ref={ref} style={[styles.textInput, textInputStyle]} {...defalutTextInputProps} {...textInputProps} />
+      </ScrollView>
       {rightIcon && <Pressable {...rightPressable}>
         <Icon {...defaultIconProps} {...rightIcon} />
       </Pressable>}
@@ -73,12 +76,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gray1, 
     flexDirection: "row",
     alignItems: "center",
+    height: 40,
+    borderWidth: 1,
+  },
+  scrollContainer: {
+    flex: 1,
   },
   textInput: {
     color: colors.gray7, 
-    height: 40,
     fontFamily: "Pretendard-Regular",
-    fontSize: 16,
+    fontSize: 14,
     flex: 1,
+    height: 25,
+    padding: 0,
   },
 })
