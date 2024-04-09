@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, SafeAreaView } from "react-native";
 import { Card } from "react-native-paper";
 
 import IconText from "../components/IconText";
@@ -277,33 +277,39 @@ const BasicInfoPage = () => {
     console.log(basicInfo);
   }, [basicInfo])
 
-  return <View style={{backgroundColor: "white", flex: 1, paddingHorizontal: 32}}>
-    <Title onPress={handlePrevPage}>기본 정보</Title>
-    <View style={styles.innerContainer}>
-      <Card style={styles.card}>
-        <IconText icon={{source: "chat-question", size: 18}} textStyle={styles.cardText}>기본 정보는 왜 필요한가요? 🤔</IconText>
-      </Card>
-      <View style={styles.textContainer}>
-        <Text style={styles.text}>다른 사용자와 관계를 시작하기 전,{"\n"} 서로 최소한의 인적 사항을 참고하기 위함이에요.</Text>
+  return (
+    <SafeAreaView style={styles.container}>
+      <Title onPress={handlePrevPage}>기본 정보</Title>
+      <View style={styles.innerContainer}>
+        <Card style={styles.card}>
+          <IconText icon={{source: "chat-question", size: 18}} textStyle={styles.cardText}>기본 정보는 왜 필요한가요? 🤔</IconText>
+        </Card>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>다른 사용자와 관계를 시작하기 전,{"\n"} 서로 최소한의 인적 사항을 참고하기 위함이에요.</Text>
+        </View>
+        {contents[pageIndex]}
       </View>
-      {contents[pageIndex]}
-    </View>
-    <View style={{ marginBottom: 12 }}/>
-    <CustomProgressBar progress={(pageIndex + 1) / 6}/>
-    <View style={styles.bottomContainer}>
-      <CustomButton 
+      <CustomProgressBar progress={(pageIndex + 1) / 6}/>
+      <View style={{ height: 27 }}/>
+      <View style={styles.bottomContainer}>
+        <CustomButton 
         containerStyle={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} 
         onPress={handleNextPage}
         textStyle={isFormValid() ? styles.activatedTextStyle : styles.disabledTextStyle}
-      >완료</CustomButton>
-    </View>
-  </View>
+        >완료</CustomButton>
+      </View>
+    </SafeAreaView>
+  )
 }
 
 export default BasicInfoPage;
 
-
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "white", 
+    flex: 1, 
+    paddingHorizontal: 32, 
+  },
   innerContainer: {
     paddingHorizontal: 8,
     alignItems: "center",
@@ -311,9 +317,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomContainer: {
-    paddingHorizontal: 8,
     alignItems: "center",
-    height: 127,
+    marginBottom: 46,
+    paddingHorizontal: 8,
   },
   card: {
     backgroundColor: colors.light_pink,
@@ -339,7 +345,6 @@ const styles = StyleSheet.create({
   },
   activatedButtonStyle: {
     backgroundColor: colors.point,
-    marginTop: 27,
   },
   activatedTextStyle: {
     fontSize: 18,
@@ -347,7 +352,6 @@ const styles = StyleSheet.create({
   },
   disabledButtonStyle: {
     backgroundColor: colors.pastel_point,
-    marginTop: 27,
   },
   disabledTextStyle: {
     fontSize: 18,
