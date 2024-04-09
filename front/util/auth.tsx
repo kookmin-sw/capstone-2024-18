@@ -314,6 +314,10 @@ export const isValidResponse = (response: validResponse | errorResponse): respon
   return (response as errorResponse).exceptionCode === undefined;
 }
 
+export const isErrorResponse = (response: validResponse | errorResponse): response is errorResponse => {
+  return (response as errorResponse).exceptionCode !== undefined;
+}
+
 export const isBasicInfoResponse = (response: validResponse | errorResponse): response is basicInfoResponse => {
   return (response as basicInfoResponse).nickname !== undefined;
 }
