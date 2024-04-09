@@ -8,3 +8,4 @@ db/
 .env
 docker-compose.yml
 Dockerfile
+!AndroidManifest.xml
