@@ -125,8 +125,11 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const loadInitialToken = async () => {
+      console.log("loadInitialToken");
       const storedAccessToken = await loadToken("accessToken");
       const storedRefreshToken = await loadToken("refreshToken");
+      console.log("stored access token: ", storedAccessToken);
+      console.log("stored refresh token: ", storedRefreshToken);
       if (storedAccessToken) {
         setAccessToken(storedAccessToken);
       }

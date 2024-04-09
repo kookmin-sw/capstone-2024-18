@@ -14,10 +14,13 @@ export const saveToken = async (tokenType: "accessToken" | "refreshToken", refre
 export const loadToken = async (tokenType: "accessToken" | "refreshToken") => {
     try {
         const token = await EncryptedStorage.getItem(tokenType);
-        if (token !== undefined) {
+        if (token) {
             console.log(tokenType + "로딩 성공", token);
-            return token;
         }
+        else {
+            console.log(tokenType + "로딩 실패");
+        }
+        return token;
     } catch (error) {
         console.log(tokenType + "로딩 실패", error);
     }
