@@ -24,24 +24,10 @@ const Test1 = () => {
     navigate("/login");
   }
 
-  const handleResetBasicInfo = async () => {
-    const accessToken = authCtx.accessToken;
-    if (accessToken) {
-      const response = await putBasicInfo(accessToken, "", null, null, null, null, null);
-      if (isValidResponse(response)) {
-        navigate("/basic-info");
-      }
-      else {
-        createAlertMessage("초기화 실패");
-      }
-    }
-  }
-
   return (
     <View style={{height: "100%"}}>
     <NavigationContainer>
       <CustomButton onPress={handleLogout}>로그아웃</CustomButton>
-      <CustomButton onPress={handleResetBasicInfo}>기본정보 초기화</CustomButton>
       <PaperProvider theme={{version: 2}}>
         <Tab.Navigator 
           shifting={true}

@@ -54,10 +54,10 @@ export const handleError = (error: unknown, method: string): errorResponse => {
   
   else if (error instanceof Error) {
     errorInfo = {
-        method,
-        status: -2,
-        message: `${method}에서 예상치 못한 에러 발생: ${error.message}`,
-      }
+      method,
+      status: -2,
+      message: `${method}에서 예상치 못한 에러 발생: ${error.message}`,
+    }
   } 
   
   else {
@@ -276,11 +276,11 @@ export const getBasicInfo = async (accessToken: string): Promise<basicInfoRespon
 export const putBasicInfo = async (
     accessToken: string, 
     nickname: string, 
-    gender: string | null, 
-    ageGroup: string | null, 
-    ageDegree: string | null, 
-    heightGroup: string | null, 
-    region: string | null 
+    gender: string,
+    ageGroup: string,
+    ageDegree: string ,
+    heightGroup: string, 
+    region: string, 
   ): Promise<validResponse | errorResponse> => {
   const method = "getBasicInfo";
   const endpoint =  `${LOCALHOST}/members/basic-info`;
