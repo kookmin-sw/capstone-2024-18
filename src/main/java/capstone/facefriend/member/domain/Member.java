@@ -25,13 +25,8 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column
-    private String nickname;
-
     @Column(nullable = false)
     private String password;
-
-    private String imageUrl;
 
     @Column
     private boolean isVerified;
@@ -41,8 +36,12 @@ public class Member extends BaseEntity {
     private Role role;
 
     @OneToOne
-    @JoinColumn(name = "BASIC_INFO_ID")
+    @JoinColumn(name = "BASIC_INFO_ID", nullable = false)
     private BasicInfo basicInfo;
+
+    @OneToOne
+    @JoinColumn(name = "FACE_INFO_ID", nullable = false)
+    private FaceInfo faceInfo;
 
     public Member(String email) {
         this.email = email;
@@ -67,6 +66,10 @@ public class Member extends BaseEntity {
 
     public void setBasicInfo(BasicInfo basicInfo) {
         this.basicInfo = basicInfo;
+    }
+
+    public void setFaceInfo(FaceInfo faceInfo) {
+        this.faceInfo = faceInfo;
     }
 
     public boolean isVerified() {

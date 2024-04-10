@@ -1,10 +1,14 @@
 package capstone.facefriend.member.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 @Entity
 public class FaceInfo {
 
@@ -12,11 +16,17 @@ public class FaceInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String token;
+    @Column
+    private String originS3Url;
 
-    private String imageURL;
+    @Column
+    private String generatedS3url;
 
-    private String generatedImageURL;
+    public void setOriginS3Url(String originS3Url) {
+        this.originS3Url = originS3Url;
+    }
 
-    private String description;
+    public void setGeneratedS3Url(String generatedS3url) {
+        this.generatedS3url = generatedS3url;
+    }
 }
