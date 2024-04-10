@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { View, Text, StyleSheet, ScrollView, SafeAreaView } from "react-native";
+import { useNavigate } from "react-router-native";
 import { Card } from "react-native-paper";
 
 import IconText from "../components/IconText";
@@ -12,12 +13,14 @@ import { AuthContext } from "../store/auth-context";
 
 import { colors } from "../assets/colors";
 import { ageDegree, ageGroup, heightGroup, region, gender, HeightGroup, Gender, AgeGroup, AgeDegree, Region } from "../util/basicInfoFormat";
-import { putBasicInfo } from "../util/auth";
+import { isErrorResponse, isValidResponse, putBasicInfo } from "../util/auth";
 import SelectableTag from "../components/SelectableTag";
+import { createAlertMessage } from "../util/alert";
 
 const BasicInfoPage = () => {
   const authCtx = useContext(AuthContext);
-
+  const navigate = useNavigate();
+  
   interface BasicInfo {
     nickname: string;
     gender: string;
@@ -108,6 +111,13 @@ const BasicInfoPage = () => {
         basicInfo.height,
         basicInfo.region,
       );  
+      if (isValidResponse(response)) {
+        createAlertMessage("기본 정보 입력이 완료되었습니다.");
+        navigate("/main");
+      }
+      if (isErrorResponse(response)) {
+        createAlertMessage(response.message);
+      }
     }
     else {
       console.log("로그인 정보가 없습니다.");
