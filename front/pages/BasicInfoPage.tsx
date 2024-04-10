@@ -112,20 +112,20 @@ const BasicInfoPage = () => {
     else {
       console.log("로그인 정보가 없습니다.");
     }
-
-    
   }
-
-  const contents = [
-    // 닉네임 설정 페이지
+  
+  // 닉네임 설정 페이지
+  const nicknameContent = (
     <>
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>닉네임 설정</Text>
       </View>
       <CustomTextInput placeholder="닉네임을 입력해주세요" value={basicInfo.nickname} onChangeText={handleNicknameOnChange}/>
-    </>,
+    </>
+  );
 
-    // 성별 설정 페이지
+  // 성별 설정 페이지
+  const genderContent = (
     <>
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>성별</Text>
@@ -143,9 +143,11 @@ const BasicInfoPage = () => {
           textStyle={basicInfo.gender === "FEMALE" ? styles.selectedGenderButtonText : styles.genderButtonText}
         >여</CustomButton>
       </View>
-    </>,
+    </>
+  );
 
-    // 나이대 설정 페이지
+  // 나이대 설정 페이지
+  const ageContent = (
     <>
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>나이대</Text>
@@ -187,17 +189,21 @@ const BasicInfoPage = () => {
       </View>
       <View style={{ height: 52 }}/>
       <CustomSlider values={["초반", "중반", "후반"]} setValue={setAgeSliderValue}/>
-    </>,
+    </>
+  );
 
-    // 키 설정 페이지
+  // 키 설정 페이지
+  const heightContent = (
     <>
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>키</Text>
       </View>
       <CustomSlider values={["150대\n이하", "160대", "170대", "180대", "190대\n이상"]} setValue={setHeightSliderValue}/>
-    </>,
+    </>
+  )
 
-    // 지역 설정 페이지
+  // 지역 설정 페이지
+  const regionContent = (
     <>
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>지역</Text>
@@ -236,9 +242,11 @@ const BasicInfoPage = () => {
           </View>
         </View>
       </ScrollView>
-    </>,
+    </>
+  )
 
-    // 최종 확인 페이지
+  // 최종 확인 페이지
+  const confirmContent = (
     <>
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>올바르게 작성되었는지 확인해주세요!</Text>
@@ -271,6 +279,15 @@ const BasicInfoPage = () => {
         </View>
       </View>
     </>
+  )
+
+  const contents = [
+    nicknameContent,
+    genderContent,
+    ageContent,
+    heightContent,
+    regionContent,
+    confirmContent,
   ]
 
   useEffect(() => {
