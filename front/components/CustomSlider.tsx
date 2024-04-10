@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   knobStyle: {
     width: 20, 
     height: 20, 
-    borderRadius: 11, 
+    borderRadius: 10, 
     alignSelf: "center",
     pointerEvents: "none",
   },
