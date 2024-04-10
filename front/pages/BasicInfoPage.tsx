@@ -92,7 +92,6 @@ const BasicInfoPage = () => {
       case 4:
         return basicInfo.region !== "DEFAULT";
       case 5:
-        submitForm();
         return true;
       default:
         return false;
@@ -321,9 +320,9 @@ const BasicInfoPage = () => {
       <View style={styles.bottomContainer}>
         <CustomButton 
         containerStyle={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} 
-        onPress={handleNextPage}
+        onPress={pageIndex === contents.length - 1 ? submitForm : handleNextPage}
         textStyle={isFormValid() ? styles.activatedTextStyle : styles.disabledTextStyle}
-        >완료</CustomButton>
+        >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
       </View>
     </SafeAreaView>
   )
