@@ -23,6 +23,7 @@ const BasicInfoPage = () => {
   
   interface BasicInfo {
     nickname: string;
+    nicknameState: string;
     gender: string;
     age: [string, string];
     height: string;
@@ -32,6 +33,7 @@ const BasicInfoPage = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     nickname: "",
+    nicknameState: "",
     gender: "DEFAULT",
     age: ["DEFAULT", "DEFAULT"],
     height: "DEFAULT",
@@ -44,15 +46,20 @@ const BasicInfoPage = () => {
   }
 
   const handleNextPage = () => {
+    if (pageIndex === 0 && basicInfo.nickname === "") {
+      setBasicInfo({...basicInfo, nicknameState: "INVALID"});
+    }
     if (isFormValid()) {
       setPageIndex(pageIndex + 1);
     }
   }
 
   const handleNicknameOnChange = (value: string) => {
-    setBasicInfo({...basicInfo, nickname: value});
+    const regex = /^[ㄱ-힣A-Za-z0-9]{1,10}$/;
+    console.log(value, regex.test(value));
+    setBasicInfo({...basicInfo, nickname: value, nicknameState: regex.test(value) ? "VALID" : "INVALID"});
   }
-
+  
   const handleSelectGender = (value: string) => {
     setBasicInfo({...basicInfo, gender: value});
   }
@@ -62,14 +69,14 @@ const BasicInfoPage = () => {
   }
 
   const setAgeSliderValue = (index: number) => {
-    const value = Object.keys(ageDegree)[index];
+    const value = Object.keys(ageDegree)[index + 1];
     if (value !== basicInfo.age[1]) {
       setBasicInfo({...basicInfo, age: [basicInfo.age[0], value]});
     }
   }
 
   const setHeightSliderValue = (index: number) => {
-    const value = Object.keys(heightGroup)[index];
+    const value = Object.keys(heightGroup)[index + 1];
     if (value !== basicInfo.height) {
       setBasicInfo({...basicInfo, height: value});
     }
@@ -82,7 +89,7 @@ const BasicInfoPage = () => {
   const isFormValid = () => {
     switch(pageIndex) {
       case 0:
-        return !!basicInfo.nickname;
+        return basicInfo.nicknameState === "VALID";
       case 1:
         return basicInfo.gender !== "DEFAULT";
       case 2:
@@ -129,7 +136,15 @@ const BasicInfoPage = () => {
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>닉네임 설정</Text>
       </View>
-      <CustomTextInput placeholder="닉네임을 입력해주세요" value={basicInfo.nickname} onChangeText={handleNicknameOnChange}/>
+      <CustomTextInput 
+        placeholder="닉네임을 입력해주세요" 
+        value={basicInfo.nickname} 
+        onChangeText={handleNicknameOnChange} 
+        isValid={basicInfo.nicknameState === "VALID" || basicInfo.nicknameState === ""}
+      />
+      <View style={styles.iconTextContainer}>
+        <IconText icon={{ source: "information" }}>한글 + 영문 + 숫자 총 10자 이하</IconText>
+      </View>
     </>
   );
 
@@ -368,6 +383,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: colors.gray7,
     fontFamily: "Pretendard-Regualar",
+  },
+  iconTextContainer: {
+    width: "100%",
+    padding: 8,
+    justifyContent: "flex-start",
   },
   activatedButtonStyle: {
     backgroundColor: colors.point,
