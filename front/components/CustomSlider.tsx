@@ -1,45 +1,36 @@
 import { Slider } from "@miblanchard/react-native-slider"
 import { View, Text, StyleSheet } from "react-native"
-import { useState, useEffect } from "react"
 import { colors } from "../assets/colors"
 
 interface Props {
-  values: string[];
-  setValue: (index: number) => void;
+  labels: string[];
+  index: number;
+  onChange: (index: number) => void;
 }
 
-const CustomSlider = ({ values, setValue }: Props) => {
-  const [sliderIndex, setSliderIndex] = useState(-1);
-
-  const handleOnChange = (value: number) => {
-    setSliderIndex(value);
-    setValue(value);
-  }
-
-  useEffect(() => {
-    console.log(sliderIndex);
-  }, [sliderIndex])
+const CustomSlider = ({ labels, index, onChange }: Props) => {
 
   return (
-    <View style={{ width: values.length * 50 }}>
+    <View style={{ width: labels.length * 50 }}>
       <View style={{ marginHorizontal: 5 }}>
         <Slider 
           minimumValue={0}
-          maximumValue={values.length - 1}
+          maximumValue={labels.length - 1}
           step={1}
           minimumTrackTintColor={colors.gray2}
           maximumTrackTintColor={colors.gray2}
           thumbStyle={styles.thumbStyle}
-          onValueChange={(sliderValue) => handleOnChange(sliderValue[0])}
+          onValueChange={(sliderValue) => onChange(sliderValue[0])}
+          value={index}
         />
       </View>
       <View style={styles.tickContiner}>
-        {values.map((value, index) => {
-          return <View key={index} style={index === sliderIndex ? styles.knobStyle : styles.tickStyle}/>
+        {labels.map((_, i) => {
+          return <View key={i} style={i === index ? styles.knobStyle : styles.tickStyle}/>
         })}
       </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between"}}>
-          {values.map( value => <Text key={value} style={{color: colors.gray7, textAlign: "center"}}>{value}</Text>)}
+          {labels.map(value => <Text key={value} style={{color: colors.gray7, textAlign: "center"}}>{value}</Text>)}
         </View>  
     </View>
   )

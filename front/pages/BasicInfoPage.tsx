@@ -25,7 +25,8 @@ const BasicInfoPage = () => {
     nickname: string;
     nicknameState: string;
     gender: string;
-    age: [string, string];
+    ageGroup: string;
+    ageDegree: string;
     height: string;
     region: string;
   }
@@ -35,9 +36,15 @@ const BasicInfoPage = () => {
     nickname: "",
     nicknameState: "",
     gender: "DEFAULT",
-    age: ["DEFAULT", "DEFAULT"],
+    ageGroup: "DEFAULT",
+    ageDegree: "DEFAULT",
     height: "DEFAULT",
     region: "DEFAULT",
+  })
+
+  const [sliderIndex, setSliderIndex] = useState({
+    ageDegree: -1,
+    height: -1,
   })
 
   const handlePrevPage = () => {
@@ -64,21 +71,23 @@ const BasicInfoPage = () => {
     setBasicInfo({...basicInfo, gender: value});
   }
 
-  const handleSelectAge = (value: string) => {
-    setBasicInfo({...basicInfo, age: [value, basicInfo.age[1]]});
+  const handleSelectAgeGroup = (value: string) => {
+    setBasicInfo({...basicInfo, ageGroup: value});
   }
 
-  const setAgeSliderValue = (index: number) => {
-    const value = Object.keys(ageDegree)[index + 1];
-    if (value !== basicInfo.age[1]) {
-      setBasicInfo({...basicInfo, age: [basicInfo.age[0], value]});
+  const handleSelectAgeDegree = (index: number) => {
+    const value = Object.keys(ageDegree)[index];
+    if (value !== basicInfo.ageDegree) {
+      setBasicInfo({...basicInfo, ageDegree: value});
+      setSliderIndex({...sliderIndex, ageDegree: index})
     }
   }
 
-  const setHeightSliderValue = (index: number) => {
-    const value = Object.keys(heightGroup)[index + 1];
+  const handleChangeHeightSliderIndex = (index: number) => {
+    const value = Object.keys(heightGroup)[index];
     if (value !== basicInfo.height) {
       setBasicInfo({...basicInfo, height: value});
+      setSliderIndex({...sliderIndex, height: index});
     }
   }
 
@@ -93,7 +102,7 @@ const BasicInfoPage = () => {
       case 1:
         return basicInfo.gender !== "DEFAULT";
       case 2:
-        return basicInfo.age[0] !== "DEFAULT" && basicInfo.age[1] !== "DEFAULT";
+        return basicInfo.ageDegree !== "DEFAULT" && basicInfo.ageGroup !== "DEFAULT";
       case 3:
         return basicInfo.height !== "DEFAULT";
       case 4:
@@ -112,8 +121,8 @@ const BasicInfoPage = () => {
         authCtx.accessToken,
         basicInfo.nickname,
         basicInfo.gender,
-        basicInfo.age[0],
-        basicInfo.age[1],
+        basicInfo.ageGroup,
+        basicInfo.ageDegree,
         basicInfo.height,
         basicInfo.region,
       );  
@@ -179,40 +188,40 @@ const BasicInfoPage = () => {
       <View>
         <View style={styles.ageButtonContainer}>
           <CustomButton 
-            onPress={() => { handleSelectAge("TWENTIES") }}
-            containerStyle={basicInfo.age[0] === "TWENTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
-            textStyle={basicInfo.age[0] === "TWENTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+            onPress={() => { handleSelectAgeGroup("TWENTIES") }}
+            containerStyle={basicInfo.ageGroup === "TWENTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.ageGroup === "TWENTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
           >20대</CustomButton>
           <View style={styles.ageButtonSeparator}/>
           <CustomButton 
-            onPress={() => { handleSelectAge("THIRTIES") }}
-            containerStyle={basicInfo.age[0] === "THIRTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
-            textStyle={basicInfo.age[0] === "THIRTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+            onPress={() => { handleSelectAgeGroup("THIRTIES") }}
+            containerStyle={basicInfo.ageGroup === "THIRTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.ageGroup === "THIRTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
           >30대</CustomButton>
         </View>
         <View style={styles.ageButtonSeparator}/>
         <View style={styles.ageButtonContainer}>
           <CustomButton 
-            onPress={() => { handleSelectAge("FORTIES") }}
-            containerStyle={basicInfo.age[0] === "FORTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
-            textStyle={basicInfo.age[0] === "FORTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+            onPress={() => { handleSelectAgeGroup("FORTIES") }}
+            containerStyle={basicInfo.ageGroup === "FORTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.ageGroup === "FORTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
           >40대</CustomButton>
           <View style={styles.ageButtonSeparator}/>
           <CustomButton 
-            onPress={() => { handleSelectAge("FIFTIES") }}
-            containerStyle={basicInfo.age[0] === "FIFTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
-            textStyle={basicInfo.age[0] === "FIFTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+            onPress={() => { handleSelectAgeGroup("FIFTIES") }}
+            containerStyle={basicInfo.ageGroup === "FIFTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.ageGroup === "FIFTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
           >50대</CustomButton>
           <View style={styles.ageButtonSeparator}/>
           <CustomButton 
-            onPress={() => { handleSelectAge("SIXTIES") }}
-            containerStyle={basicInfo.age[0] === "SIXTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
-            textStyle={basicInfo.age[0] === "SIXTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
+            onPress={() => { handleSelectAgeGroup("SIXTIES") }}
+            containerStyle={basicInfo.ageGroup === "SIXTIES" ? styles.selectedGenderButtonStyle : styles.genderButtonStyle}
+            textStyle={basicInfo.ageGroup === "SIXTIES" ? styles.selectedGenderButtonText : styles.genderButtonText}
           >60대</CustomButton>
         </View>
       </View>
       <View style={{ height: 52 }}/>
-      <CustomSlider values={["초반", "중반", "후반"]} setValue={setAgeSliderValue}/>
+      <CustomSlider index={sliderIndex.ageDegree} onChange={handleSelectAgeDegree} labels={["초반", "중반", "후반"]}/>
     </>
   );
 
@@ -222,7 +231,7 @@ const BasicInfoPage = () => {
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>키</Text>
       </View>
-      <CustomSlider values={["150대\n이하", "160대", "170대", "180대", "190대\n이상"]} setValue={setHeightSliderValue}/>
+      <CustomSlider index={sliderIndex.height} onChange={handleChangeHeightSliderIndex} labels={["150대\n이하", "160대", "170대", "180대", "190대\n이상"]}/>
     </>
   )
 
@@ -288,7 +297,7 @@ const BasicInfoPage = () => {
       <View style={styles.ageButtonContainer}>
         <View style={styles.genderButtonStyle}>
           <Text style={styles.genderButtonText}>
-            {ageGroup[basicInfo.age[0] as keyof AgeGroup]} {ageDegree[basicInfo.age[1] as keyof AgeDegree]}
+            {ageGroup[basicInfo.ageGroup as keyof AgeGroup]} {ageDegree[basicInfo.ageDegree as keyof AgeDegree]}
           </Text>
         </View>
         <View style={styles.ageButtonSeparator}/>
