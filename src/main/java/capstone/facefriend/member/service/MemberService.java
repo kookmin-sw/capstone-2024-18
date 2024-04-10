@@ -4,17 +4,16 @@ import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.email.controller.dto.EmailVerificationResponse;
 import capstone.facefriend.email.service.EmailService;
-import capstone.facefriend.member.domain.BasicInfo;
-import capstone.facefriend.member.domain.BasicInfoRepository;
-import capstone.facefriend.member.domain.Member;
-import capstone.facefriend.member.domain.MemberRepository;
+import capstone.facefriend.member.domain.*;
 import capstone.facefriend.member.exception.MemberException;
+import capstone.facefriend.member.exception.MemberExceptionType;
 import capstone.facefriend.member.service.dto.FindEmailResponse;
 import capstone.facefriend.member.service.dto.SignInRequest;
 import capstone.facefriend.member.service.dto.SignUpRequest;
 import capstone.facefriend.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +30,7 @@ public class MemberService {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
     private final BasicInfoRepository basicInfoRepository;
+    private final FaceInfoRepository faceInfoRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
@@ -42,9 +42,12 @@ public class MemberService {
     private static final String RESET_PASSWORD_SUCCESS_MESSAGE = "비밀번호 재설정 성공";
     private static final Long SIGN_OUT_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
 
+    @Value(value = "${default-profile.s3-url}")
+    private String defaultProfileS3Url;
+
     @Transactional
     public String verifyDuplication(String email) {
-        if(memberRepository.findByEmail(email).isPresent()) {
+        if (memberRepository.findByEmail(email).isPresent()) {
             throw new MemberException(DUPLICATED_EMAIL);
         }
         return SIGN_UP_VALID_EMAIL;
@@ -75,7 +78,7 @@ public class MemberService {
         if (isVerified) {
             String encodedPassword = passwordEncoder.encode(request.password());
 
-            BasicInfo basicInfo = builder()
+            BasicInfo basicInfo = BasicInfo.builder()
                     .nickname("")
                     .gender(Gender.DEFAULT)
                     .ageGroup(AgeGroup.DEFAULT)
@@ -85,12 +88,19 @@ public class MemberService {
                     .build();
             basicInfoRepository.save(basicInfo);
 
+            FaceInfo faceInfo = FaceInfo.builder()
+                    .originS3Url(defaultProfileS3Url)
+                    .generatedS3url(defaultProfileS3Url)
+                    .build();
+            faceInfoRepository.save(faceInfo);
+
             Member member = Member.builder()
                     .email(request.email())
                     .password(encodedPassword)
                     .isVerified(true)
                     .role(USER)
                     .basicInfo(basicInfo)
+                    .faceInfo(faceInfo)
                     .build();
             memberRepository.save(member);
 
@@ -166,6 +176,18 @@ public class MemberService {
             throw new MemberException(WRONG_TEMPORARY_PASSWORD);
         }
         return RESET_PASSWORD_SUCCESS_MESSAGE;
+    }
 
+    @Transactional
+    public String resetPassword(Long memberId, String newPassword) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND));
+
+        String encodedPassword = passwordEncoder.encode(newPassword);
+
+        member.setPassword(encodedPassword);
+        memberRepository.save(member);
+
+        return RESET_PASSWORD_SUCCESS_MESSAGE;
     }
 }
