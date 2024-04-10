@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/members")
 public class BasicInfoController {
 
     private final BasicInfoService basicInfoService;
