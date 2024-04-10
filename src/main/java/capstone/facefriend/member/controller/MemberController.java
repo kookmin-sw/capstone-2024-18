@@ -24,7 +24,6 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    // 일반 유저 로직 ("/auth" 로 시작)
     @PostMapping("/auth/find-email")
     public ResponseEntity<FindEmailResponse> findEmail(
             @RequestParam("email") String email
@@ -32,6 +31,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.findEmail(email));
     }
 
+    // 비로그인 상태에서 비밀번호 변경하기 위해 임시 비밀번호 발송
     @PostMapping("/auth/send-temporary-password")
     public ResponseEntity<String> sendTemporaryPassword(
             @RequestParam("email") String email
@@ -39,8 +39,9 @@ public class MemberController {
         return ResponseEntity.ok(memberService.sendTemporaryPassword(email));
     }
 
+    // 비로그인 상태에서 비밀번호 변경
     @PostMapping("/auth/verify-temporary-password")
-    public ResponseEntity<String> resetNewPassword(
+    public ResponseEntity<String> verifyTemporaryPassword(
             @RequestParam("email") String email,
             @RequestParam("temporaryPassword") String temporaryPassword,
             @RequestBody ResetPasswordRequest request
@@ -52,6 +53,22 @@ public class MemberController {
             throw new MemberException(PASSWORDS_NOT_EQUAL);
         }
         return ResponseEntity.ok(memberService.verifyTemporaryPassword(email, temporaryPassword, newPassword));
+    }
+
+    // 로그인 상태에서 비밀번호 변경
+    @PostMapping("/auth/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @AuthMember Long memberId,
+            @RequestBody ResetPasswordRequest request
+    ) {
+        String newPassword = request.newPassword();
+        String newPassword2 = request.newPassword2();
+
+        if (!newPassword.equals(newPassword2)) {
+            throw new MemberException(PASSWORDS_NOT_EQUAL);
+        }
+
+        return ResponseEntity.ok(memberService.resetPassword(memberId, newPassword));
     }
 
     @PostMapping("/auth/verify-duplication")
@@ -90,10 +107,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.signIn(request));
     }
 
-
-
-    // 구글 유저, 일반 유저 공통 로직 ("/members" 로 시작)
-    @DeleteMapping("/members/signout")
+    @DeleteMapping("/auth/signout")
     public ResponseEntity<String> signOut(
             HttpServletRequest request,
             @AuthMember Long memberId
@@ -103,21 +117,12 @@ public class MemberController {
         return ResponseEntity.ok(memberService.signOut(memberId, accessToken));
     }
 
-    @PostMapping("/members/reissue")
+    @PostMapping("/auth/reissue")
     public ResponseEntity<TokenResponse> reissueTokens(
             @RequestBody ReissueRequest request,
             @AuthMember Long memberId
     ) {
         String refreshToken = request.refreshToken();
         return ResponseEntity.ok(memberService.reissueTokens(memberId, refreshToken));
-    }
-
-
-
-
-
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("[ MemberController ] 테스트");
     }
 }
