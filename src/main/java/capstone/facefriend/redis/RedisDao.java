@@ -40,10 +40,10 @@ public class RedisDao {
 
     public boolean isKeyOfAccessTokenInBlackList(String accessToken) {
         String signOutValue = redisTemplate.opsForValue().get(accessToken);
-        if (signOutValue.equals(SIGN_OUT_VALUE)) {
+        if (signOutValue != null && signOutValue.equals(SIGN_OUT_VALUE)) {
             throw new MemberException(ACCESS_TOKEN_IS_IN_BLACKLIST);
         }
-        return false;
+        return true;
     }
 
     public void setCode(String mail, String code, long codeTime) {

@@ -4,19 +4,21 @@ import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.email.controller.dto.EmailVerificationResponse;
 import capstone.facefriend.email.service.EmailService;
-import capstone.facefriend.member.domain.Member;
-import capstone.facefriend.member.domain.MemberRepository;
+import capstone.facefriend.member.domain.*;
 import capstone.facefriend.member.exception.MemberException;
+import capstone.facefriend.member.exception.MemberExceptionType;
 import capstone.facefriend.member.service.dto.FindEmailResponse;
 import capstone.facefriend.member.service.dto.SignInRequest;
 import capstone.facefriend.member.service.dto.SignUpRequest;
 import capstone.facefriend.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static capstone.facefriend.member.domain.BasicInfo.*;
 import static capstone.facefriend.member.domain.Role.USER;
 import static capstone.facefriend.member.exception.MemberExceptionType.*;
 
@@ -27,15 +29,31 @@ public class MemberService {
 
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
+    private final BasicInfoRepository basicInfoRepository;
+    private final FaceInfoRepository faceInfoRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
     private final RedisDao redisDao;
 
+    private static final String SIGN_UP_VALID_EMAIL = "사용 가능한 이메일입니다.";
     private static final String SIGN_UP_SUCCESS_MESSAGE = "회원가입 성공";
     private static final String SIGN_OUT_SUCCESS_MESSAGE = "로그아웃 성공";
     private static final String RESET_PASSWORD_SUCCESS_MESSAGE = "비밀번호 재설정 성공";
-    private static final Long SIGN_OUT_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
+    private static final String EXIT_SUCCESS_MESSAGE = "회원탈퇴 성공";
+
+    private static final Long BLACKLIST_REMAIN_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
+
+    @Value(value = "${default-profile.s3-url}")
+    private String defaultProfileS3Url;
+
+    @Transactional
+    public String verifyDuplication(String email) {
+        if (memberRepository.findByEmail(email).isPresent()) {
+            throw new MemberException(DUPLICATED_EMAIL);
+        }
+        return SIGN_UP_VALID_EMAIL;
+    }
 
     @Transactional
     public String sendCode(String email) {
@@ -56,17 +74,38 @@ public class MemberService {
     }
 
     @Transactional
-    public String signUp(SignUpRequest request, boolean isVerified) {
+    public String signUp(SignUpRequest request) {
+        boolean isVerified = request.isVerified();
+
         if (isVerified) {
             String encodedPassword = passwordEncoder.encode(request.password());
+
+            BasicInfo basicInfo = BasicInfo.builder()
+                    .nickname("")
+                    .gender(Gender.DEFAULT)
+                    .ageGroup(AgeGroup.DEFAULT)
+                    .ageDegree(AgeDegree.DEFAULT)
+                    .heightGroup(HeightGroup.DEFAULT)
+                    .region(Region.DEFAULT)
+                    .build();
+            basicInfoRepository.save(basicInfo);
+
+            FaceInfo faceInfo = FaceInfo.builder()
+                    .originS3Url(defaultProfileS3Url)
+                    .generatedS3url(defaultProfileS3Url)
+                    .build();
+            faceInfoRepository.save(faceInfo);
+
             Member member = Member.builder()
                     .email(request.email())
                     .password(encodedPassword)
-                    .name(request.name())
                     .isVerified(true)
                     .role(USER)
+                    .basicInfo(basicInfo)
+                    .faceInfo(faceInfo)
                     .build();
             memberRepository.save(member);
+
         } else {
             throw new MemberException(NOT_VERIFIED);
         }
@@ -91,10 +130,19 @@ public class MemberService {
     @Transactional
     public String signOut(Long memberId, String accessToken) {
         redisDao.deleteRefreshToken(String.valueOf(memberId));
-        redisDao.setAccessTokenSignOut(accessToken, SIGN_OUT_MINUTE);
+        redisDao.setAccessTokenSignOut(accessToken, BLACKLIST_REMAIN_MINUTE);
         return SIGN_OUT_SUCCESS_MESSAGE;
     }
 
+    @Transactional
+    public String exit(Long memberId) {
+        if (memberRepository.findById(memberId).isPresent()) {
+            memberRepository.deleteById(memberId);
+        }
+        return EXIT_SUCCESS_MESSAGE;
+    }
+
+    @Transactional
     public TokenResponse reissueTokens(Long memberId, String refreshTokenInput) {
         String refreshToken = redisDao.getRefreshToken(String.valueOf(memberId));
         if (!refreshToken.equals(refreshTokenInput)) {
@@ -103,15 +151,15 @@ public class MemberService {
         return tokenProvider.createTokens(memberId);
     }
 
-    public FindEmailResponse findEmail(String nameInput, String emailInput) {
+    @Transactional
+    public FindEmailResponse findEmail(String emailInput) {
 
         Member member = memberRepository.findByEmail(emailInput)
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
 
-        String name = member.getName();
         String email = member.getEmail();
 
-        if (name.equals(nameInput) && email.equals(emailInput)) {
+        if (email.equals(emailInput)) {
             return new FindEmailResponse(email, true);
         }
         return new FindEmailResponse(email, false);
@@ -140,6 +188,18 @@ public class MemberService {
             throw new MemberException(WRONG_TEMPORARY_PASSWORD);
         }
         return RESET_PASSWORD_SUCCESS_MESSAGE;
+    }
 
+    @Transactional
+    public String resetPassword(Long memberId, String newPassword) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND));
+
+        String encodedPassword = passwordEncoder.encode(newPassword);
+
+        member.setPassword(encodedPassword);
+        memberRepository.save(member);
+
+        return RESET_PASSWORD_SUCCESS_MESSAGE;
     }
 }

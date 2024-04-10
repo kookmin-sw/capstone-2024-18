@@ -34,9 +34,7 @@ public class AuthService {
     public TokenResponse generateTokens(OAuthMember oAuthMember) {
         Member newMember = Member.builder()
                 .email(oAuthMember.email())
-                .name(oAuthMember.nickname())
                 .password(TEMPORARY_GOOGLE_PASSWORD)
-                .imageUrl(oAuthMember.imageUrl())
                 .isVerified(true)
                 .role(USER)
                 .build();

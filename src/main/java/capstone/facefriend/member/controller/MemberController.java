@@ -24,67 +24,24 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/members/send-code")
-    public ResponseEntity<String> sendCode(
-            @RequestParam("email") String email) {
-        return ResponseEntity.ok(memberService.sendCode(email));
-    }
-
-    @GetMapping("/members/verify-code")
-    public ResponseEntity<EmailVerificationResponse> verifyCode(
-            @RequestParam("email") String email,
-            @RequestParam("code") String code) {
-        return ResponseEntity.ok(memberService.verifyCode(email, code));
-    }
-
-    @PostMapping("/members/signup")
-    public ResponseEntity<String> signUp(
-            @RequestBody SignUpRequest request,
-            @RequestParam("isVerified") boolean isVerified) {
-        return ResponseEntity.ok(memberService.signUp(request, isVerified));
-    }
-
-    @PostMapping("/members/signin")
-    public ResponseEntity<TokenResponse> signIn(
-            @RequestBody SignInRequest request) {
-        return ResponseEntity.ok(memberService.signIn(request));
-    }
-
-
-
-
-
-    @PostMapping("/reissue")
-    public ResponseEntity<TokenResponse> reissueTokens(
-            @RequestBody ReissueRequest request,
-            @AuthMember Long memberId) {
-        String refreshToken = request.refreshToken();
-        return ResponseEntity.ok(memberService.reissueTokens(memberId, refreshToken));
-    }
-
-    @DeleteMapping("/signout")
-    public ResponseEntity<String> signOut(
-            HttpServletRequest request,
-            @AuthMember Long memberId) {
-        String accessToken = AuthenticationExtractor.extractAccessToken(request)
-                .orElseThrow(() -> new MemberException(UNAUTHORIZED));
-        return ResponseEntity.ok(memberService.signOut(memberId, accessToken));
-    }
-
-    @PostMapping("/find-email")
+    @PostMapping("/auth/find-email")
     public ResponseEntity<FindEmailResponse> findEmail(
-            @RequestBody FindEmailRequest request) {
-        return ResponseEntity.ok(memberService.findEmail(request.name(), request.email()));
+            @RequestParam("email") String email
+    ) {
+        return ResponseEntity.ok(memberService.findEmail(email));
     }
 
-    @PostMapping("/send-temporary-password")
+    // 비로그인 상태에서 비밀번호 변경하기 위해 임시 비밀번호 발송
+    @PostMapping("/auth/send-temporary-password")
     public ResponseEntity<String> sendTemporaryPassword(
-            @RequestParam("email") String email) {
+            @RequestParam("email") String email
+    ) {
         return ResponseEntity.ok(memberService.sendTemporaryPassword(email));
     }
 
-    @PostMapping("/verify-temporary-password")
-    public ResponseEntity<String> resetNewPassword(
+    // 비로그인 상태에서 비밀번호 변경
+    @PostMapping("/auth/verify-temporary-password")
+    public ResponseEntity<String> verifyTemporaryPassword(
             @RequestParam("email") String email,
             @RequestParam("temporaryPassword") String temporaryPassword,
             @RequestBody ResetPasswordRequest request
@@ -93,14 +50,86 @@ public class MemberController {
         String newPassword2 = request.newPassword2();
 
         if (!newPassword.equals(newPassword2)) {
-            throw new MemberException(PASSWORDS_NOT_EQUAL)    ;
+            throw new MemberException(PASSWORDS_NOT_EQUAL);
         }
         return ResponseEntity.ok(memberService.verifyTemporaryPassword(email, temporaryPassword, newPassword));
     }
 
+    // 로그인 상태에서 비밀번호 변경
+    @PostMapping("/auth/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @AuthMember Long memberId,
+            @RequestBody ResetPasswordRequest request
+    ) {
+        String newPassword = request.newPassword();
+        String newPassword2 = request.newPassword2();
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("[ MemberController ] 테스트");
+        if (!newPassword.equals(newPassword2)) {
+            throw new MemberException(PASSWORDS_NOT_EQUAL);
+        }
+
+        return ResponseEntity.ok(memberService.resetPassword(memberId, newPassword));
+    }
+
+    @PostMapping("/auth/verify-duplication")
+    public ResponseEntity<String> verifyDuplication(
+            @RequestParam("email") String email
+    ) {
+        return ResponseEntity.ok(memberService.verifyDuplication(email));
+    }
+
+    @PostMapping("/auth/send-code")
+    public ResponseEntity<String> sendCode(
+            @RequestParam("email") String email
+    ) {
+        return ResponseEntity.ok(memberService.sendCode(email));
+    }
+
+    @GetMapping("/auth/verify-code")
+    public ResponseEntity<EmailVerificationResponse> verifyCode(
+            @RequestParam("email") String email,
+            @RequestParam("code") String code
+    ) {
+        return ResponseEntity.ok(memberService.verifyCode(email, code));
+    }
+
+    @PostMapping("/auth/signup")
+    public ResponseEntity<String> signUp(
+            @RequestBody SignUpRequest request
+    ) {
+        return ResponseEntity.ok(memberService.signUp(request));
+    }
+
+    @PostMapping("/auth/signin")
+    public ResponseEntity<TokenResponse> signIn(
+            @RequestBody SignInRequest request
+    ) {
+        return ResponseEntity.ok(memberService.signIn(request));
+    }
+
+    @DeleteMapping("/auth/signout")
+    public ResponseEntity<String> signOut(
+            HttpServletRequest request,
+            @AuthMember Long memberId
+    ) {
+        String accessToken = AuthenticationExtractor.extractAccessToken(request)
+                .orElseThrow(() -> new MemberException(UNAUTHORIZED));
+        return ResponseEntity.ok(memberService.signOut(memberId, accessToken));
+    }
+
+    @DeleteMapping("/auth/exit")
+    public ResponseEntity<String> exit(
+            @AuthMember Long memberId
+    ) {
+        return ResponseEntity.ok(memberService.exit(memberId));
+    }
+
+    @PostMapping("/auth/reissue")
+    public ResponseEntity<TokenResponse> reissueTokens(
+            @RequestBody ReissueRequest request,
+            @AuthMember Long memberId
+    ) {
+        String refreshToken = request.refreshToken();
+        return ResponseEntity.ok(memberService.reissueTokens(memberId, refreshToken));
     }
 }

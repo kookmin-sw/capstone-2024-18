@@ -17,7 +17,8 @@ public enum MemberExceptionType implements ExceptionType {
     ACCESS_TOKEN_IS_IN_BLACKLIST(Status.BAD_REQUEST, 3011, "액세스 토큰이 로그아웃 처리되었습니다. 재로그인하시기 바랍니다."),
     NOT_VERIFIED(Status.BAD_REQUEST, 3012, "본인 인증을 먼저 완료해야 합니다."),
     PASSWORDS_NOT_EQUAL(Status.BAD_REQUEST, 3013, "재설정하는 비밀번호들이 동일하지 않습니다."),
-    WRONG_TEMPORARY_PASSWORD(Status.BAD_REQUEST, 3014, "임시 비밀번호가 올바르지 않습니다.")
+    WRONG_TEMPORARY_PASSWORD(Status.BAD_REQUEST, 3014, "임시 비밀번호가 올바르지 않습니다."),
+    NOT_FOUND_GENDER(Status.NOT_FOUND, 3015, "일치하는 성별이 없습니다.")
     ;
 
     private final Status status;
