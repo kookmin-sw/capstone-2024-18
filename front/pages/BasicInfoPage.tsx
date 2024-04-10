@@ -30,7 +30,7 @@ const BasicInfoPage = () => {
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     nickname: "",
     gender: "DEFAULT",
-    age: ["DEFAULT", "EARLY"],
+    age: ["DEFAULT", "DEFAULT"],
     height: "DEFAULT",
     region: "DEFAULT",
   })
@@ -83,7 +83,7 @@ const BasicInfoPage = () => {
       case 1:
         return basicInfo.gender !== "DEFAULT";
       case 2:
-        return basicInfo.age[0] !== "DEFAULT";
+        return basicInfo.age[0] !== "DEFAULT" && basicInfo.age[1] !== "DEFAULT";
       case 3:
         return basicInfo.height !== "DEFAULT";
       case 4:
