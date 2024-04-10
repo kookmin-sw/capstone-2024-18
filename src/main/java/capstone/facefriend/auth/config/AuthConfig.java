@@ -51,6 +51,7 @@ public class AuthConfig implements WebMvcConfigurer {
 
                 .addIncludePathPattern("/auth/reset-password", POST)
                 .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/auth/exit", DELETE)
                 .addIncludePathPattern("/basic-info", ANY)
                 .addIncludePathPattern("/face-info", ANY)
 
@@ -63,6 +64,7 @@ public class AuthConfig implements WebMvcConfigurer {
 
                 .addIncludePathPattern("/auth/reset-password", POST)
                 .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/auth/exit", DELETE)
                 .addIncludePathPattern("/basic-info", ANY)
                 .addIncludePathPattern("/face-info", ANY)
 
@@ -81,6 +83,7 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addExcludePathPattern("/**", OPTIONS)
 
                 .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/auth/exit", DELETE)
                 .addIncludePathPattern("/auth/reset-password", POST)
                 .addIncludePathPattern("/basic-info", ANY)
                 .addIncludePathPattern("/face-info", ANY);
@@ -91,6 +94,7 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addExcludePathPattern("/**", OPTIONS)
 
                 .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/auth/exit", DELETE)
                 .addIncludePathPattern("/auth/reset-password", POST)
                 .addIncludePathPattern("/basic-info", ANY)
                 .addIncludePathPattern("/face-info", ANY);

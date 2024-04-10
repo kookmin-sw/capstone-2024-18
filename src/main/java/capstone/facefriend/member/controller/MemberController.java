@@ -117,6 +117,13 @@ public class MemberController {
         return ResponseEntity.ok(memberService.signOut(memberId, accessToken));
     }
 
+    @DeleteMapping("/auth/exit")
+    public ResponseEntity<String> exit(
+            @AuthMember Long memberId
+    ) {
+        return ResponseEntity.ok(memberService.exit(memberId));
+    }
+
     @PostMapping("/auth/reissue")
     public ResponseEntity<TokenResponse> reissueTokens(
             @RequestBody ReissueRequest request,

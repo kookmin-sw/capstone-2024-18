@@ -40,7 +40,9 @@ public class MemberService {
     private static final String SIGN_UP_SUCCESS_MESSAGE = "회원가입 성공";
     private static final String SIGN_OUT_SUCCESS_MESSAGE = "로그아웃 성공";
     private static final String RESET_PASSWORD_SUCCESS_MESSAGE = "비밀번호 재설정 성공";
-    private static final Long SIGN_OUT_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
+    private static final String EXIT_SUCCESS_MESSAGE = "회원탈퇴 성공";
+
+    private static final Long BLACKLIST_REMAIN_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
 
     @Value(value = "${default-profile.s3-url}")
     private String defaultProfileS3Url;
@@ -128,10 +130,19 @@ public class MemberService {
     @Transactional
     public String signOut(Long memberId, String accessToken) {
         redisDao.deleteRefreshToken(String.valueOf(memberId));
-        redisDao.setAccessTokenSignOut(accessToken, SIGN_OUT_MINUTE);
+        redisDao.setAccessTokenSignOut(accessToken, BLACKLIST_REMAIN_MINUTE);
         return SIGN_OUT_SUCCESS_MESSAGE;
     }
 
+    @Transactional
+    public String exit(Long memberId) {
+        if (memberRepository.findById(memberId).isPresent()) {
+            memberRepository.deleteById(memberId);
+        }
+        return EXIT_SUCCESS_MESSAGE;
+    }
+
+    @Transactional
     public TokenResponse reissueTokens(Long memberId, String refreshTokenInput) {
         String refreshToken = redisDao.getRefreshToken(String.valueOf(memberId));
         if (!refreshToken.equals(refreshTokenInput)) {
@@ -140,6 +151,7 @@ public class MemberService {
         return tokenProvider.createTokens(memberId);
     }
 
+    @Transactional
     public FindEmailResponse findEmail(String emailInput) {
 
         Member member = memberRepository.findByEmail(emailInput)

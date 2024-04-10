@@ -17,4 +17,6 @@ public interface MemberRepository extends Repository<Member, Long> {
     Optional<Member> findById(Long id);
 
     Page<Member> findAll(Pageable pageable);
+
+    void deleteById(Long id);
 }
