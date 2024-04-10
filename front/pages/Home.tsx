@@ -67,7 +67,9 @@ const Home = () => {
       if (authCtx.accessToken) {
         console.log("엑세스토큰 있음");
         // 기본정보 get 시도
+        console.log("기본정보 로딩 중");
         const response = await getBasicInfo(authCtx.accessToken);
+        console.log("기본정보 로딩 끝");
 
         // 기본정보 응답 확인
         if (isBasicInfoResponse(response)) {
@@ -91,9 +93,8 @@ const Home = () => {
         // 오류 처리
         if (isErrorResponse(response)) {
           switch (response.exceptionCode) {
-            // 엑세스 토큰 만료 시 
             case 2004: // EXPIRED_TOKEN 이미 만료된 토큰입니다.
-              if (authCtx.refreshToken) {
+                if (authCtx.refreshToken) {
                 // 엑세스토큰 재발급 시도
                 console.log("재발급 시도");
                 tryReissue();
@@ -121,7 +122,10 @@ const Home = () => {
               createAlertMessage(response.message, reload);
           }
         }
-        
+      }
+      else {
+        console.log("엑세스토큰 없음");
+        navigate("/login");
       }
     }
     catch {

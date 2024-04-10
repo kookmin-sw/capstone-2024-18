@@ -22,19 +22,19 @@ const BasicInfoPage = () => {
   const navigate = useNavigate();
   
   interface BasicInfo {
-    nickname: string;
-    nicknameState: string;
-    gender: string;
-    ageGroup: string;
-    ageDegree: string;
-    height: string;
-    region: string;
+    nickname: string;         
+    nicknameState: string;  // "DEFALUT", "VALID", "INVALID"
+    gender: string;         // "DEFAULT", "MALE", "FEMALE"
+    ageGroup: string;       // "DEFAULT", "TWENTIES", "THIRTIES", ...
+    ageDegree: string;      // "DEFALUT", "EARLY", "MIDDLE", "LATE"
+    height: string;         // "DEFALUT", "FIFTIES", "SIXTIES", ...
+    region: string;         // "DEFAULT", "GANGNAM_SEOCHO_YANGJAE", ...
   }
 
   const [pageIndex, setPageIndex] = useState(0);
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     nickname: "",
-    nicknameState: "",
+    nicknameState: "DEFAULT",
     gender: "DEFAULT",
     ageGroup: "DEFAULT",
     ageDegree: "DEFAULT",
@@ -149,7 +149,7 @@ const BasicInfoPage = () => {
         placeholder="닉네임을 입력해주세요" 
         value={basicInfo.nickname} 
         onChangeText={handleNicknameOnChange} 
-        isValid={basicInfo.nicknameState === "VALID" || basicInfo.nicknameState === ""}
+        isValid={basicInfo.nicknameState === "VALID" || basicInfo.nicknameState === "DEFAULT"}
       />
       <View style={styles.iconTextContainer}>
         <IconText icon={{ source: "information" }}>한글 + 영문 + 숫자 총 10자 이하</IconText>
