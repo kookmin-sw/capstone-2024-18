@@ -49,39 +49,51 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(loginCheckInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/test", GET)
-                .addIncludePathPattern("/members/**", ANY)
+                .addIncludePathPattern("/auth/reset-password", POST)
+                .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/basic-info", ANY)
+                .addIncludePathPattern("/face-info", ANY)
 
-                .addExcludePathPattern("/members/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
+                .addExcludePathPattern("/auth/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
     private HandlerInterceptor loginInterceptor() {
         return new PathMatchInterceptor(loginInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/members/**", ANY)
-                .addExcludePathPattern("/members/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
+                .addIncludePathPattern("/auth/reset-password", POST)
+                .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/basic-info", ANY)
+                .addIncludePathPattern("/face-info", ANY)
+
+                .addExcludePathPattern("/auth/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
     private HandlerInterceptor tokenReissueInterceptor() {
         return new PathMatchInterceptor(tokenReissueInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/members/**", ANY);
+                .addIncludePathPattern("/auth/reissue", POST); // 토큰 재발급 시에는 해당 요청을 가로채야 합니다.
     }
 
     private HandlerInterceptor tokenBlackListInterceptor() {
         return new PathMatchInterceptor(tokenBlackListInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/members/**", ANY);
+                .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/auth/reset-password", POST)
+                .addIncludePathPattern("/basic-info", ANY)
+                .addIncludePathPattern("/face-info", ANY);
     }
 
     private HandlerInterceptor verificationInterceptor() {
         return new PathMatchInterceptor(verificationInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/members/**", ANY);
+                .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/auth/reset-password", POST)
+                .addIncludePathPattern("/basic-info", ANY)
+                .addIncludePathPattern("/face-info", ANY);
     }
 
     @Override

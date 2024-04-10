@@ -19,7 +19,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
 
     private final TokenProvider tokenProvider;
     private final AuthenticationContext authenticationContext;
-    private final VerificationInterceptor verificationInterceptor;
+    private final TokenBlackListInterceptor tokenBlackListInterceptor;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -28,6 +28,6 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
         Long memberId = tokenProvider.extractIdIgnoringExpiration(accessToken);
         authenticationContext.setAuthentication(memberId);
 
-        return verificationInterceptor.preHandle(request, response, handler);
+        return tokenBlackListInterceptor.preHandle(request, response, handler);
     }
 }

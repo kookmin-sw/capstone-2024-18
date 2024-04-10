@@ -4,7 +4,6 @@ import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.auth.exception.AuthException;
 import capstone.facefriend.email.exception.VerificationException;
-import capstone.facefriend.email.support.VerificationContext;
 import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
 import capstone.facefriend.member.exception.MemberException;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import static capstone.facefriend.auth.exception.AuthExceptionType.UNAUTHORIZED;
-import static capstone.facefriend.email.exception.VerificationExceptionType.*;
+import static capstone.facefriend.email.exception.VerificationExceptionType.NOT_VERIFIED;
 import static capstone.facefriend.member.exception.MemberExceptionType.NOT_FOUND;
 
 
@@ -26,7 +25,6 @@ import static capstone.facefriend.member.exception.MemberExceptionType.NOT_FOUND
 public class VerificationInterceptor implements HandlerInterceptor {
 
     private final TokenProvider tokenProvider;
-    private final VerificationContext verificationContext;
     private final MemberRepository memberRepository;
 
     @Override
@@ -41,8 +39,6 @@ public class VerificationInterceptor implements HandlerInterceptor {
 
         boolean isVerified = member.isVerified();
         if (!isVerified) throw new VerificationException(NOT_VERIFIED);
-
-        verificationContext.setIsVerified(true); // 예외를 통과했다면 무조건 true 입니다.
 
         return true;
     }
