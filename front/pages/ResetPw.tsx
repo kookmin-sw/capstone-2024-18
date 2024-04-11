@@ -90,8 +90,6 @@ const ResetPw = () => {
       }
     }
     else setPassword({...password, status: "NOT_MATCH", message: "비밀번호가 일치하지 않습니다."});
-
-    console.log(password.value)
   }, [password.value, password.isFocused])
 
   useEffect(() => {
@@ -104,7 +102,7 @@ const ResetPw = () => {
       password.status === "" ? "" 
     : password.status === "VALID" ? 
       <IconText icon={{ source: "check-circle" }}>{password.message}</IconText>
-    : // password.status === "INVALID || password.status === NOT_MATCH"
+    : // password.status === "INVALID" || password.status === "NOT_MATCH"
       <IconText 
         icon={{ source: "close-circle", color: password.isFocused ? colors.gray6 : colors.point }} 
         textStyle={{ color: password.isFocused ? colors.gray6 : colors.point }}

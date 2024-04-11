@@ -8,6 +8,7 @@ import CustomTextInput from '../components/CustomTextInput.tsx';
 import CustomButton from '../components/CustomButton.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { findEmail } from "../util/auth.tsx";
+import IconText from '../components/IconText.tsx';
 
 
 const FindEmail = () => {
@@ -33,16 +34,22 @@ const FindEmail = () => {
       return;
     }
 
-    setEmail({...email, status: "LOADING", message: "중복 확인 중입니다."});
-
     const emaliRegex = /^[\w.-]+@[\w.-]+\.\w+$/;
     if (emaliRegex.test(email.value)) {
       setEmail({...email, status: "VALID", message: "올바른 이메일 형식입니다."});
-    } 
-    else {
+    } else {
       setEmail({...email, status: "INVALID", message: "이메일 형식이 아닙니다."});
     }
   }
+
+  const emailHintText = 
+    <View style={styles.hintContainer}>{
+      email.status === "" ? "" 
+    : email.status === "VALID" ? 
+      <IconText icon={{ source: "check-circle" }}>{email.message}</IconText>
+    : // email.status === "LOADING" 
+        <IconText icon={{ source: "close-circle", color: colors.point }} textStyle={{ color: colors.point }}>{email.message}</IconText>
+    }</View>
 
   const handleSubmit = async () => {
     console.log("submit", isFormValid);
@@ -81,6 +88,7 @@ const FindEmail = () => {
             isValid={email.status === "VALID" || email.status === "LOADING" || email.status === ""}
           />
         </View>
+        {emailHintText}
       </View>
 
       <CustomButton 
@@ -103,6 +111,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: -16 * 0.02, 
     paddingBottom: 12
+  },
+  hintContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 10,
+    marginTop: 8,
+    marginBottom: 4,
+    height: 18,
   },
   smallHelperText: {
     alignSelf: 'center', 

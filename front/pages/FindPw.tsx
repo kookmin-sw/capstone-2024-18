@@ -46,11 +46,11 @@ const FindPw = () => {
   const emailHintText = 
     <View style={styles.hintContainer}>{
       email.status === "" ? "" 
-    : email.status === "VERIFIED" || email.status === "VALID" ? 
+    : email.status === "VALID" ? 
       <IconText icon={{ source: "check-circle" }}>{email.message}</IconText>
-    : email.status === "NOT_CHECKED" || email.status === "INVALID" ? 
-        <IconText icon={{ source: "close-circle", color: colors.point }} textStyle={{ color: colors.point }}>{email.message}</IconText>
-    : // email.status === "LOADING" 
+    : email.status === "INVALID" ? 
+      <IconText icon={{ source: "close-circle", color: colors.point }} textStyle={{ color: colors.point }}>{email.message}</IconText>
+    : // email.status === "LOADING"
       <IconText icon={{ source: "loading" }}>{email.message}</IconText>
     }</View>
 
@@ -67,7 +67,6 @@ const FindPw = () => {
     }
   }
 
-  // 
   useEffect(() => {
     console.log(email.status);
     if (email.status === "VALID") setIsFormValid(true);
@@ -88,7 +87,7 @@ const FindPw = () => {
             blurOnSubmit={false}
             returnKeyType="next"
             onBlur={handleEmailInputOnBlur}
-            isValid={email.status === "VALID" || email.status === "LOADING" || email.status === ""}
+            isValid={email.status === "VALID" || email.status === ""}
           />
         </View>
         {emailHintText}
