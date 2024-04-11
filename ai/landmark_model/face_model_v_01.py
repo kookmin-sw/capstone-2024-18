@@ -41,30 +41,58 @@ def rotate_point_clockwise(point_a, point_b, angle_deg):
     
     return x_new, y_new
 
+# def calculate_angle(x1, y1, x2, y2, x3, y3):
+#     # 끼인 각을 이루는 세 변의 길이를 계산
+#     a = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)  # x1과 x2 사이의 변
+#     b = math.sqrt((x3 - x1)**2 + (y3 - y1)**2)  # x1과 x3 사이의 변
+#     c = math.sqrt((x3 - x2)**2 + (y3 - y2)**2)  # x2와 x3 사이의 변
+    
+#     # 끼인 각의 코사인 값을 계산
+#     cos_angle = (a**2 + c**2 - b**2) / (2 * a * c)
+    
+#     # 코사인 값에서 각도를 계산하고 라디안에서 도로 변환
+#     angle_rad = math.acos(cos_angle)
+#     angle_deg = math.degrees(angle_rad)
+    
+#     return angle_deg
+
 def calculate_angle(x1, y1, x2, y2, x3, y3):
-    # 끼인 각을 이루는 세 변의 길이를 계산
-    a = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)  # x1과 x2 사이의 변
-    b = math.sqrt((x3 - x1)**2 + (y3 - y1)**2)  # x1과 x3 사이의 변
-    c = math.sqrt((x3 - x2)**2 + (y3 - y2)**2)  # x2와 x3 사이의 변
+    # 각 점을 벡터로 표현
+    vec1 = [x1 - x2, y1 - y2]
+    vec2 = [x3 - x2, y3 - y2]
     
-    # 끼인 각의 코사인 값을 계산
-    cos_angle = (a**2 + c**2 - b**2) / (2 * a * c)
+    # 외적을 계산하여 z 성분으로부터 시계 방향 여부를 판단
+    cross_product = vec1[0] * vec2[1] - vec1[1] * vec2[0]
     
-    # 코사인 값에서 각도를 계산하고 라디안에서 도로 변환
-    angle_rad = math.acos(cos_angle)
+    # 시계 방향이면 양수 각도, 반시계 방향이면 음수 각도를 반환
+    if cross_product > 0:
+        return calculate_positive_angle(vec1, vec2)
+    else:
+        return -calculate_positive_angle(vec1, vec2)
+
+def calculate_positive_angle(vec1, vec2):
+    # 두 벡터의 내적을 계산
+    dot_product = vec1[0] * vec2[0] + vec1[1] * vec2[1]
+    
+    # 각도를 계산
+    angle_rad = math.acos(dot_product / (magnitude(vec1) * magnitude(vec2)))
     angle_deg = math.degrees(angle_rad)
     
     return angle_deg
 
+def magnitude(vec):
+    # 벡터의 크기를 계산
+
+    return math.sqrt(vec[0] ** 2 + vec[1] ** 2)
 def calibration(landmarks):
     min_y = landmarks[10]
     max_y = landmarks[152]
 
     middle = [(min_y[0]+max_y[0])/2, (min_y[1]+max_y[1])/2]
-
+    print(min_y, middle, max_y)
     angle = calculate_angle(min_y[0],min_y[1], middle[0],middle[1], middle[0], 0)
     if angle>0: angle = max(0, angle-2)
-    elif angle<0: angle = min(0, angle+2)
+    elif angle<0: angle = min(0, angle)
     print("angle", angle)
     for i in range(len(landmarks)):
         landmarks[i] = rotate_point_clockwise(landmarks[i], middle, angle)
