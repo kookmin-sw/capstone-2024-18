@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet } from "react-native";
-import { IconButton } from "react-native-paper";
+import { View, Text, StyleSheet, LayoutChangeEvent } from "react-native";
+import { IconButton,  } from "react-native-paper";
 import { Pressable } from "react-native-paper/lib/typescript/components/TouchableRipple/Pressable";
 import { colors } from "../assets/colors";
 
@@ -9,10 +9,15 @@ interface Props {
 }
 
 const Title = ({ children, onPress }: Props) => {
+  const onLayout = (event: LayoutChangeEvent) => {
+    const { x, y, width, height } = event.nativeEvent.layout;
+    console.log('x:', x, 'y:', y, 'width:', width, 'height:', height);
+  };
+
   return (
-    <View style={styles.container}>
+    <View onLayout={onLayout} style={styles.container}>
       <View style={styles.buttonContainer}>
-        <IconButton icon="chevron-left" size={44} onPress={onPress}/>
+        <IconButton icon="chevron-left" size={44} onPress={onPress} iconColor={colors.gray7}/>
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.text}>{children}</Text>
@@ -40,7 +45,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonContainer: {
-    width: 44,
+    width: 70,
     justifyContent: "center",
     alignItems: "center",
   }

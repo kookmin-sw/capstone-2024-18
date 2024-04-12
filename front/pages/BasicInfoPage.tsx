@@ -328,27 +328,29 @@ const BasicInfoPage = () => {
   }, [basicInfo])
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Title onPress={handlePrevPage}>기본 정보</Title>
-      <View style={styles.innerContainer}>
-        <Card style={styles.card}>
-          <IconText icon={{source: "chat-question", size: 18}} textStyle={styles.cardText}>기본 정보는 왜 필요한가요? 🤔</IconText>
-        </Card>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>다른 사용자와 관계를 시작하기 전,{"\n"} 서로 최소한의 인적 사항을 참고하기 위함이에요.</Text>
+      <View style={styles.container}>
+        <View style={styles.innerContainer}>
+          <Card style={styles.card}>
+            <IconText icon={{source: "chat-question", size: 18}} textStyle={styles.cardText}>기본 정보는 왜 필요한가요? 🤔</IconText>
+          </Card>
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>다른 사용자와 관계를 시작하기 전,{"\n"} 서로 최소한의 인적 사항을 참고하기 위함이에요.</Text>
+          </View>
+          {contents[pageIndex]}
         </View>
-        {contents[pageIndex]}
+        <CustomProgressBar progress={(pageIndex + 1) / 6}/>
+        <View style={{ height: 27 }}/>
+        <View style={styles.bottomContainer}>
+          <CustomButton 
+          containerStyle={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} 
+          onPress={pageIndex === contents.length - 1 ? submitForm : handleNextPage}
+          textStyle={isFormValid() ? styles.activatedTextStyle : styles.disabledTextStyle}
+          >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
+        </View>
       </View>
-      <CustomProgressBar progress={(pageIndex + 1) / 6}/>
-      <View style={{ height: 27 }}/>
-      <View style={styles.bottomContainer}>
-        <CustomButton 
-        containerStyle={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} 
-        onPress={pageIndex === contents.length - 1 ? submitForm : handleNextPage}
-        textStyle={isFormValid() ? styles.activatedTextStyle : styles.disabledTextStyle}
-        >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
   )
 }
 
