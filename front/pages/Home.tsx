@@ -125,6 +125,9 @@ const Home = () => {
       }
       else {
         console.log("엑세스토큰 없음");
+        if (authCtx.accessToken) {
+          console.log("있네");
+        }
         navigate("/login");
       }
     }
@@ -135,8 +138,10 @@ const Home = () => {
 
   useEffect(() => {
     console.log("reloadCounter: " + reloadCounter);
-    handleAuth();
-  }, [reloadCounter])
+    if (!authCtx.isLoading) {
+      handleAuth();
+    }
+  }, [reloadCounter, authCtx.isLoading])
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

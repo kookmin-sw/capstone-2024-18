@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useMemo} from 'react';
 import { removeToken, saveToken, loadToken } from '../util/encryptedStorage';
 import axios from 'axios';
 import Config from 'react-native-config';
@@ -11,6 +11,7 @@ interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   signin: (accessToken: string, refreshToken: string) => Promise<validResponse | errorResponse>;
   signout: () => Promise<validResponse | errorResponse>;
   reissue: () => Promise<validResponse | errorResponse>;
@@ -26,6 +27,7 @@ export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
+  isLoading: false,
   signin: async (email: string, password: string): Promise<validResponse | errorResponse> => exampleResponse,
   signout: async (): Promise<validResponse | errorResponse> => exampleResponse,
   reissue: async (): Promise<validResponse | errorResponse> => exampleResponse,
@@ -38,6 +40,7 @@ interface AuthProviderProps {
 const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 10. OK
   const signin = async (email: string, password: string) => {
@@ -125,29 +128,32 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const loadInitialToken = async () => {
-      console.log("loadInitialToken");
+      console.log("토큰 로딩 시작");
       const storedAccessToken = await loadToken("accessToken");
       const storedRefreshToken = await loadToken("refreshToken");
-      console.log("stored access token: ", storedAccessToken);
-      console.log("stored refresh token: ", storedRefreshToken);
       if (storedAccessToken) {
         setAccessToken(storedAccessToken);
+        console.log("엑세스 토큰: ", storedAccessToken);
       }
       if (storedRefreshToken) {
         setRefreshToken(storedRefreshToken);
+        console.log("리프레시 토큰: ", storedRefreshToken);
       }
+      setIsLoading(false); 
+      console.log("토큰 로딩 완료");
     };
     loadInitialToken();
   }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     accessToken,
     refreshToken,
     isAuthenticated: !!accessToken,
+    isLoading: isLoading, 
     signin,
     signout,
     reissue,
-  };
+  }), [accessToken, refreshToken, isLoading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
