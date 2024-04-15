@@ -54,10 +54,10 @@ export const handleError = (error: unknown, method: string): errorResponse => {
   
   else if (error instanceof Error) {
     errorInfo = {
-        method,
-        status: -2,
-        message: `${method}에서 예상치 못한 에러 발생: ${error.message}`,
-      }
+      method,
+      status: -2,
+      message: `${method}에서 예상치 못한 에러 발생: ${error.message}`,
+    }
   } 
   
   else {
@@ -83,7 +83,7 @@ export const findEmail = async (email: string): Promise<findEmailResponse | erro
   const endpoint = `${LOCALHOST}/auth/find-email?email=${email}`;
   try {
     const response = await axios.post(endpoint);
-    const { receivedEmail, isRegistered } = response.data;
+    const { email: receivedEmail, isRegistered } = response.data;
     if (email !== receivedEmail) {
       throw new Error(`${method}에서 예상치 못한 에러 발생 ${JSON.stringify(response.data)}`);
     }
@@ -232,4 +232,92 @@ export const signup = async (email: string, password: string, password2: string,
   catch (error) {
     return handleError(error, method);
   }
+}
+
+interface basicInfoResponse extends validResponse {
+  nickname: string;
+  gender: string;
+  ageGroup: string;
+  ageDegree: string;
+  heightGroup: string;
+  region: string;
+}
+
+// 13.
+export const getBasicInfo = async (accessToken: string): Promise<basicInfoResponse | errorResponse> => {
+  const method = "getBasicInfo";
+  const endpoint =  `${LOCALHOST}/members/basic-info`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken } 
+  };
+  try {
+    const response = await axios.get(endpoint, config);
+    const { nickname, gender, ageGroup, ageDegree, heightGroup, region } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "기본 정보를 로드했습니다.",
+      nickname,
+      gender,
+      ageGroup,
+      ageDegree,
+      heightGroup,
+      region,
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 14.
+export const putBasicInfo = async (
+    accessToken: string, 
+    nickname: string, 
+    gender: string,
+    ageGroup: string,
+    ageDegree: string ,
+    heightGroup: string, 
+    region: string, 
+  ): Promise<validResponse | errorResponse> => {
+  const method = "getBasicInfo";
+  const endpoint =  `${LOCALHOST}/members/basic-info`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken } 
+  };
+  const body = {
+    nickname,
+    gender,
+    ageGroup,
+    ageDegree,
+    heightGroup,
+    region,
+  }
+  try {
+    const response = await axios.put(endpoint, body, config);
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "기본 정보를 저장했습니다.",
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+export const isValidResponse = (response: validResponse | errorResponse): response is validResponse => {
+  return (response as errorResponse).exceptionCode === undefined;
+}
+
+export const isErrorResponse = (response: validResponse | errorResponse): response is errorResponse => {
+  return (response as errorResponse).exceptionCode !== undefined;
+}
+
+export const isBasicInfoResponse = (response: validResponse | errorResponse): response is basicInfoResponse => {
+  return (response as basicInfoResponse).nickname !== undefined;
 }
