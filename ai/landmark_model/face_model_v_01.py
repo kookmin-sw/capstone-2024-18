@@ -84,6 +84,7 @@ def magnitude(vec):
     # 벡터의 크기를 계산
 
     return math.sqrt(vec[0] ** 2 + vec[1] ** 2)
+
 def calibration(landmarks):
     min_y = landmarks[10]
     max_y = landmarks[152]
