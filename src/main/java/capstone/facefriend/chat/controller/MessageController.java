@@ -1,7 +1,7 @@
 package capstone.facefriend.chat.controller;
 
 import capstone.facefriend.chat.domain.Room;
-import capstone.facefriend.chat.infrastructure.repository.dto.MessageDto;
+import capstone.facefriend.chat.infrastructure.repository.dto.MessageRequest;
 import capstone.facefriend.chat.service.MessageService;
 import capstone.facefriend.chat.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -35,17 +35,9 @@ public class MessageController {
     @MessageMapping("/chats/messages")
     public void message(
             @RequestBody String name,
-            @RequestBody String messageDtoJson
-    ) {
-        Room room = roomService.setRoom(name);
-        try {
-            MessageDto messageDto = converter.getObjectMapper().readValue(messageDtoJson, MessageDto.class);
-            messageDto.setRoomId(room.getId());
-            messageService.sendMessage(messageDto);
-        } catch (IOException e) {
-            log.error("Failed to parse MessageDto JSON: {}", e.getMessage());
-            // 예외 처리
-        }
+            @RequestBody MessageRequest messageRequest
+            ) {
+        messageService.sendMessage(messageRequest);
     }
 
 }

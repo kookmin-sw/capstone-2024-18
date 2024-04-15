@@ -1,9 +1,10 @@
 package capstone.facefriend.chat.service;
 
+import capstone.facefriend.chat.domain.ChatMessage;
 import capstone.facefriend.chat.domain.Room;
 import capstone.facefriend.chat.infrastructure.repository.MessageRepository;
 import capstone.facefriend.chat.infrastructure.repository.RoomRepository;
-import capstone.facefriend.chat.infrastructure.repository.dto.MessageDto;
+import capstone.facefriend.chat.infrastructure.repository.dto.MessageRequest;
 import capstone.facefriend.member.domain.Member;
 import capstone.facefriend.member.domain.MemberRepository;
 import capstone.facefriend.member.exception.MemberException;
@@ -39,20 +40,7 @@ public class MessageService {
     }
 
     @Transactional
-    public void sendMessage(MessageDto messageDto) {
-        Member sender = findMemberById(messageDto.getSenderId());
-        Room room = findRoomById(messageDto.getRoomId());
-        capstone.facefriend.chat.domain.Message message = capstone.facefriend.chat.domain.Message.builder()
-                .content(messageDto.getContent())
-                .sendTime(messageDto.getCreatedAt())
-                .sender(sender)
-                .room(room)
-                .isRead(false)
-                .build();
-
-        messageRepository.save(message);
-
-        redisTemplate.convertAndSend(topic, messageDto);
+    public void sendMessage(MessageRequest messageRequest) {
 
     }
 

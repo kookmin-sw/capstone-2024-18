@@ -8,17 +8,14 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class MessageDto {
-
+public class MessageResponse {
     private Long roomId;
 
     private Long senderId;
 
-    @NotBlank
     private String content;
 
     private LocalDateTime createdAt;
 
     private Boolean isRead;
-
 }

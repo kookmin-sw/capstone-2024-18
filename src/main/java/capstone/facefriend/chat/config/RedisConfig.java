@@ -1,7 +1,7 @@
 package capstone.facefriend.chat.config;
 
 
-import capstone.facefriend.chat.infrastructure.repository.dto.MessageDto;
+import capstone.facefriend.chat.infrastructure.repository.dto.MessageResponse;
 import capstone.facefriend.chat.service.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +44,7 @@ public class RedisConfig {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(MessageDto.class));
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(MessageResponse.class));
         return redisTemplate;
     }
 

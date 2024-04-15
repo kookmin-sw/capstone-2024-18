@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Slf4j
 @DynamicInsert
-public class Message extends BaseEntity {
+public class ChatMessage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

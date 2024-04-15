@@ -1,6 +1,6 @@
 package capstone.facefriend.chat.service;
 
-import capstone.facefriend.chat.infrastructure.repository.dto.MessageDto;
+import capstone.facefriend.chat.infrastructure.repository.dto.MessageResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,9 @@ public class RedisSubscriber implements MessageListener {
         String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 
         try {
-            MessageDto messageDto = objectMapper.readValue(publishMessage, MessageDto.class);
+            MessageResponse messageResponse = objectMapper.readValue(publishMessage, MessageResponse.class);
 
-            messagingTemplate.convertAndSend("/sub/chat/room/" + messageDto.getRoomId(), messageDto);
+            messagingTemplate.convertAndSend("/sub/chat/room/" + messageResponse.getRoomId(), messageResponse);
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

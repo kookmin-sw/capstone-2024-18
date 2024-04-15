@@ -25,12 +25,13 @@ public class Room extends BaseEntity {
 
         @Enumerated(EnumType.STRING)
         @Column
-        private Status status = Status.open;
+        private Status status = Status.set;
 
         @Column
         private boolean isPublic;
 
         public enum Status {
+                set("Set"),
                 open("Open"),
                 close("Close"),
                 delete("Delete");
