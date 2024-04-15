@@ -1,5 +1,5 @@
 from eye import EagleEye, BigEye, EyePolicy
-from face_shape import FireFaceShape,GroundFaceShape,WaterFaceShape,GoldFaceShape,TreeFaceShape
+from face_shape import FireFaceShape,GroundFaceShape,WaterFaceShape,GoldFaceShape,TreeFaceShape,FaceShapePolicy
 
 face = {
     "face_shape":{
@@ -10,7 +10,7 @@ face = {
             GroundFaceShape.GroundFaceShape,
             TreeFaceShape.TreeFaceShape
         ],
-        "policy":lambda x: "역삼각형"
+        "policy":FaceShapePolicy.FaceShapePolicy
     },
     "eye":{
         "types":[
