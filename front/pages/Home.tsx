@@ -112,13 +112,18 @@ const Home = () => {
             case 2006: // INVALID_TOKEN           토큰이 유효하지 않습니다.
             case 2007: // BAD_REQUEST_TO_PROVIDER 토큰이 유효하지 않습니다.
             case 2008: // UNAUTHORIZED            로그인한 정보가 없습니다.
-              console.log(response.message);
+              console.log("tokenError:", response.message);
               createAlertMessage(response.message, logoutAndRedirect);
+              break;
+            
+            // 기본정보가 null인 경우
+            case 0: 
+              console.log("nullError:", response.message);
               break;
 
             // 그 외 통신 오류 등  
             default:
-              console.log(response.message);
+              console.log("default:", response.message);
               createAlertMessage(response.message, reload);
           }
         }

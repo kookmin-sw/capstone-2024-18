@@ -68,7 +68,7 @@ export const handleError = (error: unknown, method: string): errorResponse => {
     }
   }
   
-  console.log(JSON.stringify(errorInfo));
+  console.log("handleError:", JSON.stringify(errorInfo));
   return errorInfo;
 }
 
