@@ -4,7 +4,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 export const saveToken = async (tokenType: "accessToken" | "refreshToken", refreshToken: string) => {
     try {
         await EncryptedStorage.setItem(tokenType, refreshToken);
-        console.log(tokenType + "저장 성공");
+        console.log(tokenType + "저장 성공: ");
     } catch (error) {
         console.log(tokenType + "저장 실패", error);
     }
@@ -15,14 +15,14 @@ export const loadToken = async (tokenType: "accessToken" | "refreshToken") => {
     try {
         const token = await EncryptedStorage.getItem(tokenType);
         if (token) {
-            console.log(tokenType + "로딩 성공", token);
+            console.log(tokenType + " 로딩 성공: ", token);
         }
         else {
-            console.log(tokenType + "로딩 실패");
+            console.log(tokenType + " 로딩 실패");
         }
         return token;
     } catch (error) {
-        console.log(tokenType + "로딩 실패", error);
+        console.log(tokenType + " 로딩 실패", error);
     }
 };
 
@@ -30,8 +30,8 @@ export const loadToken = async (tokenType: "accessToken" | "refreshToken") => {
 export const removeToken = async (tokenType: "accessToken" | "refreshToken") => {
     try {
         await EncryptedStorage.removeItem(tokenType);
-        console.log(tokenType + "삭제 성공");
+        console.log(tokenType + " 삭제 성공");
     } catch (error) {
-        console.log(tokenType + "삭제 실패", error);
+        console.log(tokenType + " 삭제 실패", error);
     }
 };

@@ -324,7 +324,7 @@ const BasicInfoPage = () => {
   ]
 
   useEffect(() => {
-    console.log(basicInfo);
+    console.log("basicInfo:", basicInfo);
   }, [basicInfo])
 
   return (

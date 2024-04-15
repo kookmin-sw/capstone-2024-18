@@ -125,9 +125,6 @@ const Home = () => {
       }
       else {
         console.log("엑세스토큰 없음");
-        if (authCtx.accessToken) {
-          console.log("있네");
-        }
         navigate("/login");
       }
     }

@@ -9,13 +9,9 @@ interface Props {
 }
 
 const Title = ({ children, onPress }: Props) => {
-  const onLayout = (event: LayoutChangeEvent) => {
-    const { x, y, width, height } = event.nativeEvent.layout;
-    console.log('x:', x, 'y:', y, 'width:', width, 'height:', height);
-  };
-
+  
   return (
-    <View onLayout={onLayout} style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.buttonContainer}>
         <IconButton icon="chevron-left" size={44} onPress={onPress} iconColor={colors.gray7}/>
       </View>

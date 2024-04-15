@@ -128,19 +128,17 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const loadInitialToken = async () => {
-      console.log("토큰 로딩 시작");
+      console.log("loadInitialToken 시작");
       const storedAccessToken = await loadToken("accessToken");
       const storedRefreshToken = await loadToken("refreshToken");
       if (storedAccessToken) {
         setAccessToken(storedAccessToken);
-        console.log("엑세스 토큰: ", storedAccessToken);
       }
       if (storedRefreshToken) {
         setRefreshToken(storedRefreshToken);
-        console.log("리프레시 토큰: ", storedRefreshToken);
       }
       setIsLoading(false); 
-      console.log("토큰 로딩 완료");
+      console.log("loadInitialToken 종료");
     };
     loadInitialToken();
   }, []);
