@@ -11,5 +11,11 @@ class BigEye(PartType):
 
 
     def analyze(self, landmarks_mash,landmark_1000):
-        #비율 계산? 어떤 방식으로든 하나의 숫자로 리턴 해야함
-        return 2
+        eye_height = landmarks_mash[374][1] - landmarks_mash[386][1]
+        eye_to_chin = landmarks_mash[152][1] - landmarks_mash[362][1]
+
+        user_rate = eye_height/eye_to_chin
+        standard_rate = 1.02 / 12.1
+
+        eye_height_sigma = 0.0125
+        return (user_rate - standard_rate) / eye_height_sigma #큰 눈이면 음수가 반환, z-score 반환
