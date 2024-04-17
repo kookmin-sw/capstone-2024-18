@@ -39,7 +39,7 @@ public class FaceInfoService {
     @Value("${flask.generate-url}")
     private String requestUrl;
 
-    @Value("${default-profile.s3-url}")
+    @Value("${cloud.aws.s3.default-profile}")
     private String defaultProfileS3Url;
 
     private final RestTemplate restTemplate;
@@ -50,18 +50,18 @@ public class FaceInfoService {
     private final MemberRepository memberRepository;
 
     // origin 업로드 & generated 업로드
-    public FaceInfoResponse upload(MultipartFile origin, Long styleId, Long memberId) throws IOException {
+    public FaceInfoResponse uploadOrigin(MultipartFile origin, Long styleId, Long memberId) throws IOException {
         ByteArrayMultipartFile generated = generate(origin, styleId, memberId);
-        return bucketService.upload(origin, generated, memberId);
+        return bucketService.uploadOriginAndGenerated(origin, generated, memberId);
     }
 
     // origin 삭제 & generated 삭제 -> origin 업로드 & generated 업로드
-    public FaceInfoResponse update(MultipartFile origin, Long styleId, Long memberId) throws IOException {
+    public FaceInfoResponse updateOrigin(MultipartFile origin, Long styleId, Long memberId) throws IOException {
         ByteArrayMultipartFile generated = generate(origin, styleId, memberId);
-        return bucketService.update(origin, generated, memberId);
+        return bucketService.updateOriginAndGenerated(origin, generated, memberId);
     }
 
-    public FaceInfoResponse get(Long memberId) {
+    public FaceInfoResponse getOriginAndGenerated(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
 
@@ -70,8 +70,8 @@ public class FaceInfoService {
     }
 
     // origin 삭제 & generated 삭제
-    public FaceInfoResponse delete(Long memberId) {
-        FaceInfoResponse delete = bucketService.delete(memberId);
+    public FaceInfoResponse deleteOriginAndGenerated(Long memberId) {
+        FaceInfoResponse delete = bucketService.deleteOriginAndGenerated(memberId);
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
