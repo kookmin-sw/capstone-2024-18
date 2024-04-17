@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Builder
@@ -14,6 +15,7 @@ import org.hibernate.annotations.DynamicInsert;
 @Entity
 @Slf4j
 @DynamicInsert
+@DynamicUpdate
 public class Member extends BaseEntity {
 
     private static final int EMAIL_MASKING_LENGTH = 2;

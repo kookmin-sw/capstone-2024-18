@@ -24,14 +24,14 @@ public class FaceInfoController {
             @RequestParam("styleId") Long styleId,
             @AuthMember Long memberId
     ) throws IOException {
-        return ResponseEntity.ok(faceInfoService.upload(origin, styleId, memberId));
+        return ResponseEntity.ok(faceInfoService.uploadOrigin(origin, styleId, memberId));
     }
 
     @GetMapping("/face-info")
     public ResponseEntity<FaceInfoResponse> get(
             @AuthMember Long memberId
     ) {
-        return ResponseEntity.ok(faceInfoService.get(memberId));
+        return ResponseEntity.ok(faceInfoService.getOriginAndGenerated(memberId));
     }
 
     @PutMapping("/face-info")
@@ -40,13 +40,13 @@ public class FaceInfoController {
             @RequestParam("styleId") Long styleId,
             @AuthMember Long memberId
     ) throws IOException {
-        return ResponseEntity.ok(faceInfoService.update(origin, styleId, memberId));
+        return ResponseEntity.ok(faceInfoService.updateOrigin(origin, styleId, memberId));
     }
 
     @DeleteMapping("/face-info")
     public ResponseEntity<FaceInfoResponse> delete(
             @AuthMember Long memberId
     ) {
-        return ResponseEntity.ok(faceInfoService.delete(memberId));
+        return ResponseEntity.ok(faceInfoService.deleteOriginAndGenerated(memberId));
     }
 }
