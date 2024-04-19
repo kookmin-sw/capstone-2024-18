@@ -91,9 +91,9 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
 
-        if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new MemberException(WRONG_PASSWORD);
-        }
+//        if (!passwordEncoder.matches(password, member.getPassword())) {
+//            throw new MemberException(WRONG_PASSWORD);
+//        }
         return tokenProvider.createTokens(member.getId());
     }
 

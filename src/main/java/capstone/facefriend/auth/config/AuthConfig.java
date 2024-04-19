@@ -60,7 +60,9 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addExcludePathPattern("/**", OPTIONS)
 
                 .addIncludePathPattern("/members/**", ANY)
+                .addExcludePathPattern("/rooms/**", ANY)
                 .addExcludePathPattern("/members/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
+
     }
 
     private HandlerInterceptor tokenReissueInterceptor() {
@@ -74,6 +76,7 @@ public class AuthConfig implements WebMvcConfigurer {
         return new PathMatchInterceptor(tokenBlackListInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
+                .addExcludePathPattern("/rooms/**", ANY)
                 .addIncludePathPattern("/members/**", ANY);
     }
 

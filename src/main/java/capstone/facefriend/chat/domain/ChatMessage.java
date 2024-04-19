@@ -21,7 +21,7 @@ public class ChatMessage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long messageId;
+    private Long id;
 
     @Column(nullable = false)
     private String content;
@@ -38,13 +38,13 @@ public class ChatMessage extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "ROOM_ID")
-    private Room room;
+    private ChatRoom chatRoom;
 
     public void setMember(Member sender) {
         this.sender = sender;
     }
 
-    public void setRoom(Room Room) {
-        this.room = Room;
+    public void setChatRoom(ChatRoom ChatRoom) {
+        this.chatRoom = ChatRoom;
     }
 }

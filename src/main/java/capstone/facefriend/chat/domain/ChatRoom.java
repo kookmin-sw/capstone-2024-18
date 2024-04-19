@@ -14,14 +14,11 @@ import org.hibernate.annotations.DynamicInsert;
 @Entity
 @Slf4j
 @DynamicInsert
-public class Room extends BaseEntity {
+public class ChatRoom extends BaseEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-
-        @Column
-        private String name;
 
         @Enumerated(EnumType.STRING)
         @Column

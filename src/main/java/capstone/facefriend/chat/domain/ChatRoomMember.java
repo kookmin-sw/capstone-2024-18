@@ -15,7 +15,7 @@ import org.hibernate.annotations.DynamicInsert;
 @Entity
 @Slf4j
 @DynamicInsert
-public class RoomMember extends BaseEntity {
+public class ChatRoomMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class RoomMember extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "Room_ID")
-    private Room room;
+    private ChatRoom chatRoom;
 
     @ManyToOne
     @JoinColumn(name = "SENDER_ID")
@@ -45,8 +45,8 @@ public class RoomMember extends BaseEntity {
     @Column
     private boolean isReceiverPublic;
 
-    public void setRoom(Room room) {
-        this.room = room;
+    public void setChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
     }
     public void setSender(Member Sender) {
         this.sender = sender;
