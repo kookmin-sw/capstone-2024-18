@@ -18,7 +18,11 @@
       android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:launchMode="singleTask"
       android:windowSoftInputMode="adjustResize"
-      android:exported="true">
+      android:exported="true"
+      android:icon="@mipmap/ic_launcher"
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:allowBackup="false"
+      android:theme="@style/AppTheme">
       <!-- 앱을 시작하기 위한 인텐트 필터 -->
       <intent-filter>
           <action android:name="android.intent.action.MAIN" />

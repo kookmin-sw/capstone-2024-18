@@ -42,7 +42,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 10. OK
+  // 8. OK
   const signin = async (email: string, password: string) => {
     const method = "signin";
     const endpoint =  `${LOCALHOST}/auth/signin`;
@@ -71,10 +71,10 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
-  // 11. OK
+  // 10. OK
   const signout = async (): Promise<validResponse | errorResponse>  => {
     const method = "signout";
-    const endpoint =  `${LOCALHOST}/members/signout`;
+    const endpoint =  `${LOCALHOST}/auth/signout`;
     const config = { 
       headers: { Authorization: 'Bearer ' + accessToken } 
     };
@@ -97,10 +97,10 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
-  // 12. OK
+  // 11. OK
   const reissue = async (): Promise<validResponse | errorResponse>  => {
     const method = "reissue";
-    const endpoint =  `${LOCALHOST}/members/reissue`;
+    const endpoint =  `${LOCALHOST}/auth/reissue`;
     const body = { refreshToken };
     const config = { 
       headers: { Authorization: 'Bearer ' + accessToken } 
