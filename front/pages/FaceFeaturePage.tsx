@@ -109,7 +109,7 @@ const FaceFeaturePage = () => {
         borderRadius={300} source={{uri: uri}}
         containerStyle={[styles.image_container, !isImageSetting ? styles.unsetting_image_color : styles.setting_image_color]}
         imageStyle={styles.image}
-        centerIcon={!isImageSetting ? {size: 80, source: 'plus', color: colors.pastel_point} : undefined} 
+        centerIcon={{size: 80, source: 'plus', color: !isImageSetting ? colors.pastel_point : colors.transparent}} 
         centerPressable={{onPress: () => takePhoto(), style:{alignSelf: 'center'}}}>
         {!isImageSetting ? <Text style={styles.image_text}>필수</Text> : undefined}
       </ImageWithIconOverlay>
