@@ -35,6 +35,7 @@ interface Props extends ImageBackgroundProps {
   leftPressable?: PressableProps
   rightPressable?: PressableProps
   centerPressable?: PressableProps
+  borderRadius?: number
   containerStyle?: StyleProp<ViewStyle>
   children?: React.ReactNode
 }
@@ -46,6 +47,7 @@ const ImageWithIconOverlay = ({
   leftPressable, 
   rightPressable, 
   centerPressable,
+  borderRadius,
   containerStyle,
   children,
   ...imageBackgroundProps
@@ -55,7 +57,7 @@ const ImageWithIconOverlay = ({
   const defaultSize = { height: width, width: width };
 
   return (
-    <ImageBackground {...imageBackgroundProps} resizeMode='cover' 
+    <ImageBackground {...imageBackgroundProps} resizeMode='cover' borderRadius={borderRadius}
       style={[defaultSize, containerStyle]}>
       <View style={styles.icons}>
         {leftIcon && <Pressable style={styles.icon} {...leftPressable}>

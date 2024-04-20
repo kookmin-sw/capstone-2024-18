@@ -1,4 +1,5 @@
 import axios from 'axios';
+import RNFS from 'react-native-fs';
 import Config from 'react-native-config';
 
 const LOCALHOST = Config.LOCALHOST;
@@ -310,6 +311,132 @@ export const putBasicInfo = async (
   }
 }
 
+interface faceInfoResponse extends validResponse {
+  originS3Url: string,
+  generatedS3Url: string
+}
+
+// 14.
+export const getFaceInfo = async (accessToken: string): Promise<faceInfoResponse | errorResponse> => {
+  const method = "getFaceInfo";
+  const endpoint =  `${LOCALHOST}/face-info`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken } 
+  };
+  try {
+    const response = await axios.get(endpoint, config);
+    const { originS3Url, generatedS3Url } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "관상 이미지를 로드했습니다.",
+      originS3Url, 
+      generatedS3Url
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+const getMimeTypeFromExtension = (extension: string | undefined) => {
+  switch (extension) {
+    case 'jpg':
+    case 'jpeg':
+      return 'image/jpeg';
+    case 'png':
+      return 'image/png';
+    case 'gif':
+      return 'image/gif';
+    default:
+      return 'application/octet-stream'; // 기본값으로 설정합니다. 
+  }
+};
+
+// 15.
+export const postFaceInfo = async (accessToken: string, fileUri: string, styleId: number): Promise<faceInfoResponse | errorResponse> => {
+  // 파일의 확장자를 추출
+  const extension = fileUri.split('.').pop()?.toLowerCase();
+  // 파일(이미지)의 타입을 결정
+  const mimeType = getMimeTypeFromExtension(extension);
+  
+  // FormData 객체를 생성합니다.
+  const formData = new FormData();
+  formData.append('origin', {
+    uri: fileUri,
+    name: `file.${extension}`,
+    type: mimeType,
+  });
+
+  const method = "postFaceInfo";
+  const endpoint = `${LOCALHOST}/face-info?styleId=${styleId}`;
+  const config = { 
+    headers: { 
+      Authorization: 'Bearer ' + accessToken,
+      'Content-Type': 'multipart/form-data',
+    }
+  };
+  try {
+    const response = await axios.post(endpoint, formData, config);
+    const { originS3Url, generatedS3Url } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "관상 이미지를 저장했습니다.",
+      originS3Url, 
+      generatedS3Url
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 16.
+export const putFaceInfo = async (accessToken: string, fileUri: string, styleId: number): Promise<faceInfoResponse | errorResponse> => {
+  // 파일의 확장자를 추출
+  const extension = fileUri.split('.').pop()?.toLowerCase();
+  // 파일(이미지)의 타입을 결정
+  const mimeType = getMimeTypeFromExtension(extension);
+  
+  // FormData 객체를 생성합니다.
+  const formData = new FormData();
+  formData.append('origin', {
+    uri: fileUri,
+    name: `file.${extension}`,
+    type: mimeType,
+  });
+
+  const method = "putFaceInfo";
+  const endpoint = `${LOCALHOST}/face-info?styleId=${styleId}`;
+  const config = { 
+    headers: { 
+      Authorization: 'Bearer ' + accessToken,
+      'Content-Type': 'multipart/form-data',
+    }
+  };
+  try {
+    const response = await axios.put(endpoint, formData, config);
+    const { originS3Url, generatedS3Url } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "관상 이미지를 수정했습니다.",
+      originS3Url, 
+      generatedS3Url
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
 export const isValidResponse = (response: validResponse | errorResponse): response is validResponse => {
   return (response as errorResponse).exceptionCode === undefined;
 }
@@ -320,4 +447,12 @@ export const isErrorResponse = (response: validResponse | errorResponse): respon
 
 export const isBasicInfoResponse = (response: validResponse | errorResponse): response is basicInfoResponse => {
   return (response as basicInfoResponse).nickname !== undefined;
+}
+
+export const isFaceInfoResponse = (response: validResponse | errorResponse): response is faceInfoResponse => {
+  return (response as faceInfoResponse).generatedS3Url !== undefined;
+}
+
+export const isFaceInfoDefaultResponse = (response: validResponse | errorResponse): response is faceInfoResponse => {
+  return (response as faceInfoResponse).generatedS3Url !== (response as faceInfoResponse).originS3Url;
 }
