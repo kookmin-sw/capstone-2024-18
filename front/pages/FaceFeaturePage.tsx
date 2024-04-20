@@ -103,24 +103,24 @@ const FaceFeaturePage = () => {
   }
 
   const setImageContent = (
-    <View style={styles.content_container}>
+    <View style={styles.contentContainer}>
       {showModal(modalVisible, () => {setModalVisible(false)}, setPhoto )}
       <ImageWithIconOverlay
         borderRadius={300} source={{uri: uri}}
-        containerStyle={[styles.image_container, !isImageSetting ? styles.unsetting_image_color : styles.setting_image_color]}
+        containerStyle={[styles.imageContainer, !isImageSetting ? styles.unsettingImageColor : styles.settingImageColor]}
         imageStyle={styles.image}
         centerIcon={{size: 80, source: 'plus', color: !isImageSetting ? colors.pastel_point : colors.transparent}} 
         centerPressable={{onPress: () => takePhoto(), style:{alignSelf: 'center'}}}>
-        {!isImageSetting ? <Text style={styles.image_text}>필수</Text> : undefined}
+        {!isImageSetting ? <Text style={styles.imageText}>필수</Text> : undefined}
       </ImageWithIconOverlay>
-      <View style={styles.gray_container}>
-        <Text style={styles.tip_title}>관상 분석 팁</Text>
+      <View style={styles.grayContainer}>
+        <Text style={styles.tipTitle}>관상 분석 팁</Text>
         <View style={{flexDirection:'row', alignSelf: 'center', paddingBottom: 12.5}} >
-          <ImageWithIconOverlay containerStyle={styles.tip_image} source={require('../assets/images/face_feature_hint1.png')}>
-            <IconButton icon={'circle-outline'} size={23} iconColor={colors.white} style={styles.bottom_icon}/>
+          <ImageWithIconOverlay containerStyle={styles.tipImage} source={require('../assets/images/face_feature_hint1.png')}>
+            <IconButton icon={'circle-outline'} size={23} iconColor={colors.white} style={styles.bottomIcon}/>
           </ImageWithIconOverlay>
-          <ImageWithIconOverlay containerStyle={styles.tip_image} source={require('../assets/images/face_feature_hint2.png')}>
-            <IconButton icon={'close'} size={23} iconColor={colors.white} style={styles.bottom_icon}/>
+          <ImageWithIconOverlay containerStyle={styles.tipImage} source={require('../assets/images/face_feature_hint2.png')}>
+            <IconButton icon={'close'} size={23} iconColor={colors.white} style={styles.bottomIcon}/>
           </ImageWithIconOverlay>
         </View>
         <Text style={{margin: 4}}>단체사진이 아닌 눈,코,입 눈썹 등 얼굴 요소가 잘 드러난 독사진이어야 해요.</Text>
@@ -128,22 +128,22 @@ const FaceFeaturePage = () => {
     </View>
   );
   const resultContent = (
-    <View style={styles.content_container}>
+    <View style={styles.contentContainer}>
       {haveGeneratedS3Url ? 
       <ImageWithIconOverlay
         borderRadius={300} source={{uri: generatedS3Url}}
-        containerStyle={styles.result_image_container} imageStyle={styles.image}>
-        <IconButton icon={'check'} size={30} iconColor={colors.white} style={styles.result_bottom_icon}/>
+        containerStyle={styles.resultImageContainer} imageStyle={styles.image}>
+        <IconButton icon={'check'} size={30} iconColor={colors.white} style={styles.resultBottomIcon}/>
       </ImageWithIconOverlay>:<></>
       }
       {/* 이 부분 코드는 나중에 관상 분석 결과 내용 나오면 수정 */}
-      <View style={styles.result_container}>
-        <Text style={styles.result_title}>위쪽으로 올라간 입꼬리</Text>
-        <Text style={styles.result_content}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
-        <Text style={styles.result_title}>살짝 튀어나온 광대</Text>
-        <Text style={styles.result_content}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
-        <Text style={styles.result_title}>평평한 눈썹</Text>
-        <Text style={styles.result_content}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
+      <View style={styles.resultContainer}>
+        <Text style={styles.resultTitle}>위쪽으로 올라간 입꼬리</Text>
+        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
+        <Text style={styles.resultTitle}>살짝 튀어나온 광대</Text>
+        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
+        <Text style={styles.resultTitle}>평평한 눈썹</Text>
+        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
       </View>
       <CustomButton containerStyle={{width: 73, height: 26}} textStyle={{fontSize: 12, color: colors.white}}>
         자세히 보기
@@ -171,13 +171,13 @@ const FaceFeaturePage = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <IconText 
         icon={{source: 'chat-question', color: colors.gray7}} 
-        containerStyle={styles.hint_container}
+        containerStyle={styles.hintContainer}
         textStyle={{fontSize: 14, color: colors.gray7}}>AI 관상 분석은 무엇인가요? 🤔</IconText>
       <View>
         {contents[pageIndex]}
       </View>
       <View style={{flex: 1}}/>
-      <View style={styles.bottom_container}>
+      <View style={styles.bottomContainer}>
         <CustomButton 
           containerStyle={isButtonClickable ? {backgroundColor: colors.point} : {backgroundColor: colors.pastel_point}} 
           onPress={clickButton}
@@ -194,13 +194,13 @@ const styles = StyleSheet.create({
     minHeight: '100%',
     justifyContent: 'center'
   },
-  content_container: {
+  contentContainer: {
     justifyContent: 'center',
     paddingBottom: 15
   },
 
   // 이번 창의 단어 hint (ex. ai 관상은 무엇인가요?)
-  hint_container: {
+  hintContainer: {
     backgroundColor: colors.light_pink, 
     height: 32, 
     paddingHorizontal: 16,
@@ -210,13 +210,13 @@ const styles = StyleSheet.create({
   },
 
   // 회색 tip, result 상자
-  gray_container: {
+  grayContainer: {
     backgroundColor: colors.gray1, 
     padding: 11,
     marginTop: 40, 
     marginBottom: 18
   },
-  result_container: {
+  resultContainer: {
     backgroundColor: colors.gray1, 
     padding: 22,
     flex: 1, 
@@ -224,19 +224,19 @@ const styles = StyleSheet.create({
   },
 
   // 결과 회색 상자의 text style
-  result_title: {
+  resultTitle: {
     paddingTop: 12,
     fontSize: 16,
     color: colors.point
   },
-  result_content: {
+  resultContent: {
     paddingTop: 5,
     fontSize: 14,
     color: colors.gray7
   },
 
   // tip 회색 상자의 text style
-  tip_title: {
+  tipTitle: {
     width: '100%', 
     fontSize: 16, 
     color: colors.gray7, 
@@ -247,13 +247,13 @@ const styles = StyleSheet.create({
   },
 
   // tip 안에 있는 image style
-  tip_image: {
+  tipImage: {
     width: 80,
     height: 80, 
     margin: 10
   },
   // tip 안에 있는 image의 bottom icon style
-  bottom_icon: {
+  bottomIcon: {
     backgroundColor: colors.gray5, 
     borderWidth: 1, 
     borderColor: colors.white,
@@ -263,11 +263,11 @@ const styles = StyleSheet.create({
   },
 
   // 이미지 color style
-  setting_image_color: {
+  settingImageColor: {
     backgroundColor: '#626262',
     borderColor: '#626262'
   },
-  unsetting_image_color: {
+  unsettingImageColor: {
     backgroundColor: colors.light_pink, 
     borderColor: colors.pastel_point
   },
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     width: 226, 
     height: 226, 
   },
-  image_container: {
+  imageContainer: {
     width: 230, 
     height: 230, 
     alignSelf: 'center', 
@@ -285,9 +285,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#626262',
     backgroundColor: colors.light_pink,
-    paddingTop: 33 // plus 중앙 배열을 위한 image_text 만큼의 크기 paddingTop으로 설정
+    paddingTop: 33 // plus 중앙 배열을 위한 imageText 만큼의 크기 paddingTop으로 설정
   },
-  result_image_container: {
+  resultImageContainer: {
     width: 230, 
     height: 230, 
     alignSelf: 'center', 
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     marginBottom: 27
   },
   // 이미지의 '필수' 텍스트 style
-  image_text: { 
+  imageText: { 
     alignSelf: 'center', 
     height: 18, 
     marginBottom: 15, 
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     color: colors.point
   },
   // result창의 이미지 style
-  result_bottom_icon: {
+  resultBottomIcon: {
     backgroundColor: colors.point, 
     borderWidth: 1, 
     borderColor: colors.point,
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   },
 
   // bottom button container
-  bottom_container: {
+  bottomContainer: {
     alignItems: "center",
     marginBottom: 46,
     paddingHorizontal: 8,

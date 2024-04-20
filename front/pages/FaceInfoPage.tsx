@@ -115,31 +115,31 @@ const FaceInfoPage = () => {
   }
 
   const setImageContent = (
-    <View style={styles.content_container}>
+    <View style={styles.contentContainer}>
       {showModal(modalVisible, () => {setModalVisible(false)}, setPhoto )}
       <IconText 
         icon={{source: 'chat-question', color: colors.gray7}} 
-        containerStyle={styles.hint_container}
+        containerStyle={styles.hintContainer}
         textStyle={{fontSize: 14, color: colors.gray7}}>AI 관상 생성은 무엇인가요? 🤔</IconText>
       <ImageWithIconOverlay
         borderRadius={300} source={{uri: uri}} imageStyle={styles.image}
-        containerStyle={[styles.image_container, !isImageSetting ? styles.unsetting_image_color : styles.setting_image_color]}
+        containerStyle={[styles.imageContainer, !isImageSetting ? styles.unsettingImageColor : styles.settingImageColor]}
         centerIcon={{size: 80, source: 'plus', color: !isImageSetting ? colors.pastel_point : colors.transparent}} 
         centerPressable={{onPress: () => takePhoto(), style:{alignSelf: 'center'}}}>
-        {!isImageSetting ? <Text style={styles.image_text}>필수</Text> : undefined}
+        {!isImageSetting ? <Text style={styles.imageText}>필수</Text> : undefined}
       </ImageWithIconOverlay>
-      <View style={styles.gray_container}>
-        <Text style={styles.tip_title} onLayout={onLayout}>마스크 생성 과정</Text>
+      <View style={styles.grayContainer}>
+        <Text style={styles.tipTitle} onLayout={onLayout}>마스크 생성 과정</Text>
         <AutoHeightImage width={exImageWidth} source={require('../assets/images/mask_ex.jpeg')} style={{marginVertical: 11}}/>
-        <Text style={styles.tip_text}>FACE FRIEND 에서는 실제 얼굴을 드러내지 않는 반익명 활동을 장려해요. 때문에 학습시킨 AI로 가상 마스크를 만들어요.</Text>
+        <Text style={styles.tipText}>FACE FRIEND 에서는 실제 얼굴을 드러내지 않는 반익명 활동을 장려해요. 때문에 학습시킨 AI로 가상 마스크를 만들어요.</Text>
       </View>
     </View>
   );
   const setImageStyleContent = (
-    <View style={styles.content_container}>
+    <View style={styles.contentContainer}>
       <IconText 
         icon={{source: 'chat-question', color: colors.gray7}} 
-        containerStyle={styles.hint_container}
+        containerStyle={styles.hintContainer}
         textStyle={{fontSize: 14, color: colors.gray7}}>마스크에 적용하고 싶은 그림 스타일을 선택해주세요!</IconText>
       {
         styleImages.map((styleImage) => {
@@ -147,7 +147,7 @@ const FaceInfoPage = () => {
             <Pressable onPress={() => handleSelectedId(styleImage.id)}>
               <Image key={styleImage.id} height={150} width={150} 
                 blurRadius={(styleImage.id === selectedStyleId || selectedStyleId === -1) ? 0 : 5}
-                style={styles.style_image} source={{uri: styleImage.uri}}/>
+                style={styles.styleImage} source={{uri: styleImage.uri}}/>
             </Pressable>
           );
         })
@@ -186,7 +186,7 @@ const FaceInfoPage = () => {
         {contents[pageIndex]}
       </View>
       <View style={{flex: 1}}/>
-      <View style={styles.bottom_container}>
+      <View style={styles.bottomContainer}>
         <CustomButton 
           containerStyle={isButtonClickable ? {backgroundColor: colors.point} : {backgroundColor: colors.pastel_point}} 
           onPress={clickButton}
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     minHeight: '100%',
     justifyContent: 'center'
   },
-  content_container: {
+  contentContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
 
   // 이번 창의 단어 hint (ex. ai 관상은 무엇인가요?)
-  hint_container: {
+  hintContainer: {
     backgroundColor: colors.light_pink, 
     height: 32, 
     paddingHorizontal: 16,
@@ -221,19 +221,19 @@ const styles = StyleSheet.create({
   },
 
   // style 이미지들 margin 설정
-  style_image: {
+  styleImage: {
     margin: 5, // 각 아이템 사이의 간격
   },
 
   // tip 컨테이너
-  gray_container: {
+  grayContainer: {
     backgroundColor: colors.gray1, 
     padding: 11,
     marginTop: 40, 
   },
 
   // tip 회색 상자의 text style
-  tip_title: {
+  tipTitle: {
     width: '100%', 
     fontSize: 16, 
     color: colors.gray7, 
@@ -242,18 +242,18 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.gray4,
     textAlign: 'center'
   },
-  tip_text: {
+  tipText: {
     fontSize: 14,
     color: colors.gray7,
     margin: 4
   },
 
   // 이미지 color style
-  setting_image_color: {
+  settingImageColor: {
     backgroundColor: '#626262',
     borderColor: '#626262'
   },
-  unsetting_image_color: {
+  unsettingImageColor: {
     backgroundColor: colors.light_pink, 
     borderColor: colors.pastel_point
   },
@@ -263,15 +263,15 @@ const styles = StyleSheet.create({
     width: 226, 
     height: 226, 
   },
-  image_container: {
+  imageContainer: {
     width: 230, 
     height: 230, 
     alignSelf: 'center', 
     borderRadius: 300, 
     borderWidth: 2,
-    paddingTop: 33 // plus 중앙 배열을 위한 image_text 만큼의 크기 paddingTop으로 설정
+    paddingTop: 33 // plus 중앙 배열을 위한 imageText 만큼의 크기 paddingTop으로 설정
   },
-  image_text: {
+  imageText: {
     alignSelf: 'center', 
     height: 18, 
     marginBottom: 15, 
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   },
 
   // bottom button container
-  bottom_container: {
+  bottomContainer: {
     alignItems: "center",
     marginBottom: 46,
     paddingHorizontal: 8,
