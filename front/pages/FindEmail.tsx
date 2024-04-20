@@ -7,7 +7,7 @@ import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
 import CustomButton from '../components/CustomButton.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
-import { findEmail } from "../util/auth.tsx";
+import { findEmail, isFindEmailResponse } from "../util/auth.tsx";
 import IconText from '../components/IconText.tsx';
 
 
@@ -56,10 +56,8 @@ const FindEmail = () => {
 
     const response = await findEmail(email.value);
 
-    if (response.status === 200) { // 회원이 있음
+    if (isFindEmailResponse(response)) {
       createAlertMessage(response.message, () => navigate('/'));
-    } else if (response.status === 500) { // 회원이 없음
-      createAlertMessage('회원이 없습니다');
     } else { // 나머지 에러
       createAlertMessage(response.message);
     }
