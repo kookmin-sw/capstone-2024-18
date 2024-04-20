@@ -34,18 +34,18 @@ const FaceInfoPage = () => {
 
   // style 이미지 설정
   const [ selectedStyleId, setSelectedStyleId ] = useState<number>(-1);
-  const [ styleImages, setStyleImages ] = useState([
-    {id: 1, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 2, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 3, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 4, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 5, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 6, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 7, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 8, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 9, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 10, selected: false, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-  ]);
+  const styleImages = [
+    {id: 1, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+    {id: 2, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+    {id: 3, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+    {id: 4, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+    {id: 5, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+    {id: 6, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+    {id: 7, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+    {id: 8, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+    {id: 9, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+    {id: 10, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+  ];
 
   // 이미지 추가하는 방식 모달 가시성 설정
   const [ modalVisible, setModalVisible ] = useState(false);
@@ -61,32 +61,11 @@ const FaceInfoPage = () => {
   }
 
   function handleSelectedId(changeId: number) {
-    const prevStyleId = selectedStyleId;
-
-    const nextStyleImages = styleImages.map((styleImage) => {
-      if (styleImage.id === changeId) {
-        if (styleImage.selected) {
-          setSelectedStyleId(-1)
-        } else {
-          setSelectedStyleId(changeId);
-        }
-
-        return {
-          ...styleImage,
-          selected: !styleImage.selected,
-        };
-      } else if (selectedStyleId !== -1 && styleImage.id === prevStyleId) { // 이전 selected false로 수정
-        return {
-          ...styleImage,
-          selected: false,
-        };
-      } else {
-        return styleImage;
-      }
-    });
-
-    // Re-render with the new array
-    setStyleImages(nextStyleImages);
+    if (selectedStyleId === changeId) {
+      setSelectedStyleId(-1)
+    } else {
+      setSelectedStyleId(changeId);
+    }
   }
 
   const clickButton = async () => {
