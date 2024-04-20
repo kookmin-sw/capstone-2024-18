@@ -7,7 +7,7 @@ import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
 import CustomButton from '../components/CustomButton.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
-import { findEmail, isFindEmailResponse } from "../util/auth.tsx";
+import { findEmail, isErrorResponse, isFindEmailResponse } from "../util/auth.tsx";
 import IconText from '../components/IconText.tsx';
 
 
@@ -32,7 +32,7 @@ const FindEmail = () => {
       setEmail({...email, status: ""});
       return;
     }
-
+    
     const emaliRegex = /^[\w.-]+@[\w.-]+\.\w+$/;
     if (emaliRegex.test(email.value)) {
       setEmail({...email, status: "VALID", message: "올바른 이메일 형식입니다."});
@@ -47,7 +47,7 @@ const FindEmail = () => {
     : email.status === "VALID" ? 
       <IconText icon={{ source: "check-circle" }}>{email.message}</IconText>
     : // email.status === "INVALID" 
-        <IconText icon={{ source: "close-circle", color: colors.point }} textStyle={{ color: colors.point }}>{email.message}</IconText>
+      <IconText icon={{ source: "close-circle", color: colors.point }} textStyle={{ color: colors.point }}>{email.message}</IconText>
     }</View>;
 
   // 이메일 찾기 api
@@ -58,7 +58,8 @@ const FindEmail = () => {
 
     if (isFindEmailResponse(response)) {
       createAlertMessage(response.message, () => navigate('/'));
-    } else { // 나머지 에러
+    }
+    if (isErrorResponse(response)){ // 나머지 에러
       createAlertMessage(response.message);
     }
   }
