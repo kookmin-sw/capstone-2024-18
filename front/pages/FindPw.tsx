@@ -207,7 +207,7 @@ const FindPw = () => {
         </View>
         <View style={styles.textInputContainer}>
           <CustomTextInput 
-            placeholder='비밀번호를 입력해주세요'
+            placeholder='인증코드를 입력해주세요'
             secureTextEntry={!tempPassword.visible} 
             onChangeText={(newText) => handlTempPwInputChange(newText)}
             rightIcon={{ source: !tempPassword.visible ? "eye-off-outline" : "eye-outline" }} 
