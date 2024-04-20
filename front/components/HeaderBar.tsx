@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, LayoutChangeEvent } from "react-native";
 import { IconButton,  } from "react-native-paper";
-import { Pressable } from "react-native-paper/lib/typescript/components/TouchableRipple/Pressable";
 import { colors } from "../assets/colors";
 
 interface Props {
@@ -8,7 +7,7 @@ interface Props {
   onPress: () => void;
 }
 
-const Title = ({ children, onPress }: Props) => {
+const HeaderBar = ({ children, onPress }: Props) => {
   
   return (
     <View style={styles.container}>
@@ -23,7 +22,7 @@ const Title = ({ children, onPress }: Props) => {
   )
 }
 
-export default Title;
+export default HeaderBar;
 
 const styles = StyleSheet.create({
   container: {
