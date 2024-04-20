@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigate } from "react-router-native";
 
 import { colors } from '../assets/colors.tsx';
@@ -12,9 +12,9 @@ import IconText from '../components/IconText.tsx';
 
 
 const FindEmail = () => {
-  const height = Dimensions.get('window').height;
   const navigate = useNavigate();
 
+  // email state 관리와 
   const [email, setEmail] = useState({
     value: "",
     status: "",
@@ -26,9 +26,8 @@ const FindEmail = () => {
     setEmail({...email, value});
   }
 
+  // email 유효성 검사. focus out시 실행
   const handleEmailInputOnBlur = async () => {
-    console.log("check email")
-
     if (email.value === "") {
       setEmail({...email, status: ""});
       return;
@@ -47,10 +46,11 @@ const FindEmail = () => {
       email.status === "" ? "" 
     : email.status === "VALID" ? 
       <IconText icon={{ source: "check-circle" }}>{email.message}</IconText>
-    : // email.status === "LOADING" 
+    : // email.status === "INVALID" 
         <IconText icon={{ source: "close-circle", color: colors.point }} textStyle={{ color: colors.point }}>{email.message}</IconText>
-    }</View>
+    }</View>;
 
+  // 이메일 찾기 api
   const handleSubmit = async () => {
     console.log("submit", isFormValid);
 
@@ -66,13 +66,12 @@ const FindEmail = () => {
   }
 
   useEffect(() => {
-    console.log(email.status);
     if (email.status === "VALID") setIsFormValid(true);
     else setIsFormValid(false);
   }, [email.status])
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45, minHeight: height}}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45, minHeight: '100%'}}>
       <CustomBackHandler onBack={() => navigate('/')}/>
       <View style={styles.container}>
         <Text style={styles.helperText}>이메일을 입력해주세요</Text>
@@ -92,8 +91,7 @@ const FindEmail = () => {
       </View>
 
       <CustomButton 
-        onPress={handleSubmit} 
-        disabled={!isFormValid}
+        onPress={handleSubmit} disabled={!isFormValid}
         containerStyle={StyleSheet.flatten([styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }])}
         textStyle={styles.pointButtonText}>이메일 찾기
       </CustomButton>
