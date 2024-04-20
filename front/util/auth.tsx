@@ -454,5 +454,5 @@ export const isFaceInfoResponse = (response: validResponse | errorResponse): res
 }
 
 export const isFaceInfoDefaultResponse = (response: validResponse | errorResponse): response is faceInfoResponse => {
-  return (response as faceInfoResponse).generatedS3Url == (response as faceInfoResponse).originS3Url;
+  return (response as faceInfoResponse).generatedS3Url !== (response as faceInfoResponse).originS3Url;
 }
