@@ -8,7 +8,8 @@ import CustomTextInput from '../components/CustomTextInput.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 
 import { colors } from '../assets/colors.tsx';
-import { isValidResponse } from '../util/auth.tsx';
+import { isErrorResponse, isValidResponse } from '../util/auth.tsx';
+import { createAlertMessage } from '../util/alert.tsx';
 
 const Login = () => {
   const authCtx = useContext(AuthContext);
@@ -31,6 +32,9 @@ const Login = () => {
     const response = await authCtx.signin(email, pw);
     if (isValidResponse(response)) {
       navigate('/');
+    }
+    if (isErrorResponse(response)) {
+      createAlertMessage(response.message);
     }
   }
 
