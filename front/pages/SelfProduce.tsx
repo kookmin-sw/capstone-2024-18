@@ -2,20 +2,52 @@ import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewS
 import { Icon, Chip } from 'react-native-paper';
 import { colors } from '../assets/colors.tsx'
 import CustomButton from '../components/CustomButton';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import CustomTextInput from '../components/CustomTextInput.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 
+import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse, isValidResponse } from '../util/auth.tsx';
+import { AuthContext } from "../store/auth-context";
+
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+import { createAlertMessage } from '../util/alert.tsx';
 
 
 const SelfProduce = () => {
+  // auth를 위한 method
+  const authCtx = useContext(AuthContext);
+
+  // 자기소개서가 있는지 확인 (현재는 auth 연결 아직 안함)
   const [ haveSelfProduce, setHaveSelfProduce ] = useState(true);
+
+  // 자기소개서 삭제 관련 기능
+  function deleteAlert() {
+    Alert.alert(
+      "정말 삭제하시겠습니까?", 
+      "삭제하면, 해당 자기소개서를 복구할 수 없습니다",
+      [
+        {
+          text: "아니요",
+          style: 'cancel'
+        },
+        {
+          text: "네",
+          onPress: () => deleteSelfProduce()
+        }
+      ])
+  }
+
+  function deleteSelfProduce() {
+    // UI 상에서 자기소개 만들기
+    setHaveSelfProduce(false);
+
+    // 자기소개서 삭제하는 요청 전송
+  }
 
   // 자기소개서 edit 기능 조절 변수
   const [ edit, setEdit ] = useState(false);
@@ -29,21 +61,17 @@ const SelfProduce = () => {
   // 현재 이미지 슬라이더의 페이지를 알기 위한 페이지 설정
   const [ page, setPage ] = useState(0);
 
-  // 이미지 추가하는 방식 모달 가시성 설정
+  // 이미지 추가 설정 (카메라 or 사진첩)
   const [ modalVisible, setModalVisible ] = useState(false);
+  function takePhoto() {
+    setModalVisible(true);
+  }
+  function setPhoto(uri: string) {
+    handleAddImageAtIndex(images.length-1, {id: images.length, type: 'image', source: {uri: uri}})
+  }
 
-  // 이미지 슬라이더의 내부 contents 설정
+  // (임시) 이미지 슬라이더의 내부 contents 설정 (api 연동하면, 그냥 빈 array 설정)
   const [ images, setImages ] = useState([
-    {
-      id: uuidv4(),
-      type: 'basic',
-      source: require('../assets/images/Jenny_image.png'),
-    },
-    {
-      id: uuidv4(),
-      type: 'basic',
-      source: require('../assets/images/Jenny_image.png')
-    },
     {
       id: uuidv4(),
       type: 'image',
@@ -51,14 +79,18 @@ const SelfProduce = () => {
     },
   ]);
 
-  function setPhoto(uri: string) {
-    handleAddImageAtIndex(images.length-1, {id: images.length, type: 'image', source: {uri: uri}})
-  }
-
-  // 이미지 추가하는 방식(사진 찍기, 갤러리에서 사진 가져오기) 모달 보여주기
-  function takePhoto() {
-    setModalVisible(true);
-  }
+  // 이미지 슬라이더의 content handler
+  const handleAddImageAtIndex = (index: number, newImage: any) => {
+    setImages(prevImages => {
+      const newImages = [...prevImages];
+      newImages.splice(index, 0, newImage);
+      return newImages
+    })
+  };
+  const handleDeleteImageWidthId = (id: string) => {
+    const newData = images.filter(image=> image.id !== id);
+    setImages(newData);
+  };
 
   /**
    * 이미지 슬라이더에 들어갈 컨텐츠 내용물 데이터를 React.ReactNode로 바꿔주는 함수
@@ -93,20 +125,59 @@ const SelfProduce = () => {
     } 
   }
 
-  const handleAddImageAtIndex = (index: number, newImage: any) => {
-    // splice() 메서드를 사용하여 데이터의 특정 인덱스에 새로운 원소를 추가합니다.
-    const newImages = [...images];
-    newImages.splice(index, 0, newImage);
+  // 기본 정보
+  const [ basic, setBasic ] = useState([
+    {id: "0", text: "d여성"},
+    {id: "1", text: "d20대 중반"},
+    {id: "2", text: "d170cm 중반"},
+    {id: "3", text: "d서울 강북"}
+  ])
 
-    // 변경된 배열을 상태로 업데이트합니다.
-    setImages(newImages);
-  };
+  const createBasicInfo = async () => {
+    if (authCtx.accessToken) {
+      const response = await getBasicInfo(
+        authCtx.accessToken
+      );  
+      if (isBasicInfoResponse(response)) {
+        const newBasic = [
+          {id: uuidv4(), text: response.gender},
+          {id: uuidv4(), text: response.ageGroup + response.ageDegree},
+          {id: uuidv4(), text: response.heightGroup},
+          {id: uuidv4(), text: response.region},
+        ]
+        setBasic(newBasic)
+      } else {
+        // 기본 정보 없는 경우
+      }
+      if (isErrorResponse(response)) {
+        createAlertMessage(response.message);
+      }
+    }
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+  }
 
-  const handleDeleteImageWidthId = (id: string) => {
-    const newData = images.filter(image=> image.id !== id);
-    setImages(newData);
-  };
+  // 슬라이더의 1, 2 페이지에 관상 이미지 가져와서 display (사용자 변경 불가)
+  const createFaceImage = async () => {
+    if (authCtx.accessToken) {
+      const response = await getFaceInfo(
+        authCtx.accessToken
+      );  
+      if (isFaceInfoResponse(response)) {
+        handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.generatedS3Url}});
+        handleAddImageAtIndex(1, {id: uuidv4(), type: 'basic', source: {uri: response.originS3Url}});
+      }
+      if (isErrorResponse(response)) {
+        createAlertMessage(response.message);
+      }
+    }
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+  }
 
+  // useEffect들
   // edit 기능 설정하고 저장할 때, 이미지 추가 버튼 생성, 삭제, 이미지 슬라이더의 gap, offset, page width 재설정
   useEffect(() => {
     if (!edit) {
@@ -135,18 +206,17 @@ const SelfProduce = () => {
     }
   }, [edit])
 
-  // 기본 정보, 관상 정보, 카테고리 정보, 자기소개서 내용
-  const [ basic, setBasic ] = useState([
-    {id: 0, text: "여성"},
-    {id: 1, text: "20대 중반"},
-    {id: 2, text: "170cm 중반"},
-    {id: 3, text: "서울 강북"}
-  ])
+  useEffect(() => {
+    createBasicInfo();
+    createFaceImage();
+  }, [])
+
+  // 아직 api 연동 못한 것 
   const [ face, setFace ] = useState([
-    {id: 0, text: "머리가 빼어남"},
-    {id: 1, text: "담대한"},
-    {id: 2, text: "모험심이 강함"},
-    {id: 3, text: "영리함"}
+    {id: 0, text: "d머리가 빼어남"},
+    {id: 1, text: "d담대한"},
+    {id: 2, text: "d모험심이 강함"},
+    {id: 3, text: "d영리함"}
   ])
   const [ categories, setCategories ] = useState([
     {id: 0, text: "운동", selected: true},
@@ -174,30 +244,6 @@ const SelfProduce = () => {
     });
     // Re-render with the new array
     setCategories(nextCategory);
-  }
-
-  // 자기소개서 삭제 관련 기능
-  function deleteAlert() {
-    Alert.alert(
-      "정말 삭제하시겠습니까?", 
-      "삭제하면, 해당 자기소개서를 복구할 수 없습니다",
-      [
-        {
-          text: "아니요",
-          style: 'cancel'
-        },
-        {
-          text: "네",
-          onPress: () => deleteSelfProduce()
-        }
-      ])
-  }
-
-  function deleteSelfProduce() {
-    // UI 상에서 자기소개 만들기
-    setHaveSelfProduce(false);
-
-    // 자기소개서 삭제하는 요청 전송
   }
 
   return (
@@ -329,7 +375,7 @@ const SelfProduce = () => {
           {/* 자기소개서 내용 섹션 */}
           <View style={styles.section}>
             <View style={styles.sectionTop}>
-              <Text style={styles.sectionText}>내용</Text>
+              <Text style={styles.sectionText}>소개</Text>
             </View>
             <CustomTextInput 
               containerStyle={styles.inputContainer} 
@@ -365,28 +411,22 @@ const styles = StyleSheet.create({
     margin: "6%",
     flex: 1,
   },
-  modalContainer: {
-    // flex: 1,
-    height: 300,
-    backgroundColor: 'black',
-  },
   profileName: {
     marginLeft: 15, 
     fontSize: 15, 
     color: '#000000', 
     alignSelf: 'center'
   },
+
+  // tag 관련
+  tagContainer: {
+    flexDirection: "row", 
+    flexWrap: "wrap"
+  }, 
   uneditableTag: {
     borderWidth: 1, 
     borderColor: colors.point,
     backgroundColor: colors.white,
-    alignItems: 'center',
-    borderRadius: 20
-  },
-  unselectedTag: {
-    borderWidth: 1, 
-    borderColor: colors.point,
-    backgroundColor: colors.point,
     alignItems: 'center',
     borderRadius: 20
   },
@@ -396,6 +436,8 @@ const styles = StyleSheet.create({
     marginLeft: 9,
     marginRight: 9
   },
+
+  // 각 섹션
   section: {
     paddingTop: 20
   },
@@ -414,32 +456,16 @@ const styles = StyleSheet.create({
     color: colors.gray6,
     paddingLeft: 5
   },
+
+  // 자기소개 input
   inputContainer: {
     backgroundColor: colors.gray2, 
-    marginVertical: 10, 
-    marginHorizontal:0, 
+    marginVertical: 7, 
+    marginHorizontal: 0, 
     padding: 15, 
     borderRadius: 15,
     height: undefined
   },
-  tagContainer: {
-    flexDirection: "row", 
-    flexWrap: "wrap"
-  }, 
-  tagWrapper: {
-    margin: 5, 
-    flexWrap: 'wrap', 
-  },
-  selectedTag: {
-    backgroundColor: colors.point,
-    borderColor: colors.point
-  }, 
-  selectedTagText: {
-    color: colors.white
-  },
-  unselectedTagText: {
-    color: "#9E9E9E"
-  }
 });
 
 export default SelfProduce;
