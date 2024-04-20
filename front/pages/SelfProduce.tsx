@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, ImageSourcePropType, Modal } from 'react-native';
-import { Icon, Chip } from 'react-native-paper';
+import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle } from 'react-native';
+import { Icon } from 'react-native-paper';
 import { colors } from '../assets/colors.tsx'
 import CustomButton from '../components/CustomButton';
 import React, { useContext, useEffect, useState } from 'react';
@@ -9,7 +9,7 @@ import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 
-import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse, isValidResponse } from '../util/auth.tsx';
+import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context";
 
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
@@ -67,7 +67,7 @@ const SelfProduce = () => {
     setModalVisible(true);
   }
   function setPhoto(uri: string) {
-    handleAddImageAtIndex(images.length-1, {id: images.length, type: 'image', source: {uri: uri}})
+    handleAddImageAtIndex(images.length-1, {id: uuidv4(), type: 'image', source: {uri: uri}})
   }
 
   // (임시) 이미지 슬라이더의 내부 contents 설정 (api 연동하면, 그냥 빈 array 설정)
@@ -126,12 +126,10 @@ const SelfProduce = () => {
   }
 
   // 기본 정보
-  const [ basic, setBasic ] = useState([
-    {id: "0", text: "d여성"},
-    {id: "1", text: "d20대 중반"},
-    {id: "2", text: "d170cm 중반"},
-    {id: "3", text: "d서울 강북"}
-  ])
+  const _basics = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
+  const [ basic, setBasic ] = useState(_basics.map((_basic, index) => {
+    return {id: index, text: _basic}
+  }))
 
   const createBasicInfo = async () => {
     if (authCtx.accessToken) {
@@ -139,13 +137,10 @@ const SelfProduce = () => {
         authCtx.accessToken
       );  
       if (isBasicInfoResponse(response)) {
-        const newBasic = [
-          {id: uuidv4(), text: response.gender},
-          {id: uuidv4(), text: response.ageGroup + response.ageDegree},
-          {id: uuidv4(), text: response.heightGroup},
-          {id: uuidv4(), text: response.region},
-        ]
-        setBasic(newBasic)
+        const newBasic = [ response.gender, response.ageGroup + response.ageDegree, response.heightGroup, '서울 ' + response.region];
+        setBasic(newBasic.map((_basic, index) => {
+          return {id: index, text: _basic}
+        }))
       } else {
         // 기본 정보 없는 경우
       }
@@ -211,13 +206,13 @@ const SelfProduce = () => {
     createFaceImage();
   }, [])
 
-  // 아직 api 연동 못한 것 
-  const [ face, setFace ] = useState([
-    {id: 0, text: "d머리가 빼어남"},
-    {id: 1, text: "d담대한"},
-    {id: 2, text: "d모험심이 강함"},
-    {id: 3, text: "d영리함"}
-  ])
+  // 아직 api 연동 못한 것 -> 나중에 default 등 처리 예정
+  const _faces = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
+  const [ face, setFace ] = useState(
+    _faces.map((_face, index) => {
+      return {id: index, text: _face};
+    })
+  )
   const [ categories, setCategories ] = useState([
     {id: 0, text: "운동", selected: true},
     {id: 1, text: "음식", selected: false},
@@ -228,7 +223,7 @@ const SelfProduce = () => {
     {id: 6, text: "음악", selected: true},
     {id: 7, text: "자유", selected: true},
   ])
-  const [ essay, setEssay ] = useState('안녕하세요! 저는 Anna 이에요!\n저는 서울 소재 대학교에서 4학년 재학 중인 Jenny에요!\n저는 평일에 학교 근처에서 복싱장을 같이 다닐 사람을 구하고 있어요! 혼자 다니면 금방 질려서 그만두게 되더라구요.\n복싱장을 다녀온 이후에는 가볍게 맥주 한잔 정도는 괜찮은 것 같아요!\n\n대화를 나눠보고 찐친이 될 가능성이 보인다면 AI 관상을 지울게요~~');
+  const [ essay, setEssay ] = useState('안녕하세요! 저는 Anna 이에요!\n저는 서울 소재 대학교에서 4학년 재학 중인 Jenny에요!\n\n저는 평일에 학교 근처에서 복싱장을 같이 다닐 사람을 구하고 있어요! 혼자 다니면 금방 질려서 그만두게 되더라구요.\n복싱장을 다녀온 이후에는 가볍게 맥주 한잔 정도는 괜찮은 것 같아요!\n\n대화를 나눠보고 찐친이 될 가능성이 보인다면 AI 관상을 지울게요~~');
 
   // 특정 인덱스의 카테고리를 선택, 선택 취소
   function handleCategorySelect(changeIdx: number) {
