@@ -19,13 +19,16 @@ const Signup = () => {
 
   const [email, setEmail] = useState({
     value: "",
-    status: "",
+    // DEFALUT: 기본값, LOADING: 중복 확인 중,
+    // VAILD: 중복 확인/규칙 통과, INVALID: 중복 이메일 또는 규칙 미준수, VERIFIED: 인증됨
+    status: "DEFALUT",    
     message: "",
   });
 
   const [password, setPassword] = useState({
-    value: ["", ""],
-    status: "",
+    value: ["", ""], // pw1, pw2
+    // VALID: 규칙 통과, INVALID: 규칙 미준수, NOT_MATCH: pw1 != pw2
+    status: "DEFALUT",
     visible: [false, false],
     message: "",
     isFocused: false,
@@ -48,7 +51,7 @@ const Signup = () => {
   }
 
   const handleEmailInputChange = (value: string) => {
-    setEmail({...email, value});
+    setEmail({...email, value, status: "DEFALUT"});
   }
 
   const handleEmailInputOnBlur = async () => {
@@ -143,10 +146,10 @@ const Signup = () => {
 
   const emailHintText = 
     <View style={styles.hintContainer}>{
-      email.status === "" ? "" 
+      email.status === "DEFALUT" ? "" 
     : email.status === "VERIFIED" || email.status === "VALID" ? 
       <IconText icon={{ source: "check-circle" }}>{email.message}</IconText>
-    : email.status === "NOT_CHECKED" || email.status === "INVALID" ? 
+    : email.status === "INVALID" ? 
         <IconText icon={{ source: "close-circle", color: colors.point }} textStyle={{ color: colors.point }}>{email.message}</IconText>
     : // email.status === "LOADING" 
       <IconText icon={{ source: "loading" }}>{email.message}</IconText>
@@ -154,7 +157,7 @@ const Signup = () => {
 
   const passwordHintText = 
     <View style={styles.hintContainer}>{
-      password.status === "" ? "" 
+      password.status === "DEFALUT" ? "" 
     : password.status === "VALID" ? 
       <IconText icon={{ source: "check-circle" }}>{password.message}</IconText>
     : // password.status === "INVALID || password.status === NOT_MATCH"
@@ -186,7 +189,7 @@ const Signup = () => {
               onSubmitEditing={() => passwordInputRef.current?.focus()}
               blurOnSubmit={false}
               onBlur={handleEmailInputOnBlur}
-              isValid={email.status === "VALID" || email.status === "VERIFIED" || email.status === "LOADING" || email.status === ""}
+              isValid={email.status === "VALID" || email.status === "VERIFIED" || email.status === "LOADING" || email.status === "DEFALUT"}
             />
           </View>
           <View style={styles.grayButtonContainer}>
@@ -213,7 +216,7 @@ const Signup = () => {
               returnKeyType="next"
               onSubmitEditing={() => passwordConfirmInputRef.current?.focus()}
               blurOnSubmit={false}
-              isValid={password.status === "" || password.status === "VALID" || password.isFocused}
+              isValid={password.status === "DEFALUT" || password.status === "VALID" || password.isFocused}
               onFocus={handleOnFocus}
               onBlur={handleOnBlur}
             />
@@ -232,7 +235,7 @@ const Signup = () => {
               rightPressable={{ onPress: togglePwVisibility.bind(this, 1) }}
               ref={passwordConfirmInputRef}
               returnKeyType="done"
-              isValid={password.status === "" || password.status === "VALID" || password.isFocused}
+              isValid={password.status === "DEFALUT" || password.status === "VALID" || password.isFocused}
               onFocus={handleOnFocus}
               onBlur={handleOnBlur}
             />
