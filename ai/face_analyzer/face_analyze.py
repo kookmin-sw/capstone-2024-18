@@ -3,7 +3,6 @@ import io
 import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 print(sys.path)
-
 import json
 from FaceComponent import FaceComponent
 from FacePart import FacePart
@@ -50,5 +49,5 @@ def getType(image_path):
 
 
 if __name__ == "__main__":
-    result = getType("temp.jpg")
+    result = getType("small_upper_lips2.jpg")
     print(result)

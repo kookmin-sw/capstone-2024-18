@@ -16,6 +16,5 @@ class FarEyeToEye(PartType):
         user_rate = inner_eye_to_eye/outer_eye_to_eye
         standard_rate = 0.245
         
-        print('far eye', user_rate)
         face_radius = 0.015
         return (user_rate - standard_rate)/face_radius #작은 눈이면 음수가 반환, z-score 반환

@@ -17,5 +17,4 @@ class SmallEye(PartType):
         standard_rate = 1.02 / 12.1
 
         eye_height_sigma = 0.0125
-        print(user_rate)
         return (standard_rate - user_rate) / eye_height_sigma #큰 눈이면 음수가 반환, z-score 반환

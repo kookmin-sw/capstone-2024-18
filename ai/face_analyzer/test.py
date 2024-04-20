@@ -104,3 +104,22 @@ x3, y3 = -1,0
 # 끼인 각을 계산
 angle = calculate_angle(x1, y1, x2, y2, x3, y3)
 print("끼인 각:", angle)
+
+
+
+
+def polygon_area(points):
+    n = len(points)
+    area = 0.0
+
+    for i in range(n):
+        j = (i + 1) % n
+        area += points[i][0] * points[j][1]
+        area -= points[j][0] * points[i][1]
+
+    area = abs(area) / 2.0
+    return area
+
+rectangle_points = [(1, 1), (4, 1), (4, 4), (1, 4)]
+
+print(polygon_area(rectangle_points))

@@ -16,6 +16,5 @@ class CloseEyeToEye(PartType):
         user_rate = inner_eye_to_eye/outer_eye_to_eye
         standard_rate = 0.245
         
-        print('far eye', user_rate)
         face_radius = 0.015
         return (standard_rate - user_rate)/face_radius

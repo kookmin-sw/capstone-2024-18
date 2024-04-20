@@ -16,6 +16,10 @@ class LandmarkIdx:
   #아랫입술
   lipsLowerOuter= [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291]
 
+  #입술중간
+  lipsMiddle = [62,78,191,80,81,82,13,312,311,310,415,308]
+  
+
   #왼쪽 눈 위,아래
   leftEyeUpper= [246, 161, 160, 159, 158, 157, 173]
   leftEyeLower= [33, 7, 163, 144, 145, 153, 154,155, 133]
@@ -32,4 +36,4 @@ class LandmarkIdx:
   nose_tip = [64, 294, 168, 122, 174, 198, 209, 49, 48, 98, 97, 2, 326, 327, 278, 279, 420, 429, 399, 351]
 
   
-  all_idx = silhouette+lipsUpperOuter+lipsLowerOuter+rightEyeUpper+rightEyeLower+leftEyeUpper+leftEyeLower+rightEyebrowUpper+rightEyebrowLower+leftEyebrowUpper+leftEyebrowLower+nose_tip
+  all_idx = silhouette+lipsUpperOuter+lipsLowerOuter+rightEyeUpper+rightEyeLower+leftEyeUpper+leftEyeLower+rightEyebrowUpper+rightEyebrowLower+leftEyebrowUpper+leftEyebrowLower+nose_tip+lipsMiddle

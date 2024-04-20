@@ -90,11 +90,11 @@ def calibration(landmarks):
     max_y = landmarks[152]
 
     middle = [(min_y[0]+max_y[0])/2, (min_y[1]+max_y[1])/2]
-    print(min_y, middle, max_y)
+    #print(min_y, middle, max_y)
     angle = calculate_angle(min_y[0],min_y[1], middle[0],middle[1], middle[0], 0)
     if angle>0: angle = max(0, angle-2)
     elif angle<0: angle = min(0, angle)
-    print("angle", angle)
+    #print("angle", angle)
     for i in range(len(landmarks)):
         landmarks[i] = rotate_point_clockwise(landmarks[i], middle, angle)
     
@@ -139,7 +139,7 @@ def image_run(image_path):
                 y = int(landmark.y * image.shape[0])
 
     mediapipe_landmarks = calibration(mediapipe_landmarks)
-    print(mediapipe_landmarks[10], mediapipe_landmarks[152])
+    #print(mediapipe_landmarks[10], mediapipe_landmarks[152])
     for idx, point in enumerate(mediapipe_landmarks):
         if idx not in LandmarkIdx.all_idx:continue
         x,y=point
@@ -154,6 +154,6 @@ def image_run(image_path):
 
 
     # # 이미지 출력
-    # display(Image(filename=output_image_path))
+    # display(Image(filename=output_image_gktpath))
 
     return model_1000_landmarks,mediapipe_landmarks
