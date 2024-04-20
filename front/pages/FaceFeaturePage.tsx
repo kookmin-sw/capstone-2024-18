@@ -13,18 +13,19 @@ import { IconButton } from 'react-native-paper';
 import { useNavigate } from 'react-router-native';
 
 const FaceFeaturePage = () => {
-  const [ isImageSetting, setIsImageSetting ] = useState(false);
+  // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // 이미지 url uri path
+  // 이미지 uri path
   const [ uri, setUri ] = useState('');
   const [ generatedS3Url, setGeneratedS3Url ] = useState('');
   const [ haveGeneratedS3Url, setHaveGeneratedS3Url ] = useState(false);
 
+  const [ isImageSetting, setIsImageSetting ] = useState(false);
   const [ isButtonClickable, setIsButtonClickable ] = useState(false);
 
-  const [pageIndex, setPageIndex] = useState(0);
+  const [ pageIndex, setPageIndex ] = useState(0);
 
   // 이미지 추가하는 방식 모달 가시성 설정
   const [ modalVisible, setModalVisible ] = useState(false);
