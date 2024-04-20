@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-native";
 import { Card } from "react-native-paper";
 
 import IconText from "../components/IconText";
-import Title from "../components/Title";
+import Title from "../components/HeaderBar";
 import CustomTextInput from "../components/CustomTextInput";
 import CustomButton from "../components/CustomButton";
 import CustomSlider from "../components/CustomSlider";
@@ -115,7 +115,7 @@ const BasicInfoPage = () => {
   }
 
   const submitForm = async () => {
-    console.log("submit:" + JSON.stringify(basicInfo));
+    console.log("submitForm: " + JSON.stringify(basicInfo));
     if (authCtx.accessToken) {
       const response = await putBasicInfo(
         authCtx.accessToken,
