@@ -8,10 +8,10 @@ import {PermissionsAndroid} from 'react-native';
  * 안드로이드 기기에서의 사진, 갤러리 사용 모달
  * @param visible :boolean. modal의 가시성 설정
  * @param onClose :()=>void. modal의 취소 버튼, 모달 이외의 배경 클릭시 실행되는 함수
- * @param setResult :(uri: string)=>void. 사진을 찍거나 가져올 때 사진을 따로 사용해야할 경우, 함수 설정
+ * @param setImageUrl :(uri: string)=>void. 사진을 찍거나 가져올 때 사진을 따로 사용해야할 경우, 함수 설정
  * @returns :모달 내용
  */
-export const showModal = (visible: boolean, onClose: () => void, setResult?: (uri: string) => void) => {
+export const showModal = (visible: boolean, onClose: () => void, setImageUrl?: (uri: string) => void) => {
   // 카메라 안드로이드 권한 확인(카메라, 갤러리 접근 둘다 확인)
   useEffect(() => {
     checkCameraPermission();
@@ -21,11 +21,11 @@ export const showModal = (visible: boolean, onClose: () => void, setResult?: (ur
   // 모달 안의 버튼을 클릭하면, 현재 모달을 닫고, 해당 버튼 기능 실행
   function pressCamera() {
     onClose();
-    showCamera(setResult && setResult);
+    showCamera(setImageUrl && setImageUrl);
   }
   function pressPhoto() {
     onClose();
-    showPhoto(setResult && setResult);
+    showPhoto(setImageUrl && setImageUrl);
   }
   
   return (
