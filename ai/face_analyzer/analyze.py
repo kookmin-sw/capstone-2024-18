@@ -9,7 +9,6 @@ from FacePart import FacePart
 from PartType import PartType
 import class_info
 from landmark_model.face_model_v_01 import image_run
-
 sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding = 'utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding = 'utf-8')
 
@@ -38,11 +37,14 @@ def getType(image_path):
 
     face.analyze(mediapipe_landmarks, model_1000_landmarks)
     
-    result_objects = []
+    result_objects = {}
     for part_name in part_names:
         face_part = face.getChild(part_name)
         child = face_part.chooseChildByPolicy()
-        result_objects.append(child)
+        result_objects[part_name] = {
+            'name':child.name,
+            'description':child.description
+        }
 
     return result_objects
 
