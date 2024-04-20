@@ -37,7 +37,7 @@ const SelfProduce = () => {
         },
         {
           text: "네",
-          onPress: () => deleteSelfProduce()
+          onPress: deleteSelfProduce
         }
       ])
   }
@@ -242,7 +242,9 @@ const SelfProduce = () => {
   }
 
   return (
-    (haveSelfProduce == false) 
+    <>
+      {showModal(modalVisible, () => {setModalVisible(false)}, setPhoto )}
+      {(haveSelfProduce == false) 
       ? 
       <View style={styles.container}>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -259,8 +261,6 @@ const SelfProduce = () => {
         </CustomButton>
       </View>
       : 
-    <>
-      {showModal(modalVisible, () => {setModalVisible(false)}, setPhoto )}
       <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
         {/* 이미지 슬라이더 */}
         <CarouselSlider
@@ -384,7 +384,7 @@ const SelfProduce = () => {
           <View style={{...styles.section, flexDirection: 'row'}}>
             <View style={{width: "50%", display: edit ? 'none' : 'flex'}}>
               <CustomButton 
-                containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 5}} onPress={() => {deleteAlert()}}
+                containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 5}} onPress={deleteAlert}
                 textStyle={{color: colors.white}}>삭제하기
               </CustomButton>
             </View>
@@ -398,7 +398,7 @@ const SelfProduce = () => {
           </View>
         </View>
       </ScrollView>
-    </>
+    }</>
   );
 };
 
