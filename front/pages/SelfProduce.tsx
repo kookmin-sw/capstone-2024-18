@@ -291,8 +291,9 @@ const SelfProduce = () => {
         }
         </View>
 
-        {/* 프로필 사진, 이름 섹션 */}
         <View style={styles.container} >
+          {/* 프로필 사진, 이름 섹션 */}
+          {/* 아직 정확한 디자인 안나와서 일단 보류 */}
           <View style={styles.sectionTop}>
             <Icon size={60} source={require('../assets/images/Jenny_image.png')}/>
             <Text style={styles.profileName}>Jenny</Text>
