@@ -140,17 +140,17 @@ def image_run(image_path):
 
     mediapipe_landmarks = calibration(mediapipe_landmarks)
     #print(mediapipe_landmarks[10], mediapipe_landmarks[152])
-    for idx, point in enumerate(mediapipe_landmarks):
-        if idx not in LandmarkIdx.all_idx:continue
-        x,y=point
-        x = int(x)
-        y = int(y)
-        cv2.circle(image, (x, y), 2, (0, 255, 0), -1)  # 랜드마크를 초록색 점으로 표시
-        cv2.putText(image, str(idx), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)  # 랜드마크 번호 표시
+    # for idx, point in enumerate(mediapipe_landmarks):
+    #     if idx not in LandmarkIdx.all_idx:continue
+    #     x,y=point
+    #     x = int(x)
+    #     y = int(y)
+    #     cv2.circle(image, (x, y), 2, (0, 255, 0), -1)  # 랜드마크를 초록색 점으로 표시
+    #     cv2.putText(image, str(idx), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)  # 랜드마크 번호 표시
 
-    # 이미지 저장
-    output_image_path = 'result_'+ image_path
-    cv2.imwrite(output_image_path, image)
+    # # 이미지 저장
+    # output_image_path = 'result_'+ image_path
+    # cv2.imwrite(output_image_path, image)
 
 
     # # 이미지 출력
