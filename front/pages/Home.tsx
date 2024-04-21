@@ -74,22 +74,26 @@ const Home = () => {
         // 기본정보 응답 확인
         if (isBasicInfoResponse(response)) {
           // 기본정보 얻음
-          console.log("기본정보 있음");
-          navigate("/main");
-        } 
-        else {
-          // 기본정보 없음
-          if (response.exceptionCode === 0) {
+          if (response.ageDegree && 
+              response.ageGroup &&
+              response.gender &&
+              response.heightGroup && 
+              response.nickname &&
+              response.region) {
+                console.log("기본정보 있음");
+                navigate("/main");
+              }
+          else {
             console.log("기본정보 없음");
             navigate("/basic-info");
           }
-          // 통신 오류 시 alert 후 재시도
-          else {
-            console.log(response.message);
-            createAlertMessage(response.message, reload);
-          }
         } 
-      
+        else {
+          // 오류 시 에러 메세지 출력 후 재시도
+          console.log(response.message);
+          createAlertMessage(response.message, reload);
+        } 
+        
         // 오류 처리
         if (isErrorResponse(response)) {
           switch (response.exceptionCode) {
