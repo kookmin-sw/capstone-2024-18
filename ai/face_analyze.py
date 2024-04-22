@@ -2,10 +2,12 @@ from flask import Flask, request, jsonify
 import json
 import sys
 import os
-sys.path.append('./temp2')
+sys.path.append('./face_analyzer')
+sys.path.append('./landmark_model')
+
 from PIL import Image
 import io
-from temp2.analyze import getType
+from face_analyzer.analyze import getType
 import os
 import onnxruntime as ort
 ort.set_default_logger_severity(3)
