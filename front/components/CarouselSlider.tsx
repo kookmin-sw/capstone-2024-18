@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FlatList, FlatListProps, ListRenderItem, StyleProp, ViewStyle } from "react-native";
+import { FlatList, FlatListProps, StyleProp, ViewStyle } from "react-native";
 
 import useInterval from "./useInterval.tsx";
 
@@ -59,6 +59,8 @@ export const CarouselSlider = (({
       e.nativeEvent.contentOffset.x / (pageWidth + (gap.leftGap + gap.rightGap) / 2)
     );
     setPage(newPage);
+
+    onPageChange && onPageChange(newPage);
   };
 
   // renderItem 다시 구현
