@@ -3,6 +3,7 @@ export const colors = {
     white: "#FFFFFF",
     point: "#FF7269",
     pastel_point: "#FFD0CD",
+    light_pink: "#FFECEB",
     gray1: "#F0F0F5",
     gray2: "#E8E8EE",
     gray3: "#E1E1E8",
