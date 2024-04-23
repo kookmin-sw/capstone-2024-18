@@ -8,8 +8,7 @@ import CustomTextInput from '../components/CustomTextInput.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 
 import { colors } from '../assets/colors.tsx';
-import { isErrorResponse, isValidResponse } from '../util/auth.tsx';
-import { createAlertMessage } from '../util/alert.tsx';
+import { isErrorResponse, isValidResponse, createAlertMessage } from '../util/auth.tsx';
 
 const Login = () => {
   const authCtx = useContext(AuthContext);
@@ -30,16 +29,13 @@ const Login = () => {
   // 로그인 버튼 클릭
   const TryLogin = async () => {
     const response = await authCtx.signin(email, pw);
+
     if (isValidResponse(response)) {
       navigate('/');
     }
     if (isErrorResponse(response)) {
       createAlertMessage(response.message);
     }
-  }
-
-  const NavigateToSignUp = () => {
-    navigate('/signup');
   }
 
   return (
@@ -81,11 +77,11 @@ const Login = () => {
 
         {/* 이메일 찾기, 비밀번호 찾기 */}
         <View style={[styles.fit_content, {marginBottom: 40}]}>
-          <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent}}>
+          <TouchableOpacity onPress={() => {navigate('/findemail')}} style={{backgroundColor: colors.transparent}}>
             <Text style={styles.small_button_text}>이메일 찾기</Text>
           </TouchableOpacity>
           <View style={{width: 1, height: '80%', alignSelf: 'center', marginHorizontal: 15, backgroundColor: colors.gray9 }}/>
-          <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent}}>
+          <TouchableOpacity onPress={() => {navigate('/findpw')}} style={{backgroundColor: colors.transparent}}>
             <Text style={styles.small_button_text}>비밀번호 찾기</Text>
           </TouchableOpacity>
         </View>

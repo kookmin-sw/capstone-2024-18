@@ -445,6 +445,10 @@ export const isErrorResponse = (response: validResponse | errorResponse): respon
   return (response as errorResponse).exceptionCode !== undefined;
 }
 
+export const isFindEmailResponse = (response: validResponse | errorResponse): response is findEmailResponse => {
+  return (response as findEmailResponse).receivedEmail !== undefined;
+}
+
 export const isBasicInfoResponse = (response: validResponse | errorResponse): response is basicInfoResponse => {
   return (response as basicInfoResponse).nickname !== undefined;
 }
