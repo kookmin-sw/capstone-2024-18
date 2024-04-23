@@ -5,5 +5,5 @@ import face_shape.TreeFaceShape
 import face_shape.WaterFaceShape
 
 def FaceShapePolicy(result):
-    type_name = max(result)
+    type_name = max(result, key=result.get)
     return type_name
