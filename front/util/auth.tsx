@@ -1,4 +1,5 @@
 import axios from 'axios';
+import RNFS from 'react-native-fs';
 import Config from 'react-native-config';
 
 const LOCALHOST = Config.LOCALHOST;
@@ -68,7 +69,7 @@ export const handleError = (error: unknown, method: string): errorResponse => {
     }
   }
   
-  console.log(JSON.stringify(errorInfo));
+  console.log("handleError:", JSON.stringify(errorInfo));
   return errorInfo;
 }
 
@@ -77,7 +78,7 @@ interface findEmailResponse extends validResponse {
   isRegistered: boolean; 
 }
 
-// 3. OK
+// 1. OK
 export const findEmail = async (email: string): Promise<findEmailResponse | errorResponse> => {
   const method = "findEmail";
   const endpoint = `${LOCALHOST}/auth/find-email?email=${email}`;
@@ -102,7 +103,7 @@ export const findEmail = async (email: string): Promise<findEmailResponse | erro
   }
 }
 
-// 4. OK
+// 2. OK
 export const sendTemporaryPassword = async (email: string): Promise<validResponse | errorResponse> => {
   const method = "sendTemporaryPassword";
   const endpoint = `${LOCALHOST}/auth/send-temporary-password?email=${email}`;
@@ -121,7 +122,7 @@ export const sendTemporaryPassword = async (email: string): Promise<validRespons
   }
 }
 
-// 5. OK
+// 3. OK
 export const verifyTemporaryPassword = async (email: string, temPassword: string, newPassword: string, newPassword2: string): Promise<validResponse | errorResponse> => {
   const method = "verifyTemporaryPassword";
   const endpoint = `${LOCALHOST}/auth/verify-temporary-password?email=${email}&temporaryPassword=${temPassword}`;
@@ -141,7 +142,7 @@ export const verifyTemporaryPassword = async (email: string, temPassword: string
   }
 }
 
-// 6. OK
+// 4. OK
 export const verifyDuplicationEmail = async (email: string): Promise<validResponse | errorResponse> => {
   const method = "verifyDuplicationEmail";
   const endpoint = `${LOCALHOST}/auth/verify-duplication?email=${email}`;
@@ -160,7 +161,7 @@ export const verifyDuplicationEmail = async (email: string): Promise<validRespon
   }
 }
 
-// 7. OK
+// 5. OK
 export const sendCode = async (email: string): Promise<validResponse | errorResponse> => {
   const method = "sendCode";
   const endpoint = `${LOCALHOST}/auth/send-code?email=${email}`;
@@ -179,7 +180,7 @@ export const sendCode = async (email: string): Promise<validResponse | errorResp
   }
 }
 
-// 8. OK
+// 6. OK
 interface verifyCodeResponse extends validResponse{
   email: string; 
   isVerified: boolean; 
@@ -209,7 +210,7 @@ export const verifyCode = async (email: string, code: string): Promise<verifyCod
   }
 }
 
-// 9. OK
+// 7. OK
 export const signup = async (email: string, password: string, password2: string, isVerified: boolean): Promise<validResponse | errorResponse> => {
   const method = "signup";
   const endpoint =  `${LOCALHOST}/auth/signup`;
@@ -282,7 +283,7 @@ export const putBasicInfo = async (
     heightGroup: string, 
     region: string, 
   ): Promise<validResponse | errorResponse> => {
-  const method = "getBasicInfo";
+  const method = "putBasicInfo";
   const endpoint =  `${LOCALHOST}/basic-info`;
   const config = { 
     headers: { Authorization: 'Bearer ' + accessToken } 
@@ -444,8 +445,12 @@ export const isErrorResponse = (response: validResponse | errorResponse): respon
   return (response as errorResponse).exceptionCode !== undefined;
 }
 
+export const isFindEmailResponse = (response: validResponse | errorResponse): response is findEmailResponse => {
+  return (response as findEmailResponse).receivedEmail !== undefined;
+}
+
 export const isBasicInfoResponse = (response: validResponse | errorResponse): response is basicInfoResponse => {
-  return (response as basicInfoResponse).nickname !== undefined && (response as basicInfoResponse).nickname !== '';
+  return (response as basicInfoResponse).nickname !== undefined;
 }
 
 export const isFaceInfoResponse = (response: validResponse | errorResponse): response is faceInfoResponse => {

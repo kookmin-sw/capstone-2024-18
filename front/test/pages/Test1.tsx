@@ -1,18 +1,33 @@
+import { useContext } from 'react';
 import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import SubTest1 from './SubTest1.tsx';
 import SubTest2 from './SubTest2.tsx';
 import eye from '../../assets/images/eye.png';
+import CustomButton from "../../components/CustomButton.tsx";
+import { AuthContext } from '../../store/auth-context.tsx';
+import { useNavigate } from "react-router-native";
+import { isValidResponse, putBasicInfo } from '../../util/auth.tsx';
+import { createAlertMessage } from '../../util/alert.tsx';
 
 
 const Tab = createMaterialBottomTabNavigator();
 
 const Test1 = () => {
+  const authCtx = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const response = await authCtx.signout();
+    navigate("/login");
+  }
+
   return (
     <View style={{height: "100%"}}>
     <NavigationContainer>
+      <CustomButton onPress={handleLogout}>로그아웃</CustomButton>
       <PaperProvider theme={{version: 2}}>
         <Tab.Navigator 
           shifting={true}
