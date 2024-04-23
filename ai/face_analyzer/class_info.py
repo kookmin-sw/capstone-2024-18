@@ -1,6 +1,8 @@
 from eye import BigEye, SmallEye, CloseEyeToEye, CloseEyeToEyebrow, FarEyeToEye, FarEyeToEyebrow, HightailEye, LowtailEye, EyePolicy
 from face_shape import FireFaceShape,GroundFaceShape,WaterFaceShape,GoldFaceShape,TreeFaceShape,FaceShapePolicy
 from lips import BigLips, LipsPolicy,BigUpperLips, SmallLips, SmallUpperLips
+from nose import LongNose,ShortNose,NarrowNose,WideNose,NosePolicy
+
 face = {
     "face_shape":{
         "types":[
@@ -33,5 +35,14 @@ face = {
             SmallUpperLips.SmallUpperLips
         ],
         "policy":LipsPolicy.LipsPolicy
+    },
+    "nose":{
+        "types":[
+            LongNose.LongNose,
+            ShortNose.ShortNose,
+            NarrowNose.NarrowNose,
+            WideNose.WideNose
+        ],
+        "policy":NosePolicy.NosePolicy
     }
 }
