@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 
 import { colors } from '../assets/colors.tsx';
@@ -8,6 +8,7 @@ import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFace
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { Icon } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Profile = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
@@ -71,10 +72,12 @@ const Profile = ({navigation}: any) => {
     })
   )
 
-  useEffect(() => {
-    createBasicInfo();
-    tryGetFaceInfo();
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      createBasicInfo();
+      tryGetFaceInfo();
+    }, [])
+  );
 
   const editButton = (onPress: () => void) => {
     return <Pressable onPress={onPress} style={styles.icon}><Icon source={'pencil-outline'} size={19} color={colors.point}/></Pressable>
@@ -96,12 +99,12 @@ const Profile = ({navigation}: any) => {
             borderRadius={300} source={{uri: generatedS3Url}}
             containerStyle={styles.grayImageContainer} imageStyle={styles.image}
             centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
-            centerPressable={{onPress: () => console.log('click face info edit')}}/>
+            centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
           <ImageWithIconOverlay
             borderRadius={300} source={{uri: originS3Url}}
             containerStyle={styles.grayImageContainer} imageStyle={styles.image}
             centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
-            centerPressable={{onPress: () => console.log('click face info edit')}}/>
+            centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
         </View>:<></>
         }
         <View style={styles.rowFlexBox}>
@@ -112,14 +115,14 @@ const Profile = ({navigation}: any) => {
         <View style={styles.grayContainer}>
           <View style={styles.rowFlexBox}>
             <Text style={styles.grayTitle}>기본 정보</Text>
-            {editButton(() => {console.log('click basic info edit')})}
+            {editButton(() => {navigation.navigate('BasicInfoWithoutNickname')})}
           </View>
           <Text style={styles.grayContent}>{basic.join(' ')}</Text>
         </View>
         <View style={styles.grayContainer}>
           <View style={styles.rowFlexBox}>
             <Text style={styles.grayTitle}>관상 정보</Text>
-            {editButton(() => {console.log('click basic feature edit')})}
+            {editButton(() => {navigation.navigate('FaceFeature')})}
           </View>
           <Text style={styles.grayContent}>{face.join(' ')}</Text>
         </View>
