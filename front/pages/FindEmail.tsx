@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useNavigate } from "react-router-native";
 
 import { colors } from '../assets/colors.tsx';
-import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
 import CustomButton from '../components/CustomButton.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
@@ -11,9 +9,7 @@ import { findEmail, isErrorResponse, isFindEmailResponse } from "../util/auth.ts
 import IconText from '../components/IconText.tsx';
 
 
-const FindEmail = () => {
-  const navigate = useNavigate();
-
+const FindEmail = ({navigation}: any) => {
   // email state 관리와 
   const [email, setEmail] = useState({
     value: "",
@@ -57,7 +53,7 @@ const FindEmail = () => {
     const response = await findEmail(email.value);
 
     if (isFindEmailResponse(response)) {
-      createAlertMessage(response.message, () => navigate('/'));
+      createAlertMessage(response.message, () => navigation.goBack());
     }
     if (isErrorResponse(response)){ // 나머지 에러
       createAlertMessage(response.message);
@@ -71,7 +67,6 @@ const FindEmail = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45, minHeight: '100%'}}>
-      <CustomBackHandler onBack={() => navigate('/')}/>
       <View style={styles.container}>
         <Text style={styles.helperText}>이메일을 입력해주세요</Text>
         <Text style={styles.smallHelperText}>가입 시 등록했던 이메일을 입력하면 가입 여부를 알려드려요.</Text>

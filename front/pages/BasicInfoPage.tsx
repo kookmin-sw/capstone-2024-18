@@ -1,10 +1,9 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, ScrollView, SafeAreaView } from "react-native";
-import { useNavigate } from "react-router-native";
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, BackHandler } from "react-native";
 import { Card } from "react-native-paper";
 
 import IconText from "../components/IconText";
-import Title from "../components/HeaderBar";
+import HeaderBar from "../components/HeaderBar";
 import CustomTextInput from "../components/CustomTextInput";
 import CustomButton from "../components/CustomButton";
 import CustomSlider from "../components/CustomSlider";
@@ -16,10 +15,10 @@ import { ageDegree, ageGroup, heightGroup, region, gender, HeightGroup, Gender, 
 import { isErrorResponse, isValidResponse, putBasicInfo } from "../util/auth";
 import SelectableTag from "../components/SelectableTag";
 import { createAlertMessage } from "../util/alert";
+import CustomBackHandler from "../components/CustomBackHandler";
 
-const BasicInfoPage = () => {
+const BasicInfoPage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
-  const navigate = useNavigate();
   
   interface BasicInfo {
     nickname: string;         
@@ -48,7 +47,9 @@ const BasicInfoPage = () => {
   })
 
   const handlePrevPage = () => {
-    if (pageIndex === 0) return;
+    if (pageIndex === 0) {
+      navigation.goBack();
+    }
     setPageIndex(pageIndex - 1);
   }
 
@@ -128,7 +129,7 @@ const BasicInfoPage = () => {
       );  
       if (isValidResponse(response)) {
         createAlertMessage("기본 정보 입력이 완료되었습니다.");
-        navigate("/main");
+        navigation.goBack();
       }
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
@@ -329,7 +330,8 @@ const BasicInfoPage = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Title onPress={handlePrevPage}>기본 정보</Title>
+      <CustomBackHandler onBack={handlePrevPage}/>
+      <HeaderBar onPress={handlePrevPage}>기본 정보</HeaderBar>
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Card style={styles.card}>

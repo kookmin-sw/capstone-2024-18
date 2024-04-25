@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, SafeAreaView } from 'react-native';
 import CustomButton from '../components/CustomButton.tsx';
 
 import { colors } from '../assets/colors.tsx';
@@ -10,15 +10,13 @@ import { isFaceInfoResponse, postFaceInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import AutoHeightImage from 'react-native-auto-height-image';
-import { useNavigate } from 'react-router-native';
 
-const FaceInfoPage = () => {
+const FaceInfoPage = ({navigation}: any) => {
   // 이미지 uri path
   const [ uri, setUri ] = useState('');
 
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
-  const navigate = useNavigate();
 
   // 관상 생성 과정 이미지 자동 height 설정
   const [ exImageWidth, setExImageWidth ] = useState(0);
@@ -78,10 +76,11 @@ const FaceInfoPage = () => {
 
         if (isFaceInfoResponse(response)) {
           console.log(response);
-          createAlertMessage("이미지 생성이 오래 걸려, 생성이 다 되면, 프로필에서 보실 수 있습니다", ()=>{navigate('/facefeature')})
+          createAlertMessage("이미지 생성이 오래 걸려, 생성이 다 되면, 프로필에서 보실 수 있습니다", 
+          ()=>{navigation.goBack()})
         } else {
           createAlertMessage(response.message, () => {
-            createAlertMessage("이미지 생성이 오래 걸리기 때문에, 생성이 다 되면, 프로필에서 보실 수 있습니다", ()=>{navigate('/facefeature')})
+            createAlertMessage("이미지 생성이 오래 걸리기 때문에, 생성이 다 되면, 프로필에서 보실 수 있습니다", ()=>{navigation.goBack()})
           });
           // 임시
         }
@@ -115,23 +114,25 @@ const FaceInfoPage = () => {
     </View>
   );
   const setImageStyleContent = (
-    <View style={styles.contentContainer}>
-      <IconText 
-        icon={{source: 'chat-question', color: colors.gray7}} 
-        containerStyle={styles.hintContainer}
-        textStyle={{fontSize: 14, color: colors.gray7}}>마스크에 적용하고 싶은 그림 스타일을 선택해주세요!</IconText>
-      {
-        styleImages.map((styleImage) => {
-          return (
-            <Pressable onPress={() => handleSelectedId(styleImage.id)}>
-              <Image key={styleImage.id} height={150} width={150} 
-                blurRadius={(styleImage.id === selectedStyleId || selectedStyleId === -1) ? 0 : 5}
-                style={styles.styleImage} source={{uri: styleImage.uri}}/>
-            </Pressable>
-          );
-        })
-      }
-    </View>
+    <SafeAreaView>
+      <View style={styles.contentContainer}>
+        <IconText 
+          icon={{source: 'chat-question', color: colors.gray7}} 
+          containerStyle={styles.hintContainer}
+          textStyle={{fontSize: 14, color: colors.gray7}}>마스크에 적용하고 싶은 그림 스타일을 선택해주세요!</IconText>
+        {
+          styleImages.map((styleImage) => {
+            return (
+              <Pressable key={styleImage.id} onPress={() => handleSelectedId(styleImage.id)}>
+                <Image height={150} width={150} 
+                  blurRadius={(styleImage.id === selectedStyleId || selectedStyleId === -1) ? 0 : 5}
+                  style={styles.styleImage} source={{uri: styleImage.uri}}/>
+              </Pressable>
+            );
+          })
+        }
+      </View>
+    </SafeAreaView>
   );
 
   // 카메라에서 image를 가져오면 버튼 클릭 가능하게 수정

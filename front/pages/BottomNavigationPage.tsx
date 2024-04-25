@@ -1,6 +1,5 @@
 import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 import { View } from "react-native";
 import SubTest1 from '../test/pages/SubTest1.tsx';
 import SelfProduce from "./SelfProduce.tsx";
@@ -11,7 +10,6 @@ const Tab = createMaterialBottomTabNavigator();
 const Test1 = () => {
   return (
     <View style={{height: "100%"}}>
-    <NavigationContainer>
       <PaperProvider theme={{version: 2}}>
         <Tab.Navigator 
           shifting={true}
@@ -32,7 +30,6 @@ const Test1 = () => {
             }}/>
         </Tab.Navigator>
       </PaperProvider>
-    </NavigationContainer>
     </View>
   );
 };

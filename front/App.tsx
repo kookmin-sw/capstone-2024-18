@@ -1,32 +1,40 @@
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { Routes, Route,  NativeRouter } from "react-router-native";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AuthContextProvider from './store/auth-context';
 import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
-import Test1 from './test/pages/Test1.tsx';
 import BottomNavigationPage from './pages/BottomNavigationPage.tsx';
-import FindEmail from './pages/FindEmail.tsx';
-import FindPw from './pages/FindPw.tsx';
 import Home from './pages/Home.tsx';
 import BasicInfoPage from './pages/BasicInfoPage.tsx';
+import FaceInfoPage from './pages/FaceInfoPage.tsx';
+import FaceFeaturePage from './pages/FaceFeaturePage.tsx';
+import FindEmail from './pages/FindEmail.tsx';
+import FindPw from './pages/FindPw.tsx';
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import SelfProduce from './pages/SelfProduce.tsx';
+
+const Stack = createStackNavigator();
 function App() {
   return (
     <AuthContextProvider>
       <SafeAreaProvider>
-        <NativeRouter>
-          <Routes>
-            <Route path={"/login"} element={<SafeAreaView><Login/></SafeAreaView>}/>
-            <Route path={"/signup"} element={<SafeAreaView><Signup/></SafeAreaView>}/>
-            <Route path={"/findemail"} element={<SafeAreaView><FindEmail/></SafeAreaView>}/>
-            <Route path={"/findpw"} element={<SafeAreaView><FindPw/></SafeAreaView>}/>
-            <Route path={'/main'} element={<BottomNavigationPage/>}/>
-            <Route path={'/'} element={<Home/>}/>
-            <Route path={'/basic-info'} element={<BasicInfoPage/>}/>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName='Home' screenOptions={{headerShown: false}}>
+            <Stack.Screen name="Login" component={Login}/>
+            <Stack.Screen name="FindEmail" component={FindEmail}/>
+            <Stack.Screen name="FindPw" component={FindPw}/>
+            <Stack.Screen name="Signup" component={Signup}/>
+            <Stack.Screen name='Main' component={BottomNavigationPage}/>
+            <Stack.Screen name='Home' component={Home}/>
+            <Stack.Screen name='BasicInfo' component={BasicInfoPage}/>
+            <Stack.Screen name='FaceInfo' component={FaceInfoPage}/>
+            <Stack.Screen name='FaceFeature' component={FaceFeaturePage}/>
+            <Stack.Screen name='SelfProduce' component={SelfProduce}/>
             {/* Bottom Navigation이 있는 페이지의 경우 SafeAreaView를 이용하면 ios에서 bottomNavigation이 제대로 안 보임 */}
-          </Routes>
-        </NativeRouter>
-    </SafeAreaProvider>  
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>  
     </AuthContextProvider>
   );
 }
