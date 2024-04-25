@@ -1,7 +1,6 @@
 import { useRef, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
-import { useNavigate } from "react-router-native";
 import CustomButton from '../components/CustomButton.tsx';
 import ImageButton from '../components/ImageButton.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';

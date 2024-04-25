@@ -1,6 +1,5 @@
 import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 import { View } from "react-native";
 import SubTest1 from '../test/pages/SubTest1.tsx';
 import SelfProduce from "./SelfProduce.tsx";
