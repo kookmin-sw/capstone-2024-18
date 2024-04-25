@@ -8,11 +8,11 @@ import CustomTextInput from '../components/CustomTextInput.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 
 import { colors } from '../assets/colors.tsx';
-import { isErrorResponse, isValidResponse, createAlertMessage } from '../util/auth.tsx';
+import { isErrorResponse, isValidResponse } from '../util/auth.tsx';
+import { createAlertMessage } from '../util/alert.tsx';
 
-const Login = () => {
+const Login = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
-  const navigate = useNavigate();
   const [ email, setEmail ] = useState('');
   const [ pw, setPw ] = useState('');
 
@@ -31,7 +31,7 @@ const Login = () => {
     const response = await authCtx.signin(email, pw);
 
     if (isValidResponse(response)) {
-      navigate('/');
+      navigation.navigate('Home');
     }
     if (isErrorResponse(response)) {
       createAlertMessage(response.message);
@@ -77,11 +77,11 @@ const Login = () => {
 
         {/* 이메일 찾기, 비밀번호 찾기 */}
         <View style={[styles.fit_content, {marginBottom: 40}]}>
-          <TouchableOpacity onPress={() => {navigate('/findemail')}} style={{backgroundColor: colors.transparent}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('FindEmail')}} style={{backgroundColor: colors.transparent}}>
             <Text style={styles.small_button_text}>이메일 찾기</Text>
           </TouchableOpacity>
           <View style={{width: 1, height: '80%', alignSelf: 'center', marginHorizontal: 15, backgroundColor: colors.gray9 }}/>
-          <TouchableOpacity onPress={() => {navigate('/findpw')}} style={{backgroundColor: colors.transparent}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('FindPw')}} style={{backgroundColor: colors.transparent}}>
             <Text style={styles.small_button_text}>비밀번호 찾기</Text>
           </TouchableOpacity>
         </View>
@@ -101,7 +101,7 @@ const Login = () => {
         {/* 회원가입 */}
         <View style={[styles.fit_content, {marginTop: 10}]}>
           <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
-          <TouchableOpacity onPress={() => {navigate('/signup')}} style={{backgroundColor: colors.transparent, height: 17.25, marginLeft: 5}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('Signup')}} style={{backgroundColor: colors.transparent, height: 17.25, marginLeft: 5}}>
             <Text style={[styles.small_button_text, styles.underline]}>회원가입</Text>
           </TouchableOpacity>
         </View>

@@ -11,7 +11,6 @@ const Tab = createMaterialBottomTabNavigator();
 const Test1 = () => {
   return (
     <View style={{height: "100%"}}>
-    <NavigationContainer>
       <PaperProvider theme={{version: 2}}>
         <Tab.Navigator 
           shifting={true}
@@ -32,7 +31,6 @@ const Test1 = () => {
             }}/>
         </Tab.Navigator>
       </PaperProvider>
-    </NavigationContainer>
     </View>
   );
 };

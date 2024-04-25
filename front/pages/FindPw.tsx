@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, TextInput } from 'react-native';
-import { useNavigate } from "react-router-native";
 
 import { colors } from '../assets/colors.tsx';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
@@ -11,9 +10,8 @@ import { isErrorResponse, isValidResponse, sendTemporaryPassword, verifyTemporar
 import IconText from '../components/IconText.tsx';
 
 
-const FindPw = () => {
+const FindPw = ({navigation}: any) => {
   const height = Dimensions.get('window').height;
-  const navigate = useNavigate();
   const [pageIndex, setPageIndex] = useState(0);
 
   const [email, setEmail] = useState({
@@ -116,7 +114,7 @@ const FindPw = () => {
       const response = await verifyTemporaryPassword(email.value, tempPassword.value, password.value[0], password.value[1]);
       
       if (isValidResponse(response)) {
-        createAlertMessage(response.message, () => navigate('/'));
+        createAlertMessage(response.message, () => navigation.goBack());
       }
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
@@ -125,7 +123,7 @@ const FindPw = () => {
   }
 
   function onBack() {
-    if (pageIndex === 0) navigate('/');
+    if (pageIndex === 0) navigation.goBack();
     else setPageIndex(0);
   }
 
