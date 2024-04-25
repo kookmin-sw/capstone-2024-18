@@ -106,7 +106,7 @@ const Profile = ({navigation}: any) => {
         }
         <View style={styles.rowFlexBox}>
           <Text style={styles.nickname}>{nickname}</Text>
-          {editButton(() => {console.log('click nickname edit')})}
+          {editButton(() => {navigation.navigate('Nickname')})}
         </View>
         {/* 이 부분 코드는 나중에 관상 분석 결과 내용 나오면 수정 */}
         <View style={styles.grayContainer}>
