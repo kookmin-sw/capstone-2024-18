@@ -1,5 +1,6 @@
 package capstone.facefriend.chat.service;
 
+import capstone.facefriend.chat.infrastructure.repository.dto.GetMessageResponse;
 import capstone.facefriend.chat.infrastructure.repository.dto.MessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,15 @@ public class RedisSubscriber implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
-            String publishMessage = new String(message.getBody(), StandardCharsets.UTF_8);
+            // redis에서 발행된 데이터를 받아 역직렬화
+            String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 
             log.info("Received message from Redis: {}", publishMessage); // 메시지 내용 로깅
 
             MessageResponse messageResponse = objectMapper.readValue(publishMessage, MessageResponse.class);
-            messagingTemplate.convertAndSend("/sub/chat/room/" + messageResponse.getRoomId(), messageResponse);
+            GetMessageResponse chatMessageResponse = new GetMessageResponse(messageResponse);
+
+            messagingTemplate.convertAndSend("/sub/chat/room/" + messageResponse.getRoomId(), chatMessageResponse);
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to process message", e);

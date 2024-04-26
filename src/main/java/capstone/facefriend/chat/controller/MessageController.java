@@ -36,7 +36,7 @@ public class MessageController {
 
     @MessageMapping("/chat/messages")
     public void message(
-            @RequestBody MessageRequest messageRequest
+            MessageRequest messageRequest
             ) {
         messageService.sendMessage(messageRequest);
     }
