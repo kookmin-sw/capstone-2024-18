@@ -56,7 +56,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { accessToken, refreshToken } = response.data;
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      saveToken("accessToken", refreshToken);
+      saveToken("accessToken", accessToken);
       saveToken("refreshToken", refreshToken);
       const responseInfo = {
         method,
