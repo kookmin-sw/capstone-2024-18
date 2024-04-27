@@ -7,7 +7,6 @@ from PIL import Image
 import base64
 from face_maker.DualStyleGAN.style_transfer import *
 import io, glob
-import requests
 
 app = Flask(__name__)
 
@@ -31,7 +30,7 @@ def generate_image():
     request.files['image'].save(file_path)
         
     # 관상 이미지 생성
-    virtual_face = face_maker.generate(file_path, int(request.values['style_id']))
+    virtual_face = face_maker.generate(file_path, int(request.values['style_id']),weight=[1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
     
     # Image 인스턴스로 변환
     pil_virutal_face = Image.fromarray(virtual_face.astype('uint8'))
