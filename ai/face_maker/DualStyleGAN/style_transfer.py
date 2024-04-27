@@ -59,6 +59,8 @@ def run_alignment(args):
     aligned_image = align_face(filepath=args.content, predictor=predictor)
     return aligned_image
 
+
+
 class StyleTransfer():
     def __init__(self):
         self.device = "cpu"
@@ -102,10 +104,12 @@ class StyleTransfer():
         self.return_z_plus_latent=not args.wplus
         self.input_is_latent=args.wplus    
 
-    def generate(self, content_filepath, style_id):
+    def generate(self, content_filepath, style_id, weight = [0.75]*7+[1]*11, name=""):
         self.set_arg('style_id', style_id)
         self.set_arg('content', content_filepath)
-
+        self.set_arg('weight', weight)
+        self.set_arg('name', name)
+        print(self.args.name)
         args = self.args
         device = self.device
         encoder = self.encoder
@@ -115,6 +119,11 @@ class StyleTransfer():
         return_z_plus_latent = self.return_z_plus_latent
         input_is_latent = self.input_is_latent
 
+        args.align_face=True
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5],std=[0.5,0.5,0.5]),
+        ])
         
         with torch.no_grad():
             viz = []
@@ -157,7 +166,12 @@ class StyleTransfer():
             img_gen = torch.clamp(img_gen.detach(), -1, 1)
             viz += [img_gen]
         print('Generate images successfully!')
-
+        for i in range(len(viz)):
+            print(viz[i].shape)
+        save_name = args.name+'_%d_%s'%(args.style_id, os.path.basename(args.content).split('.')[0])
+        save_image(torchvision.utils.make_grid(F.adaptive_avg_pool2d(torch.cat(viz, dim=0), 256), 4, 2).cpu(), 
+        os.path.join(args.output_path, save_name+'_overview.jpg'))
+        save_image(img_gen[0].cpu(), os.path.join(args.output_path, save_name+'.jpg'))
         face = ((img_gen[0].detach().numpy().transpose(1, 2, 0) + 1.0) * 127.5).astype(np.uint8)
         return face
 
@@ -245,7 +259,8 @@ if __name__ == "__main__":
         viz += [img_gen]
 
     print('Generate images successfully!')
-    
+    for i in range(len(viz)):
+        print(viz[i].shape)
     save_name = args.name+'_%d_%s'%(args.style_id, os.path.basename(args.content).split('.')[0])
     save_image(torchvision.utils.make_grid(F.adaptive_avg_pool2d(torch.cat(viz, dim=0), 256), 4, 2).cpu(), 
                os.path.join(args.output_path, save_name+'_overview.jpg'))
