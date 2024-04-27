@@ -26,13 +26,20 @@ const Login = ({navigation}: any) => {
   }
 
   // 로그인 버튼 클릭
-  const TryLogin = async () => {
+  const tryLogin = async () => {
     const response = await authCtx.signin(email, pw);
 
     if (isValidResponse(response)) {
-      navigation.navigate('Home');
+      console.log("tryLogin: isValidResponse");
+      if (response.status === 200) {
+        navigation.navigate('Home');
+      }
+      else {
+        createAlertMessage(response.message);
+      }
     }
     if (isErrorResponse(response)) {
+      console.log("tryLogin: isErrorResponse");
       createAlertMessage(response.message);
     }
   }
@@ -87,7 +94,7 @@ const Login = ({navigation}: any) => {
 
         {/* 로그인, 구글 로그인 버튼 */}
         <View style={{marginHorizontal: 30}} onLayout={onLayout}>
-          <CustomButton onPress={TryLogin} 
+          <CustomButton onPress={tryLogin} 
             containerStyle={{backgroundColor: colors.point, marginVertical: 5}}
             textStyle={styles.button_text}>
             로그인

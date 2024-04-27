@@ -17,6 +17,20 @@ export interface errorResponse {
   message: string,
 }
 
+interface CharObject {
+  [key: string]: string; // Index signature
+}
+
+const toString = (html: CharObject) => {
+  let result = "";
+    for (let key in html) {
+      if (html.hasOwnProperty(key)) {
+        result += html[key];  // 각 문자를 결과 문자열에 추가
+      }
+    }
+    return result;
+}
+
 export const handleError = (error: unknown, method: string): errorResponse => {
   let errorInfo;
 
@@ -26,10 +40,11 @@ export const handleError = (error: unknown, method: string): errorResponse => {
     if (error.response) {
       const httpErrorCode = error.response.status;
       const errorDetails = error.response?.data ? { ...error.response.data } : {};  
+      
       errorInfo = {
         method,
         status: httpErrorCode,
-        ...errorDetails, // exceptionCode, message
+        message: toString(errorDetails), // exceptionCode, message
       };
     }
 
@@ -69,7 +84,7 @@ export const handleError = (error: unknown, method: string): errorResponse => {
     }
   }
   
-  console.log("handleError:", JSON.stringify(errorInfo));
+  console.log("handleError:", JSON.stringify(error));
   return errorInfo;
 }
 
