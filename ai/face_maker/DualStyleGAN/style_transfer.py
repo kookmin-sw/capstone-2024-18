@@ -48,7 +48,9 @@ class TestOptions():
 def run_alignment(args):
     import dlib
     from model.encoder.align_all_parallel import align_face
-    modelname = os.path.join(args.model_path, 'shape_predictor_68_face_landmarks.dat')
+    modelname = os.path.join(os.path.abspath(os.path.dirname(__file__)) + '/' + args.model_path, 'shape_predictor_68_face_landmarks.dat')
+    print('asdfasdf'+modelname)
+    print(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
     if not os.path.exists(modelname):
         import wget, bz2
         wget.download('http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2', modelname+'.bz2')
@@ -104,11 +106,11 @@ class StyleTransfer():
         self.return_z_plus_latent=not args.wplus
         self.input_is_latent=args.wplus    
 
-    def generate(self, content_filepath, style_id, weight = [0.75]*7+[1]*11, name=""):
+    def generate(self, content_filepath, style_id, weight = [0.75]*7+[1]*11, name="cartoon_transfer"):
         self.set_arg('style_id', style_id)
         self.set_arg('content', content_filepath)
         self.set_arg('weight', weight)
-        self.set_arg('name', name)
+        #self.set_arg('name', name)
         print(self.args.name)
         args = self.args
         device = self.device
