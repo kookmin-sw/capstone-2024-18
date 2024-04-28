@@ -178,15 +178,15 @@ const Home = ({ navigation }: any) => {
   // 로딩된 유저 정보에 따라 라우팅
   const handleRoute = async () => {
     if (!authCtx.isAuthenticated) return;
-    if (!userState.basicinfo) {
+    if (userState.basicinfo === "NOT_EXIST") {
       navigation.navigate("BasicInfo");
       return;
     }
-    else if (!userState.faceinfo) {
+    if (userState.faceinfo === "NOT_EXIST") {
       navigation.navigate("FaceInfo");
       return;
     }
-    else {
+    if (userState.basicinfo === "EXIST" && userState.faceinfo === "EXIST") {
       navigation.navigate("Main");
       return;
     }
