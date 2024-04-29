@@ -20,8 +20,8 @@ const Test1 = () => {
           <Tab.Screen 
             name="sub1" component={Friends} 
             options={{
-              tabBarIcon: ({color}) => <Icon source={"camera"} size={20} color={color} />,
-              tabBarLabel: 'Home',
+              tabBarIcon: ({color}) => <Icon source={"home"} size={20} color={color} />,
+              tabBarLabel: 'Friends',
             }}/>
           <Tab.Screen 
             name="sub2" component={SelfProduce} 
