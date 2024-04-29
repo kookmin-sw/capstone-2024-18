@@ -9,7 +9,7 @@ services:
     hostname: ai_container
     ports:
       - '5000:5000'
-
+      - '5001:5001'
     volumes:
       - .:/root
     stdin_open: true
