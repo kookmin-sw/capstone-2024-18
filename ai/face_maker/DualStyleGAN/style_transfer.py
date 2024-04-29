@@ -31,7 +31,7 @@ class TestOptions():
         self.parser.add_argument("--wplus", action="store_true", help="use original pSp encoder to extract the intrinsic style code")
 
     def parse(self):
-        self.opt = self.parser.parse_args()
+        self.opt, unkdown = self.parser.parse_known_args()
         if self.opt.exstyle_name is None:
             if os.path.exists(os.path.join(self.opt.model_path, self.opt.style, 'refined_exstyle_code.npy')):
                 self.opt.exstyle_name = 'refined_exstyle_code.npy'
