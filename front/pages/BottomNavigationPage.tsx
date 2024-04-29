@@ -3,6 +3,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { View } from "react-native";
 import SubTest1 from '../test/pages/SubTest1.tsx';
 import SelfProduce from "./SelfProduce.tsx";
+import Friends from "./Friends.tsx";
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -17,10 +18,10 @@ const Test1 = () => {
           activeColor="#ffffff"
           screenOptions={{tabBarColor: 'black'}}>
           <Tab.Screen 
-            name="sub1" component={SubTest1} 
+            name="sub1" component={Friends} 
             options={{
               tabBarIcon: ({color}) => <Icon source={"camera"} size={20} color={color} />,
-              tabBarLabel: 'No.1',
+              tabBarLabel: 'Home',
             }}/>
           <Tab.Screen 
             name="sub2" component={SelfProduce} 
