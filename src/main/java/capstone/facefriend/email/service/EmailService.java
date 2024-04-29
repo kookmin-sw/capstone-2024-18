@@ -1,7 +1,6 @@
 package capstone.facefriend.email.service;
 
 import capstone.facefriend.email.exception.EmailException;
-import capstone.facefriend.email.exception.EmailExceptionType;
 import capstone.facefriend.redis.RedisDao;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
