@@ -1,10 +1,7 @@
 package capstone.facefriend.member.service;
 
 
-import capstone.facefriend.member.domain.FaceInfo;
-import capstone.facefriend.member.domain.FaceInfoRepository;
-import capstone.facefriend.member.domain.Member;
-import capstone.facefriend.member.domain.MemberRepository;
+import capstone.facefriend.member.domain.*;
 import capstone.facefriend.member.exception.MemberException;
 import capstone.facefriend.member.exception.MemberExceptionType;
 import capstone.facefriend.member.multipartFile.ByteArrayMultipartFile;
@@ -23,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static capstone.facefriend.member.exception.MemberExceptionType.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,7 +49,6 @@ public class BucketService {
 
     // FaceInfo : origin 업로드 & generated 업로드
     public FaceInfoResponse uploadOriginAndGenerated(MultipartFile origin, ByteArrayMultipartFile generated, Long memberId) throws IOException {
-        /** upload origin to s3 */
         // set metadata
         ObjectMetadata originMetadata = new ObjectMetadata();
         originMetadata.setContentLength(origin.getInputStream().available());
@@ -67,7 +65,6 @@ public class BucketService {
         );
         String originS3Url = amazonS3.getUrl(bucketName, originObjectName).toString();
 
-        /** upload generated to s3 */
         // set metadata
         ObjectMetadata generatedMetadata = new ObjectMetadata();
         generatedMetadata.setContentLength(generated.getInputStream().available());
@@ -93,7 +90,7 @@ public class BucketService {
 
         // Member 최신화 후 저장
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
+                .orElseThrow(() -> new MemberException(NOT_FOUND));
         member.setFaceInfo(faceInfo);
         memberRepository.save(member);
 
@@ -119,31 +116,27 @@ public class BucketService {
 
     // Resume : resumeImages 업로드
     public List<String> uploadResumeImages(MultipartFile[] resumeImages, Long memberId) throws IOException {
-        /** upload resumeImage to s3 */
-
         int count = 0;
-        List<String> resumeS3Urls = new ArrayList<>();
+        List<String> resumeImageS3Urls = new ArrayList<>();
+
         for (MultipartFile resumeImage : resumeImages) {
             // set metadata
-            ObjectMetadata originMetadata = new ObjectMetadata();
-            originMetadata.setContentLength(resumeImage.getInputStream().available());
-            originMetadata.setContentType("image/jpeg");
+            ObjectMetadata resumeMetadata = new ObjectMetadata();
+            resumeMetadata.setContentLength(resumeImage.getInputStream().available());
+            resumeMetadata.setContentType("image/jpeg");
 
-            String resumeImageObjectName = memberId + resumePostfix + count; // ex) bucketName/1-resume-1.jpg
+            String resumeImageObjectName = memberId + resumePostfix + count++; // ex) bucketName/1-resume-1.jpg
             amazonS3.putObject(
                     new PutObjectRequest(
                             bucketName,
                             resumeImageObjectName,
                             resumeImage.getInputStream(), // resume
-                            originMetadata
+                            resumeMetadata
                     ).withCannedAcl(CannedAccessControlList.PublicRead)
             );
-            resumeS3Urls.add(amazonS3.getUrl(bucketName, resumeImageObjectName).toString());
+            resumeImageS3Urls.add(amazonS3.getUrl(bucketName, resumeImageObjectName).toString());
         }
-
-//        resumeRepository.save();
-
-        return resumeS3Urls;
+        return resumeImageS3Urls;
     }
 }
 

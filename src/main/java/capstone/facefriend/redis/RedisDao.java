@@ -4,6 +4,7 @@ package capstone.facefriend.redis;
 import capstone.facefriend.member.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import static capstone.facefriend.member.exception.MemberExceptionType.ACCESS_TO
 public class RedisDao {
 
     private final RedisTemplate<String, String> redisTemplate;
+
     private final String SIGN_OUT_VALUE = "SIGN_OUT_VALUE";
 
     public void setRefreshToken(String memberId, String refreshToken, long refreshTokenTime) {

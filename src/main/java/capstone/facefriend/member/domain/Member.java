@@ -1,10 +1,10 @@
 package capstone.facefriend.member.domain;
 
+import capstone.facefriend.chat.domain.ChatRoom;
 import capstone.facefriend.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
@@ -14,7 +14,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Slf4j
-@DynamicInsert
 @DynamicUpdate
 public class Member extends BaseEntity {
 
@@ -22,6 +21,7 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "MEMEBER_ID")
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -44,6 +44,13 @@ public class Member extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "FACE_INFO_ID", nullable = false)
     private FaceInfo faceInfo;
+
+//    @OneToOne(mappedBy = "member")
+//    private Resume resume;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "CHATROOM_ID")
+    private ChatRoom chatRoom;
 
     public Member(String email) {
         this.email = email;
