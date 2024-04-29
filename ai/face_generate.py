@@ -9,6 +9,7 @@ from face_maker.DualStyleGAN.style_transfer import *
 import io, glob
 
 app = Flask(__name__)
+face_maker = StyleTransfer()
 
 @app.route('/')
 def home():
@@ -52,5 +53,4 @@ def generate_image():
     
 
 if __name__ == '__main__':
-    face_maker = StyleTransfer()
     app.run(host='0.0.0.0', debug=True, use_reloader=False)
