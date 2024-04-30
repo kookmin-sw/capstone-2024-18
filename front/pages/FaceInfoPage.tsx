@@ -6,7 +6,7 @@ import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
-import { isFaceInfoResponse, postFaceInfo } from '../util/auth.tsx';
+import { isFaceInfoResponse, putFaceInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import AutoHeightImage from 'react-native-auto-height-image';
@@ -69,21 +69,13 @@ const FaceInfoPage = ({navigation}: any) => {
   const clickButton = async () => {
     if (pageIndex === contents.length - 1) {
       if (authCtx.accessToken) {
-        const response = await postFaceInfo(
+        const response = await putFaceInfo(
           authCtx.accessToken, 
           uri, selectedStyleId
         );
 
-        if (isFaceInfoResponse(response)) {
-          console.log(response);
-          createAlertMessage("이미지 생성이 오래 걸려, 생성이 다 되면, 프로필에서 보실 수 있습니다", 
-          ()=>{navigation.goBack()})
-        } else {
-          createAlertMessage(response.message, () => {
-            createAlertMessage("이미지 생성이 오래 걸리기 때문에, 생성이 다 되면, 프로필에서 보실 수 있습니다", ()=>{navigation.goBack()})
-          });
+        createAlertMessage("이미지 생성이 오래 걸려, 생성이 다 되면, 프로필에서 보실 수 있습니다", ()=>{navigation.goBack()})
           // 임시
-        }
       } else { // 실제에서는 절대 없는 예외 상황
         console.log("로그인 정보가 없습니다.");
       }

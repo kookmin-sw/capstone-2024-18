@@ -370,47 +370,6 @@ const getMimeTypeFromExtension = (extension: string | undefined) => {
   }
 };
 
-// 15.
-export const postFaceInfo = async (accessToken: string, fileUri: string, styleId: number): Promise<faceInfoResponse | errorResponse> => {
-  // 파일의 확장자를 추출
-  const extension = fileUri.split('.').pop()?.toLowerCase();
-  // 파일(이미지)의 타입을 결정
-  const mimeType = getMimeTypeFromExtension(extension);
-  
-  // FormData 객체를 생성합니다.
-  const formData = new FormData();
-  formData.append('origin', {
-    uri: fileUri,
-    name: `file.${extension}`,
-    type: mimeType,
-  });
-
-  const method = "postFaceInfo";
-  const endpoint = `${LOCALHOST}/face-info?styleId=${styleId}`;
-  const config = { 
-    headers: { 
-      Authorization: 'Bearer ' + accessToken,
-      'Content-Type': 'multipart/form-data',
-    }
-  };
-  try {
-    const response = await axios.post(endpoint, formData, config);
-    const { originS3Url, generatedS3Url } = response.data;
-    const responseInfo = {
-      method,
-      status: response.status,
-      message: "관상 이미지를 저장했습니다.",
-      originS3Url, 
-      generatedS3Url
-    }
-    console.log(responseInfo);
-    return responseInfo;
-  }
-  catch (error) {
-    return handleError(error, method);
-  }
-}
-
 // 16.
 export const putFaceInfo = async (accessToken: string, fileUri: string, styleId: number): Promise<faceInfoResponse | errorResponse> => {
   // 파일의 확장자를 추출
