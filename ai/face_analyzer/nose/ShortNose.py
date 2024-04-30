@@ -7,7 +7,8 @@ from PartType import PartType
 class ShortNose(PartType):
     def __init__(self):
         self.name="짧은 코"
-        self.description="짧은 코는 ~~"
+        self.description="짧은 코를 가진 사람은 성격이 싹싹하고 인정이 많습니다. 또한 융통성이 있어 결단이 빠르고 높은 지위를 가질 가능성이 있습니다. "
+        self.tag=["싹싹함","융통성"]
 
 
     def analyze(self, landmarks_mash,landmark_1000):

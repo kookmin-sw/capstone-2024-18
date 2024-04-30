@@ -7,7 +7,8 @@ from PartType import PartType
 class NarrowNose(PartType):
     def __init__(self):
         self.name="좁은 코"
-        self.description="좁은 코는 ~~"
+        self.description="좁은 코를 가진 사람은 꼼꼼하고 계산이 철저해 안정적인 삶을 살 수 있습니다."
+        self.tag=["꼼꼼함","안정된 삶"]
 
 
     def analyze(self, landmarks_mash,landmark_1000):
