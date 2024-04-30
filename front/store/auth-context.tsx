@@ -56,14 +56,14 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { accessToken, refreshToken } = response.data;
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      saveToken("accessToken", refreshToken);
+      saveToken("accessToken", accessToken);
       saveToken("refreshToken", refreshToken);
       const responseInfo = {
         method,
         status: response.status,
         message: "로그인 되었습니다.",
       }
-      console.log(responseInfo);
+      console.log(`${method}: ${JSON.stringify(responseInfo)}`);
       return responseInfo;
     }
     catch (error) {
@@ -89,7 +89,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
         status: response.status,
         message: "로그아웃 되었습니다.",
       }
-      console.log(responseInfo);
+      console.log(`${method}: ${JSON.stringify(responseInfo)}`);
       return responseInfo;
     }
     catch (error) {
@@ -118,7 +118,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
         status: response.status,
         message: "액세스토큰을 재발급했습니다.",
       }
-      console.log(responseInfo);
+      console.log(`${method}: ${JSON.stringify(responseInfo)}`);
       return responseInfo;
     }
     catch (error) {
