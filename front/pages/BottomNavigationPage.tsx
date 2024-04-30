@@ -21,7 +21,7 @@ const Test1 = () => {
           <Tab.Screen 
             name="sub1" component={Friends} 
             options={{
-              tabBarIcon: ({color}) => <Icon source={"home"} size={20} color={color} />,
+              tabBarIcon: () => <Icon source={"home"} size={20} color={'#626262'} />,
               tabBarLabel: 'Friends',
             }}/>
           <Tab.Screen 
