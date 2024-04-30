@@ -20,8 +20,10 @@ def polygon_area(points):
 
 class SmallUpperLips(PartType):
     def __init__(self):
+        super().__init__()
         self.name="윗입술이 얇은 경우"
-        self.description="윗입술이 얇은 경우 ~~"
+        self.description="윗입술이 얇은 경우 지식욕이 왕성하고 요령도 좋아 냉정하게 일을 처리합니다. 또한 이성적인 사고방식과 행동이 특징입니다. 어성의 경우 말을 잘하거나 수다쟁이가 많습니다."
+        self.tag=["지적임", "이성적"]
 
 
     def analyze(self, landmarks_mash,landmark_1000):        

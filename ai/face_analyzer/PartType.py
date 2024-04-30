@@ -2,10 +2,11 @@ from FaceComponent import FaceComponent
 
 class PartType(FaceComponent):
 
-    def __init__(self, name, description):
-        self.name=name
-        self.description=description
-    
+    def __init__(self):
+        self.name=""
+        self.description=""
+        self.tag=[]
+
     def getName(self) -> str:
         return self.name
 

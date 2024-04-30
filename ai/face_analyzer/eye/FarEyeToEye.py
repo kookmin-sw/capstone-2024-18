@@ -5,8 +5,10 @@ from PartType import PartType
 
 class FarEyeToEye(PartType):
     def __init__(self):
+        super().__init__()
         self.name="눈과 눈 사이가 먼 경우"
-        self.description="눈과 눈 사이가 먼 경우는 ~~"
+        self.description="눈과 눈 사이가 먼 경우 대범하며 다른 사람과 협력을 잘합니다. 또한 전체적인 형세판단이 가능해 큰 일을 할 수 있습니다."
+        self.tag=["협조적","대범함","리더의 자질"]
 
 
     def analyze(self, landmarks_mash,landmark_1000):

@@ -20,8 +20,10 @@ def polygon_area(points):
 
 class BigUpperLips(PartType):
     def __init__(self):
+        super().__init__()
         self.name="윗입술이 두꺼운 경우"
-        self.description="윗입술이 두꺼운 경우는 ~~"
+        self.description="윗입술이 두꺼운 경우 적극적이며 정이 깊어 타인에게 헌신적이고 두꺼울수록 이 성향이 강합니다. 또한 식욕,성욕 등의 본능이 강하고 미각, 감성이 뛰어나 요리사와 트로트 가수 등이 많습니다."
+        self.tag=["헌신적","정이 많음", "본능적"]
 
 
     def analyze(self, landmarks_mash,landmark_1000):        

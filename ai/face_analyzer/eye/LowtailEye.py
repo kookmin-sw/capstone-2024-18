@@ -5,9 +5,10 @@ from PartType import PartType
 
 class LowtailEye(PartType):
     def __init__(self):
+        super().__init__()
         self.name="눈꼬리가 내려간 눈"
-        self.description="눈꼬리가 내려간 눈은~~~"
-
+        self.description="눈꼬리가 내려간 눈을 가진 사람은 성격이 온후하고 사교성이 좋아 사랑받습니다. 또한 주변과의 협조를 잘하며 배려심이 있습니다."
+        self.tag=["온화함","배려심"]
 
     def analyze(self, landmarks_mash,landmark_1000):
         tail_height = landmarks_mash[362][1] - landmarks_mash[263][1]

@@ -43,7 +43,8 @@ def getType(image_path):
         child = face_part.chooseChildByPolicy()
         result_objects[part_name] = {
             'name':child.name,
-            'description':child.description
+            'description':child.description,
+            'tag':child.tag
         }
 
     return result_objects

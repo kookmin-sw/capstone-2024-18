@@ -5,9 +5,10 @@ from PartType import PartType
 
 class CloseEyeToEyebrow(PartType):
     def __init__(self):
+        super().__init__()
         self.name="눈과 눈썹사이가 가까울 경우"
-        self.description="눈과 눈썹사이가 가까울 경우는 ~~~"
-
+        self.description="눈과 눈썹사이가 가까울 경우 성실하고 꼼꼼한 성격을 가졌습니다. 또한 주변의 도움보단 자신의 힘으로 인생을 개척합니다."
+        self.tag=["꼼꼼함","강한 의지"]
 
 
     def analyze(self, landmarks_mash,landmark_1000):

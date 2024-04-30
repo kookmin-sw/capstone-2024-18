@@ -6,9 +6,10 @@ from PartType import PartType
 
 class BigEye(PartType):
     def __init__(self):
+        super().__init__()
         self.name="큰 눈"
-        self.description="큰 눈은 ~~"
-
+        self.description="큰 눈을 가진 사람은 감수성이 풍부하고 낙천적인 성격을 가졌으며 이상주의자에 가깝습니다."
+        self.tag = ["이상주의자", "감수성"]
 
     def analyze(self, landmarks_mash,landmark_1000):
         eye_height = landmarks_mash[374][1] - landmarks_mash[386][1]
