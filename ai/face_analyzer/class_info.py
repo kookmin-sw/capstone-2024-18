@@ -2,6 +2,7 @@ from eye import BigEye, SmallEye, CloseEyeToEye, CloseEyeToEyebrow, FarEyeToEye,
 from face_shape import FireFaceShape,GroundFaceShape,WaterFaceShape,GoldFaceShape,TreeFaceShape,FaceShapePolicy
 from lips import BigLips, LipsPolicy,BigUpperLips, SmallLips, SmallUpperLips
 from nose import LongNose,ShortNose,NarrowNose,WideNose,NosePolicy
+from eyebrow import NasolabialEyebrow,StraightEyebrow,RaisedEyebrows,EyeBrowPlicy
 
 face = {
     "face_shape":{
@@ -44,5 +45,13 @@ face = {
             WideNose.WideNose
         ],
         "policy":NosePolicy.NosePolicy
+    },
+    "eyebrow":{
+        "types":[
+            RaisedEyebrows.RaisedEyebrows,
+            StraightEyebrow.StraightEyebrow,
+            NasolabialEyebrow.NasolabialEyebrow
+        ],
+        "policy":EyeBrowPlicy.EyeBrowPolicy
     }
 }
