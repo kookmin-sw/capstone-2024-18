@@ -5,9 +5,10 @@ from PartType import PartType
 
 class TreeFaceShape(PartType):
     def __init__(self):
-        self.name="역삼각형"
-        self.description="목"
-
+        super().__init__()
+        self.name="역삼각형(목)"
+        self.description="역삼각형의 얼굴형을 가진 사람은 머리가 비상하고 성격이 나무처럼 곧습니다. 또한 행동력이 있어 꼼꼼히 계획을 세우는 것을 좋아하는 경향이 있습니다."
+        self.tag=["섬세함","성실함","지적임"]
 
     def analyze(self, landmarks_mash,landmark_1000):
         

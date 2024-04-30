@@ -6,9 +6,10 @@ from PartType import PartType
 
 class WaterFaceShape(PartType):
     def __init__(self):
-        self.name="원형"
-        self.description="수"
-
+        super().__init__()
+        self.name="원형(수)"
+        self.description="원형의 얼굴형을 가진 사람은 웬만한 일에 동조하지 않으며 서두르거나 대립하지 않는 온순한 성격을 가지고 있습니다. 또한 밖에서 활동하는 것을 좋아해 활발한 성격을 가지고 있는 경향이 있습니다."
+        self.tag=["온순함","활발함"]
 
     def analyze(self, landmarks_mash,landmark_1000):
 
