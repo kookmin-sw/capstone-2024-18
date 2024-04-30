@@ -59,8 +59,6 @@ export const CarouselSlider = (({
       e.nativeEvent.contentOffset.x / (pageWidth + (gap.leftGap + gap.rightGap) / 2)
     );
     setPage(newPage);
-
-    onPageChange && onPageChange(newPage);
   };
 
   // renderItem 다시 구현

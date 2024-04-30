@@ -12,7 +12,6 @@ import FindPw from './pages/FindPw.tsx';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import SelfProduce from './pages/SelfProduce.tsx';
 import NicknamePage from './pages/NicknamePage.tsx';
 import BasicInfoWithoutNickname from './pages/BasicInfoWithoutNickname.tsx';
 
@@ -32,7 +31,6 @@ function App() {
             <Stack.Screen name='BasicInfo' component={BasicInfoPage}/>
             <Stack.Screen name='FaceInfo' component={FaceInfoPage}/>
             <Stack.Screen name='FaceFeature' component={FaceFeaturePage}/>
-            <Stack.Screen name='SelfProduce' component={SelfProduce}/>
             <Stack.Screen name='Nickname' component={NicknamePage}/>
             <Stack.Screen name='BasicInfoWithoutNickname' component={BasicInfoWithoutNickname}/>
             {/* Bottom Navigation이 있는 페이지의 경우 SafeAreaView를 이용하면 ios에서 bottomNavigation이 제대로 안 보임 */}
