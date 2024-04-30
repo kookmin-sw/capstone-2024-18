@@ -49,8 +49,6 @@ def run_alignment(args):
     import dlib
     from model.encoder.align_all_parallel import align_face
     modelname = os.path.join(os.path.abspath(os.path.dirname(__file__)) + '/' + args.model_path, 'shape_predictor_68_face_landmarks.dat')
-    print('asdfasdf'+modelname)
-    print(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
     if not os.path.exists(modelname):
         import wget, bz2
         wget.download('http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2', modelname+'.bz2')
@@ -111,7 +109,6 @@ class StyleTransfer():
         self.set_arg('content', content_filepath)
         self.set_arg('weight', weight)
         #self.set_arg('name', name)
-        print(self.args.name)
         args = self.args
         device = self.device
         encoder = self.encoder
