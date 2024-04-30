@@ -44,7 +44,7 @@ def getType(image_path):
         result_objects[part_name] = {
             'name':child.name,
             'description':child.description,
-            'tag':child.tag
+            'tag':child.tag if hasattr(child, "tag") else "아직 미구현"
         }
 
     return result_objects
