@@ -39,7 +39,7 @@ public class FaceInfoService {
     @Value("${flask.generate-url}")
     private String requestUrl;
 
-    @Value("${cloud.aws.s3.default-profile}")
+    @Value("${spring.cloud.aws.s3.default-profile}")
     private String defaultProfileS3Url;
 
     private final RestTemplate restTemplate;

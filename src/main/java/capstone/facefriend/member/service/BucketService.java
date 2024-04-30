@@ -29,19 +29,19 @@ import java.util.List;
 @Service
 public class BucketService {
 
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
 
-    @Value("${cloud.aws.s3.default-profile}")
+    @Value("${spring.cloud.aws.s3.default-profile}")
     private String defaultProfileS3Url;
 
-    @Value("${cloud.aws.s3.origin-postfix}")
+    @Value("${spring.cloud.aws.s3.origin-postfix}")
     private String originPostfix;
 
-    @Value("${cloud.aws.s3.generated-postfix}")
+    @Value("${spring.cloud.aws.s3.generated-postfix}")
     private String generatedPostfix;
 
-    @Value("${cloud.aws.s3.resume-postfix}")
+    @Value("${spring.cloud.aws.s3.resume-postfix}")
     private String resumePostfix;
 
     private final AmazonS3 amazonS3;

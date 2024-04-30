@@ -44,7 +44,7 @@ public class MemberService {
 
     private static final Long BLACKLIST_REMAIN_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
 
-    @Value(value = "${default-profile.s3-url}")
+    @Value("${spring.cloud.aws.s3.default-profile}")
     private String defaultProfileS3Url;
 
     @Transactional
