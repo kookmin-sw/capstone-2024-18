@@ -10,6 +10,7 @@ class FireFaceShape(PartType):
         self.name="삼각형(화)"
         self.description="삼각형의 얼굴형을 가진 사람은 사교성이 뛰어나고 지도력과 포용력을 갖고 있습니다. 감정에 솔직하며 의리가 있고 성실합니다."
         self.tag=["사교성","리더쉽","성실함"]
+        self.id_num="0"
 
 
     def analyze(self, landmarks_mash,landmark_1000):

@@ -10,7 +10,8 @@ class GoldFaceShape(PartType):
         self.name="사각형(금)"
         self.description="사각형의 얼굴형을 가진 사람은 속마음이 깊고 따뜻합니다. 복잡한 것 보다는 단순한 것을 좋아하며 주변에게 신뢰를 받는 얼굴형입니다."
         self.tag=["따뜻함","단순함","신뢰성"]
-
+        self.id_num="3"
+        
     def analyze(self, landmarks_mash,landmark_1000):
 
         face_mide_x = landmarks_mash[152][0]

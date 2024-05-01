@@ -10,6 +10,7 @@ class GroundFaceShape(PartType):
         self.name="마름모형(토)"
         self.description="마름모형의 얼굴형을 가진 사람은 강한 의지력을 가지고 있습니다. 일을 할 때에도 스스로의 경험을 통해 분석하여 본인의 스타일을 찾아 합리적으로 처리하는 경향이 있습니다."
         self.tag=["끈기","의지력","인내력","합리적임"]
+        self.id_num = "4"
         
     #수정 필요
     def analyze(self, landmarks_mash,landmark_1000):
