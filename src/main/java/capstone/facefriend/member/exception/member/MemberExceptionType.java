@@ -1,4 +1,4 @@
-package capstone.facefriend.member.exception;
+package capstone.facefriend.member.exception.meber;
 
 import capstone.facefriend.common.exception.ExceptionType;
 import capstone.facefriend.common.exception.Status;

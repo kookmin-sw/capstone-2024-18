@@ -45,6 +45,10 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "FACE_INFO_ID", nullable = false)
     private FaceInfo faceInfo;
 
+    @OneToOne
+    @JoinColumn(name = "ANALYSIS_INFO_ID", nullable = false)
+    private AnalysisInfo analysisInfo;
+
     public Member(String email) {
         this.email = email;
         this.role = Role.USER;
@@ -72,6 +76,10 @@ public class Member extends BaseEntity {
 
     public void setFaceInfo(FaceInfo faceInfo) {
         this.faceInfo = faceInfo;
+    }
+
+    public void setAnalysisInfo(AnalysisInfo analysisInfo) {
+        this.analysisInfo = analysisInfo;
     }
 
     public boolean isVerified() {
