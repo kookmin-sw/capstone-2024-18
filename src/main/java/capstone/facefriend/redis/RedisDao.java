@@ -1,7 +1,7 @@
 package capstone.facefriend.redis;
 
 
-import capstone.facefriend.member.exception.MemberException;
+import capstone.facefriend.member.exception.member.MemberException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-import static capstone.facefriend.member.exception.MemberExceptionType.ACCESS_TOKEN_IS_IN_BLACKLIST;
+import static capstone.facefriend.member.exception.member.MemberExceptionType.ACCESS_TOKEN_IS_IN_BLACKLIST;
 
 @Component
 @Slf4j
