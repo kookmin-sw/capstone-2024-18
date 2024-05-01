@@ -1,4 +1,4 @@
-package capstone.facefriend.member.domain;
+package capstone.facefriend.member.domain.basicInfo;
 
 import jakarta.persistence.*;
 import lombok.*;
