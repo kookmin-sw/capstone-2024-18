@@ -1,19 +1,19 @@
 package capstone.facefriend.member.service;
 
 
-import capstone.facefriend.member.domain.BasicInfo;
-import capstone.facefriend.member.domain.Member;
-import capstone.facefriend.member.domain.MemberRepository;
-import capstone.facefriend.member.exception.MemberException;
-import capstone.facefriend.member.service.dto.BasicInfoRequest;
-import capstone.facefriend.member.service.dto.BasicInfoResponse;
+import capstone.facefriend.member.domain.basicInfo.BasicInfo;
+import capstone.facefriend.member.domain.member.Member;
+import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.exception.member.MemberException;
+import capstone.facefriend.member.service.dto.basicInfo.BasicInfoRequest;
+import capstone.facefriend.member.service.dto.basicInfo.BasicInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static capstone.facefriend.member.domain.BasicInfo.*;
-import static capstone.facefriend.member.exception.MemberExceptionType.NOT_FOUND;
+import static capstone.facefriend.member.domain.basicInfo.BasicInfo.*;
+import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 
 @Service
 @Slf4j
@@ -48,7 +48,6 @@ public class BasicInfoService {
         oldBasicInfo.setRegion(Region.valueOf(request.region()));
 
         member.setBasicInfo(oldBasicInfo);
-
         memberRepository.save(member);
 
         return BasicInfoResponse.of(oldBasicInfo);

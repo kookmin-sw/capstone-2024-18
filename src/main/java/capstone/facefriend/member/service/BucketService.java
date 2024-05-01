@@ -1,14 +1,14 @@
 package capstone.facefriend.member.service;
 
 
-import capstone.facefriend.member.domain.FaceInfo;
-import capstone.facefriend.member.domain.FaceInfoRepository;
-import capstone.facefriend.member.domain.Member;
-import capstone.facefriend.member.domain.MemberRepository;
-import capstone.facefriend.member.exception.MemberException;
-import capstone.facefriend.member.exception.MemberExceptionType;
+import capstone.facefriend.member.domain.faceInfo.FaceInfo;
+import capstone.facefriend.member.domain.faceInfo.FaceInfoRepository;
+import capstone.facefriend.member.domain.member.Member;
+import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.exception.member.MemberException;
+import capstone.facefriend.member.exception.member.MemberExceptionType;
 import capstone.facefriend.member.multipartFile.ByteArrayMultipartFile;
-import capstone.facefriend.member.service.dto.FaceInfoResponse;
+import capstone.facefriend.member.service.dto.faceInfo.FaceInfoResponse;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,8 +52,7 @@ public class BucketService {
         // set metadata
         ObjectMetadata originMetadata = new ObjectMetadata();
         originMetadata.setContentLength(origin.getInputStream().available());
-        originMetadata.setContentType("image/jpeg");
-
+        originMetadata.setContentType(origin.getContentType());
         String originObjectName = memberId + originPostfix;
         amazonS3.putObject(
                 new PutObjectRequest(
@@ -71,7 +68,7 @@ public class BucketService {
         // set metadata
         ObjectMetadata generatedMetadata = new ObjectMetadata();
         generatedMetadata.setContentLength(generated.getInputStream().available());
-        generatedMetadata.setContentType("image/jpeg");
+        generatedMetadata.setContentType(generatedMetadata.getContentType());
 
         String generatedObjectName = memberId + generatedPostfix;
         amazonS3.putObject(
@@ -89,7 +86,7 @@ public class BucketService {
                 .originS3Url(originS3Url)
                 .generatedS3url(generatedS3Url)
                 .build();
-        faceInfoRepository.save(faceInfo);
+        faceInfoRepository.save(faceInfo); //
 
         // Member 최신화 후 저장
         Member member = memberRepository.findById(memberId)
@@ -115,35 +112,6 @@ public class BucketService {
         amazonS3.deleteObject(new DeleteObjectRequest(bucketName, generatedObjectName));
 
         return new FaceInfoResponse(defaultProfileS3Url, defaultProfileS3Url);
-    }
-
-    // Resume : resumeImages 업로드
-    public List<String> uploadResumeImages(MultipartFile[] resumeImages, Long memberId) throws IOException {
-        /** upload resumeImage to s3 */
-
-        int count = 0;
-        List<String> resumeS3Urls = new ArrayList<>();
-        for (MultipartFile resumeImage : resumeImages) {
-            // set metadata
-            ObjectMetadata originMetadata = new ObjectMetadata();
-            originMetadata.setContentLength(resumeImage.getInputStream().available());
-            originMetadata.setContentType("image/jpeg");
-
-            String resumeImageObjectName = memberId + resumePostfix + count; // ex) bucketName/1-resume-1.jpg
-            amazonS3.putObject(
-                    new PutObjectRequest(
-                            bucketName,
-                            resumeImageObjectName,
-                            resumeImage.getInputStream(), // resume
-                            originMetadata
-                    ).withCannedAcl(CannedAccessControlList.PublicRead)
-            );
-            resumeS3Urls.add(amazonS3.getUrl(bucketName, resumeImageObjectName).toString());
-        }
-
-//        resumeRepository.save();
-
-        return resumeS3Urls;
     }
 }
 

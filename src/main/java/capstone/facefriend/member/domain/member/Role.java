@@ -1,7 +1,7 @@
-package capstone.facefriend.member.domain;
+package capstone.facefriend.member.domain.member;
 
-import capstone.facefriend.member.exception.MemberException;
-import capstone.facefriend.member.exception.MemberExceptionType;
+import capstone.facefriend.member.exception.member.MemberException;
+import capstone.facefriend.member.exception.member.MemberExceptionType;
 import lombok.Getter;
 
 import java.util.Arrays;
