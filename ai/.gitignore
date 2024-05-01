@@ -1,1 +1,10 @@
+/landmark_model/*.jpg
+/landmark_model/__pycache__
+/venv
+requirements.txt
+docker-compose.yml
+dockerfile
+_config.yml
+*.jpg
+index.md
 face_maker/DualStyleGAN/checkpoint
