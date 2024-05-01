@@ -1,23 +1,25 @@
-package capstone.facefriend.member.service.dto;
+package capstone.facefriend.member.service.dto.basicInfo;
 
-import capstone.facefriend.member.domain.BasicInfo;
+import capstone.facefriend.member.domain.basicInfo.BasicInfo;
+
+import static capstone.facefriend.member.domain.basicInfo.BasicInfo.*;
 
 public record BasicInfoResponse(
-    String nickname,
-    String gender,
-    String ageGroup,
-    String ageDegree,
-    String heightGroup,
-    String region
+        String nickname,
+        Gender gender,
+        AgeGroup ageGroup,
+        AgeDegree ageDegree,
+        HeightGroup heightGroup,
+        Region region
 ) {
     public static BasicInfoResponse of(BasicInfo basicInfo) {
         return new BasicInfoResponse(
                 basicInfo.getNickname(),
-                basicInfo.getGender().getValue(),
-                basicInfo.getAgeGroup().getValue(),
-                basicInfo.getAgeDegree().getValue(),
-                basicInfo.getHeightGroup().getValue(),
-                basicInfo.getRegion().getValue()
+                basicInfo.getGender(),
+                basicInfo.getAgeGroup(),
+                basicInfo.getAgeDegree(),
+                basicInfo.getHeightGroup(),
+                basicInfo.getRegion()
         );
     }
 }

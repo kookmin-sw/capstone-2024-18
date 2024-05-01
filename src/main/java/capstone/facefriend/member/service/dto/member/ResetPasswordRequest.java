@@ -1,7 +1,7 @@
-package capstone.facefriend.member.service.dto;
+package capstone.facefriend.member.service.dto.member;
 
 public record ResetPasswordRequest(
-    String newPassword,
-    String newPassword2
+        String newPassword,
+        String newPassword2
 ) {
 }
