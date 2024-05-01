@@ -44,8 +44,8 @@ def getType(image_path):
         result_objects[part_name] = {
             'name':child.name,
             'description':child.description,
-            'tag':child.tag if hasattr(child, "tag") else "아직 미구현",
-            'id_num':child.id_num if hasattr(child, "id_num") else "아직 미구현"
+            'tag':child.tag if hasattr(child, "tag") else ["절대 반환되선 안되는 문장"],
+            'id_num':child.id_num if hasattr(child, "id_num") else ["절대 반환되선 안되는 문장"]
         }
 
     return result_objects
@@ -53,5 +53,5 @@ def getType(image_path):
 
 
 if __name__ == "__main__":
-    result = getType("serom_testimage.jpg")
+    result = getType("actor.jpg")
     print(result)
