@@ -14,6 +14,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import NicknamePage from './pages/NicknamePage.tsx';
 import BasicInfoWithoutNickname from './pages/BasicInfoWithoutNickname.tsx';
+import ChatPage from './components/chat/ChatPage.tsx';
 
 const Stack = createStackNavigator();
 function App() {
@@ -21,7 +22,7 @@ function App() {
     <AuthContextProvider>
       <SafeAreaProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName='Home' screenOptions={{headerShown: false}}>
+          <Stack.Navigator initialRouteName='Chat' screenOptions={{headerShown: false}}>
             <Stack.Screen name="Login" component={Login}/>
             <Stack.Screen name="FindEmail" component={FindEmail}/>
             <Stack.Screen name="FindPw" component={FindPw}/>
@@ -32,6 +33,7 @@ function App() {
             <Stack.Screen name='FaceInfo' component={FaceInfoPage}/>
             <Stack.Screen name='FaceFeature' component={FaceFeaturePage}/>
             <Stack.Screen name='Nickname' component={NicknamePage}/>
+            <Stack.Screen name='Chat' component={ChatPage}/>
             <Stack.Screen name='BasicInfoWithoutNickname' component={BasicInfoWithoutNickname}/>
             {/* Bottom Navigation이 있는 페이지의 경우 SafeAreaView를 이용하면 ios에서 bottomNavigation이 제대로 안 보임 */}
           </Stack.Navigator>
