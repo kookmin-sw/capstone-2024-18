@@ -6,9 +6,10 @@ from PartType import PartType
 
 class RaisedEyebrows(PartType):
     def __init__(self):
+        super().__init__()
         self.name="올라간 눈썹"
         self.description="올라간 눈썹은~"
-
+        self.tag=[]
 
     def analyze(self, landmarks_mash,landmark_1000):
 
