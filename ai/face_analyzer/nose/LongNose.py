@@ -6,6 +6,7 @@ from PartType import PartType
 
 class LongNose(PartType):
     def __init__(self):
+        super().__init__()
         self.name="긴 코"
         self.description="긴 코를 가진 사람은 깔끔한 성격을 가지고 장수 할 가능성이 높습니다. 성실하며 책임감이 강해 원만한 가정을 이루는 경향이 있습니다."
         self.tag=["깔끔함","성실함","책임감"]
