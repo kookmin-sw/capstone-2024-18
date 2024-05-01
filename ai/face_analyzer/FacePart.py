@@ -8,6 +8,7 @@ class FacePart(FaceComponent):
         self.last_result = {}
         self.policy = policy
         self.tag=[]
+        self.id_num = ''
 
     def add(self,faceComponent: FaceComponent):
         self.faceComponents[faceComponent.getName()] = faceComponent

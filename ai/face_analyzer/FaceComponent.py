@@ -24,6 +24,9 @@ class FaceComponent(metaclass=ABCMeta):
     
     def getTag(self) -> str:
         raise NotImplementedError("This function is not yet implemented")
+    
+    def getId_num(self) -> str:
+        raise NotImplementedError("This function is not yet implemented")
 
     def analyze(self, landmarks_mash,landmark_1000):
         raise NotImplementedError("This function is not yet implemented")

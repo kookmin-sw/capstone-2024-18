@@ -6,6 +6,7 @@ class PartType(FaceComponent):
         self.name=""
         self.description=""
         self.tag=[]
+        self.id_num = ""
 
     def getName(self) -> str:
         return self.name
