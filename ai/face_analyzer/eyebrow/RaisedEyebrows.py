@@ -8,8 +8,8 @@ class RaisedEyebrows(PartType):
     def __init__(self):
         super().__init__()
         self.name="올라간 눈썹"
-        self.description="올라간 눈썹은~"
-        self.tag=[]
+        self.description="올라간 눈썹을 가진 사람은 대체로 대담하고 강한 성품을 가지고 있는 경향이 있다. 다소 극단적일 수 있지만 내 사람에게는 가정적이고 따뜻한 면모를 가진다."
+        self.tag=["대담함","가정적임"]
 
     def analyze(self, landmarks_mash,landmark_1000):
 

@@ -8,8 +8,8 @@ class StraightEyebrow(PartType):
     def __init__(self):
         super().__init__()
         self.name="일자 눈썹"
-        self.description="일자눈썹을 가진 사람은 "
-        self.tag=[]
+        self.description="일자눈썹을 가진 사람은 원칙을 중요시하며 사회의 변화나 주위 시선에 크게 신경쓰지 않는 경향이 있다. 목표를 향해 성실하게 임하는 성격으로 부지런한 생활 습관을 가지고 있다. 또한 거짓말을 잘 못해 자신의 감정에 솔직한 편이다."
+        self.tag=["성실함","솔직함","부지런함"]
 
     def analyze(self, landmarks_mash,landmark_1000):
 

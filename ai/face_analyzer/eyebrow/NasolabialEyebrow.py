@@ -8,8 +8,8 @@ class NasolabialEyebrow(PartType):
     def __init__(self):
         super().__init__()
         self.name="팔자눈썹"
-        self.description="팔자눈썹은~"
-        self.tag=[]
+        self.description="팔자눈썹을 가진 사람은 온화한 성격으로 대체로 애교가 많다. 자신보다 주위사람의 마음을 잘 챙겨주는 상냥한 성격을 가지고 있지만 주관이 뚜렷하고 확실하다."
+        self.tag=["배려심","상냥함","당돌함"]
 
     def analyze(self, landmarks_mash,landmark_1000):
 
