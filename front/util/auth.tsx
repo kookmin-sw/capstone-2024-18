@@ -17,6 +17,20 @@ export interface errorResponse {
   message: string,
 }
 
+interface CharObject {
+  [key: string]: string; // Index signature
+}
+
+const toString = (html: CharObject) => {
+  let result = "";
+    for (let key in html) {
+      if (html.hasOwnProperty(key)) {
+        result += html[key];  // 각 문자를 결과 문자열에 추가
+      }
+    }
+    return result;
+}
+
 export const handleError = (error: unknown, method: string): errorResponse => {
   let errorInfo;
 
@@ -26,10 +40,11 @@ export const handleError = (error: unknown, method: string): errorResponse => {
     if (error.response) {
       const httpErrorCode = error.response.status;
       const errorDetails = error.response?.data ? { ...error.response.data } : {};  
+      
       errorInfo = {
         method,
         status: httpErrorCode,
-        ...errorDetails, // exceptionCode, message
+        message: toString(errorDetails), // exceptionCode, message
       };
     }
 
@@ -69,7 +84,7 @@ export const handleError = (error: unknown, method: string): errorResponse => {
     }
   }
   
-  console.log("handleError:", JSON.stringify(errorInfo));
+  console.log("handleError:", JSON.stringify(error));
   return errorInfo;
 }
 
@@ -355,47 +370,6 @@ const getMimeTypeFromExtension = (extension: string | undefined) => {
   }
 };
 
-// 15.
-export const postFaceInfo = async (accessToken: string, fileUri: string, styleId: number): Promise<faceInfoResponse | errorResponse> => {
-  // 파일의 확장자를 추출
-  const extension = fileUri.split('.').pop()?.toLowerCase();
-  // 파일(이미지)의 타입을 결정
-  const mimeType = getMimeTypeFromExtension(extension);
-  
-  // FormData 객체를 생성합니다.
-  const formData = new FormData();
-  formData.append('origin', {
-    uri: fileUri,
-    name: `file.${extension}`,
-    type: mimeType,
-  });
-
-  const method = "postFaceInfo";
-  const endpoint = `${LOCALHOST}/face-info?styleId=${styleId}`;
-  const config = { 
-    headers: { 
-      Authorization: 'Bearer ' + accessToken,
-      'Content-Type': 'multipart/form-data',
-    }
-  };
-  try {
-    const response = await axios.post(endpoint, formData, config);
-    const { originS3Url, generatedS3Url } = response.data;
-    const responseInfo = {
-      method,
-      status: response.status,
-      message: "관상 이미지를 저장했습니다.",
-      originS3Url, 
-      generatedS3Url
-    }
-    console.log(responseInfo);
-    return responseInfo;
-  }
-  catch (error) {
-    return handleError(error, method);
-  }
-}
-
 // 16.
 export const putFaceInfo = async (accessToken: string, fileUri: string, styleId: number): Promise<faceInfoResponse | errorResponse> => {
   // 파일의 확장자를 추출
@@ -443,6 +417,10 @@ export const isValidResponse = (response: validResponse | errorResponse): respon
 
 export const isErrorResponse = (response: validResponse | errorResponse): response is errorResponse => {
   return (response as errorResponse).exceptionCode !== undefined;
+}
+
+export const isFindEmailResponse = (response: validResponse | errorResponse): response is findEmailResponse => {
+  return (response as findEmailResponse).receivedEmail !== undefined;
 }
 
 export const isBasicInfoResponse = (response: validResponse | errorResponse): response is basicInfoResponse => {

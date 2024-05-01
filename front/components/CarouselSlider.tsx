@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FlatList, FlatListProps, ListRenderItem, StyleProp, ViewStyle } from "react-native";
+import { FlatList, FlatListProps, StyleProp, ViewStyle } from "react-native";
 
 import useInterval from "./useInterval.tsx";
 

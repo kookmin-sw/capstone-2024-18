@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { View, StyleSheet, Text, Pressable, ScrollView, TextInput } from "react-native";
 import { Icon } from 'react-native-paper';
-import { useNavigate } from "react-router-native";
 
 import IconText from "../components/IconText.tsx";
 import CustomTextInput from "../components/CustomTextInput.tsx";
@@ -13,8 +12,7 @@ import { createAlertMessage } from "../util/alert.tsx";
 
 import VerifyEmailModal from "./VerifyEmailModal.tsx";
 
-const Signup = () => {
-  const navigate = useNavigate();
+const Signup = ({navigation}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [email, setEmail] = useState({
@@ -118,7 +116,7 @@ const Signup = () => {
     const response = await signup(email.value, password.value[0], password.value[1], email.status === "VERIFIED");
     if (isValidResponse(response)) {
       createAlertMessage(response.message);
-      navigate('/');
+      navigation.goBack();
     };
   }
   

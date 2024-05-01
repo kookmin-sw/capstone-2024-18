@@ -4,7 +4,6 @@ import { Card } from "react-native-paper";
 
 import IconText from "../components/IconText";
 import HeaderBar from "../components/HeaderBar";
-import CustomTextInput from "../components/CustomTextInput";
 import CustomButton from "../components/CustomButton";
 import CustomSlider from "../components/CustomSlider";
 import CustomProgressBar from "../components/CustomProgressBar";
@@ -12,17 +11,15 @@ import { AuthContext } from "../store/auth-context";
 
 import { colors } from "../assets/colors";
 import { ageDegree, ageGroup, heightGroup, region, gender, HeightGroup, Gender, AgeGroup, AgeDegree, Region } from "../util/basicInfoFormat";
-import { isErrorResponse, isValidResponse, putBasicInfo } from "../util/auth";
+import { getBasicInfo, isBasicInfoResponse, isErrorResponse, isValidResponse, putBasicInfo } from "../util/auth";
 import SelectableTag from "../components/SelectableTag";
 import { createAlertMessage } from "../util/alert";
 import CustomBackHandler from "../components/CustomBackHandler";
 
-const BasicInfoPage = ({navigation}: any) => {
+const BasicInfoWithoutNickname = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
   
   interface BasicInfo {
-    nickname: string;         
-    nicknameState: string;  // "DEFALUT", "VALID", "INVALID"
     gender: string;         // "DEFAULT", "MALE", "FEMALE"
     ageGroup: string;       // "DEFAULT", "TWENTIES", "THIRTIES", ...
     ageDegree: string;      // "DEFALUT", "EARLY", "MIDDLE", "LATE"
@@ -32,8 +29,6 @@ const BasicInfoPage = ({navigation}: any) => {
 
   const [pageIndex, setPageIndex] = useState(0);
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
-    nickname: "",
-    nicknameState: "DEFAULT",
     gender: "DEFAULT",
     ageGroup: "DEFAULT",
     ageDegree: "DEFAULT",
@@ -54,18 +49,9 @@ const BasicInfoPage = ({navigation}: any) => {
   }
 
   const handleNextPage = () => {
-    if (pageIndex === 0 && basicInfo.nickname === "") {
-      setBasicInfo({...basicInfo, nicknameState: "INVALID"});
-    }
     if (isFormValid()) {
       setPageIndex(pageIndex + 1);
     }
-  }
-
-  const handleNicknameOnChange = (value: string) => {
-    const regex = /^[ㄱ-힣A-Za-z0-9]{1,10}$/;
-    console.log(value, regex.test(value));
-    setBasicInfo({...basicInfo, nickname: value, nicknameState: regex.test(value) ? "VALID" : "INVALID"});
   }
   
   const handleSelectGender = (value: string) => {
@@ -99,16 +85,14 @@ const BasicInfoPage = ({navigation}: any) => {
   const isFormValid = () => {
     switch(pageIndex) {
       case 0:
-        return basicInfo.nicknameState === "VALID";
-      case 1:
         return basicInfo.gender !== "DEFAULT";
-      case 2:
+      case 1:
         return basicInfo.ageDegree !== "DEFAULT" && basicInfo.ageGroup !== "DEFAULT";
-      case 3:
+      case 2:
         return basicInfo.height !== "DEFAULT";
-      case 4:
+      case 3:
         return basicInfo.region !== "DEFAULT";
-      case 5:
+      case 4:
         return true;
       default:
         return false;
@@ -118,21 +102,30 @@ const BasicInfoPage = ({navigation}: any) => {
   const submitForm = async () => {
     console.log("submitForm: " + JSON.stringify(basicInfo));
     if (authCtx.accessToken) {
-      const response = await putBasicInfo(
-        authCtx.accessToken,
-        basicInfo.nickname,
-        basicInfo.gender,
-        basicInfo.ageGroup,
-        basicInfo.ageDegree,
-        basicInfo.height,
-        basicInfo.region,
-      );  
-      if (isValidResponse(response)) {
-        createAlertMessage("기본 정보 입력이 완료되었습니다.");
-        navigation.goBack();
+      const getBasicInfoRespose = await getBasicInfo(
+        authCtx.accessToken
+      );
+
+      if (isBasicInfoResponse(getBasicInfoRespose)) {
+        const response = await putBasicInfo(
+          authCtx.accessToken,
+          getBasicInfoRespose.nickname,
+          basicInfo.gender,
+          basicInfo.ageGroup,
+          basicInfo.ageDegree,
+          basicInfo.height,
+          basicInfo.region,
+        );  
+        if (isValidResponse(response)) {
+          createAlertMessage("기본 정보 입력이 완료되었습니다.");
+          navigation.goBack();
+        }
+        if (isErrorResponse(response)) {
+          createAlertMessage(response.message);
+        }
       }
-      if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
+      else {
+        // 절대 없는 경우
       }
     }
     else {
@@ -140,24 +133,6 @@ const BasicInfoPage = ({navigation}: any) => {
     }
   }
   
-  // 닉네임 설정 페이지
-  const nicknameContent = (
-    <>
-      <View style={styles.subtitleContainer}>
-        <Text style={styles.subtitleText}>닉네임 설정</Text>
-      </View>
-      <CustomTextInput 
-        placeholder="닉네임을 입력해주세요" 
-        value={basicInfo.nickname} 
-        onChangeText={handleNicknameOnChange} 
-        isValid={basicInfo.nicknameState === "VALID" || basicInfo.nicknameState === "DEFAULT"}
-      />
-      <View style={styles.iconTextContainer}>
-        <IconText icon={{ source: "information" }}>한글 + 영문 + 숫자 총 10자 이하</IconText>
-      </View>
-    </>
-  );
-
   // 성별 설정 페이지
   const genderContent = (
     <>
@@ -287,10 +262,6 @@ const BasicInfoPage = ({navigation}: any) => {
       </View>
       <View style={styles.ageButtonContainer}>
         <View style={styles.genderButtonStyle}>
-          <Text style={styles.genderButtonText}>닉네임: {basicInfo.nickname}</Text>
-        </View>
-        <View style={styles.ageButtonSeparator}/>
-        <View style={styles.genderButtonStyle}>
           <Text style={styles.genderButtonText}>{gender[basicInfo.gender as keyof Gender]}</Text>
         </View>
       </View>
@@ -316,7 +287,6 @@ const BasicInfoPage = ({navigation}: any) => {
   )
 
   const contents = [
-    nicknameContent,
     genderContent,
     ageContent,
     heightContent,
@@ -356,7 +326,7 @@ const BasicInfoPage = ({navigation}: any) => {
   )
 }
 
-export default BasicInfoPage;
+export default BasicInfoWithoutNickname;
 
 const styles = StyleSheet.create({
   container: {

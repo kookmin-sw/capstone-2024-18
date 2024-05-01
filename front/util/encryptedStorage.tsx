@@ -2,12 +2,12 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import { ChatProps } from '../components/chat/Chat';
 
 // 리프레시 토큰 저장하기
-export const saveToken = async (tokenType: "accessToken" | "refreshToken", refreshToken: string) => {
+export const saveToken = async (tokenType: "accessToken" | "refreshToken", token: string) => {
     try {
-        await EncryptedStorage.setItem(tokenType, refreshToken);
-        console.log(tokenType + "저장 성공: ");
+        await EncryptedStorage.setItem(tokenType, token);
+        console.log(tokenType, "저장 성공:", token);
     } catch (error) {
-        console.log(tokenType + "저장 실패", error);
+        console.log(tokenType, "저장 실패", error);
     }
 };
 

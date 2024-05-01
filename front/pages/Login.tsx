@@ -1,7 +1,6 @@
 import { useRef, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
-import { useNavigate } from "react-router-native";
 import CustomButton from '../components/CustomButton.tsx';
 import ImageButton from '../components/ImageButton.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
@@ -11,9 +10,8 @@ import { colors } from '../assets/colors.tsx';
 import { isErrorResponse, isValidResponse } from '../util/auth.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 
-const Login = () => {
+const Login = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
-  const navigate = useNavigate();
   const [ email, setEmail ] = useState('');
   const [ pw, setPw ] = useState('');
 
@@ -28,18 +26,22 @@ const Login = () => {
   }
 
   // 로그인 버튼 클릭
-  const TryLogin = async () => {
+  const tryLogin = async () => {
     const response = await authCtx.signin(email, pw);
+
     if (isValidResponse(response)) {
-      navigate('/');
+      console.log("tryLogin: isValidResponse");
+      if (response.status === 200) {
+        navigation.navigate('Home');
+      }
+      else {
+        createAlertMessage(response.message);
+      }
     }
     if (isErrorResponse(response)) {
+      console.log("tryLogin: isErrorResponse");
       createAlertMessage(response.message);
     }
-  }
-
-  const NavigateToSignUp = () => {
-    navigate('/signup');
   }
 
   return (
@@ -81,18 +83,18 @@ const Login = () => {
 
         {/* 이메일 찾기, 비밀번호 찾기 */}
         <View style={[styles.fit_content, {marginBottom: 40}]}>
-          <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('FindEmail')}} style={{backgroundColor: colors.transparent}}>
             <Text style={styles.small_button_text}>이메일 찾기</Text>
           </TouchableOpacity>
           <View style={{width: 1, height: '80%', alignSelf: 'center', marginHorizontal: 15, backgroundColor: colors.gray9 }}/>
-          <TouchableOpacity onPress={() => {}} style={{backgroundColor: colors.transparent}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('FindPw')}} style={{backgroundColor: colors.transparent}}>
             <Text style={styles.small_button_text}>비밀번호 찾기</Text>
           </TouchableOpacity>
         </View>
 
         {/* 로그인, 구글 로그인 버튼 */}
         <View style={{marginHorizontal: 30}} onLayout={onLayout}>
-          <CustomButton onPress={TryLogin} 
+          <CustomButton onPress={tryLogin} 
             containerStyle={{backgroundColor: colors.point, marginVertical: 5}}
             textStyle={styles.button_text}>
             로그인
@@ -105,7 +107,7 @@ const Login = () => {
         {/* 회원가입 */}
         <View style={[styles.fit_content, {marginTop: 10}]}>
           <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
-          <TouchableOpacity onPress={() => {navigate('/signup')}} style={{backgroundColor: colors.transparent, height: 17.25, marginLeft: 5}}>
+          <TouchableOpacity onPress={() => {navigation.navigate('Signup')}} style={{backgroundColor: colors.transparent, height: 17.25, marginLeft: 5}}>
             <Text style={[styles.small_button_text, styles.underline]}>회원가입</Text>
           </TouchableOpacity>
         </View>
