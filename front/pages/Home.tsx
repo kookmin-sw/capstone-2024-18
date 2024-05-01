@@ -1,10 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { View } from "react-native"
 import AutoHeightImage from 'react-native-auto-height-image';
 
 import { AuthContext } from '../store/auth-context.tsx';
 import { errorResponse, getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse, isValidResponse } from "../util/auth";
 import { createAlertMessage } from "../util/alert.tsx";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface UserState {
   basicinfo: "LOADING" | "EXIST" | "NOT_EXIST" | "ERROR";
@@ -193,34 +194,40 @@ const Home = ({ navigation }: any) => {
   };
   
   // 엑세스 토큰 판별
-  useEffect(() => {
-    if (reloadCounter > 5) {
-      logoutAndRedirect();
-    }
-    if (authCtx.isLoading) return;
-    
-    if (authCtx.accessToken) {
-      console.log("엑세스 토큰 있음")
-    } else {
-      console.log("엑세스 토큰 없음")
-      navigation.navigate("Login");
-    }
-  }, [authCtx.isLoading, authCtx.accessToken, reloadCounter]);
+  useFocusEffect(
+    useCallback(() => {
+      if (reloadCounter > 5) {
+        logoutAndRedirect();
+      }
+      if (authCtx.isLoading) return;
+      
+      if (authCtx.accessToken) {
+        console.log("엑세스 토큰 있음")
+      } else {
+        console.log("엑세스 토큰 없음")
+        navigation.navigate("Login");
+      }
+    }, [authCtx.isLoading, authCtx.accessToken, reloadCounter])
+  );
   
   // 엑세스 토큰이 있을 경우 유저 정보 로딩
-  useEffect(() => {
-    if (authCtx.accessToken) {
-      loadInitialInfo();
-    }
-  }, [authCtx.accessToken]);
+  useFocusEffect(
+    useCallback(() => {
+      if (authCtx.accessToken) {
+        loadInitialInfo();
+      }
+    }, [authCtx.accessToken])
+  );
 
   // 로딩 되었을 경우 라우팅 실행
-  useEffect(() => {
-    if (userState.basicinfo !== "LOADING" && userState.faceinfo !== "LOADING") {
-      console.log("userState:", JSON.stringify(userState));
-      handleRoute();
-    }
-  }, [userState])
+  useFocusEffect(
+    useCallback(() => {
+      if (userState.basicinfo !== "LOADING" && userState.faceinfo !== "LOADING") {
+        console.log("userState:", JSON.stringify(userState));
+        handleRoute();
+      }
+    }, [userState])
+  );
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
