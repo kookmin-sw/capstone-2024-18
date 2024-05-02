@@ -51,6 +51,7 @@ public class AuthConfig implements WebMvcConfigurer {
 
                 .addIncludePathPattern("/test", GET)
                 .addIncludePathPattern("/members/**", ANY)
+                .addIncludePathPattern("/rooms/**", ANY)
 
                 .addExcludePathPattern("/members/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }

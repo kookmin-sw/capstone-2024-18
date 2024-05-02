@@ -15,8 +15,10 @@ import java.time.LocalDateTime;
 public class MessageResponse implements Serializable {
     private Long roomId;
     private Long senderId;
+    private Long receiveId;
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
     private Boolean isRead;
+    private String type;
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 public class MessageRequest {
     private Long roomId;
 
-    private Long senderId;
+    private Long receiveId;
 
     private String content;
 }
