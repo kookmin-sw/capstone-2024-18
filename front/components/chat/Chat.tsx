@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { View, Text, StyleSheet, LayoutChangeEvent } from "react-native";
 import { colors } from "../../assets/colors";
 
@@ -6,31 +6,47 @@ export interface ChatProps {
   message: string;
   nickname: string;
   uuid: string;
-  id: number;
+  id: string;
   timestamp: Date;
   isInitial?: boolean;
   isFinal?: boolean;
+  isDailyInitial?: boolean;
+}
+
+interface Props extends ChatProps {
+  setHeight: (height: number) => void;
 }
 
 const UUID = "0";
 
-const Chat = React.memo(({ message, nickname, uuid, timestamp, isInitial, isFinal }: ChatProps) => {
+const Chat = React.memo(({ message, nickname, uuid, timestamp, isInitial, isFinal, isDailyInitial, setHeight }: Props ) => {
+
   const date = new Date(timestamp);
   const hours = date.getHours(); 
   const minutes = date.getMinutes(); 
   const AMorPM = hours < 12 ? "오전" : "오후";
   const formattedTime = `${AMorPM} ${hours % 12}:${minutes.toString().padStart(2, '0')}`;
 
-  const onLayoutHandler = (event: LayoutChangeEvent) => {
-    const {x, y, width, height} = event.nativeEvent.layout;
-    console.log("X position: ", x);
-    console.log("Y position: ", y);
-    console.log("Width: ", width);
-    console.log("Height: ", height);
-  };
+  const timestampDate = (typeof timestamp === 'string' || timestamp instanceof Date) ? new Date(timestamp) : timestamp;
+  const formattedDailyBorder = `${timestampDate?.getFullYear()}년 ${timestampDate?.getMonth() + 1}월 ${timestampDate?.getDate()}일`;
+  
+  const onLayout = useCallback((event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout;
+    console.log("height:", height);
+    if (height !== undefined && height !== null && !isNaN(height)) setHeight(height); 
+  }, [isInitial, isFinal, isDailyInitial]);
 
   return (
-    <View style={{ flexDirection : uuid == UUID ? "row-reverse" : "row" }}>
+    
+    <View onLayout={onLayout}>
+      {isDailyInitial && 
+        <View style={styles.dailyBorderContainer}>
+          <View style={styles.dailyBorder}/>
+          <Text style={styles.dailyBorderText}>
+            {formattedDailyBorder}
+          </Text>
+        </View>}
+      <View style={{ flexDirection : uuid == UUID ? "row-reverse" : "row" }}>
       <View style={isInitial ? styles.profile : styles.profileSpacer}/>
       <View style={styles.innerContainer}>
         {isInitial && <View style={styles.nicknameContainer}>
@@ -43,9 +59,10 @@ const Chat = React.memo(({ message, nickname, uuid, timestamp, isInitial, isFina
           {isFinal && <View style={styles.timestampContainer}>
             <Text style={[styles.timestamp, { textAlign : uuid == UUID ? "right" : "left" }]}>{formattedTime}</Text>
           </View>}
+          </View>
         </View>
+        <View style={styles.spacer}/>
       </View>
-      <View  onLayout={onLayoutHandler} style={styles.spacer}/>
     </View>
   )
 }, (prevProps, nextProps) => {
@@ -102,5 +119,18 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flex: 1,
+  },
+  dailyBorder: {
+    marginHorizontal: 40,
+    marginTop: 20,
+    borderBottomWidth: 1,
+    borderColor: colors.gray4,
+  },
+  dailyBorderContainer: {
+  },
+  dailyBorderText: {
+    color: colors.gray6,
+    textAlign: "center",
+    marginVertical: 10,
   }
 })

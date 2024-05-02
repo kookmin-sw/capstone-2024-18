@@ -18,7 +18,6 @@ const ChatPage = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [chatHeights, setChatHeights] = useState<number[]>([]);
-  const [sendCounter, setSendCounter] = useState(0);
   
   const ChatListRef = useRef<FlatList<ChatProps> | null>(null);
   const localDate = new Date();
@@ -28,21 +27,27 @@ const ChatPage = () => {
     return newId;
   }
 
-  const getChatHeight = (chat: ChatProps) => {
-    if (chat.isInitial) return 67;
-    else return 47;
-  }
+  const areDatesEqual = (date1: Date | string | undefined, date2: Date | string | undefined) => {
+    console.log("date1:", date1, "date2:", date2);
 
-  const areDatesEqual = (date1: Date | undefined, date2: Date | undefined) => {
-    if (date1 === undefined || date2 === undefined) return true;
+    // date1과 date2가 문자열이라면 Date 객체로 변환
+    const d1 = (typeof date1 === 'string' || date1 instanceof Date) ? new Date(date1) : date1;
+    const d2 = (typeof date2 === 'string' || date2 instanceof Date) ? new Date(date2) : date2;
+
+    // date1 또는 date2가 유효하지 않은 경우
+    if (d1 === undefined || d2 === undefined || isNaN(d1.getTime()) || isNaN(d2.getTime())) {
+        return false; // 날짜 데이터가 없거나 유효하지 않으면 같지 않다고 처리
+    }
+
+    // 연, 월, 일, 시, 분이 같은지 확인
     return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate() &&
-      date1.getHours() === date2.getHours() &&
-      date1.getMinutes() === date2.getMinutes()
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate() &&
+      d1.getHours() === d2.getHours() &&
+      d1.getMinutes() === d2.getMinutes()
     );
-  }
+}
 
   const sendChat = (message: string) => {
     const timestamp = new Date(localDate.getTime());
@@ -50,18 +55,14 @@ const ChatPage = () => {
       message, 
       nickname: "nickname",
       uuid: UUID, 
-      id: getNewId(), 
+      id: Math.random().toString(), 
       timestamp,
     };
     addChat(newChat);
-    setSendCounter(sendCounter + 1);
   }
 
-  useEffect(() => {
-    scrollToEnd();
-  }, [sendCounter])
-
-  const getIsSequenceChat = (prevChat: ChatProps, newChat: ChatProps) => {
+  const getIsSequenceChat = (prevChat: ChatProps | undefined, newChat: ChatProps) => {
+    if (prevChat === undefined) return false;
     return areDatesEqual(prevChat?.timestamp, newChat?.timestamp) && prevChat?.uuid == UUID;
   }
 
@@ -71,14 +72,11 @@ const ChatPage = () => {
       const isSequence = getIsSequenceChat(prevChat, chat);
       const newPrevChat = {...prevChat, isFinal: !isSequence };
       const newChat = {...chat, isInitial: !isSequence, isFinal: true};
-      console.log(prevChat.isInitial, prevChat.isFinal, newChat.isInitial, newChat.isFinal);
+      console.log("addChat:", prevChat.isInitial, prevChat.isFinal, newChat.isInitial, newChat.isFinal);
       setChats([...chats.slice(0, -1), newPrevChat, newChat]);
-      setChatHeights([...chatHeights.slice(0, -1), getChatHeight(newPrevChat), getChatHeight(newChat)]);
     }
     else {
-      console.log(chat.isInitial, chat.isFinal);
-      setChats([chat]);
-      setChatHeights([getChatHeight(chat)]);
+      setChats([{...chat, isInitial: true, isFinal: true}]);
     }
   }
 
@@ -88,23 +86,26 @@ const ChatPage = () => {
 
   const handleLoadChatHistory = async () => {
     const chatHistory = await loadChatHistory();
+    console.log(chatHistory);
     setChats(chatHistory ? chatHistory as ChatProps[] : []);
   }
 
   const handleLoadDummyHistory = async () => {
-    const array = Array.from({ length: 1000 }, (_, index) => index);
+    const array = Array.from({ length: 100 }, (_, index) => index);
     const dummyChats = array.map((item) => {
+      const id = Math.random().toString();
       return { 
-        message: item.toString(), 
+        message: id,
         uuid: (item % 2).toString(),
-        id: item,
+        id,
         nickname: (item % 2).toString(),
         isInitial: true,
         isFinal: true,
         timestamp: new Date(0),
-      } as ChatProps
+        setHeight: (height: number) => { handleSetChatHeight(item, height) },
+      }
     });
-    setChats(dummyChats);
+    setChats([...chats, ...dummyChats]);
   }
 
   const handleClearChatHistory = async() => {
@@ -128,22 +129,14 @@ const ChatPage = () => {
     }
   }
 
-  const scrollToIndex = (index: number, method="scrollToIndex") => {
-    console.log("scrollToIndex:", index);
-    if (index < 0) return;
-    try {
-      ChatListRef?.current?.scrollToIndex({ animated: false, index });
-    }
-    catch (error) {
-      console.log(`${method}: ${error}`);
-    }
+  const scrollToIndex = (index: number, animated?: boolean) => {
+    const offset = chatHeights.slice(0, index).reduce((sum, height) => sum + height, 0);
+    ChatListRef.current?.scrollToOffset({ offset, animated });
   }
 
   const scrollToEnd = () => {
-    const index = chats.length - 1;
-    console.log("scrollToEnd", index);
-    if (index < 0) return;
-    scrollToIndex(index, "scrollToEnd");
+    scrollToIndex(chats.length - 1);
+    // scrollToIndex(1);
   };
   
   const fetchChatHistory = async (page: number) => {
@@ -176,8 +169,6 @@ const ChatPage = () => {
 
     setChats([...fetchedChats, ...chats]);
     setPage(page + 1);
-    const newCahtHeights = fetchedChats.map(chat => getChatHeight(chat));
-    setChatHeights([...newCahtHeights, ...chatHeights]);
     scrollToIndex(fetchedChats.length - 1);
   }
 
@@ -192,10 +183,47 @@ const ChatPage = () => {
     }
   }
 
-  const hanleOnScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => { 
+  const handleOnScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => { 
     const position = event.nativeEvent.contentOffset.y;
     setScrollPosition(position); 
   };
+
+  const handleSetChatHeight = (index: number, height: number) => {
+    setChatHeights((prevChatHeight) => {
+      const newChatHeight = [...prevChatHeight];  // 배열을 복사하여 새 배열을 생성
+      newChatHeight[index] = height;
+      return newChatHeight;
+    })
+  };
+
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', (event) => {
+      setKeyboardHeight(event.endCoordinates.height);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("keyboardHeight:", keyboardHeight);
+    setScrollPosition(scrollPosition + keyboardHeight);
+  }, [keyboardHeight])
+
+  useEffect(() => {
+    // scrollToPosition(scrollPosition);
+  }, [scrollPosition])
+
+  useEffect(() => {
+    scrollToEnd();
+  }, [chats]);
 
   useEffect(() => {
     const loadChat = async () => { 
@@ -230,26 +258,8 @@ const ChatPage = () => {
     };
   }, []);
 
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener('keyboardDidShow', (event) => {
-      setKeyboardHeight(event.endCoordinates.height);
-      console.log('Keyboard shown');
-    });
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      setKeyboardHeight(0);
-      console.log('Keyboard hidden');
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
-
   const options = (
-    <View style={{position: "absolute", bottom: 0}}>
+    <View style={{position: "absolute", top: 0}}>
       <View style={{ flexDirection: "row" }}>
         <Pressable style={styles.option} onPress={handleClearChat}><Text style
         ={styles.optionText}>채팅 초기화</Text></Pressable>
@@ -271,19 +281,17 @@ const ChatPage = () => {
 
   return (
     <View style={styles.container}>
-      <View style={{flex:1}}>
       <ChatList 
         chats={chats} 
         chatHeights={chatHeights}
         ref={ChatListRef} 
         onRefresh={handleOnRefresh} 
         refreshing={refreshing}
-        onScroll={hanleOnScroll}
-        keybordHeight={keyboardHeight}
+        onScroll={handleOnScroll}
+        setChatHeight={handleSetChatHeight}
       />
-      {options}
-      </View>
       <ChatInput sendChat={sendChat}/>
+      {options}
     </View>
   ) 
 }

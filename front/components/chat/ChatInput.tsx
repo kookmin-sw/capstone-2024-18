@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { KeyboardAvoidingView, StyleSheet } from "react-native";
 import CustomTextInput from "../CustomTextInput";
 import { useState } from "react";
 
@@ -35,7 +35,7 @@ const ChatInput = ({ sendChat }: Props) => {
 export default ChatInput;
 
 const styles = StyleSheet.create({
-  constainer: {
-
+  container: {
+    
   }
 })
