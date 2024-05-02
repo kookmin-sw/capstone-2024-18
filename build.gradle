@@ -21,7 +21,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-test'
 
 	// postgresql
 	implementation 'org.postgresql:postgresql'
@@ -48,10 +48,15 @@ dependencies {
 	// 메일 인증
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
 
+<<<<<<< HEAD
 	// WebSocket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 	developmentOnly "org.springframework.boot:spring-boot-devtools"
+=======
+	// AWS S3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+>>>>>>> acff94d3a7bc0f0e8bc79fb0095bbc2446e3b3cc
 }
 
 tasks.named('test') {

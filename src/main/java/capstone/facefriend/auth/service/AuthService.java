@@ -5,15 +5,13 @@ import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.OAuthMember;
 import capstone.facefriend.auth.domain.Provider;
 import capstone.facefriend.auth.domain.TokenProvider;
-import capstone.facefriend.member.domain.Member;
-import capstone.facefriend.member.domain.MemberRepository;
-import capstone.facefriend.member.domain.Role;
+import capstone.facefriend.member.domain.member.Member;
+import capstone.facefriend.member.domain.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static capstone.facefriend.member.domain.Role.*;
+import static capstone.facefriend.member.domain.member.Role.*;
 
 
 @RequiredArgsConstructor
@@ -34,10 +32,7 @@ public class AuthService {
     public TokenResponse generateTokens(OAuthMember oAuthMember) {
         Member newMember = Member.builder()
                 .email(oAuthMember.email())
-                .nickname(oAuthMember.nickname())
                 .password(TEMPORARY_GOOGLE_PASSWORD)
-                .imageUrl(oAuthMember.imageUrl())
-                .isVerified(true)
                 .role(USER)
                 .build();
         Member member = memberRepository.findByEmail(oAuthMember.email())

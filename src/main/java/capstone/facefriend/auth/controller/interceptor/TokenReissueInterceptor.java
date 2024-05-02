@@ -3,7 +3,6 @@ package capstone.facefriend.auth.controller.interceptor;
 import capstone.facefriend.auth.controller.support.AuthenticationContext;
 import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
 import capstone.facefriend.auth.domain.TokenProvider;
-import capstone.facefriend.email.controller.interceptor.VerificationInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
 
     private final TokenProvider tokenProvider;
     private final AuthenticationContext authenticationContext;
-    private final VerificationInterceptor verificationInterceptor;
+    private final TokenBlackListInterceptor tokenBlackListInterceptor;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -28,6 +27,6 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
         Long memberId = tokenProvider.extractIdIgnoringExpiration(accessToken);
         authenticationContext.setAuthentication(memberId);
 
-        return verificationInterceptor.preHandle(request, response, handler);
+        return tokenBlackListInterceptor.preHandle(request, response, handler);
     }
 }

@@ -2,7 +2,6 @@ package capstone.facefriend.auth.config;
 
 import capstone.facefriend.auth.controller.AuthArgumentResolver;
 import capstone.facefriend.auth.controller.interceptor.*;
-import capstone.facefriend.email.controller.interceptor.VerificationInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +28,6 @@ public class AuthConfig implements WebMvcConfigurer {
     private final LoginInterceptor loginInterceptor;
     private final TokenReissueInterceptor tokenReissueInterceptor;
     private final TokenBlackListInterceptor tokenBlackListInterceptor;
-    private final VerificationInterceptor verificationInterceptor;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,49 +40,53 @@ public class AuthConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor());
         registry.addInterceptor(tokenReissueInterceptor());
         registry.addInterceptor(tokenBlackListInterceptor());
-        registry.addInterceptor(verificationInterceptor());
     }
 
     private HandlerInterceptor loginCheckInterceptor() {
         return new PathMatchInterceptor(loginCheckInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/test", GET)
-                .addIncludePathPattern("/members/**", ANY)
+                .addIncludePathPattern("/auth/reset-password", POST)
+                .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/auth/exit", DELETE)
+                .addIncludePathPattern("/basic-info", ANY)
+                .addIncludePathPattern("/face-info", ANY)
+                .addIncludePathPattern("/analysis-info", ANY)
 
-                .addExcludePathPattern("/members/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
+                .addExcludePathPattern("/auth/reissue/**", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
     private HandlerInterceptor loginInterceptor() {
         return new PathMatchInterceptor(loginInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/members/**", ANY)
-                .addExcludePathPattern("/rooms/**", ANY)
-                .addExcludePathPattern("/members/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
+                .addIncludePathPattern("/auth/reset-password", POST)
+                .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/auth/exit", DELETE)
+                .addIncludePathPattern("/basic-info", ANY)
+                .addIncludePathPattern("/face-info", ANY)
+                .addIncludePathPattern("/analysis-info/**", ANY)
 
+                .addExcludePathPattern("/auth/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
     private HandlerInterceptor tokenReissueInterceptor() {
         return new PathMatchInterceptor(tokenReissueInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addIncludePathPattern("/members/**", ANY);
+                .addIncludePathPattern("/auth/reissue", POST); // 토큰 재발급 시에는 해당 요청을 가로채야 합니다.
     }
 
     private HandlerInterceptor tokenBlackListInterceptor() {
         return new PathMatchInterceptor(tokenBlackListInterceptor)
                 .addExcludePathPattern("/**", OPTIONS)
 
-                .addExcludePathPattern("/rooms/**", ANY)
-                .addIncludePathPattern("/members/**", ANY);
-    }
-
-    private HandlerInterceptor verificationInterceptor() {
-        return new PathMatchInterceptor(verificationInterceptor)
-                .addExcludePathPattern("/**", OPTIONS)
-
-                .addIncludePathPattern("/members/**", ANY);
+                .addIncludePathPattern("/auth/signout", DELETE)
+                .addIncludePathPattern("/auth/exit", DELETE)
+                .addIncludePathPattern("/auth/reset-password", POST)
+                .addIncludePathPattern("/basic-info", ANY)
+                .addIncludePathPattern("/face-info", ANY)
+                .addIncludePathPattern("/analysis-info/**", ANY);
     }
 
     @Override
