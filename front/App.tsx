@@ -30,7 +30,7 @@ function App() {
             <Stack.Screen name='Home' component={Home}/>
             <Stack.Screen name='BasicInfo' component={BasicInfoPage}/>
             <Stack.Screen name='FaceInfo' component={FaceInfoPage}/>
-            <Stack.Screen name='FaceFeature' component={FaceFeaturePage}/>
+            <Stack.Screen name='AnalysisInfo' component={FaceFeaturePage}/>
             <Stack.Screen name='Nickname' component={NicknamePage}/>
             <Stack.Screen name='BasicInfoWithoutNickname' component={BasicInfoWithoutNickname}/>
             {/* Bottom Navigation이 있는 페이지의 경우 SafeAreaView를 이용하면 ios에서 bottomNavigation이 제대로 안 보임 */}

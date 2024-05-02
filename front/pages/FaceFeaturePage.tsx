@@ -6,7 +6,7 @@ import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
-import { getFaceInfo, isFaceInfoDefaultResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { getFaceInfo, isAnalysisFullInfoResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { IconButton } from 'react-native-paper';
@@ -58,24 +58,35 @@ const FaceFeaturePage = ({navigation}: any) => {
     }
   }
 
-  const tryPostFaceFeature = async () => {
-    // 아직 관상 분석 메소드 없음. postFaceFeature?
-    if (authCtx.accessToken) {
-      // const response = await getFaceInfo(
-      //   authCtx.accessToken
-      // );
-      
-      // if (!isFaceInfoResponse(response)) {
-      //   createAlertMessage(response.message);
-      // } else if (isFaceInfoDefaultResponse(response)) {
-      //   setGeneratedS3Url(response.generatedS3Url);
-      //   setHaveGeneratedS3Url(true);
-      // } else {
-      //   setHaveGeneratedS3Url(false);
-      // }
+  const [results, setResults] = useState<Record<string, string>>({});
 
-      // 임시로 그냥 넘어감
-      setPageIndex(1)
+  const tryPostFaceFeature = async () => {
+    if (authCtx.accessToken) {
+      const response = await getFaceInfo(
+        authCtx.accessToken
+      );
+      
+      if (!isFaceInfoResponse(response)) {
+        createAlertMessage(response.message);
+      } else if (isFaceInfoDefaultResponse(response)) {
+        setGeneratedS3Url(response.generatedS3Url);
+        setHaveGeneratedS3Url(true);
+      } else {
+        setHaveGeneratedS3Url(false);
+      }
+
+      const analysisResponse = await putAnalysisInfo(
+        authCtx.accessToken, uri
+      );
+      
+      if (!isAnalysisFullInfoResponse(analysisResponse)) {
+        createAlertMessage(analysisResponse.message);
+        return;
+      } else {
+        setResults(analysisResponse.analysisFull);
+      }
+
+      setPageIndex(1);
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
     }
@@ -136,12 +147,16 @@ const FaceFeaturePage = ({navigation}: any) => {
       }
       {/* 이 부분 코드는 나중에 관상 분석 결과 내용 나오면 수정 */}
       <View style={styles.resultContainer}>
-        <Text style={styles.resultTitle}>위쪽으로 올라간 입꼬리</Text>
-        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
-        <Text style={styles.resultTitle}>살짝 튀어나온 광대</Text>
-        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
-        <Text style={styles.resultTitle}>평평한 눈썹</Text>
-        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
+        {
+          Object.entries(results).map(([key, value]) => (
+            <>
+              <Text style={styles.resultTitle}>{key}</Text>
+              <Text style={styles.resultContent}>{value}</Text>
+            </>
+          ))
+        }
+        {/* <Text style={styles.resultTitle}>위쪽으로 올라간 입꼬리</Text>
+        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text> */}
       </View>
       <CustomButton containerStyle={{width: 73, height: 26}} textStyle={{fontSize: 12, color: colors.white}}>
         자세히 보기
