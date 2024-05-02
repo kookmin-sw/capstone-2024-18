@@ -6,7 +6,7 @@ import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
-import { getFaceInfo, isAnalysisFullInfoResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
+import { getFaceInfo, isAnalysisFullInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { IconButton } from 'react-native-paper';
@@ -45,13 +45,14 @@ const FaceFeaturePage = ({navigation}: any) => {
         authCtx.accessToken
       );
       
-      if (!isFaceInfoResponse(response)) {
+      if (isErrorResponse(response)) {
         createAlertMessage(response.message);
-      } else if (isFaceInfoDefaultResponse(response)) {
+      }
+      if (isFaceInfoDefaultResponse(response)) {
+        setHaveGeneratedS3Url(false);
+      } else if (isFaceInfoResponse(response)) {
         setGeneratedS3Url(response.generatedS3Url);
         setHaveGeneratedS3Url(true);
-      } else {
-        setHaveGeneratedS3Url(false);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");

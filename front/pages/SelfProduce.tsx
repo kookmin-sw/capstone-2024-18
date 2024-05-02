@@ -131,6 +131,7 @@ const SelfProduce = () => {
   const [ basic, setBasic ] = useState(_basics.map((_basic, index) => {
     return {id: index, text: _basic}
   }))
+  const [nickname, setNickname] = useState('DEFAULT');
 
   const createBasicInfo = async () => {
     if (authCtx.accessToken) {
@@ -146,8 +147,7 @@ const SelfProduce = () => {
         setBasic(newBasic.map((_basic, index) => {
           return {id: index, text: _basic}
         }))
-      } else {
-        // 기본 정보 없는 경우
+        setNickname(response.nickname);
       }
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
@@ -316,8 +316,7 @@ const SelfProduce = () => {
           {/* 프로필 사진, 이름 섹션 */}
           {/* 아직 정확한 디자인 안나와서 일단 보류 */}
           <View style={styles.sectionTop}>
-            <Icon size={60} source={require('../assets/images/Jenny_image.png')}/>
-            <Text style={styles.profileName}>Jenny</Text>
+            <Text style={styles.profileName}>{nickname}</Text>
           </View>
 
           {/* 기본 정보 섹션 */}
@@ -434,8 +433,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   profileName: {
-    marginLeft: 15, 
-    fontSize: 15, 
+    fontSize: 20, 
     color: '#000000', 
     alignSelf: 'center'
   },

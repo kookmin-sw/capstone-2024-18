@@ -147,7 +147,7 @@ const Profile = ({navigation}: any) => {
         <View style={styles.grayContainer}>
           <View style={styles.rowFlexBox}>
             <Text style={styles.grayTitle}>관상 정보</Text>
-            {editButton(() => {navigation.navigate('FaceFeature')})}
+            {editButton(() => {navigation.navigate('AnalysisInfo')})}
           </View>
           <Text style={styles.grayContent}>{analysis.join(' ')}</Text>
         </View>
