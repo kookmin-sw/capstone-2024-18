@@ -12,6 +12,7 @@ import { AuthContext } from "../store/auth-context.tsx";
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { createAlertMessage } from '../util/alert.tsx';
+import { FlatList } from 'react-native-gesture-handler';
 
 
 const Friends = () => {
@@ -111,11 +112,36 @@ const Friends = () => {
     </TouchableOpacity>;
 
   const defaultImageUrl = [exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl];
-  const testCardViews = defaultImageUrl.map((url, id) => {{
-    return cardView({imageUrl: url, id: uuidv4()});
-  }})
 
-  const categoriesText = [["음식", "맛집 탐방 같이 하실 분"], ["운동", "헬스 함께 해요"], ["영화", "듄 함께 보실 분~"], ["자유", "수다 떠실 분"], ["연애", "고민 상담 해주세요"], ["음악", "음악 추천 드립니다"], ["공부", "같이 카공하실 분"]];
+  interface Faces {
+    [key: string]: string[];
+  }
+  const [faces, setFaces] = useState<Faces>({
+    fit: [...defaultImageUrl],
+    unfit: [...defaultImageUrl],
+    sport: [...defaultImageUrl],
+    love: [...defaultImageUrl],
+    food: [...defaultImageUrl],
+    movie: [...defaultImageUrl],
+    fashion: [...defaultImageUrl],
+    study: [...defaultImageUrl],
+    music: [...defaultImageUrl],
+    free: [...defaultImageUrl],
+  });
+
+  const renderCardItem = ({item, idex}: any) => {{
+    return cardView({imageUrl: item, id: uuidv4()});
+  }}
+  const fetchNewData = (type: string) => {
+    if (!(type in faces)) return;
+  
+    setFaces((prev) => ({
+      ...prev,
+      [type]: [...prev[type], ...defaultImageUrl]
+    }));
+  };
+
+  const categoriesText = [["음식", "맛집 탐방 같이 하실 분", 'food'], ["운동", "헬스 함께 해요", "sport"], ["영화", "듄 함께 보실 분~", "movie"], ["자유", "수다 떠실 분", "free"], ["연애", "고민 상담 해주세요", "love"], ["음악", "음악 추천 드립니다", "music"], ["공부", "같이 카공하실 분", "study"]];
 
   return (
     <>
@@ -152,9 +178,12 @@ const Friends = () => {
           </View>
           <Text style={{paddingLeft: 27}}>AI가 분석한 {nickname}님의 베스트 매치 관상 추천</Text>
         </View>
-        <ScrollView horizontal contentContainerStyle={{paddingVertical: 26, paddingHorizontal: 16}}>
-          { testCardViews }
-        </ScrollView>
+        <FlatList 
+          horizontal 
+          data={faces.fit} 
+          renderItem={renderCardItem}
+          style={{paddingVertical: 26, paddingHorizontal: 16}}
+          onEndReached={() => fetchNewData("fit")}/>
         <View style={styles.personalRecommendTop}>
           <View style={styles.sectionTitleContainer}>
             <Text style={styles.sectionTitle}>나와 다른 관상</Text>
@@ -165,9 +194,12 @@ const Friends = () => {
           </View>
           <Text style={{marginHorizontal: 26}}>AI가 분석한 {nickname}님의 다른 관상 추천</Text>
         </View>
-        <ScrollView horizontal contentContainerStyle={{paddingVertical: 26, paddingHorizontal: 16}}>
-          { testCardViews }
-        </ScrollView>
+        <FlatList 
+          horizontal 
+          data={faces.unfit} 
+          renderItem={renderCardItem}
+          style={{paddingVertical: 26, paddingHorizontal: 16}}
+          onEndReached={() => fetchNewData("unfit")}/>
         <View style={{backgroundColor: '#F9F9FF', paddingTop: 20}}>
           <Text style={styles.categorySectionTitle}>카테고리별 맞춤 추전</Text>
           {
@@ -182,9 +214,12 @@ const Friends = () => {
                       <Text>전체 보러가기{">"}</Text>
                     </TouchableOpacity>
                   </View>
-                  <ScrollView horizontal contentContainerStyle={{paddingVertical: 26, paddingHorizontal: 16}}>
-                    { testCardViews }
-                  </ScrollView>
+                  <FlatList 
+                    horizontal 
+                    data={faces.unfit} 
+                    renderItem={renderCardItem}
+                    style={{paddingVertical: 26, paddingHorizontal: 16}}
+                    onEndReached={() => fetchNewData("unfit")}/>
                 </View>
               );
             })

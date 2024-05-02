@@ -6,10 +6,11 @@ import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
-import { isFaceInfoResponse, putFaceInfo } from '../util/auth.tsx';
+import { getBasicInfo, isBasicInfoResponse, isFaceInfoResponse, putFaceInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import AutoHeightImage from 'react-native-auto-height-image';
+import { Gender } from '../util/basicInfoFormat.tsx';
 
 const FaceInfoPage = ({navigation}: any) => {
   // 이미지 uri path
@@ -32,17 +33,31 @@ const FaceInfoPage = ({navigation}: any) => {
 
   // style 이미지 설정
   const [ selectedStyleId, setSelectedStyleId ] = useState<number>(-1);
-  const styleImages = [
-    {id: 1, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 2, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 3, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 4, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 5, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 6, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 7, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 8, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 9, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
-    {id: 10, uri: 'https://static1.moviewebimages.com/wordpress/wp-content/uploads/article/pahThSfjzxshkmSFvKhYMaG3d3sand.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5'},
+  const [ gender, setGender ] = useState<keyof Gender>();
+
+  const manStyleIdData = [
+    {id: 17, source: require('../assets/images/cartoon-image/man/17.jpg')}, 
+    {id: 30, source: require('../assets/images/cartoon-image/man/30.jpg')}, 
+    {id: 32, source: require('../assets/images/cartoon-image/man/32.jpg')}, 
+    {id: 43, source: require('../assets/images/cartoon-image/man/43.jpg')}, 
+    {id: 72, source: require('../assets/images/cartoon-image/man/72.jpg')}, 
+    {id: 209, source: require('../assets/images/cartoon-image/man/209.jpg')}, 
+    {id: 237, source: require('../assets/images/cartoon-image/man/237.jpg')}, 
+    {id: 255, source: require('../assets/images/cartoon-image/man/255.jpg')}, 
+    {id: 302, source: require('../assets/images/cartoon-image/man/302.jpg')}, 
+    {id: 313, source: require('../assets/images/cartoon-image/man/313.jpg')}
+  ];
+  const womanStyleIdData = [
+    {id: 4, source: require('../assets/images/cartoon-image/woman/4.jpg')}, 
+    {id: 53, source: require('../assets/images/cartoon-image/woman/53.jpg')}, 
+    {id: 135, source: require('../assets/images/cartoon-image/woman/135.jpg')}, 
+    {id: 156, source: require('../assets/images/cartoon-image/woman/156.jpg')}, 
+    {id: 158, source: require('../assets/images/cartoon-image/woman/158.jpg')}, 
+    {id: 208, source: require('../assets/images/cartoon-image/woman/208.jpg')}, 
+    {id: 234, source: require('../assets/images/cartoon-image/woman/234.jpg')}, 
+    {id: 243, source: require('../assets/images/cartoon-image/woman/243.jpg')}, 
+    {id: 256, source: require('../assets/images/cartoon-image/woman/256.jpg')}, 
+    {id: 299, source: require('../assets/images/cartoon-image/woman/299.jpg')}
   ];
 
   // 이미지 추가하는 방식 모달 가시성 설정
@@ -69,18 +84,33 @@ const FaceInfoPage = ({navigation}: any) => {
   const clickButton = async () => {
     if (pageIndex === contents.length - 1) {
       if (authCtx.accessToken) {
-        const response = await putFaceInfo(
+        console.log('put face info', uri, selectedStyleId);
+        putFaceInfo(
           authCtx.accessToken, 
           uri, selectedStyleId
         );
-
         createAlertMessage("이미지 생성이 오래 걸려, 생성이 다 되면, 프로필에서 보실 수 있습니다", ()=>{navigation.goBack()})
-          // 임시
       } else { // 실제에서는 절대 없는 예외 상황
         console.log("로그인 정보가 없습니다.");
       }
     } else {
       setPageIndex(1);
+    }
+  }
+
+  const getGender = async () => {
+    if (authCtx.accessToken) {
+      const response = await getBasicInfo(
+        authCtx.accessToken, 
+      );
+
+      if (isBasicInfoResponse(response)) {
+        setGender(response.gender as keyof Gender);
+        console.log(response.gender)
+      }
+        // 임시
+    } else { // 실제에서는 절대 없는 예외 상황
+      console.log("로그인 정보가 없습니다.");
     }
   }
 
@@ -113,12 +143,12 @@ const FaceInfoPage = ({navigation}: any) => {
           containerStyle={styles.hintContainer}
           textStyle={{fontSize: 14, color: colors.gray7}}>마스크에 적용하고 싶은 그림 스타일을 선택해주세요!</IconText>
         {
-          styleImages.map((styleImage) => {
+          (gender === 'FEMALE' ? womanStyleIdData : manStyleIdData).map(({id, source}: any) => {
             return (
-              <Pressable key={styleImage.id} onPress={() => handleSelectedId(styleImage.id)}>
-                <Image height={150} width={150} 
-                  blurRadius={(styleImage.id === selectedStyleId || selectedStyleId === -1) ? 0 : 5}
-                  style={styles.styleImage} source={{uri: styleImage.uri}}/>
+              <Pressable key={id} onPress={() => handleSelectedId(id)}>
+                <Image
+                  blurRadius={(id === selectedStyleId || selectedStyleId === -1) ? 0 : 20}
+                  style={styles.styleImage} source={source}/>
               </Pressable>
             );
           })
@@ -132,6 +162,10 @@ const FaceInfoPage = ({navigation}: any) => {
     if (!isImageSetting) return;
     setIsButtonClickable(true);
   }, [isImageSetting])
+
+  useEffect(() => {
+    getGender();
+  }, [])
 
   // 선택한 style 이미지가 달라질 때마다 버튼 클릭 가능 여부 재설정
   useEffect(() => {
@@ -195,6 +229,8 @@ const styles = StyleSheet.create({
   // style 이미지들 margin 설정
   styleImage: {
     margin: 5, // 각 아이템 사이의 간격
+    width: 150,
+    height: 150
   },
 
   // tip 컨테이너

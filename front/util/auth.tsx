@@ -233,7 +233,6 @@ export const signup = async (email: string, password: string, password2: string,
     email,
     password,
     password2,
-    isVerified,
   }
   try {
     const response = await axios.post(endpoint, body);
@@ -411,6 +410,123 @@ export const putFaceInfo = async (accessToken: string, fileUri: string, styleId:
   }
 }
 
+// 14.
+export const getAnalysisInfoFull = async (accessToken: string): Promise<faceInfoResponse | errorResponse> => {
+  const method = "getAnalysisInfoFull";
+  const endpoint =  `${LOCALHOST}/analysis-info/full`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken } 
+  };
+  try {
+    const response = await axios.get(endpoint, config);
+    const { analysisFull } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "관상 분석을 로드했습니다.",
+      analysisFull
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+interface analysisResponse extends validResponse {
+  analysisShort: string[];
+  analysisFull: {string: string};
+}
+
+export const getAnalysisInfo = async (accessToken: string): Promise<faceInfoResponse | errorResponse> => {
+  const method = "getAnalysisInfo";
+  const endpoint =  `${LOCALHOST}/analysis-info`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken } 
+  };
+  try {
+    const response = await axios.get(endpoint, config);
+    const { analysisFull, analysisShort } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "관상 분석을 로드했습니다.",
+      analysisFull,
+      analysisShort
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 14.
+export const getAnalysisInfoShort = async (accessToken: string): Promise<faceInfoResponse | errorResponse> => {
+  const method = "getAnalysisInfoShort";
+  const endpoint =  `${LOCALHOST}/analysis-info/short`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken } 
+  };
+  try {
+    const response = await axios.get(endpoint, config);
+    const { analysisShort } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "관상 분석을 로드했습니다.",
+      analysisShort
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 16.
+export const putAnalysisInfo = async (accessToken: string, fileUri: string): Promise<faceInfoResponse | errorResponse> => {
+  // 파일의 확장자를 추출
+  const extension = fileUri.split('.').pop()?.toLowerCase();
+  // 파일(이미지)의 타입을 결정
+  const mimeType = getMimeTypeFromExtension(extension);
+  
+  // FormData 객체를 생성합니다.
+  const formData = new FormData();
+  formData.append('origin', {
+    uri: fileUri,
+    name: `file.${extension}`,
+    type: mimeType,
+  });
+
+  const method = "putAnalysisInfoFull";
+  const endpoint = `${LOCALHOST}/analysis-info`;
+  const config = { 
+    headers: { 
+      Authorization: 'Bearer ' + accessToken,
+      'Content-Type': 'multipart/form-data',
+    }
+  };
+  try {
+    const response = await axios.put(endpoint, formData, config);
+    const { analysisFull } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "관상 정보를 생성했습니다.",
+      analysisFull
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
 export const isValidResponse = (response: validResponse | errorResponse): response is validResponse => {
   return (response as errorResponse).exceptionCode === undefined;
 }
@@ -432,5 +548,17 @@ export const isFaceInfoResponse = (response: validResponse | errorResponse): res
 }
 
 export const isFaceInfoDefaultResponse = (response: validResponse | errorResponse): response is faceInfoResponse => {
-  return (response as faceInfoResponse).generatedS3Url !== (response as faceInfoResponse).originS3Url;
+  return (response as faceInfoResponse).generatedS3Url === (response as faceInfoResponse).originS3Url;
+}
+
+export const isAnalysisInfoResponse = (response: validResponse | errorResponse): response is analysisResponse => {
+  return isAnalysisFullInfoResponse(response) && isAnalysisShortInfoResponse(response);
+}
+
+export const isAnalysisFullInfoResponse = (response: validResponse | errorResponse): response is analysisResponse => {
+  return (response as analysisResponse).analysisFull !== undefined;
+}
+
+export const isAnalysisShortInfoResponse = (response: validResponse | errorResponse): response is analysisResponse => {
+  return (response as analysisResponse).analysisShort !== undefined;
 }

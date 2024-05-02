@@ -57,32 +57,31 @@ const VerifyEmailModal = ({email, setModalVisible, setEmail}: Props) => {
   return (
     <Modal
         animationType="slide"
-        visible={true}
-      >
+        visible={true}>
       <View style={{right: 0}}>
         <IconButton icon="close" onPress={handleClose}/>
       </View>
-        <View style={styles.container}>
-          <View style={styles.sectionContainer}>
-            <Text style={styles.title}>이메일 인증하기</Text>
-            <View style={[styles.textContainer, {height: 50}]}>
-              <Text style={styles.inputLabel}>{modalMessage}</Text>
-            </View>
-            <View style={styles.textContainer}>
-              <Text style={styles.inputLabel}>인증번호 입력</Text>
-              <Text style={styles.inputLabelStar}> *</Text>
-            </View>
-            <CustomTextInput placeholder="XXXXXX" onChangeText={handleVerifyCodeChange}/>
+      <View style={styles.container}>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.title}>이메일 인증하기</Text>
+          <View style={[styles.textContainer, {height: 50}]}>
+            <Text style={styles.inputLabel}>{modalMessage}</Text>
           </View>
-          <CustomButton onPress={handleSendCode} 
-            containerStyle={styles.pointButton}
-            textStyle={styles.pointButtonText}>인증번호 발송
-          </CustomButton>
-          <CustomButton onPress={handleSubmit} containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
-            textStyle={styles.pointButtonText}>인증번호 입력
-          </CustomButton>
+          <View style={styles.textContainer}>
+            <Text style={styles.inputLabel}>인증번호 입력</Text>
+            <Text style={styles.inputLabelStar}> *</Text>
+          </View>
+          <CustomTextInput placeholder="XXXXXX" onChangeText={handleVerifyCodeChange}/>
         </View>
-      </Modal>
+        <CustomButton onPress={handleSendCode} 
+          containerStyle={styles.pointButton}
+          textStyle={styles.pointButtonText}>인증번호 발송
+        </CustomButton>
+        <CustomButton onPress={handleSubmit} containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
+          textStyle={styles.pointButtonText}>인증번호 입력
+        </CustomButton>
+      </View>
+    </Modal>
   )
 }
 
@@ -92,6 +91,7 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 60,
     paddingHorizontal: 45,
+    flex: 1
   },
   title: {
     color: colors.gray7,
@@ -121,6 +121,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 9,
     paddingBottom: 12,
+    flexDirection: 'column',
+    flex: 1,
   },
   pointButton: {
     backgroundColor: colors.point, 

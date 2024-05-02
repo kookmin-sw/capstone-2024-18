@@ -3,19 +3,20 @@ import { View } from "react-native"
 import AutoHeightImage from 'react-native-auto-height-image';
 
 import { AuthContext } from '../store/auth-context.tsx';
-import { errorResponse, getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse, isValidResponse } from "../util/auth";
+import { errorResponse, getAnalysisInfoFull, getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, isValidResponse } from "../util/auth";
 import { createAlertMessage } from "../util/alert.tsx";
 import { useFocusEffect } from "@react-navigation/native";
 
 interface UserState {
   basicinfo: "LOADING" | "EXIST" | "NOT_EXIST" | "ERROR";
   faceinfo: "LOADING" | "EXIST" | "NOT_EXIST" | "ERROR";
+  analysisinfo: "LOADING" | "EXIST" | "NOT_EXIST" | "ERROR";
 }
 
 const Home = ({ navigation }: any) => {
   const authCtx = useContext(AuthContext);
   const [reloadCounter, setReloadCounter] = useState(0);
-  const [userState, setUserState] = useState<UserState>({ basicinfo: "LOADING", faceinfo: "LOADING" });
+  const [userState, setUserState] = useState<UserState>({ basicinfo: "LOADING", faceinfo: "LOADING", analysisinfo: "LOADING" });
 
   const reload = () => {
     setReloadCounter(reloadCounter + 1);
@@ -149,13 +150,14 @@ const Home = ({ navigation }: any) => {
       const faceInfoResponse = await getFaceInfo(authCtx.accessToken);
       console.log("마스크 이미지 로딩 끝");
 
-      if (isFaceInfoResponse(faceInfoResponse)) {
+      if (!isFaceInfoDefaultResponse(faceInfoResponse)) {
         console.log("마스크 이미지 있음");
         setUserState(prevState => {
           return { ...prevState, faceinfo: "EXIST" };
         });
       } else {
         console.log("마스크 이미지 없음");
+        console.log(faceInfoResponse);
         setUserState(prevState => {
           return { ...prevState, faceinfo: "NOT_EXIST" };
         });
@@ -168,12 +170,41 @@ const Home = ({ navigation }: any) => {
       }
     }
   }
+
+  // 마스크 이미지 로딩 후 userState.faceinfo 업데이트
+  const setAnalysisInfoState = async () => {
+    if (authCtx.accessToken) {
+      console.log("관상 분석 로딩 중");
+      const response = await getAnalysisInfoShort(authCtx.accessToken);
+      console.log("관상 분석 로딩 끝");
+
+      if (isAnalysisShortInfoResponse(response)) {
+        console.log("관상 분석 있음");
+        setUserState(prevState => {
+          return { ...prevState, analysisinfo: "EXIST" };
+        });
+      } else {
+        console.log("관상 분석 없음");
+        console.log(response);
+        setUserState(prevState => {
+          return { ...prevState, analysisinfo: "NOT_EXIST" };
+        });
+      }
+      if (isErrorResponse(response)) {
+        setUserState(prevState => {
+          return { ...prevState, analysisinfo: "ERROR" };
+        });
+        handleErrorResponse(response);
+      }
+    }
+  }
   
   // 유저 정보 로딩
   const loadInitialInfo = async () => {
     console.log("loadInitialInfo", authCtx.accessToken);
     setBasicInfoState();
     setFaceinfoState();
+    setAnalysisInfoState();
   }
   
   // 로딩된 유저 정보에 따라 라우팅
@@ -187,7 +218,11 @@ const Home = ({ navigation }: any) => {
       navigation.navigate("FaceInfo");
       return;
     }
-    if (userState.basicinfo === "EXIST" && userState.faceinfo === "EXIST") {
+    if (userState.analysisinfo === "NOT_EXIST") {
+      navigation.navigate("AnalysisInfo");
+      return;
+    }
+    if (userState.basicinfo === "EXIST" && userState.faceinfo === "EXIST" && userState.analysisinfo === "EXIST") {
       navigation.navigate("Main");
       return;
     }
