@@ -8,9 +8,9 @@ import capstone.facefriend.chat.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.rsocket.annotation.ConnectMapping;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,13 +41,26 @@ public class MessageController {
         return "테스트 자동화 했다고 왜 안돼? 자동으로 되는 거 이제?";
     }
 
-    @SubscribeMapping("/chat/{receiveId}")
-    public void handleSubscription(
-            @DestinationVariable Long receiveId
-    ) {
-        log.info("subscribeMapping 작동");
-        messageService.sendSentMessage(receiveId);
+
+    @ConnectMapping("/chat/test")
+    public String testcnt() {
+        log.info("connect 실행");
+        return "구독 connect 테스트";
     }
+
+    @SubscribeMapping("/chat/test")
+    public String test() {
+        log.info("sub 실행");
+        return "구독 sub 테스트";
+    }
+
+    @MessageMapping("/chat/test")
+    @SendTo("/chat/test")
+    public String testmsg() {
+        log.info("구독 message 실행");
+        return "구독 message 테스트";
+    }
+
 
     @MessageMapping("/chat/send-heart")
     public void sendheart(

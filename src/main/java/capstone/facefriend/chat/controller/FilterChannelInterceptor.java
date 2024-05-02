@@ -23,14 +23,25 @@ public class FilterChannelInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         log.info("Stomp Handler 실행");
-//        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-//        StompCommand command = headerAccessor.getCommand();
-//        String destination = headerAccessor.getDestination();
-//        String subscribeUrl = headerAccessor.getSubscriptionId();
-//        String sessionId = headerAccessor.getSessionId();
-//        Object payload = message.getPayload();
+        StompCommand command = headerAccessor.getCommand();
+        String destination = headerAccessor.getDestination();
+        String subscribeUrl = headerAccessor.getSubscriptionId();
+        String sessionId = headerAccessor.getSessionId();
+        Object payload = message.getPayload();
+        String messageHeaders = String.valueOf(accessor.getMessageHeaders());
+        String messageType = String.valueOf(accessor.getMessageType());
+
+        log.info("Command: {}", command);
+        log.info("Destination: {}", destination);
+        log.info("Subscription ID: {}", subscribeUrl);
+        log.info("Session ID: {}", sessionId);
+        log.info("Payload: {}", payload.toString());
+        log.info("Message Type: {}", messageType);
+        log.info("Message Headers: {}", messageHeaders.toString());
+
 
         String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
         if (headerAccessor.getCommand() == StompCommand.CONNECT) {
