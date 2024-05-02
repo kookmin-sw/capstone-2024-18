@@ -1,4 +1,4 @@
-package capstone.facefriend.member.bucketConfig;
+package capstone.facefriend.bucket;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

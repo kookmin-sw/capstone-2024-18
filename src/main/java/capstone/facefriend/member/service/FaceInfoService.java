@@ -1,5 +1,6 @@
 package capstone.facefriend.member.service;
 
+import capstone.facefriend.bucket.BucketService;
 import capstone.facefriend.member.domain.faceInfo.FaceInfo;
 import capstone.facefriend.member.domain.faceInfo.FaceInfoRepository;
 import capstone.facefriend.member.domain.member.Member;
@@ -60,7 +61,7 @@ public class FaceInfoService {
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
 
         FaceInfo faceInfo = member.getFaceInfo();
-        return new FaceInfoResponse(faceInfo.getOriginS3Url(), faceInfo.getGeneratedS3url());
+        return new FaceInfoResponse(faceInfo.getOriginS3url(), faceInfo.getGeneratedS3url());
     }
 
     // origin 삭제 & generated 삭제
@@ -71,7 +72,7 @@ public class FaceInfoService {
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
 
         FaceInfo faceInfo = member.getFaceInfo();
-        faceInfo.setOriginS3Url(defaultProfileS3Url);
+        faceInfo.setOriginS3url(defaultProfileS3Url);
         faceInfo.setGeneratedS3Url(defaultProfileS3Url);
         faceInfoRepository.save(faceInfo);
 

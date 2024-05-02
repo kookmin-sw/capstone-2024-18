@@ -27,7 +27,6 @@ public class BasicInfoService {
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
     }
 
-    @Transactional
     public BasicInfoResponse getBasicInfo(Long memberId) {
         Member member = findMemberById(memberId);
         BasicInfo basicInfo = member.getBasicInfo();

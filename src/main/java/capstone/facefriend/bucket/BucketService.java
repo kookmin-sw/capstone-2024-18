@@ -1,4 +1,4 @@
-package capstone.facefriend.member.service;
+package capstone.facefriend.bucket;
 
 
 import capstone.facefriend.member.domain.faceInfo.FaceInfo;
@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class BucketService {
     private String generatedPostfix;
 
     @Value("${spring.cloud.aws.s3.resume-postfix}")
-    private String resumePostfix;
+    private String resumeInfix;
 
     private final AmazonS3 amazonS3;
     private final MemberRepository memberRepository;
@@ -62,7 +64,7 @@ public class BucketService {
                         originMetadata
                 ).withCannedAcl(CannedAccessControlList.PublicRead)
         );
-        String originS3Url = amazonS3.getUrl(bucketName, originObjectName).toString();
+        String originS3url = amazonS3.getUrl(bucketName, originObjectName).toString();
 
         /** upload generated to s3 */
         // set metadata
@@ -83,7 +85,7 @@ public class BucketService {
 
         // FaceInfo 저장
         FaceInfo faceInfo = FaceInfo.builder()
-                .originS3Url(originS3Url)
+                .originS3url(originS3url)
                 .generatedS3url(generatedS3Url)
                 .build();
         faceInfoRepository.save(faceInfo); //
@@ -94,7 +96,7 @@ public class BucketService {
         member.setFaceInfo(faceInfo);
         memberRepository.save(member);
 
-        return new FaceInfoResponse(originS3Url, generatedS3Url);
+        return new FaceInfoResponse(originS3url, generatedS3Url);
     }
 
     // FaceInfo : origin 수정 -> generated 수정
@@ -112,6 +114,39 @@ public class BucketService {
         amazonS3.deleteObject(new DeleteObjectRequest(bucketName, generatedObjectName));
 
         return new FaceInfoResponse(defaultProfileS3Url, defaultProfileS3Url);
+    }
+
+    public List<String> uploadResumeImages(List<MultipartFile> images, Long memberId) throws IOException {
+        int start = 0;
+        List<String> resumeImageS3urls = new ArrayList<>();
+
+        for (MultipartFile image : images) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(image.getInputStream().available());
+            metadata.setContentType(image.getContentType());
+
+            String imageObjectName = memberId + resumeInfix + start;
+            amazonS3.putObject(
+                    new PutObjectRequest(
+                            bucketName,
+                            imageObjectName,
+                            image.getInputStream(),
+                            metadata
+                    ).withCannedAcl(CannedAccessControlList.PublicRead)
+            );
+
+            resumeImageS3urls.add(amazonS3.getUrl(bucketName, imageObjectName).toString());
+        }
+
+        return resumeImageS3urls;
+    }
+
+    public List<String> updateResumeImages() {
+        return null;
+    }
+
+    public List<String> deleteResumeImages(Long memberId) {
+        String imageObjectName = memberId + resumeInfix +
     }
 }
 

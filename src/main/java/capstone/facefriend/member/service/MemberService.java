@@ -110,7 +110,7 @@ public class MemberService {
 
         // 관상 이미지 초기값
         FaceInfo faceInfo = FaceInfo.builder()
-                .originS3Url(defaultProfileS3Url)
+                .originS3url(defaultProfileS3Url)
                 .generatedS3url(defaultProfileS3Url)
                 .build();
         faceInfoRepository.save(faceInfo);

@@ -10,9 +10,9 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class FacefriendApplication {
 
-	public static void main(String[] args) {
-		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-		SpringApplication.run(FacefriendApplication.class, args);
-	}
+    public static void main(String[] args) {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+        SpringApplication.run(FacefriendApplication.class, args);
 
+    }
 }
