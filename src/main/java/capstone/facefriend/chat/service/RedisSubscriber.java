@@ -1,7 +1,9 @@
 package capstone.facefriend.chat.service;
 
 import capstone.facefriend.chat.infrastructure.repository.dto.GetMessageResponse;
+import capstone.facefriend.chat.infrastructure.repository.dto.GetSendHeartResponse;
 import capstone.facefriend.chat.infrastructure.repository.dto.MessageResponse;
+import capstone.facefriend.chat.infrastructure.repository.dto.SendHeartResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +14,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,34 +27,28 @@ public class RedisSubscriber implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
+
             // redis에서 발행된 데이터를 받아 역직렬화
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 
             log.info("Received message from Redis: {}", publishMessage); // 메시지 내용 로깅
 
-            MessageResponse messageResponse = objectMapper.readValue(publishMessage, MessageResponse.class);
-            GetMessageResponse chatMessageResponse = new GetMessageResponse(messageResponse);
+            if (publishMessage.contains("message")) {
+                MessageResponse messageResponse = objectMapper.readValue(publishMessage, MessageResponse.class);
 
-            messagingTemplate.convertAndSend("/sub/chat/room/" + messageResponse.getRoomId(), chatMessageResponse);
+                GetMessageResponse chatMessageResponse = new GetMessageResponse(messageResponse);
 
+                messagingTemplate.convertAndSend("/sub/chat/" + messageResponse.getReceiveId(), chatMessageResponse);
+
+            } else if (publishMessage.contains("Heart")) {
+                SendHeartResponse sendHeartResponse = objectMapper.readValue(publishMessage, SendHeartResponse.class);
+
+                GetSendHeartResponse chatSendHeartResponse = new GetSendHeartResponse(sendHeartResponse);
+
+                    messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getReceiveId(), chatSendHeartResponse);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Failed to process message", e);
         }
     }
-
-
-//    public void onHeart(Message message, byte[] pattern) {
-//        String publishRequest = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-//
-//        try {
-//            ChatRoomResponse chatRoomResponse = objectMapper.readValue(publishRequest, ChatRoomResponse.class);
-//
-//            messagingTemplate.convertAndSend("sub/chat/room/" + chatRoomResponse.chatRoom().getId(), chatRoomResponse);
-//        }  catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
-
 }
-

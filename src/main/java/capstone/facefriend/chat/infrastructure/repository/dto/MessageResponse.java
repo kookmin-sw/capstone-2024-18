@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MessageResponse implements Serializable {
     private Long roomId;
+    private Long receiveId;
     private Long senderId;
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
