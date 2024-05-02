@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicInsert;
 
 @Getter
+@Setter
 @Builder
 @EqualsAndHashCode(of = "id", callSuper = false)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,6 +31,8 @@ public class ChatRoom extends BaseEntity {
         public enum Status {
                 set("Set"),
                 open("Open"),
+
+                progress("Progres"),
                 close("Close"),
                 delete("Delete");
                 private final String value;

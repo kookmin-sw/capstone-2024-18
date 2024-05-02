@@ -1,13 +1,14 @@
 package capstone.facefriend.chat.domain;
 
 import capstone.facefriend.common.domain.BaseEntity;
-import capstone.facefriend.member.domain.Member;
+import capstone.facefriend.member.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicInsert;
 
 @Getter
+@Setter
 @Builder
 @EqualsAndHashCode(of = "id", callSuper = false)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

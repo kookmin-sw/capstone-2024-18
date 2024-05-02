@@ -1,4 +1,4 @@
-package capstone.facefriend.chat.infrastructure.repository.dto;
+package capstone.facefriend.chat.service.dto.heart;
 
 import lombok.Getter;
 import lombok.Setter;

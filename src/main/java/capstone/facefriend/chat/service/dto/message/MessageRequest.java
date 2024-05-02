@@ -1,4 +1,4 @@
-package capstone.facefriend.chat.infrastructure.repository.dto;
+package capstone.facefriend.chat.service.dto.message;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import lombok.Setter;
 public class MessageRequest {
     private Long roomId;
 
-    private Long senderId;
+    private Long receiveId;
 
     private String content;
 }

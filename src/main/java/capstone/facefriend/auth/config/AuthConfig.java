@@ -52,6 +52,7 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/basic-info", ANY)
                 .addIncludePathPattern("/face-info", ANY)
                 .addIncludePathPattern("/analysis-info", ANY)
+                .addIncludePathPattern("/room/**", ANY)
 
                 .addExcludePathPattern("/auth/reissue/**", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
@@ -66,6 +67,7 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/basic-info", ANY)
                 .addIncludePathPattern("/face-info", ANY)
                 .addIncludePathPattern("/analysis-info/**", ANY)
+                .addIncludePathPattern("/room/**", ANY)
 
                 .addExcludePathPattern("/auth/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
@@ -86,7 +88,9 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/auth/reset-password", POST)
                 .addIncludePathPattern("/basic-info", ANY)
                 .addIncludePathPattern("/face-info", ANY)
-                .addIncludePathPattern("/analysis-info/**", ANY);
+                .addIncludePathPattern("/analysis-info/**", ANY)
+                .addIncludePathPattern("/room/**", ANY);
+
     }
 
     @Override

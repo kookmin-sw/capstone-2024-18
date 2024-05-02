@@ -1,9 +1,9 @@
 package capstone.facefriend.chat.service;
 
-import capstone.facefriend.chat.infrastructure.repository.dto.GetMessageResponse;
-import capstone.facefriend.chat.infrastructure.repository.dto.GetSendHeartResponse;
-import capstone.facefriend.chat.infrastructure.repository.dto.MessageResponse;
-import capstone.facefriend.chat.infrastructure.repository.dto.SendHeartResponse;
+import capstone.facefriend.chat.service.dto.message.GetMessageResponse;
+import capstone.facefriend.chat.service.dto.heart.GetSendHeartResponse;
+import capstone.facefriend.chat.service.dto.message.MessageResponse;
+import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +35,8 @@ public class RedisSubscriber implements MessageListener {
 
             if (publishMessage.contains("message")) {
                 MessageResponse messageResponse = objectMapper.readValue(publishMessage, MessageResponse.class);
+
+                log.info("Received message: {}", messageResponse.toString()); // message 보내지는 지 확인
 
                 GetMessageResponse chatMessageResponse = new GetMessageResponse(messageResponse);
 
