@@ -19,6 +19,11 @@ public class AuthController {
     private final AuthService authService;
     private final OAuthRequester oAuthRequester;
 
+    @GetMapping("/ping")
+    public String ping() {
+        return "pong";
+    }
+
     @GetMapping("/oauth/{provider}/login-uri")
     public ResponseEntity<LoginUriResponse> loginUri(
             @PathVariable String provider,
