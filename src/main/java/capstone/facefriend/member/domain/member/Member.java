@@ -1,6 +1,9 @@
-package capstone.facefriend.member.domain;
+package capstone.facefriend.member.domain.member;
 
 import capstone.facefriend.common.domain.BaseEntity;
+import capstone.facefriend.member.domain.analysisInfo.AnalysisInfo;
+import capstone.facefriend.member.domain.basicInfo.BasicInfo;
+import capstone.facefriend.member.domain.faceInfo.FaceInfo;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +21,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 public class Member extends BaseEntity {
 
-    private static final int EMAIL_MASKING_LENGTH = 2;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,9 +30,6 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false)
     private String password;
-
-    @Column
-    private boolean isVerified;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -44,6 +42,10 @@ public class Member extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "FACE_INFO_ID", nullable = false)
     private FaceInfo faceInfo;
+
+    @OneToOne
+    @JoinColumn(name = "ANALYSIS_INFO_ID", nullable = false)
+    private AnalysisInfo analysisInfo;
 
     public Member(String email) {
         this.email = email;
@@ -58,10 +60,6 @@ public class Member extends BaseEntity {
         return this.id.equals(id);
     }
 
-    public String maskEmail() {
-        return this.email.charAt(0) + "*".repeat(EMAIL_MASKING_LENGTH) + this.email.substring(EMAIL_MASKING_LENGTH + 1);
-    }
-
     public void setRole(Role role) {
         this.role = role;
     }
@@ -74,8 +72,8 @@ public class Member extends BaseEntity {
         this.faceInfo = faceInfo;
     }
 
-    public boolean isVerified() {
-        return this.isVerified == true;
+    public void setAnalysisInfo(AnalysisInfo analysisInfo) {
+        this.analysisInfo = analysisInfo;
     }
 
     public void setPassword(String password) {

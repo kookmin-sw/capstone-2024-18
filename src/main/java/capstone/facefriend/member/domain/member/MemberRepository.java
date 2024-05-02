@@ -1,4 +1,4 @@
-package capstone.facefriend.member.domain;
+package capstone.facefriend.member.domain.member;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
