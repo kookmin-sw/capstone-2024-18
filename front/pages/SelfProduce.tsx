@@ -9,13 +9,14 @@ import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 
-import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context";
 
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { createAlertMessage } from '../util/alert.tsx';
+import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
 
 
 const SelfProduce = () => {
@@ -80,7 +81,7 @@ const SelfProduce = () => {
   ]);
 
   // 이미지 슬라이더의 content handler
-  const handleAddImageAtIndex = (index: number, newImage: any) => {
+  const handleAddImageAtIndex = async (index: number, newImage: any) => {
     setImages(prevImages => {
       const newImages = [...prevImages];
       newImages.splice(index, 0, newImage);
@@ -137,7 +138,11 @@ const SelfProduce = () => {
         authCtx.accessToken
       );  
       if (isBasicInfoResponse(response)) {
-        const newBasic = [ response.gender, response.ageGroup + response.ageDegree, response.heightGroup, '서울 ' + response.region];
+        const newBasic = [ 
+          gender[response.gender as keyof Gender], 
+          ageGroup[response.ageGroup as keyof AgeGroup] + ageDegree[response.ageDegree as keyof AgeDegree], 
+          heightGroup[response.heightGroup as keyof HeightGroup], 
+          '서울 ' + region['SEOUL'][response.region as keyof Region['SEOUL']]];
         setBasic(newBasic.map((_basic, index) => {
           return {id: index, text: _basic}
         }))
@@ -160,8 +165,33 @@ const SelfProduce = () => {
         authCtx.accessToken
       );  
       if (isFaceInfoResponse(response)) {
-        handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.generatedS3Url}});
-        handleAddImageAtIndex(1, {id: uuidv4(), type: 'basic', source: {uri: response.originS3Url}});
+        await handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.generatedS3Url}});
+        await handleAddImageAtIndex(1, {id: uuidv4(), type: 'basic', source: {uri: response.originS3Url}});
+      }
+      if (isErrorResponse(response)) {
+        createAlertMessage(response.message);
+      }
+    }
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+  }
+
+  // 관상 분석
+  const _analysis = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
+  const [ analysis, setAnalysis ] = useState(_analysis.map((_a, index)=> {
+    return {id: index, text: _a};
+  }))
+
+  const createAnalysisInfo = async () => {
+    if (authCtx.accessToken) {
+      const response = await getAnalysisInfoShort(
+        authCtx.accessToken
+      );  
+      if (isAnalysisShortInfoResponse(response)) {
+        setAnalysis(response.analysisShort.map((_analysis, index) => {
+          return {id: index, text: _analysis};
+        }))
       }
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
@@ -204,15 +234,10 @@ const SelfProduce = () => {
   useEffect(() => {
     createBasicInfo();
     createFaceImage();
+    createAnalysisInfo();
   }, [])
 
   // 아직 api 연동 못한 것 -> 나중에 default 등 처리 예정
-  const _faces = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
-  const [ face, setFace ] = useState(
-    _faces.map((_face, index) => {
-      return {id: index, text: _face};
-    })
-  )
   const [ categories, setCategories ] = useState([
     {id: 0, text: "운동", selected: true},
     {id: 1, text: "음식", selected: false},
@@ -270,6 +295,7 @@ const SelfProduce = () => {
           gap={gap}
           data={images}
           onPageChange={setPage}
+          initialScrollIndex={0}
           renderItem={renderItem}/>
 
         <View style={{flexDirection: 'row', alignSelf: 'center', paddingTop: 10}}>
@@ -325,7 +351,7 @@ const SelfProduce = () => {
             </View>
             <View style={styles.tagContainer}>
             {
-              face.map((item) => {
+              analysis.map((item) => {
                 return (
                   <SelectableTag 
                     key={item.id}

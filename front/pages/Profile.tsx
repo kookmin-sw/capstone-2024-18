@@ -4,11 +4,13 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import IconText from '../components/IconText.tsx';
-import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { Icon } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
+
 
 const Profile = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
@@ -48,7 +50,11 @@ const Profile = ({navigation}: any) => {
       );  
       if (isBasicInfoResponse(response)) {
         setNickName(response.nickname);
-        const newBasic = [ response.gender, response.ageGroup + response.ageDegree, response.heightGroup, '서울 ' + response.region];
+        const newBasic = [ 
+          gender[response.gender as keyof Gender], 
+          ageGroup[response.ageGroup as keyof AgeGroup] + ageDegree[response.ageDegree as keyof AgeDegree], 
+          heightGroup[response.heightGroup as keyof HeightGroup], 
+          '서울 ' + region['SEOUL'][response.region as keyof Region['SEOUL']]];
         setBasic(newBasic.map((_basic) => {
           return ('#' + _basic);
         }))
@@ -64,18 +70,37 @@ const Profile = ({navigation}: any) => {
     }
   }
 
-  // 아직 api 연동 못한 것 -> 나중에 default 등 처리 예정
-  const _faces = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
-  const [ face, setFace ] = useState(
-    _faces.map((_face) => {
-      return '#' + _face;
+  const _analysis = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
+  const [ analysis, setAnalysis ] = useState(
+    _analysis.map((_a) => {
+      return '#' + _a;
     })
   )
+
+  const createAnalysisInfo = async () => {
+    if (authCtx.accessToken) {
+      const response = await getAnalysisInfoShort(
+        authCtx.accessToken
+      );  
+      if (isAnalysisShortInfoResponse(response)) {
+        setAnalysis(response.analysisShort.map((_analysis, index) => {
+          return '#' + _analysis;
+        }))
+      }
+      if (isErrorResponse(response)) {
+        createAlertMessage(response.message);
+      }
+    }
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+  }
 
   useFocusEffect(
     useCallback(() => {
       createBasicInfo();
       tryGetFaceInfo();
+      createAnalysisInfo();
     }, [])
   );
 
@@ -124,7 +149,7 @@ const Profile = ({navigation}: any) => {
             <Text style={styles.grayTitle}>관상 정보</Text>
             {editButton(() => {navigation.navigate('FaceFeature')})}
           </View>
-          <Text style={styles.grayContent}>{face.join(' ')}</Text>
+          <Text style={styles.grayContent}>{analysis.join(' ')}</Text>
         </View>
       </View>
       <View style={{flex: 1}}/>
