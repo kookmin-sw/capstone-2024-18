@@ -6,7 +6,9 @@ import capstone.facefriend.common.exception.Status;
 public enum ResumeExceptionType implements ExceptionType {
 
     NO_RESUME(Status.NOT_FOUND, 7001, "자기소개서가 없습니다!."),
-    ALREADY_HAVE_RESUME(Status.BAD_REQUEST, 7002, "자기소개서는 1인당 1개만 생성할 수 있습니다!")
+    ALREADY_HAS_RESUME(Status.BAD_REQUEST, 7002, "자기소개서는 1인당 1개만 생성할 수 있습니다!"),
+    UNAUTHORIZED(Status.UNAUTHORIZED, 7003, "나의 자기소개서가 아닙니다!"),
+    FAIL_TO_DELETE(Status.BAD_REQUEST, 7004, "자기소개서 삭제 실패")
     ;
 
     private final Status status;

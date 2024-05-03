@@ -1,6 +1,6 @@
 package capstone.facefriend.resume.domain.dto;
 
-public record ResumeRequest(
+public record ResumePutRequest(
         Long resumeId,
         String category,
         String content

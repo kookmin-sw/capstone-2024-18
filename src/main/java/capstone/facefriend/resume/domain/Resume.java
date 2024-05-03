@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
+@Setter
 @Builder
 @EqualsAndHashCode(of = "id", callSuper = false)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

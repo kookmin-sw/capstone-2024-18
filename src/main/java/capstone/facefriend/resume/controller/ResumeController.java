@@ -1,11 +1,12 @@
 package capstone.facefriend.resume.controller;
 
 import capstone.facefriend.auth.controller.support.AuthMember;
-import capstone.facefriend.resume.domain.dto.ResumeHomeDetailResponse;
-import capstone.facefriend.resume.domain.dto.ResumeRequest;
+import capstone.facefriend.resume.domain.dto.*;
 import capstone.facefriend.resume.service.ResumeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,41 +22,64 @@ public class ResumeController {
 
     private final ResumeService resumeService;
 
-    /** 특정 페이지 **/
+    // 정적 쿼리
     @PostMapping("/resume")
-    public ResponseEntity postResume(
-            @RequestPart List<MultipartFile> images,
+    public ResponseEntity<ResumeResponse> postResume(
             @AuthMember Long memberId,
-            ResumeRequest request
+            @RequestPart("images") List<MultipartFile> images,
+            @RequestPart("request") ResumePostRequest request
     ) throws IOException {
-        resumeService.postResume(memberId, images, request);
-
-    }
-
-
-    /** 홈 페이지 **/
-    @GetMapping("/resume")
-    public List<ResumeHomeDetailResponse> getHomeResumesByGoodCombi(
-            @AuthMember Long memberId
-    ) {
-        return resumeService.getHomeResumesByGoodCombi(memberId);
+        return ResponseEntity.ok(resumeService.postResume(memberId, images, request));
     }
 
     @GetMapping("/resume")
-    public List<ResumeHomeDetailResponse> getHomeResumesByBadCombi(
-            @AuthMember Long memberId
-    ) {
-        return resumeService.getHomeResumesByBadCombi(memberId)
-    }
-
-    @GetMapping("/resume")
-    public List<ResumeHomeDetailResponse> getDetailResumesByCategory(
+    public ResponseEntity<ResumeResponse> getResume(
             @AuthMember Long memberId,
-            String category
+            @RequestParam("resumeId") Long resumeId
     ) {
-        return resumeService.getDetailResumesByCategory(category)
+        return ResponseEntity.ok(resumeService.getResume(memberId, resumeId));
     }
 
-    /** 디테일 페이지 **/
+    @PutMapping("/resume")
+    public ResponseEntity<ResumeResponse> putResume(
+            @AuthMember Long memberId,
+            @RequestPart("images") List<MultipartFile> images,
+            @RequestPart("request") ResumePutRequest request
+    ) throws IOException {
+        return ResponseEntity.ok(resumeService.putResume(memberId, images, request));
+    }
 
+    @DeleteMapping("/resume")
+    public ResponseEntity<ResumeDeleteResponse> deleteResume(
+            @AuthMember Long memberId,
+            @RequestParam("resumeId") Long resumeId
+    ) {
+        return ResponseEntity.ok(resumeService.deleteResume(memberId, resumeId));
+    }
+
+    // 동적 쿼리
+    @GetMapping("/resume-by-good-combi")
+    public Page<ResumeHomeDetailResponse> getResumesByGoodCombi(
+            @AuthMember Long memberId,
+            Pageable pageable
+    ) {
+        return resumeService.getResumesByGoodCombi(memberId, pageable);
+    }
+
+    @GetMapping("/resume-by-bad-combi")
+    public Page<ResumeHomeDetailResponse> getResumesByBadCombi(
+            @AuthMember Long memberId,
+            Pageable pageable
+    ) {
+        return resumeService.getResumesByBadCombi(memberId, pageable);
+    }
+
+    @GetMapping("/resume-by-category")
+    public Page<ResumeHomeDetailResponse> getResumesByCategory(
+            @AuthMember Long memberId,
+            @RequestParam String category,
+            Pageable pageable
+    ) {
+        return resumeService.getResumesByCategory(category, pageable);
+    }
 }

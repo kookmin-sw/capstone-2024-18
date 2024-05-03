@@ -49,7 +49,11 @@ public class BucketService {
     private final FaceInfoRepository faceInfoRepository;
 
     // FaceInfo : origin 업로드 & generated 업로드
-    public FaceInfoResponse uploadOriginAndGenerated(MultipartFile origin, ByteArrayMultipartFile generated, Long memberId) throws IOException {
+    public FaceInfoResponse uploadOriginAndGenerated(
+            MultipartFile origin,
+            ByteArrayMultipartFile generated,
+            Long memberId
+    ) throws IOException {
         /** upload origin to s3 */
         // set metadata
         ObjectMetadata originMetadata = new ObjectMetadata();
@@ -100,13 +104,19 @@ public class BucketService {
     }
 
     // FaceInfo : origin 수정 -> generated 수정
-    public FaceInfoResponse updateOriginAndGenerated(MultipartFile origin, ByteArrayMultipartFile generated, Long memberId) throws IOException {
+    public FaceInfoResponse updateOriginAndGenerated(
+            MultipartFile origin,
+            ByteArrayMultipartFile generated,
+            Long memberId
+    ) throws IOException {
         deleteOriginAndGenerated(memberId); // 기존에 저장되어있던 사진 삭제
         return uploadOriginAndGenerated(origin, generated, memberId); // 새로 사진 저장
     }
 
     // FaceInfo : origin 삭제 -> generated 삭제
-    public FaceInfoResponse deleteOriginAndGenerated(Long memberId) {
+    public FaceInfoResponse deleteOriginAndGenerated(
+            Long memberId
+    ) {
         String originObjectName = memberId + originPostfix;
         amazonS3.deleteObject(new DeleteObjectRequest(bucketName, originObjectName));
 
@@ -116,8 +126,12 @@ public class BucketService {
         return new FaceInfoResponse(defaultProfileS3Url, defaultProfileS3Url);
     }
 
-    public List<String> uploadResumeImages(List<MultipartFile> images, Long memberId) throws IOException {
-        int start = 0;
+    // Resume : images 업로드
+    public List<String> uploadResumeImages(
+            List<MultipartFile> images,
+            Long memberId
+    ) throws IOException {
+        int idx = 0;
         List<String> resumeImageS3urls = new ArrayList<>();
 
         for (MultipartFile image : images) {
@@ -125,7 +139,7 @@ public class BucketService {
             metadata.setContentLength(image.getInputStream().available());
             metadata.setContentType(image.getContentType());
 
-            String imageObjectName = memberId + resumeInfix + start;
+            String imageObjectName = memberId + resumeInfix + idx;
             amazonS3.putObject(
                     new PutObjectRequest(
                             bucketName,
@@ -136,17 +150,31 @@ public class BucketService {
             );
 
             resumeImageS3urls.add(amazonS3.getUrl(bucketName, imageObjectName).toString());
+            idx++;
         }
 
         return resumeImageS3urls;
     }
 
-    public List<String> updateResumeImages() {
-        return null;
+    // Resume : images 삭제 -> images 업로드
+    public List<String> updateResumeImages(
+            List<MultipartFile> images,
+            Long memberId,
+            int size
+    ) throws IOException {
+        deleteResumeImages(memberId,size);
+        return uploadResumeImages(images, memberId);
     }
 
-    public List<String> deleteResumeImages(Long memberId) {
-        String imageObjectName = memberId + resumeInfix +
+    // Resume : images 삭제
+    public void deleteResumeImages(
+            Long memberId,
+            int size
+    ) {
+        for (int idx = 0; idx < size; idx++) {
+            String imageObjectName = memberId + resumeInfix + idx;
+            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, imageObjectName));
+        }
     }
 }
 
