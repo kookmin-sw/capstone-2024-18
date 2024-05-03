@@ -6,8 +6,10 @@ import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
+@Profile({"prod"}) // profile 설정을 통해 prod, dev를 구분
 public class JasyptConfig {
 
     @Value("${jasypt.encryptor.password}")

@@ -1,4 +1,11 @@
-jasypt:
-  encryptor:
-    bean: jasyptStringEncryptor
-    password: ${ENCRYPT_KEY}
+#production에서 실행할 때
+#jasypt:
+#  encryptor:
+#    bean: jasyptStringEncryptor
+#    password: ${ENCRYPT_KEY}
+
+
+# local에서 실행할 때
+spring:
+  profiles:
+    active: dev
