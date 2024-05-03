@@ -58,7 +58,18 @@ public class MessageController {
         messageService.sendHeart(senderId, sendHeartRequest.getReceiveId());
     }
 
+    @MessageMapping("/chat/heart-reply")
+    public void heartreply(
+            StompHeaderAccessor headerAccessor,
+            HeartReplyRequest heartReplyRequest
+    ) {
+        String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
+        String token = authorizationHeader.substring(BEARER_PREFIX.length());
+        log.info("token: {}",token);
+        Long receiveId = jwtProvider.extractId(token);
+        log.info("receiveId: {}",receiveId.toString());
 
-
+        messageService.heartReply(heartReplyRequest, receiveId);
+    }
 
 }
