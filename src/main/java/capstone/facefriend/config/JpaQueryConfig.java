@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class QuerydslConfiguration {
+public class JpaQueryConfig {
 
     @Bean
     public JPAQueryFactory jpaQueryFactory(EntityManager em) {
