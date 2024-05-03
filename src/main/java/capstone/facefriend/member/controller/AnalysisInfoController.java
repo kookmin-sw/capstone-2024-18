@@ -32,8 +32,8 @@ public class AnalysisInfoController {
         return ResponseEntity.ok(analysisInfoService.analyze(origin, memberId));
     }
 
-    @GetMapping("/analysis-info")
-    public ResponseEntity<AnalysisInfoFullShortResponse> getAnalysisInfo(
+    @GetMapping("/analysis-info/full-short")
+    public ResponseEntity<AnalysisInfoFullShortResponse> getAnalysisInfoFullShort(
             @AuthMember Long memberId
     ) {
         return ResponseEntity.ok(analysisInfoService.getAnalysisInfoFullShort(memberId));

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +36,8 @@ import java.util.stream.Stream;
 import static capstone.facefriend.member.exception.analysis.AnalysisExceptionType.FAIL_TO_EXTRACT_FACE_SHAPE_ID_NUM;
 import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 
+
+@Transactional
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -88,9 +91,8 @@ public class AnalysisInfoService {
         member.getAnalysisInfo().setAnalysisInfoFull(analysisFull);
         member.getAnalysisInfo().setAnalysisInfoShort(analysisShort);
         member.getAnalysisInfo().setFaceShapeIdNum(faceShapeIdNum);
-        memberRepository.save(member);
+//        memberRepository.save(member);
 
-        // return not AnalysisInfoShort, but AnalysisInfoFull
         return new AnalysisInfoFullResponse(analysisFull);
     }
 
