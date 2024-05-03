@@ -8,6 +8,8 @@ import capstone.facefriend.chat.exception.ChatExceptionType;
 import capstone.facefriend.chat.repository.ChatMessageRepository;
 import capstone.facefriend.chat.repository.ChatRoomMemberRepository;
 import capstone.facefriend.chat.repository.ChatRoomRepository;
+import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
+import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
 import capstone.facefriend.chat.service.dto.message.MessageRequest;
 import capstone.facefriend.chat.service.dto.message.MessageResponse;
 import capstone.facefriend.member.domain.Member;
@@ -99,6 +101,48 @@ public class MessageService {
 
         redisTemplate.convertAndSend(topic, messageResponse);
 
+    }
+    @Transactional
+    public void sendHeart(Long senderId, Long receiveId) {
+
+
+        ChatRoom chatRoom = ChatRoom.builder()
+                .status(ChatRoom.Status.set)
+                .isPublic(false)
+                .build();
+        chatRoomRepository.save(chatRoom);
+
+        Member sender = findMemberById(senderId);
+        Member receiver = findMemberById(receiveId);
+
+
+        if (chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId).isPresent())
+            throw new ChatException(ChatExceptionType.ALREADY_CHATROOM);
+
+
+        ChatRoomMember chatRoomMember = ChatRoomMember.builder()
+                .chatRoom(chatRoom)
+                .sender(sender)
+                .receiver(receiver)
+                .isSenderExist(false)
+                .isReceiverExist(false)
+                .isSenderPublic(false)
+                .isReceiverPublic(false)
+                .build();
+
+        chatRoomMemberRepository.save(chatRoomMember);
+
+        SendHeartResponse sendHeartResponse = new SendHeartResponse();
+        sendHeartResponse.setRoomId(chatRoom.getId());
+        sendHeartResponse.setSenderId(sender.getId());
+        sendHeartResponse.setReceiveId(receiveId);
+        sendHeartResponse.setSenderName(sender.getBasicInfo().getNickname());
+        sendHeartResponse.setCreatedAt(LocalDateTime.now());
+        sendHeartResponse.setType("Heart");
+
+        String topic = channelTopic.getTopic();
+        log.info("-------------------send-heart---------------");
+        redisTemplate.convertAndSend(topic, sendHeartResponse);
     }
 
 }
