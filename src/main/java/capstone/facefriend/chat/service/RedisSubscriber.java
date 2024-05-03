@@ -42,6 +42,12 @@ public class RedisSubscriber implements MessageListener {
 
                 messagingTemplate.convertAndSend("/sub/chat/" + messageResponse.getReceiveId(), chatMessageResponse);
 
+            } else if (publishMessage.contains("Heart")) {
+                SendHeartResponse sendHeartResponse = objectMapper.readValue(publishMessage, SendHeartResponse.class);
+
+                GetSendHeartResponse chatSendHeartResponse = new GetSendHeartResponse(sendHeartResponse);
+
+                messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getReceiveId(), chatSendHeartResponse);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to process message", e);
