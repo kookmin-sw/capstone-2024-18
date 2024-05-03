@@ -144,5 +144,34 @@ public class MessageService {
         log.info("-------------------send-heart---------------");
         redisTemplate.convertAndSend(topic, sendHeartResponse);
     }
+    @Transactional
+    public void heartReply(HeartReplyRequest heartReplyRequest, Long receiveId) {
+        String message = null;
 
+        Member receiver = findMemberById(receiveId);
+        Member sender = findMemberById(heartReplyRequest.getSenderId());
+
+        ChatRoomMember chatRoomMember = findSenderReceiver(sender.getId(), receiver.getId());
+        ChatRoom chatRoom = findRoomById(chatRoomMember.getChatRoom().getId());
+
+        if (heartReplyRequest.getIntention().equals("positive")) {
+            chatRoom.setStatus(ChatRoom.Status.open);
+            chatRoomRepository.save(chatRoom);
+            chatRoomMemberRepository.save(chatRoomMember);
+
+            message = receiver.getBasicInfo().getNickname() + "님이 수락했습니다.";
+        } else if (heartReplyRequest.getIntention().equals("negative")) {
+            chatRoomMemberRepository.delete(chatRoomMember);
+            chatRoomRepository.delete(chatRoom);
+
+            message = receiver.getBasicInfo().getNickname() + "님이 거절했습니다.";
+        } else {
+            throw new ChatException(ChatExceptionType.ALREADY_CHATROOM);
+        }
+        // 동적으로 목적지 설정
+        String destination = "/sub/chat/" + sender.getId();
+
+        // 메시지 전송
+        messagingTemplate.convertAndSend(destination, message);
+    }
 }
