@@ -37,16 +37,17 @@ public class ResumeController {
             @AuthMember Long memberId,
             @RequestParam("resumeId") Long resumeId
     ) {
-        return ResponseEntity.ok(resumeService.getResume(memberId, resumeId));
+        return ResponseEntity.ok(resumeService.getResume(resumeId));
     }
 
     @PutMapping("/resume")
     public ResponseEntity<ResumeResponse> putResume(
             @AuthMember Long memberId,
+            @RequestParam("resumeId") Long resumeId,
             @RequestPart("images") List<MultipartFile> images,
             @RequestPart("request") ResumePutRequest request
     ) throws IOException {
-        return ResponseEntity.ok(resumeService.putResume(memberId, images, request));
+        return ResponseEntity.ok(resumeService.putResume(memberId, resumeId, images, request));
     }
 
     @DeleteMapping("/resume")
@@ -57,6 +58,8 @@ public class ResumeController {
         return ResponseEntity.ok(resumeService.deleteResume(memberId, resumeId));
     }
 
+
+
     // 동적 쿼리
     @GetMapping("/resume-by-good-combi")
     public Page<ResumeHomeDetailResponse> getResumesByGoodCombi(
@@ -64,14 +67,6 @@ public class ResumeController {
             Pageable pageable
     ) {
         return resumeService.getResumesByGoodCombi(memberId, pageable);
-    }
-
-    @GetMapping("/resume-by-bad-combi")
-    public Page<ResumeHomeDetailResponse> getResumesByBadCombi(
-            @AuthMember Long memberId,
-            Pageable pageable
-    ) {
-        return resumeService.getResumesByBadCombi(memberId, pageable);
     }
 
     @GetMapping("/resume-by-category")
