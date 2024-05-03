@@ -1,4 +1,50 @@
 package capstone.facefriend.chat.service;
 
-public class RedisSubscriber {
+import capstone.facefriend.chat.service.dto.message.GetMessageResponse;
+import capstone.facefriend.chat.service.dto.heart.GetSendHeartResponse;
+import capstone.facefriend.chat.service.dto.message.MessageResponse;
+import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class RedisSubscriber implements MessageListener {
+
+    private final ObjectMapper objectMapper;
+    private final RedisTemplate redisTemplate;
+    private final SimpMessageSendingOperations messagingTemplate;
+
+    @Override
+    public void onMessage(Message message, byte[] pattern) {
+        try {
+
+            // redis에서 발행된 데이터를 받아 역직렬화
+            String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
+
+            log.info("Received message from Redis: {}", publishMessage); // 메시지 내용 로깅
+
+            if (publishMessage.contains("message")) {
+                MessageResponse messageResponse = objectMapper.readValue(publishMessage, MessageResponse.class);
+
+                log.info("Received message: {}", messageResponse.toString()); // message 보내지는 지 확인
+
+                GetMessageResponse chatMessageResponse = new GetMessageResponse(messageResponse);
+
+                messagingTemplate.convertAndSend("/sub/chat/" + messageResponse.getReceiveId(), chatMessageResponse);
+
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to process message", e);
+        }
+    }
 }
