@@ -50,8 +50,6 @@ public class Resume {
     private Map<Long, Boolean> friends = new HashMap<>(); // 타멤버id : 공개여부
 
     public enum Category {
-        SIMILAR_ANALYSIS("비슷한 관상"),
-        DIFFERENT_ANALYSIS("다른 관상"),
         FOOD("음식"),
         WORKOUT("운동"),
         MOVIE("영화"),

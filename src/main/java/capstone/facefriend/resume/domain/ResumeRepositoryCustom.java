@@ -4,11 +4,8 @@ import capstone.facefriend.resume.domain.dto.ResumeHomeDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 public interface ResumeRepositoryCustom {
 
     Page<ResumeHomeDetailResponse> getResumesByGoodCombi(Long memberId, Pageable pageable); // 좋은 궁합
-    Page<ResumeHomeDetailResponse> getResumesByBadCombi(Long memberId, Pageable pageable); // 나쁜 궁합
     Page<ResumeHomeDetailResponse> getResumesByCategory(String category, Pageable pageable); // 카테고리별
 }
