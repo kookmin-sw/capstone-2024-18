@@ -44,6 +44,21 @@ public class MessageController {
         messageService.sendMessage(messageRequest, senderId);
     }
 
+    @MessageMapping("/chat/send-heart")
+    public void sendheart(
+            StompHeaderAccessor headerAccessor,
+            @RequestBody SendHeartRequest sendHeartRequest
+    ){
+        String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
+        String token = authorizationHeader.substring(BEARER_PREFIX.length());
+        log.info("token: {}",token);
+        Long senderId = jwtProvider.extractId(token);
+        log.info("senderId: {}",senderId.toString());
+        String destination = headerAccessor.getDestination();
+        messageService.sendHeart(senderId, sendHeartRequest.getReceiveId());
+    }
+
+
 
 
 }
