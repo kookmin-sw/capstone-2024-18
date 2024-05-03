@@ -41,12 +41,17 @@ public class ResumeService {
             ResumePostRequest request
     ) throws IOException {
 
+        if (images.size() == 0) {
+            throw new ResumeException(AT_LEAST_ONE_IMAGE);
+        }
+
         Member member = findMemberById(memberId);
-        if (!resumeRepository.findResumeByMember(member).isPresent()) {
+        if (resumeRepository.findResumeByMember(member).isPresent()) {
             throw new ResumeException(ALREADY_HAS_RESUME);
         }
 
-        List<String> resumeImagesS3url = bucketService.uploadResumeImages(images, memberId);
+        List<String> resumeImagesS3url = bucketService.uploadResumeImages(images);
+
         Resume resume = Resume.builder()
                 .member(member)
                 .resumeImageS3urls(resumeImagesS3url)
@@ -67,7 +72,6 @@ public class ResumeService {
     }
 
     public ResumeResponse getResume(
-            Long memberId,
             Long resumeId
     ) {
         Resume resume = resumeRepository.findResumeById(resumeId)
@@ -86,30 +90,31 @@ public class ResumeService {
 
     public ResumeResponse putResume(
             Long memberId,
+            Long resumeId,
             List<MultipartFile> images,
             ResumePutRequest request
     ) throws IOException {
-        Member member = findMemberById(memberId); // me
-        Resume resume = findResumeByMember(member); // mine
+        Member me = findMemberById(memberId);
+        Resume myResume = findResumeByMember(me); // dirty check possible
 
-        if (request.resumeId() != resume.getId()) { // if resumeId is not mine
+        if (resumeId != myResume.getId()) {
             throw new ResumeException(UNAUTHORIZED);
         }
 
-        List<String> resumeImageS3urls = bucketService.updateResumeImages(images, memberId, images.size());
+        List<String> resumeImageS3urls = bucketService.updateResumeImages(images, myResume);
 
-        resume.setResumeImageS3urls(resumeImageS3urls);
-        resume.setCategory(Category.valueOf(request.category()));
-        resume.setContent(request.content());
+        myResume.setResumeImageS3urls(resumeImageS3urls); // dirty check possible
+        myResume.setCategory(Category.valueOf(request.category()));
+        myResume.setContent(request.content());
 
         return new ResumeResponse(
-                resume.getId(),
-                resume.getResumeImageS3urls(),
-                resume.getMember().getFaceInfo(),
-                resume.getMember().getBasicInfo(),
-                resume.getMember().getAnalysisInfo(),
-                resume.getCategory(),
-                resume.getContent()
+                myResume.getId(),
+                myResume.getResumeImageS3urls(),
+                myResume.getMember().getFaceInfo(),
+                myResume.getMember().getBasicInfo(),
+                myResume.getMember().getAnalysisInfo(),
+                myResume.getCategory(),
+                myResume.getContent()
         );
     }
 
@@ -124,8 +129,7 @@ public class ResumeService {
             throw new ResumeException(UNAUTHORIZED);
         }
 
-        int size = resume.getResumeImageS3urls().size();
-        bucketService.deleteResumeImages(memberId, size);
+        bucketService.deleteResumeImages(resume);
         resumeRepository.deleteResumeById(resumeId);
 
         return new ResumeDeleteResponse(DELETE_SUCCESS_MESSAGE);
@@ -134,10 +138,6 @@ public class ResumeService {
     // 동적 쿼리
     public Page<ResumeHomeDetailResponse> getResumesByGoodCombi(Long memberId, Pageable pageable) {
         return resumeRepository.getResumesByGoodCombi(memberId, pageable);
-    }
-
-    public Page<ResumeHomeDetailResponse> getResumesByBadCombi(Long memberId, Pageable pageable) {
-        return resumeRepository.getResumesByBadCombi(memberId, pageable);
     }
 
     public Page<ResumeHomeDetailResponse> getResumesByCategory(String category, Pageable pageable) {
