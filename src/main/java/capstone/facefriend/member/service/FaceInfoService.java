@@ -21,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,9 +30,11 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 
 
+@Transactional
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -39,47 +42,57 @@ public class FaceInfoService {
 
     @Value("${flask.generate-url}")
     private String requestUrl;
-
-    @Value("${spring.cloud.aws.s3.default-profile}")
-    private String defaultProfileS3Url;
-
     private final RestTemplate restTemplate;
-
     private final BucketService bucketService;
-
-    private final FaceInfoRepository faceInfoRepository;
     private final MemberRepository memberRepository;
+    private final FaceInfoRepository faceInfoRepository;
+
 
     // origin 삭제 & generated 삭제 -> origin 업로드 & generated 업로드
     public FaceInfoResponse updateOrigin(MultipartFile origin, Long styleId, Long memberId) throws IOException {
+        // bucket update
         ByteArrayMultipartFile generated = generate(origin, styleId, memberId);
-        return bucketService.updateOriginAndGenerated(origin, generated, memberId);
+        List<String> s3urls = bucketService.updateOriginAndGenerated(origin, generated, memberId);
+
+        // entity update
+        Member member = findMemberById(memberId);
+        FaceInfo faceInfo = faceInfoRepository.findFaceInfoById(member.getFaceInfo().getId());
+
+        String originS3url = s3urls.get(0);
+        String generatedS3url = s3urls.get(1);
+
+        faceInfo.setOriginS3url(originS3url);
+        faceInfo.setGeneratedS3url(generatedS3url);
+
+        member.setFaceInfo(faceInfo);
+
+        return new FaceInfoResponse(originS3url, generatedS3url);
     }
 
     public FaceInfoResponse getOriginAndGenerated(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
-
+        Member member = findMemberById(memberId);
         FaceInfo faceInfo = member.getFaceInfo();
         return new FaceInfoResponse(faceInfo.getOriginS3url(), faceInfo.getGeneratedS3url());
     }
 
     // origin 삭제 & generated 삭제
     public FaceInfoResponse deleteOriginAndGenerated(Long memberId) {
-        FaceInfoResponse delete = bucketService.deleteOriginAndGenerated(memberId);
+        String defaultFaceInfoS3url = bucketService.deleteOriginAndGenerated(memberId);
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
+        Member member = findMemberById(memberId);
+        faceInfoRepository.deleteFaceInfoById(member.getFaceInfo().getId());
 
-        FaceInfo faceInfo = member.getFaceInfo();
-        faceInfo.setOriginS3url(defaultProfileS3Url);
-        faceInfo.setGeneratedS3Url(defaultProfileS3Url);
+        FaceInfo faceInfo = FaceInfo.builder()
+                .originS3url(defaultFaceInfoS3url)
+                .generatedS3url(defaultFaceInfoS3url)
+                .build();
+        faceInfo.setOriginS3url(defaultFaceInfoS3url);
+        faceInfo.setGeneratedS3url(defaultFaceInfoS3url);
         faceInfoRepository.save(faceInfo);
 
         member.setFaceInfo(faceInfo);
-        memberRepository.save(member);
 
-        return delete;
+        return new FaceInfoResponse(defaultFaceInfoS3url, defaultFaceInfoS3url);
     }
 
     private ByteArrayMultipartFile generate(MultipartFile origin, Long styleId, Long memberId) throws IOException {
@@ -109,11 +122,17 @@ public class FaceInfoService {
 
         // convert JSON into Map
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> result = objectMapper.convertValue(responseEntity.getBody(), new TypeReference<>() {});
+        Map<String, Object> result = objectMapper.convertValue(responseEntity.getBody(), new TypeReference<>() {
+        });
 
-        byte[] imageBinary = Base64.getDecoder().decode((String)result.get("image_binary"));
+        byte[] imageBinary = Base64.getDecoder().decode((String) result.get("image_binary"));
 
         return new ByteArrayMultipartFile(imageBinary, origin.getOriginalFilename());
+    }
+
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
     }
 }
 
