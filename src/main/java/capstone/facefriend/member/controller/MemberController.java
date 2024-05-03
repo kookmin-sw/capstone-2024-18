@@ -5,17 +5,17 @@ import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
 import capstone.facefriend.email.controller.dto.EmailVerificationResponse;
-import capstone.facefriend.member.exception.MemberException;
+import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.service.MemberService;
-import capstone.facefriend.member.service.dto.*;
+import capstone.facefriend.member.service.dto.member.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static capstone.facefriend.member.exception.MemberExceptionType.PASSWORDS_NOT_EQUAL;
-import static capstone.facefriend.member.exception.MemberExceptionType.UNAUTHORIZED;
+import static capstone.facefriend.member.exception.member.MemberExceptionType.PASSWORDS_NOT_EQUAL;
+import static capstone.facefriend.member.exception.member.MemberExceptionType.UNAUTHORIZED;
 
 @Slf4j
 @RestController

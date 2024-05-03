@@ -1,13 +1,13 @@
 package capstone.facefriend.member.service;
 
-import capstone.facefriend.member.domain.FaceInfo;
-import capstone.facefriend.member.domain.FaceInfoRepository;
-import capstone.facefriend.member.domain.Member;
-import capstone.facefriend.member.domain.MemberRepository;
-import capstone.facefriend.member.exception.MemberException;
-import capstone.facefriend.member.exception.MemberExceptionType;
+import capstone.facefriend.member.domain.faceInfo.FaceInfo;
+import capstone.facefriend.member.domain.faceInfo.FaceInfoRepository;
+import capstone.facefriend.member.domain.member.Member;
+import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.exception.member.MemberException;
+import capstone.facefriend.member.exception.member.MemberExceptionType;
 import capstone.facefriend.member.multipartFile.ByteArrayMultipartFile;
-import capstone.facefriend.member.service.dto.FaceInfoResponse;
+import capstone.facefriend.member.service.dto.faceInfo.FaceInfoResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,12 +48,6 @@ public class FaceInfoService {
 
     private final FaceInfoRepository faceInfoRepository;
     private final MemberRepository memberRepository;
-
-    // origin 업로드 & generated 업로드
-    public FaceInfoResponse uploadOrigin(MultipartFile origin, Long styleId, Long memberId) throws IOException {
-        ByteArrayMultipartFile generated = generate(origin, styleId, memberId);
-        return bucketService.uploadOriginAndGenerated(origin, generated, memberId);
-    }
 
     // origin 삭제 & generated 삭제 -> origin 업로드 & generated 업로드
     public FaceInfoResponse updateOrigin(MultipartFile origin, Long styleId, Long memberId) throws IOException {
@@ -108,8 +102,9 @@ public class FaceInfoService {
 
         // request entity
         HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
         // response entity
-        ResponseEntity<JsonNode> responseEntity = restTemplate.postForEntity(requestUrl, requestEntity, JsonNode.class);
+        ResponseEntity<JsonNode> responseEntity = restTemplate.postForEntity(requestUrl, requestEntity, JsonNode.class); // 문제
 
         // convert JSON into Map
         ObjectMapper objectMapper = new ObjectMapper();

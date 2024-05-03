@@ -1,7 +1,6 @@
 package capstone.facefriend.auth.controller.interceptor;
 
 import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
-import capstone.facefriend.email.controller.interceptor.VerificationInterceptor;
 import capstone.facefriend.redis.RedisDao;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,8 +17,6 @@ public class TokenBlackListInterceptor implements HandlerInterceptor {
 
     private final RedisDao redisDao;
 
-    private final VerificationInterceptor verificationInterceptor;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String accessToken = AuthenticationExtractor.extractAccessToken(request).get();
@@ -27,6 +24,6 @@ public class TokenBlackListInterceptor implements HandlerInterceptor {
         if (accessToken != null) {
             return redisDao.isKeyOfAccessTokenInBlackList(accessToken); // 액세스 토큰이 블랙리스트에 등록되었다면 false 반환해야 합니다.
         }
-        return verificationInterceptor.preHandle(request, response, handler);
+        return true;
     }
 }

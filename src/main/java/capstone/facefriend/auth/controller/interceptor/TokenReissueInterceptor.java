@@ -3,7 +3,6 @@ package capstone.facefriend.auth.controller.interceptor;
 import capstone.facefriend.auth.controller.support.AuthenticationContext;
 import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
 import capstone.facefriend.auth.domain.TokenProvider;
-import capstone.facefriend.email.controller.interceptor.VerificationInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
