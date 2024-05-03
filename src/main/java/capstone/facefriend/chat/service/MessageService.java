@@ -92,6 +92,7 @@ public class MessageService {
         messageResponse.setRoomId(chatMessage.getChatRoom().getId());
         messageResponse.setSenderId(senderId);
         messageResponse.setReceiveId(receiver.getId());
+        messageResponse.setSenderNickname(sender.getBasicInfo().getNickname());
         messageResponse.setContent(chatMessage.getContent());
         messageResponse.setType("message");
         messageResponse.setCreatedAt(chatMessage.getSendTime());
