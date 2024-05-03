@@ -64,8 +64,8 @@ public class MemberService {
 
     private static final Long BLACKLIST_REMAIN_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
 
-    @Value("${spring.cloud.aws.s3.default-profile}")
-    private String defaultProfileS3Url;
+    @Value("${spring.cloud.aws.s3.default-faceInfo-s3url}")
+    private String defaultFaceInfoS3url;
 
     @Transactional
     public String verifyDuplication(String email) {
@@ -110,8 +110,8 @@ public class MemberService {
 
         // 관상 이미지 초기값
         FaceInfo faceInfo = FaceInfo.builder()
-                .originS3url(defaultProfileS3Url)
-                .generatedS3url(defaultProfileS3Url)
+                .originS3url(defaultFaceInfoS3url)
+                .generatedS3url(defaultFaceInfoS3url)
                 .build();
         faceInfoRepository.save(faceInfo);
 

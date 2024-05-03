@@ -15,17 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import static capstone.facefriend.member.domain.basicInfo.BasicInfo.*;
 import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 
+
+@Transactional
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class BasicInfoService {
 
     private final MemberRepository memberRepository;
-
-    private Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(NOT_FOUND));
-    }
 
     public BasicInfoResponse getBasicInfo(Long memberId) {
         Member member = findMemberById(memberId);
@@ -47,8 +44,13 @@ public class BasicInfoService {
         oldBasicInfo.setRegion(Region.valueOf(request.region()));
 
         member.setBasicInfo(oldBasicInfo);
-        memberRepository.save(member);
+//        memberRepository.save(member);
 
         return BasicInfoResponse.of(oldBasicInfo);
+    }
+
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND));
     }
 }
