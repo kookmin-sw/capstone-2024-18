@@ -22,6 +22,7 @@ public class AnalysisInfo {
     @Column(name = "ANALYSIS_INFO_ID")
     private Long id;
 
+    @Column
     private Integer faceShapeIdNum;
 
     @Builder.Default
