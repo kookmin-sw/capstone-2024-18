@@ -18,6 +18,7 @@ public class MessageResponse implements Serializable {
     private Long senderId;
     private String content;
     private String type;
+    private String senderNickname;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
     private Boolean isRead;
