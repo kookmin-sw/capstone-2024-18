@@ -21,12 +21,4 @@ public class FaceInfo {
 
     @Column
     private String generatedS3url;
-
-    public void setOriginS3url(String originS3Url) {
-        this.originS3url = originS3url;
-    }
-
-    public void setGeneratedS3Url(String generatedS3url) {
-        this.generatedS3url = generatedS3url;
-    }
 }
