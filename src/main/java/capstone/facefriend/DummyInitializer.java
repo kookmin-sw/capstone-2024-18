@@ -62,26 +62,5 @@ public class DummyInitializer {
                     .build();
             resumeRepository.save(resume);
         }
-
-
-//        @PostConstruct
-//        @Transactional
-//        public void init() {
-//            Random random = new Random();
-//
-//            for (int i = 1; i <= 50; i++) {
-//                // 회원 가입
-//                memberService.signUp(new SignUpRequest(i + "@" + i + ".com", "123", "123"));
-//                Member member = memberService.findMemberByEmail(i + "@" + i + ".com");
-//
-//                // 회원의 분석 정보 업데이트
-//                AnalysisInfo analysisInfo = analysisInfoService.findAnalysisInfoByMemberId(member.getId());
-//                analysisInfo.setFaceShapeIdNum((i - 1) % 5);
-//
-//                // 이력 생성
-//                Resume resume = Resume.builder().category(Resume.Category.DATING).member(member).build();
-//                resumeService.saveResume(resume);
-//            }
-//        }
     }
 }

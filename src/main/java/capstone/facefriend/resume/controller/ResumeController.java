@@ -24,7 +24,7 @@ public class ResumeController {
 
     // 정적 쿼리
     @PostMapping("/resume")
-    public ResponseEntity<ResumeResponse> postResume(
+    public ResponseEntity<ResumePutResponse> postResume(
             @AuthMember Long memberId,
             @RequestPart("images") List<MultipartFile> images,
             @RequestPart("request") ResumePostRequest request
@@ -33,15 +33,15 @@ public class ResumeController {
     }
 
     @GetMapping("/resume")
-    public ResponseEntity<ResumeResponse> getResume(
+    public ResponseEntity<ResumeGetResponse> getResume(
             @AuthMember Long memberId,
             @RequestParam("resumeId") Long resumeId
     ) {
-        return ResponseEntity.ok(resumeService.getResume(resumeId));
+        return ResponseEntity.ok(resumeService.getResume(memberId, resumeId));
     }
 
     @PutMapping("/resume")
-    public ResponseEntity<ResumeResponse> putResume(
+    public ResponseEntity<ResumePutResponse> putResume(
             @AuthMember Long memberId,
             @RequestParam("resumeId") Long resumeId,
             @RequestPart("images") List<MultipartFile> images,
@@ -57,8 +57,6 @@ public class ResumeController {
     ) {
         return ResponseEntity.ok(resumeService.deleteResume(memberId, resumeId));
     }
-
-
 
     // 동적 쿼리
     @GetMapping("/resume-by-good-combi")

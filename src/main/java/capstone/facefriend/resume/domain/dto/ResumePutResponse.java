@@ -8,13 +8,13 @@ import java.util.List;
 
 import static capstone.facefriend.resume.domain.Resume.Category;
 
-public record ResumeResponse(
+public record ResumePutResponse(
         Long resumeId,
-        List<String> resumeImageS3urls, // resume
+        List<String> resumeImageS3urls,
         FaceInfo faceInfo,
         BasicInfo basicInfo,
         AnalysisInfo analysisInfo,
-        Category category, // resume
-        String content // resume
+        Category category,
+        String content
 ) {
 }

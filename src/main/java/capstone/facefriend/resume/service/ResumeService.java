@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class ResumeService {
     private static final String DELETE_SUCCESS_MESSAGE = "자기소개서 삭제 완료!";
 
     // 정적 쿼리
-    public ResumeResponse postResume(
+    public ResumePutResponse postResume(
             Long memberId,
             List<MultipartFile> images,
             ResumePostRequest request
@@ -60,7 +61,7 @@ public class ResumeService {
                 .build();
         resumeRepository.save(resume);
 
-        return new ResumeResponse(
+        return new ResumePutResponse(
                 resume.getId(),
                 resume.getResumeImageS3urls(),
                 resume.getMember().getFaceInfo(),
@@ -71,65 +72,77 @@ public class ResumeService {
         );
     }
 
-    public ResumeResponse getResume(
+    public ResumeGetResponse getResume(
+            Long memberId,
             Long resumeId
     ) {
         Resume resume = resumeRepository.findResumeById(resumeId)
                 .orElseThrow(() -> new ResumeException(NO_RESUME));
 
-        return new ResumeResponse(
+        Member member = findMemberById(memberId);
+        Resume mine = findResumeByMember(member);
+
+        Boolean isMine;
+        if (mine.equals(resume)) isMine = Boolean.TRUE;
+        else isMine = Boolean.FALSE;
+
+        return new ResumeGetResponse(
                 resume.getId(),
                 resume.getResumeImageS3urls(),
                 resume.getMember().getFaceInfo(),
                 resume.getMember().getBasicInfo(),
                 resume.getMember().getAnalysisInfo(),
                 resume.getCategory(),
-                resume.getContent()
+                resume.getContent(),
+                isMine
         );
     }
 
-    public ResumeResponse putResume(
+    @Transactional
+    public ResumePutResponse putResume(
             Long memberId,
             Long resumeId,
             List<MultipartFile> images,
             ResumePutRequest request
     ) throws IOException {
-        Member me = findMemberById(memberId);
-        Resume myResume = findResumeByMember(me); // dirty check possible
 
-        if (resumeId != myResume.getId()) {
+        Member me = findMemberById(memberId);
+        Resume mine = findResumeByMember(me); // 영속 상태
+
+        if (resumeId != mine.getId()) {
             throw new ResumeException(UNAUTHORIZED);
         }
 
-        List<String> resumeImageS3urls = bucketService.updateResumeImages(images, myResume);
+        List<String> resumeImageS3urls = bucketService.updateResumeImages(images, mine);
 
-        myResume.setResumeImageS3urls(resumeImageS3urls); // dirty check possible
-        myResume.setCategory(Category.valueOf(request.category()));
-        myResume.setContent(request.content());
+        mine.setResumeImageS3urls(resumeImageS3urls); // dirty check
+        mine.setCategory(Category.valueOf(request.category())); // // dirty check
+        mine.setContent(request.content()); // // dirty check
 
-        return new ResumeResponse(
-                myResume.getId(),
-                myResume.getResumeImageS3urls(),
-                myResume.getMember().getFaceInfo(),
-                myResume.getMember().getBasicInfo(),
-                myResume.getMember().getAnalysisInfo(),
-                myResume.getCategory(),
-                myResume.getContent()
+        return new ResumePutResponse(
+                mine.getId(),
+                mine.getResumeImageS3urls(),
+                mine.getMember().getFaceInfo(),
+                mine.getMember().getBasicInfo(),
+                mine.getMember().getAnalysisInfo(),
+                mine.getCategory(),
+                mine.getContent()
         );
     }
 
+    @Transactional
     public ResumeDeleteResponse deleteResume(
             Long memberId,
             Long resumeId
     ) {
-        Member member = findMemberById(memberId); // me
-        Resume resume = findResumeByMember(member); // mine
+        Member me = findMemberById(memberId);
+        Resume mine = findResumeByMember(me);
 
-        if (resumeId != resume.getId()) { // if resumeId is not mine
+        if (resumeId != mine.getId()) { // if resumeId is not mine
             throw new ResumeException(UNAUTHORIZED);
         }
 
-        bucketService.deleteResumeImages(resume);
+        bucketService.deleteResumeImages(mine);
         resumeRepository.deleteResumeById(resumeId);
 
         return new ResumeDeleteResponse(DELETE_SUCCESS_MESSAGE);
