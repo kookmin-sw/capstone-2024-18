@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Transactional
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -47,24 +47,23 @@ public class FaceInfoService {
     private final MemberRepository memberRepository;
     private final FaceInfoRepository faceInfoRepository;
 
-
-    // origin 삭제 & generated 삭제 -> origin 업로드 & generated 업로드
+    @Transactional // origin 삭제 & generated 삭제 -> origin 업로드 & generated 업로드
     public FaceInfoResponse updateOrigin(MultipartFile origin, Long styleId, Long memberId) throws IOException {
         // bucket update
         ByteArrayMultipartFile generated = generate(origin, styleId, memberId);
         List<String> s3urls = bucketService.updateOriginAndGenerated(origin, generated, memberId);
 
         // entity update
-        Member member = findMemberById(memberId);
-        FaceInfo faceInfo = faceInfoRepository.findFaceInfoById(member.getFaceInfo().getId());
+        Member member = findMemberById(memberId); // 영속
+        FaceInfo faceInfo = faceInfoRepository.findFaceInfoById(member.getFaceInfo().getId()); // 영속
 
         String originS3url = s3urls.get(0);
         String generatedS3url = s3urls.get(1);
 
-        faceInfo.setOriginS3url(originS3url);
-        faceInfo.setGeneratedS3url(generatedS3url);
+        faceInfo.setOriginS3url(originS3url); // dirty check
+        faceInfo.setGeneratedS3url(generatedS3url); // dirty check
 
-        member.setFaceInfo(faceInfo);
+        member.setFaceInfo(faceInfo); // dirty check
 
         return new FaceInfoResponse(originS3url, generatedS3url);
     }
@@ -75,11 +74,11 @@ public class FaceInfoService {
         return new FaceInfoResponse(faceInfo.getOriginS3url(), faceInfo.getGeneratedS3url());
     }
 
-    // origin 삭제 & generated 삭제
+    @Transactional // origin 삭제 & generated 삭제
     public FaceInfoResponse deleteOriginAndGenerated(Long memberId) {
         String defaultFaceInfoS3url = bucketService.deleteOriginAndGenerated(memberId);
 
-        Member member = findMemberById(memberId);
+        Member member = findMemberById(memberId); // 영속
         faceInfoRepository.deleteFaceInfoById(member.getFaceInfo().getId());
 
         FaceInfo faceInfo = FaceInfo.builder()
@@ -90,7 +89,7 @@ public class FaceInfoService {
         faceInfo.setGeneratedS3url(defaultFaceInfoS3url);
         faceInfoRepository.save(faceInfo);
 
-        member.setFaceInfo(faceInfo);
+        member.setFaceInfo(faceInfo); // dirty check
 
         return new FaceInfoResponse(defaultFaceInfoS3url, defaultFaceInfoS3url);
     }

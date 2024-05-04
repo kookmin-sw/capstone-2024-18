@@ -1,7 +1,6 @@
 package capstone.facefriend.member.service;
 
 
-import capstone.facefriend.member.domain.analysisInfo.AnalysisInfoRepository;
 import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.domain.member.MemberRepository;
 import capstone.facefriend.member.exception.analysis.AnalysisException;
@@ -37,7 +36,6 @@ import static capstone.facefriend.member.exception.analysis.AnalysisExceptionTyp
 import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 
 
-@Transactional
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -49,8 +47,9 @@ public class AnalysisInfoService {
     private final RestTemplate restTemplate;
 
     private final MemberRepository memberRepository;
-    private final AnalysisInfoRepository analysisInfoRepository;
 
+
+    @Transactional
     public AnalysisInfoFullResponse analyze(MultipartFile origin, Long memberId) throws IOException {
         // convert MultipartFile into ByteArrayResource
         ByteArrayResource resource = new ByteArrayResource(origin.getBytes()) {
@@ -87,18 +86,16 @@ public class AnalysisInfoService {
         List<String> analysisShort = extractAnalysisInfoShort(total);
         Integer faceShapeIdNum = extractFaceShapeIdNum(total);
 
-        Member member = findMemberById(memberId);
-        member.getAnalysisInfo().setAnalysisInfoFull(analysisFull);
+        Member member = findMemberById(memberId); // 영속 상태
+        member.getAnalysisInfo().setAnalysisInfoFull(analysisFull); // dirty
         member.getAnalysisInfo().setAnalysisInfoShort(analysisShort);
         member.getAnalysisInfo().setFaceShapeIdNum(faceShapeIdNum);
-//        memberRepository.save(member);
 
         return new AnalysisInfoFullResponse(analysisFull);
     }
 
     private Map<String, String> extractAnalysisInfoFull(AnalysisInfoTotal total) {
         Map<String, String> analysisFull = new HashMap<>();
-
         analysisFull.put(total.getEye().getName(), total.getEye().getDescription());
         analysisFull.put(total.getFaceShape().getName(), total.getFaceShape().getDescription());
         analysisFull.put(total.getLips().getName(), total.getLips().getDescription());
@@ -119,11 +116,11 @@ public class AnalysisInfoService {
 
     private List<String> extractAnalysisInfoShort(AnalysisInfoTotal total) {
         return Stream.of(
-                    total.getEye().getTag(),
-                    total.getFaceShape().getTag(),
-                    total.getLips().getTag(),
-                    total.getNose().getTag(),
-                    total.getEyebrow().getTag()
+                        total.getEye().getTag(),
+                        total.getFaceShape().getTag(),
+                        total.getLips().getTag(),
+                        total.getNose().getTag(),
+                        total.getEyebrow().getTag()
                 ).flatMap(List::stream)
                 .collect(Collectors.toList());
     }
@@ -154,7 +151,7 @@ public class AnalysisInfoService {
     @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static  class AnalysisInfoTotal {
+    public static class AnalysisInfoTotal {
         @JsonProperty("face_shape")
         private FaceShape faceShape;
         private Eye eye;
@@ -167,7 +164,7 @@ public class AnalysisInfoService {
     @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static  class FaceShape {
+    public static class FaceShape {
         private String name;
         private String description;
         @JsonDeserialize(using = StringListDeserializer.class)
@@ -180,7 +177,7 @@ public class AnalysisInfoService {
     @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static  class Eye {
+    public static class Eye {
         private String name;
         private String description;
         @JsonDeserialize(using = StringListDeserializer.class)
@@ -193,7 +190,7 @@ public class AnalysisInfoService {
     @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static  class Lips {
+    public static class Lips {
         private String name;
         private String description;
         @JsonDeserialize(using = StringListDeserializer.class)
@@ -206,7 +203,7 @@ public class AnalysisInfoService {
     @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static  class Nose {
+    public static class Nose {
         private String name;
         private String description;
         @JsonDeserialize(using = StringListDeserializer.class)
