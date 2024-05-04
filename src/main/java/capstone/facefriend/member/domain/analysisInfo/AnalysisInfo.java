@@ -22,12 +22,15 @@ public class AnalysisInfo {
     @Column(name = "ANALYSIS_INFO_ID")
     private Long id;
 
+    @Column
     private Integer faceShapeIdNum;
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "ANALYSIS_INFO_FULL", joinColumns = @JoinColumn(name = "ANALYSIS_INFO_ID"))
     private Map<String, String> analysisInfoFull = new HashMap<>();
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "ANALYSIS_INFO_SHORT", joinColumns = @JoinColumn(name = "ANALYSIS_INFO_ID"))
     private List<String> analysisInfoShort = new ArrayList<>();

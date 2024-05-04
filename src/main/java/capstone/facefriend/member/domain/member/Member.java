@@ -11,6 +11,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
+@Setter
 @Builder
 @EqualsAndHashCode(of = "id", callSuper = false)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -58,25 +59,5 @@ public class Member extends BaseEntity {
 
     public boolean isSame(Long id) {
         return this.id.equals(id);
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public void setBasicInfo(BasicInfo basicInfo) {
-        this.basicInfo = basicInfo;
-    }
-
-    public void setFaceInfo(FaceInfo faceInfo) {
-        this.faceInfo = faceInfo;
-    }
-
-    public void setAnalysisInfo(AnalysisInfo analysisInfo) {
-        this.analysisInfo = analysisInfo;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
