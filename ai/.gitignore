@@ -6,5 +6,6 @@ docker-compose.yml
 dockerfile
 _config.yml
 *.jpg
+*.pyc
 index.md
 face_maker/DualStyleGAN/checkpoint
