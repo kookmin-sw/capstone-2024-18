@@ -2,7 +2,7 @@ package capstone.facefriend.member.controller;
 
 import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.member.service.FaceInfoService;
-import capstone.facefriend.member.service.dto.FaceInfoResponse;
+import capstone.facefriend.member.service.dto.faceInfo.FaceInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +17,6 @@ import java.io.IOException;
 public class FaceInfoController {
 
     private final FaceInfoService faceInfoService;
-
-    @PostMapping("/face-info")
-    public ResponseEntity<FaceInfoResponse> upload(
-            @RequestPart("origin") MultipartFile origin,
-            @RequestParam("styleId") Long styleId,
-            @AuthMember Long memberId
-    ) throws IOException {
-        return ResponseEntity.ok(faceInfoService.uploadOrigin(origin, styleId, memberId));
-    }
 
     @GetMapping("/face-info")
     public ResponseEntity<FaceInfoResponse> get(

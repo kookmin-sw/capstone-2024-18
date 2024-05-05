@@ -4,12 +4,18 @@ import capstone.facefriend.auth.controller.dto.TokenResponse;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.email.controller.dto.EmailVerificationResponse;
 import capstone.facefriend.email.service.EmailService;
-import capstone.facefriend.member.domain.*;
-import capstone.facefriend.member.exception.MemberException;
-import capstone.facefriend.member.exception.MemberExceptionType;
-import capstone.facefriend.member.service.dto.FindEmailResponse;
-import capstone.facefriend.member.service.dto.SignInRequest;
-import capstone.facefriend.member.service.dto.SignUpRequest;
+import capstone.facefriend.member.domain.analysisInfo.AnalysisInfo;
+import capstone.facefriend.member.domain.analysisInfo.AnalysisInfoRepository;
+import capstone.facefriend.member.domain.basicInfo.BasicInfo;
+import capstone.facefriend.member.domain.basicInfo.BasicInfoRepository;
+import capstone.facefriend.member.domain.faceInfo.FaceInfo;
+import capstone.facefriend.member.domain.faceInfo.FaceInfoRepository;
+import capstone.facefriend.member.domain.member.Member;
+import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.exception.member.MemberException;
+import capstone.facefriend.member.service.dto.member.FindEmailResponse;
+import capstone.facefriend.member.service.dto.member.SignInRequest;
+import capstone.facefriend.member.service.dto.member.SignUpRequest;
 import capstone.facefriend.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +24,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static capstone.facefriend.member.domain.BasicInfo.*;
-import static capstone.facefriend.member.domain.Role.USER;
-import static capstone.facefriend.member.exception.MemberExceptionType.*;
+import java.util.List;
+import java.util.Map;
+
+import static capstone.facefriend.member.domain.basicInfo.BasicInfo.*;
+import static capstone.facefriend.member.domain.member.Role.USER;
+import static capstone.facefriend.member.exception.member.MemberExceptionType.*;
 
 @Service
 @Slf4j
@@ -31,6 +40,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BasicInfoRepository basicInfoRepository;
     private final FaceInfoRepository faceInfoRepository;
+    private final AnalysisInfoRepository analysisInfoRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
@@ -42,10 +53,19 @@ public class MemberService {
     private static final String RESET_PASSWORD_SUCCESS_MESSAGE = "비밀번호 재설정 성공";
     private static final String EXIT_SUCCESS_MESSAGE = "회원탈퇴 성공";
 
+    private static final String INITIAL_ANALYSIS_NAME_EYE = "눈";
+    private static final String INITIAL_ANALYSIS_NAME_FACE_SHAPE = "얼굴형";
+    private static final String INITIAL_ANALYSIS_NAME_LIPS = "입술";
+    private static final String INITIAL_ANALYSIS_NAME_NOSE = "코";
+    private static final String INITIAL_ANALYSIS_NAME_EYEBROW = "눈썹";
+    private static final String INITIAL_ANALYSIS_DESCRIPTION = "관상 분석 설명이 없습니다!";
+    private static final String INITIAL_ANALYSIS_TAG = "관상 분석 태그가 없습니다!";
+    private static final Integer INITIAL_ANALYSIS_FACE_SHAPE_NUM = -1;
+
     private static final Long BLACKLIST_REMAIN_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
 
-    @Value("${spring.cloud.aws.s3.default-profile}")
-    private String defaultProfileS3Url;
+    @Value("${spring.cloud.aws.s3.default-faceInfo-s3url}")
+    private String defaultFaceInfoS3url;
 
     @Transactional
     public String verifyDuplication(String email) {
@@ -75,40 +95,50 @@ public class MemberService {
 
     @Transactional
     public String signUp(SignUpRequest request) {
-        boolean isVerified = request.isVerified();
+        String encodedPassword = passwordEncoder.encode(request.password());
 
-        if (isVerified) {
-            String encodedPassword = passwordEncoder.encode(request.password());
+        // 기본정보 초기값
+        BasicInfo basicInfo = BasicInfo.builder()
+                .nickname("")
+                .gender(Gender.DEFAULT)
+                .ageGroup(AgeGroup.DEFAULT)
+                .ageDegree(AgeDegree.DEFAULT)
+                .heightGroup(HeightGroup.DEFAULT)
+                .region(Region.DEFAULT)
+                .build();
+        basicInfoRepository.save(basicInfo);
 
-            BasicInfo basicInfo = BasicInfo.builder()
-                    .nickname("")
-                    .gender(Gender.DEFAULT)
-                    .ageGroup(AgeGroup.DEFAULT)
-                    .ageDegree(AgeDegree.DEFAULT)
-                    .heightGroup(HeightGroup.DEFAULT)
-                    .region(Region.DEFAULT)
-                    .build();
-            basicInfoRepository.save(basicInfo);
+        // 관상 이미지 초기값
+        FaceInfo faceInfo = FaceInfo.builder()
+                .originS3url(defaultFaceInfoS3url)
+                .generatedS3url(defaultFaceInfoS3url)
+                .build();
+        faceInfoRepository.save(faceInfo);
 
-            FaceInfo faceInfo = FaceInfo.builder()
-                    .originS3Url(defaultProfileS3Url)
-                    .generatedS3url(defaultProfileS3Url)
-                    .build();
-            faceInfoRepository.save(faceInfo);
+        // 관상 분석 초기값
+        AnalysisInfo analysisInfo = AnalysisInfo.builder()
+                .analysisInfoFull(Map.of(
+                        INITIAL_ANALYSIS_NAME_EYE, INITIAL_ANALYSIS_DESCRIPTION,
+                        INITIAL_ANALYSIS_NAME_FACE_SHAPE, INITIAL_ANALYSIS_DESCRIPTION,
+                        INITIAL_ANALYSIS_NAME_LIPS, INITIAL_ANALYSIS_DESCRIPTION,
+                        INITIAL_ANALYSIS_NAME_NOSE, INITIAL_ANALYSIS_DESCRIPTION,
+                        INITIAL_ANALYSIS_NAME_EYEBROW, INITIAL_ANALYSIS_DESCRIPTION))
+                .analysisInfoShort(List.of(INITIAL_ANALYSIS_TAG))
+                .faceShapeIdNum(INITIAL_ANALYSIS_FACE_SHAPE_NUM)
+                .build();
+        analysisInfoRepository.save(analysisInfo);
 
-            Member member = Member.builder()
-                    .email(request.email())
-                    .password(encodedPassword)
-                    .isVerified(true)
-                    .role(USER)
-                    .basicInfo(basicInfo)
-                    .faceInfo(faceInfo)
-                    .build();
-            memberRepository.save(member);
+        // 저장
+        Member member = Member.builder()
+                .email(request.email())
+                .password(encodedPassword)
+                .role(USER)
+                .basicInfo(basicInfo) // 기본정보
+                .faceInfo(faceInfo) // 관상 이미지
+                .analysisInfo(analysisInfo) // 관상 분석
+                .build();
+        memberRepository.save(member);
 
-        } else {
-            throw new MemberException(NOT_VERIFIED);
-        }
         return SIGN_UP_SUCCESS_MESSAGE;
     }
 

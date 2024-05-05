@@ -26,7 +26,7 @@ public record ChatRoomMessageResponse(
                 message.getSendTime(),
                 message.getSender().getBasicInfo().getNickname(),
                 message.getSender().getFaceInfo().getGeneratedS3url(),
-                message.getSender().getFaceInfo().getOriginS3Url()
+                message.getSender().getFaceInfo().getOriginS3url()
         );
     }
 }

@@ -12,10 +12,10 @@ import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
 import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
 import capstone.facefriend.chat.service.dto.message.MessageRequest;
 import capstone.facefriend.chat.service.dto.message.MessageResponse;
-import capstone.facefriend.member.domain.Member;
-import capstone.facefriend.member.domain.MemberRepository;
-import capstone.facefriend.member.exception.MemberException;
-import capstone.facefriend.member.exception.MemberExceptionType;
+import capstone.facefriend.member.domain.member.Member;
+import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.exception.member.MemberException;
+import capstone.facefriend.member.exception.member.MemberExceptionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -142,7 +142,6 @@ public class MessageService {
         sendHeartResponse.setType("Heart");
 
         String topic = channelTopic.getTopic();
-        log.info("-------------------send-heart---------------");
         redisTemplate.convertAndSend(topic, sendHeartResponse);
     }
     @Transactional

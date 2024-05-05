@@ -10,7 +10,7 @@ import capstone.facefriend.chat.service.dto.chatroom.ChatRoomHeartResponse;
 import capstone.facefriend.chat.service.dto.chatroom.ChatRoomMessageResponse;
 import capstone.facefriend.chat.service.dto.chatroom.ChatRoomOpenResponse;
 import capstone.facefriend.chat.service.dto.heart.GetSendHeartResponse;
-import capstone.facefriend.member.domain.Member;
+import capstone.facefriend.member.domain.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -68,7 +68,6 @@ public class ChatRoomService {
                 sendHeartResponse.setSenderId(chatRoomMember.getSender().getId());
                 sendHeartResponse.setReceiveId(chatRoomMember.getReceiver().getId());
                 sendHeartResponse.setSenderName(chatRoomMember.getSender().getBasicInfo().getNickname());
-                log.info("sendHeart:{}", sendHeartResponse.toString());
                 ChatRoomHeartResponse chatRoomHeartResponse = ChatRoomHeartResponse.of(chatRoomMember, sendHeartResponse);
                 chatRoomsHeart.add(chatRoomHeartResponse);
 

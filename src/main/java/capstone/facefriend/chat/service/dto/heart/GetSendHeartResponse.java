@@ -7,7 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Setter
+
 @Data
 @NoArgsConstructor
 public class GetSendHeartResponse {

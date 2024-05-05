@@ -2,7 +2,6 @@ package capstone.facefriend.auth.config;
 
 import capstone.facefriend.auth.controller.AuthArgumentResolver;
 import capstone.facefriend.auth.controller.interceptor.*;
-import capstone.facefriend.email.controller.interceptor.VerificationInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +28,6 @@ public class AuthConfig implements WebMvcConfigurer {
     private final LoginInterceptor loginInterceptor;
     private final TokenReissueInterceptor tokenReissueInterceptor;
     private final TokenBlackListInterceptor tokenBlackListInterceptor;
-    private final VerificationInterceptor verificationInterceptor;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,7 +40,6 @@ public class AuthConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor());
         registry.addInterceptor(tokenReissueInterceptor());
         registry.addInterceptor(tokenBlackListInterceptor());
-        registry.addInterceptor(verificationInterceptor());
     }
 
     private HandlerInterceptor loginCheckInterceptor() {
@@ -54,8 +51,12 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/auth/exit", DELETE)
                 .addIncludePathPattern("/basic-info", ANY)
                 .addIncludePathPattern("/face-info", ANY)
+                .addIncludePathPattern("/analysis-info", ANY)
+                .addIncludePathPattern("/resume", ANY)
+                .addIncludePathPattern("/resume-by-good-combi", ANY)
+                .addIncludePathPattern("/resume-by-category", ANY)
 
-                .addExcludePathPattern("/auth/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
+                .addExcludePathPattern("/auth/reissue/**", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
 
     private HandlerInterceptor loginInterceptor() {
@@ -67,6 +68,10 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/auth/exit", DELETE)
                 .addIncludePathPattern("/basic-info", ANY)
                 .addIncludePathPattern("/face-info", ANY)
+                .addIncludePathPattern("/analysis-info/**", ANY)
+                .addIncludePathPattern("/resume", ANY)
+                .addIncludePathPattern("/resume-by-good-combi", ANY)
+                .addIncludePathPattern("/resume-by-category", ANY)
 
                 .addExcludePathPattern("/auth/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
@@ -86,18 +91,12 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/auth/exit", DELETE)
                 .addIncludePathPattern("/auth/reset-password", POST)
                 .addIncludePathPattern("/basic-info", ANY)
-                .addIncludePathPattern("/face-info", ANY);
-    }
-
-    private HandlerInterceptor verificationInterceptor() {
-        return new PathMatchInterceptor(verificationInterceptor)
-                .addExcludePathPattern("/**", OPTIONS)
-
-                .addIncludePathPattern("/auth/signout", DELETE)
-                .addIncludePathPattern("/auth/exit", DELETE)
-                .addIncludePathPattern("/auth/reset-password", POST)
-                .addIncludePathPattern("/basic-info", ANY)
-                .addIncludePathPattern("/face-info", ANY);
+                .addIncludePathPattern("/face-info", ANY)
+                .addIncludePathPattern("/analysis-info/**", ANY)
+                .addIncludePathPattern("/resume", ANY)
+                .addIncludePathPattern("/resume-by-good-combi", ANY)
+                .addIncludePathPattern("/resume-by-category", ANY)
+                ;
     }
 
     @Override

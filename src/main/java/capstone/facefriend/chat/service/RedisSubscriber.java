@@ -31,12 +31,8 @@ public class RedisSubscriber implements MessageListener {
             // redis에서 발행된 데이터를 받아 역직렬화
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 
-            log.info("Received message from Redis: {}", publishMessage); // 메시지 내용 로깅
-
             if (publishMessage.contains("message")) {
                 MessageResponse messageResponse = objectMapper.readValue(publishMessage, MessageResponse.class);
-
-                log.info("Received message: {}", messageResponse.toString()); // message 보내지는 지 확인
 
                 GetMessageResponse chatMessageResponse = new GetMessageResponse(messageResponse);
 

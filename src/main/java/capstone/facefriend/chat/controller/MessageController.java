@@ -37,10 +37,7 @@ public class MessageController {
     ) {
         String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
         String token = authorizationHeader.substring(BEARER_PREFIX.length());
-        log.info("token: {}",token);
         Long senderId = jwtProvider.extractId(token);
-        log.info("senderId: {}",senderId.toString());
-        String destination = headerAccessor.getDestination();
         messageService.sendMessage(messageRequest, senderId);
     }
 
@@ -51,10 +48,7 @@ public class MessageController {
     ){
         String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
         String token = authorizationHeader.substring(BEARER_PREFIX.length());
-        log.info("token: {}",token);
         Long senderId = jwtProvider.extractId(token);
-        log.info("senderId: {}",senderId.toString());
-        String destination = headerAccessor.getDestination();
         messageService.sendHeart(senderId, sendHeartRequest.getReceiveId());
     }
 
@@ -65,9 +59,7 @@ public class MessageController {
     ) {
         String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
         String token = authorizationHeader.substring(BEARER_PREFIX.length());
-        log.info("token: {}",token);
         Long receiveId = jwtProvider.extractId(token);
-        log.info("receiveId: {}",receiveId.toString());
 
         messageService.heartReply(heartReplyRequest, receiveId);
     }
