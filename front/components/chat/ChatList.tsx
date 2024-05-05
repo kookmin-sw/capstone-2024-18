@@ -37,7 +37,6 @@ const ChatList = forwardRef<FlatList<ChatProps>, Props>(({
     return date ? new Date(date).getDate() : undefined;
   };
   
-
   const renderItem = ({ item, index }: { item: ChatProps; index: number }) => {
     const { id, message, nickname, uuid, timestamp, isFinal, isInitial} = item;
     const prevChat = index ? chats[index - 1] : undefined;
@@ -62,6 +61,7 @@ const ChatList = forwardRef<FlatList<ChatProps>, Props>(({
       />
     );
   }
+  
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {

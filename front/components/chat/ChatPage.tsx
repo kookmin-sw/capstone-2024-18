@@ -12,7 +12,6 @@ const SOCKET_URL = "";
 const UUID = "0";
 
 const ChatPage = () => {
-  const [chats, setChats] = useState<ChatProps[]>([]);
   const [newId, setNewId] = useState(0);
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
@@ -58,16 +57,16 @@ const ChatPage = () => {
         setHeight: (height: number) => { handleSetChatHeight(item, height) },
       }
     });
-    setChats([...chats, ...dummyChats]);
+    chatCtx.setChats([...chatCtx.chats, ...dummyChats]);
   }
 
   const handleClearChatHistory = async() => {
     clearChatHistory();
-    setChats([]);
+    chatCtx.setChats([]);
   }
 
   const handleClearChat = async() => {
-    setChats([]);
+    chatCtx.setChats([]);
   }
 
   const scrollToPosition = (position: number) => {
@@ -88,7 +87,7 @@ const ChatPage = () => {
   }
 
   const scrollToEnd = () => {
-    scrollToIndex(chats.length - 1);
+    scrollToIndex(chatCtx.chats.length - 1);
     // scrollToIndex(1);
   };
   
@@ -96,7 +95,7 @@ const ChatPage = () => {
     const fetchedChats = await chatCtx.fetchChatHistory(page);
     if (!fetchedChats) return;
 
-    setChats([...fetchedChats, ...chats]);
+    chatCtx.setChats([...fetchedChats, ...chatCtx.chats]);
     setPage(page + 1);
     scrollToIndex(fetchedChats.length - 1);
   }
@@ -152,7 +151,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     scrollToEnd();
-  }, [chats]);
+  }, [chatCtx.chats]);
 
   const options = (
     <View style={{position: "absolute", top: 0}}>
@@ -178,7 +177,7 @@ const ChatPage = () => {
   return (
     <View style={styles.container}>
       <ChatList 
-        chats={chats} 
+        chats={chatCtx.chats} 
         chatHeights={chatHeights}
         ref={ChatListRef} 
         onRefresh={handleOnRefresh} 

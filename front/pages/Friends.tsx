@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, Image, TouchableOpacity, Pressable } from 'react-native';
 import { colors } from '../assets/colors.tsx'
 import React, { useContext, useEffect, useState } from 'react';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
@@ -12,9 +12,10 @@ import { AuthContext } from "../store/auth-context.tsx";
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { createAlertMessage } from '../util/alert.tsx';
+import { removeToken } from '../util/encryptedStorage.tsx';
 
 
-const Friends = () => {
+const Friends = (navigation: any) => {
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
 
@@ -55,12 +56,12 @@ const Friends = () => {
    * @returns React.ReactNode
    */
   function renderItem({id, type, source}: any,
-    containerStyle: StyleProp<ViewStyle>) {
-      return (
-        <ImageWithIconOverlay
-          source={source} borderRadius={0} key={id}
-          containerStyle={containerStyle}/>
-      );
+  containerStyle: StyleProp<ViewStyle>) {
+    return (
+      <ImageWithIconOverlay
+        source={source} borderRadius={0} key={id}
+        containerStyle={containerStyle}/>
+    );
   }
 
   const tryGetBasicInfo = async () => {
@@ -106,7 +107,10 @@ const Friends = () => {
   }, [])
 
   const cardView = ({imageUrl, id}: any) =>
-    <TouchableOpacity key={id} style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 6}} onPress={() => console.log(id)}>
+    <TouchableOpacity key={id} style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 6}} 
+      onPress={() => {
+        console.log(id);
+      }}>
       <Image source={{uri: imageUrl}} width={150} height={150}/>
     </TouchableOpacity>;
 
@@ -117,8 +121,14 @@ const Friends = () => {
 
   const categoriesText = [["음식", "맛집 탐방 같이 하실 분"], ["운동", "헬스 함께 해요"], ["영화", "듄 함께 보실 분~"], ["자유", "수다 떠실 분"], ["연애", "고민 상담 해주세요"], ["음악", "음악 추천 드립니다"], ["공부", "같이 카공하실 분"]];
 
+  const handleLogout = async () => {
+    await removeToken('accessToken');
+    await removeToken('refreshToken');
+  }
+
   return (
     <>
+      <Pressable onPress={handleLogout}><Text>로그아웃</Text></Pressable>
       <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
         {/* 이미지 슬라이더 */}
         <CarouselSlider

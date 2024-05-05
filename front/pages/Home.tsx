@@ -150,10 +150,18 @@ const Home = ({ navigation }: any) => {
       console.log("마스크 이미지 로딩 끝");
 
       if (isFaceInfoResponse(faceInfoResponse)) {
-        console.log("마스크 이미지 있음");
-        setUserState(prevState => {
-          return { ...prevState, faceinfo: "EXIST" };
-        });
+        if (faceInfoResponse.generatedS3Url !== "https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-profile.png") {
+          console.log("마스크 이미지 있음");
+          setUserState(prevState => {
+            return { ...prevState, faceinfo: "EXIST" };
+          });
+        }
+        else {
+          console.log("마스크 이미지 없음");
+          setUserState(prevState => {
+            return { ...prevState, faceinfo: "NOT_EXIST" };
+          });
+        }
       } else {
         console.log("마스크 이미지 없음");
         setUserState(prevState => {

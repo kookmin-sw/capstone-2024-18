@@ -1,15 +1,18 @@
-import React, { createContext, useState, useEffect, useMemo} from 'react';
+import React, { createContext, useState, useEffect, useMemo, useContext} from 'react';
 import { saveChatHistory, loadChatHistory } from '../util/encryptedStorage';
 import Config from 'react-native-config';
 
 import { io } from 'socket.io-client';
+import StompJs from '@stomp/stompjs';
+
 import { ChatProps } from '../components/chat/Chat';
 import { errorResponse, validResponse } from '../util/auth';
 import axios from 'axios';
+import { AuthContext } from './auth-context';
+
 
 const SOCKET_URL = Config.SOCKET_URL;
 const UUID = "0";
-
 interface ChatContextType {
   chats: ChatProps[];
   setChats: (chats: ChatProps[]) => void;
@@ -113,46 +116,75 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     setChats(chatHistory ? chatHistory as ChatProps[] : []);
   }
 
-  useEffect(() => {
-    const loadChat = async () => { 
-      try { 
-          console.log("채팅 로딩 시도");
-          await handleLoadChatHistory();
-          console.log("채팅 로딩 성공");
-      } catch (error) { 
-          console.error('채팅 로딩 실패:', error); 
-      } 
-    }
-    loadChat();
-  }, [])
+  // useEffect(() => {
+  //   const loadChat = async () => { 
+  //     try { 
+  //         console.log("채팅 로딩 시도");
+  //         await handleLoadChatHistory();
+  //         console.log("채팅 로딩 성공");
+  //     } catch (error) { 
+  //         console.error('채팅 로딩 실패:', error); 
+  //     } 
+  //   }
+  //   loadChat();
+  // }, [])
 
-  useEffect(() => {
-    if (SOCKET_URL) {
-      const socket = io(SOCKET_URL, {
-        transports: ['websocket'], 
-      });
+  // const authCtx = useContext(AuthContext);
+
+  // useEffect(() => {
+  //   const client = new StompJs.Client({
+  //     brokerURL: '/api/ws',
+  //     connectHeaders: {
+
+  //     },
+  //     debug: function (str) {
+  //       console.log(str);
+  //     },
+  //     reconnectDelay: 5000, //자동 재 연결
+  //     heartbeatIncoming: 4000,
+  //     heartbeatOutgoing: 4000,
+  //   });
+
+  //   client.onConnect = function (frame) {
+  //     console.log("연결됨");
+  //   };
+
+  //   client.onStompError = function (frame) {
+  //     console.log('Broker reported error: ' + frame.headers['message']);
+  //     console.log('Additional details: ' + frame.body);
+  //   };
+
+  //   client.activate();
+
+  //   return () => {
+  //     client.deactivate();
+  //   }
+    // if (SOCKET_URL) {
+    //   const socket = io(SOCKET_URL, {
+    //     transports: ['websocket'], 
+    //   });
   
-      console.log('소켓 통신 연결 시작');
-      socket.on('connect', () => {
-        console.log('소켓 통신 연결됨');
-      });
+    //   console.log('소켓 통신 연결 시작');
+    //   socket.on('connect', () => {
+    //     console.log('소켓 통신 연결됨');
+    //   });
   
-      socket.on('message', (newChat: ChatProps) => {
-        console.log('New chat:', newChat.message);
-        setChats([...chats, newChat]);
-      });
+    //   socket.on('message', (newChat: ChatProps) => {
+    //     console.log('New chat:', newChat.message);
+    //     setChats([...chats, newChat]);
+    //   });
   
-      if (sendingChat) {
-        const sendingData = { message: sendingChat.message, timestamp: sendingChat.timestamp, userId: sendingChat.uuid };
-        console.log(sendingData);
-        socket.emit('message', JSON.stringify(sendingData), setSendingChat(null));
-      }
+    //   if (sendingChat) {
+    //     const sendingData = { message: sendingChat.message, timestamp: sendingChat.timestamp, userId: sendingChat.uuid };
+    //     console.log(sendingData);
+    //     socket.emit('message', JSON.stringify(sendingData), setSendingChat(null));
+    //   }
       
-      return () => {
-        socket.disconnect();
-      };
-    }
-  }, [sendingChat]);
+    //   return () => {
+    //     socket.disconnect();
+    //   };
+    // }
+  // }, [sendingChat]);
   
   const value = useMemo(() => ({
     chats,
