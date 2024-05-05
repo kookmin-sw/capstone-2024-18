@@ -1,7 +1,9 @@
 package capstone.facefriend.resume.domain.dto;
 
+import java.util.List;
+
 public record ResumePostRequest(
-        String category,
+        List<String> categories,
         String content
 ) {
 }

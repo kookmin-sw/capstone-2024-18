@@ -23,8 +23,8 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     // 정적 쿼리
-    @PostMapping("/resume")
-    public ResponseEntity<ResumePutResponse> postResume(
+    @PostMapping("/my-resume")
+    public ResponseEntity<ResumePostPutResponse> postResume(
             @AuthMember Long memberId,
             @RequestPart("images") List<MultipartFile> images,
             @RequestPart("request") ResumePostRequest request
@@ -40,22 +40,27 @@ public class ResumeController {
         return ResponseEntity.ok(resumeService.getResume(memberId, resumeId));
     }
 
-    @PutMapping("/resume")
-    public ResponseEntity<ResumePutResponse> putResume(
+    @GetMapping("/my-resume")
+    public ResponseEntity<ResumeGetResponse> getMyResume(
+            @AuthMember Long memberId
+    ) {
+        return ResponseEntity.ok(resumeService.getMyResume(memberId));
+    }
+
+    @PutMapping("/my-resume")
+    public ResponseEntity<ResumePostPutResponse> putMyResume(
             @AuthMember Long memberId,
-            @RequestParam("resumeId") Long resumeId,
             @RequestPart("images") List<MultipartFile> images,
             @RequestPart("request") ResumePutRequest request
     ) throws IOException {
-        return ResponseEntity.ok(resumeService.putResume(memberId, resumeId, images, request));
+        return ResponseEntity.ok(resumeService.putResume(memberId, images, request));
     }
 
-    @DeleteMapping("/resume")
-    public ResponseEntity<ResumeDeleteResponse> deleteResume(
-            @AuthMember Long memberId,
-            @RequestParam("resumeId") Long resumeId
+    @DeleteMapping("/my-resume")
+    public ResponseEntity<ResumeDeleteResponse> deleteMyResume(
+            @AuthMember Long memberId
     ) {
-        return ResponseEntity.ok(resumeService.deleteResume(memberId, resumeId));
+        return ResponseEntity.ok(resumeService.deleteResume(memberId));
     }
 
     // 동적 쿼리
@@ -70,7 +75,7 @@ public class ResumeController {
     @GetMapping("/resume-by-category")
     public Page<ResumeHomeDetailResponse> getResumesByCategory(
             @AuthMember Long memberId,
-            @RequestParam String category,
+            @RequestParam("category") String category,
             Pageable pageable
     ) {
         return resumeService.getResumesByCategory(category, pageable);

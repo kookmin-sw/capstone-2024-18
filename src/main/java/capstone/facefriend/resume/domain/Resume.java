@@ -7,9 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 @Setter
@@ -36,9 +34,11 @@ public class Resume {
     @CollectionTable(name = "RESUME_IMAGE_S3_URLS", joinColumns = @JoinColumn(name = "RESUME_ID"))
     private List<String> resumeImageS3urls;
 
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "CATEGORIES", joinColumns = @JoinColumn(name = "RESUME_ID"))
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Category category;
+    private Set<Category> categories = new HashSet<>();
 
     private String content;
 

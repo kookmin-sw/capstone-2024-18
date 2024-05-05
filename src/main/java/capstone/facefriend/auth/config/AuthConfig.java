@@ -53,6 +53,7 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/face-info", ANY)
                 .addIncludePathPattern("/analysis-info", ANY)
                 .addIncludePathPattern("/resume", ANY)
+                .addIncludePathPattern("/my-resume", ANY)
                 .addIncludePathPattern("/resume-by-good-combi", ANY)
                 .addIncludePathPattern("/resume-by-category", ANY)
 
@@ -70,6 +71,7 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/face-info", ANY)
                 .addIncludePathPattern("/analysis-info/**", ANY)
                 .addIncludePathPattern("/resume", ANY)
+                .addIncludePathPattern("/my-resume", ANY)
                 .addIncludePathPattern("/resume-by-good-combi", ANY)
                 .addIncludePathPattern("/resume-by-category", ANY)
 
@@ -94,6 +96,7 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/face-info", ANY)
                 .addIncludePathPattern("/analysis-info/**", ANY)
                 .addIncludePathPattern("/resume", ANY)
+                .addIncludePathPattern("/my-resume", ANY)
                 .addIncludePathPattern("/resume-by-good-combi", ANY)
                 .addIncludePathPattern("/resume-by-category", ANY)
                 ;

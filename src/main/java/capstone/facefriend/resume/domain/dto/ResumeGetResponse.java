@@ -6,14 +6,18 @@ import capstone.facefriend.member.domain.faceInfo.FaceInfo;
 import capstone.facefriend.resume.domain.Resume;
 
 import java.util.List;
+import java.util.Set;
+
+import static capstone.facefriend.resume.domain.Resume.*;
 
 public record ResumeGetResponse(
         Long resumeId,
+        Long memberId,
         List<String> resumeImageS3urls,
         FaceInfo faceInfo,
         BasicInfo basicInfo,
         AnalysisInfo analysisInfo,
-        Resume.Category category,
+        Set<Category> category,
         String content,
         Boolean isMine
 ) {

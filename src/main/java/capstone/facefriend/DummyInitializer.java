@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -42,8 +44,128 @@ public class DummyInitializer {
 
         List<Integer> GOOD_COMBI = new ArrayList<>();
 
-        List<String> CATEGORY = List.of("FOOD", "WORKOUT", "MOVIE", "FASHION", "DATING", "STUDY", "ETC");
-        int size = CATEGORY.size();
+
+        List<List<String>> CATEGORY = List.of(
+                List.of("FOOD"),
+                List.of("WORKOUT"),
+                List.of("MOVIE"),
+                List.of("FASHION"),
+                List.of("DATING"),
+                List.of("STUDY"),
+                List.of("ETC"),
+                List.of("FOOD", "WORKOUT"),
+                List.of("FOOD", "MOVIE"),
+                List.of("FOOD", "FASHION"),
+                List.of("FOOD", "DATING"),
+                List.of("FOOD", "STUDY"),
+                List.of("FOOD", "ETC"),
+                List.of("WORKOUT", "MOVIE"),
+                List.of("WORKOUT", "FASHION"),
+                List.of("WORKOUT", "DATING"),
+                List.of("WORKOUT", "STUDY"),
+                List.of("WORKOUT", "ETC"),
+                List.of("MOVIE", "FASHION"),
+                List.of("MOVIE", "DATING"),
+                List.of("MOVIE", "STUDY"),
+                List.of("MOVIE", "ETC"),
+                List.of("FASHION", "DATING"),
+                List.of("FASHION", "STUDY"),
+                List.of("FASHION", "ETC"),
+                List.of("DATING", "STUDY"),
+                List.of("DATING", "ETC"),
+                List.of("STUDY", "ETC"),
+                List.of("FOOD", "WORKOUT", "MOVIE"),
+                List.of("FOOD", "WORKOUT", "FASHION"),
+                List.of("FOOD", "WORKOUT", "DATING"),
+                List.of("FOOD", "WORKOUT", "STUDY"),
+                List.of("FOOD", "WORKOUT", "ETC"),
+                List.of("FOOD", "MOVIE", "FASHION"),
+                List.of("FOOD", "MOVIE", "DATING"),
+                List.of("FOOD", "MOVIE", "STUDY"),
+                List.of("FOOD", "MOVIE", "ETC"),
+                List.of("FOOD", "FASHION", "DATING"),
+                List.of("FOOD", "FASHION", "STUDY"),
+                List.of("FOOD", "FASHION", "ETC"),
+                List.of("FOOD", "DATING", "STUDY"),
+                List.of("FOOD", "DATING", "ETC"),
+                List.of("FOOD", "STUDY", "ETC"),
+                List.of("WORKOUT", "MOVIE", "FASHION"),
+                List.of("WORKOUT", "MOVIE", "DATING"),
+                List.of("WORKOUT", "MOVIE", "STUDY"),
+                List.of("WORKOUT", "MOVIE", "ETC"),
+                List.of("WORKOUT", "FASHION", "DATING"),
+                List.of("WORKOUT", "FASHION", "STUDY"),
+                List.of("WORKOUT", "FASHION", "ETC"),
+                List.of("WORKOUT", "DATING", "STUDY"),
+                List.of("WORKOUT", "DATING", "ETC"),
+                List.of("WORKOUT", "STUDY", "ETC"),
+                List.of("MOVIE", "FASHION", "DATING"),
+                List.of("MOVIE", "FASHION", "STUDY"),
+                List.of("MOVIE", "FASHION", "ETC"),
+                List.of("MOVIE", "DATING", "STUDY"),
+                List.of("MOVIE", "DATING", "ETC"),
+                List.of("MOVIE", "STUDY", "ETC"),
+                List.of("FASHION", "DATING", "STUDY"),
+                List.of("FASHION", "DATING", "ETC"),
+                List.of("FASHION", "STUDY", "ETC"),
+                List.of("DATING", "STUDY", "ETC"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "FASHION"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "DATING"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "STUDY"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "ETC"),
+                List.of("FOOD", "WORKOUT", "FASHION", "DATING"),
+                List.of("FOOD", "WORKOUT", "FASHION", "STUDY"),
+                List.of("FOOD", "WORKOUT", "FASHION", "ETC"),
+                List.of("FOOD", "WORKOUT", "DATING", "STUDY"),
+                List.of("FOOD", "WORKOUT", "DATING", "ETC"),
+                List.of("FOOD", "WORKOUT", "STUDY", "ETC"),
+                List.of("FOOD", "MOVIE", "FASHION", "DATING"),
+                List.of("FOOD", "MOVIE", "FASHION", "STUDY"),
+                List.of("FOOD", "MOVIE", "FASHION", "ETC"),
+                List.of("FOOD", "MOVIE", "DATING", "STUDY"),
+                List.of("FOOD", "MOVIE", "DATING", "ETC"),
+                List.of("FOOD", "MOVIE", "STUDY", "ETC"),
+                List.of("FOOD", "FASHION", "DATING", "STUDY"),
+                List.of("FOOD", "FASHION", "DATING", "ETC"),
+                List.of("FOOD", "FASHION", "STUDY", "ETC"),
+                List.of("FOOD", "DATING", "STUDY", "ETC"),
+                List.of("WORKOUT", "MOVIE", "FASHION", "DATING"),
+                List.of("WORKOUT", "MOVIE", "FASHION", "STUDY"),
+                List.of("WORKOUT", "MOVIE", "FASHION", "ETC"),
+                List.of("WORKOUT", "MOVIE", "DATING", "STUDY"),
+                List.of("WORKOUT", "MOVIE", "DATING", "ETC"),
+                List.of("WORKOUT", "MOVIE", "STUDY", "ETC"),
+                List.of("WORKOUT", "FASHION", "DATING", "STUDY"),
+                List.of("WORKOUT", "FASHION", "DATING", "ETC"),
+                List.of("WORKOUT", "FASHION", "STUDY", "ETC"),
+                List.of("WORKOUT", "DATING", "STUDY", "ETC"),
+                List.of("MOVIE", "FASHION", "DATING", "STUDY"),
+                List.of("MOVIE", "FASHION", "DATING", "ETC"),
+                List.of("MOVIE", "FASHION", "STUDY", "ETC"),
+                List.of("MOVIE", "DATING", "STUDY", "ETC"),
+                List.of("FASHION", "DATING", "STUDY", "ETC"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "FASHION", "DATING"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "FASHION", "STUDY"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "FASHION", "ETC"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "DATING", "STUDY"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "DATING", "ETC"),
+                List.of("FOOD", "WORKOUT", "MOVIE", "STUDY", "ETC"),
+                List.of("FOOD", "WORKOUT", "FASHION", "DATING", "STUDY"),
+                List.of("FOOD", "WORKOUT", "FASHION", "DATING", "ETC"),
+                List.of("FOOD", "WORKOUT", "FASHION", "STUDY", "ETC"),
+                List.of("FOOD", "WORKOUT", "DATING", "STUDY", "ETC"),
+                List.of("FOOD", "MOVIE", "FASHION", "DATING", "STUDY"),
+                List.of("FOOD", "MOVIE", "FASHION", "DATING", "ETC"),
+                List.of("FOOD", "MOVIE", "FASHION", "STUDY", "ETC"),
+                List.of("FOOD", "MOVIE", "DATING", "STUDY", "ETC"),
+                List.of("FOOD", "FASHION", "DATING", "STUDY", "ETC"),
+                List.of("WORKOUT", "MOVIE", "FASHION", "DATING", "STUDY"),
+                List.of("WORKOUT", "MOVIE", "FASHION", "DATING", "ETC"),
+                List.of("WORKOUT", "MOVIE", "FASHION", "STUDY", "ETC"),
+                List.of("WORKOUT", "MOVIE", "DATING", "STUDY", "ETC"),
+                List.of("WORKOUT", "FASHION", "DATING", "STUDY", "ETC"),
+                List.of("MOVIE", "FASHION", "DATING", "STUDY", "ETC")
+        );
 
         for (int i = 1; i <= 50; i++) {
             // 회원 가입
@@ -57,10 +179,12 @@ public class DummyInitializer {
 
             // 자기소개서
             Resume resume = Resume.builder()
-                    .category(Resume.Category.valueOf(CATEGORY.get(random.nextInt(size-1)))) // 카테고리 랜덤
+                    .categories(CATEGORY.get(random.nextInt(CATEGORY.size() - 1)).stream().map(str -> Resume.Category.valueOf(str)).collect(Collectors.toSet())) // 카테고리 랜던
                     .member(member)
                     .build();
             resumeRepository.save(resume);
+
+            // Resume.Category.valueOf(CATEGORY.get(random.nextInt(size-1))
         }
     }
 }

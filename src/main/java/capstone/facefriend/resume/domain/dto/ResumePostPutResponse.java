@@ -5,16 +5,18 @@ import capstone.facefriend.member.domain.basicInfo.BasicInfo;
 import capstone.facefriend.member.domain.faceInfo.FaceInfo;
 
 import java.util.List;
+import java.util.Set;
 
 import static capstone.facefriend.resume.domain.Resume.Category;
 
-public record ResumePutResponse(
+public record ResumePostPutResponse(
         Long resumeId,
+        Long memberId,
         List<String> resumeImageS3urls,
         FaceInfo faceInfo,
         BasicInfo basicInfo,
         AnalysisInfo analysisInfo,
-        Category category,
+        Set<Category> category,
         String content
 ) {
 }

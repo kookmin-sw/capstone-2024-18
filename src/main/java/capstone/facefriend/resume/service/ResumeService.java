@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 import static capstone.facefriend.resume.domain.Resume.Category;
@@ -36,7 +37,7 @@ public class ResumeService {
     private static final String DELETE_SUCCESS_MESSAGE = "자기소개서 삭제 완료!";
 
     // 정적 쿼리
-    public ResumePutResponse postResume(
+    public ResumePostPutResponse postResume(
             Long memberId,
             List<MultipartFile> images,
             ResumePostRequest request
@@ -56,18 +57,19 @@ public class ResumeService {
         Resume resume = Resume.builder()
                 .member(member)
                 .resumeImageS3urls(resumeImagesS3url)
-                .category(Category.valueOf(request.category()))
+                .categories(request.categories().stream().map(str -> Category.valueOf(str)).collect(Collectors.toSet()))
                 .content(request.content())
                 .build();
         resumeRepository.save(resume);
 
-        return new ResumePutResponse(
+        return new ResumePostPutResponse(
                 resume.getId(),
+                memberId,
                 resume.getResumeImageS3urls(),
                 resume.getMember().getFaceInfo(),
                 resume.getMember().getBasicInfo(),
                 resume.getMember().getAnalysisInfo(),
-                resume.getCategory(),
+                resume.getCategories(),
                 resume.getContent()
         );
     }
@@ -79,29 +81,46 @@ public class ResumeService {
         Resume resume = resumeRepository.findResumeById(resumeId)
                 .orElseThrow(() -> new ResumeException(NO_RESUME));
 
-        Member member = findMemberById(memberId);
-        Resume mine = findResumeByMember(member);
+        Member me = findMemberById(memberId);
+        Long mine = findResumeByMember(me).getId();
 
-        Boolean isMine;
-        if (mine.equals(resume)) isMine = Boolean.TRUE;
-        else isMine = Boolean.FALSE;
+        Boolean isMine = (resumeId == mine) ? Boolean.TRUE : Boolean.FALSE;
 
         return new ResumeGetResponse(
                 resume.getId(),
+                resume.getMember().getId(),
                 resume.getResumeImageS3urls(),
                 resume.getMember().getFaceInfo(),
                 resume.getMember().getBasicInfo(),
                 resume.getMember().getAnalysisInfo(),
-                resume.getCategory(),
+                resume.getCategories(),
                 resume.getContent(),
                 isMine
         );
     }
 
+    public ResumeGetResponse getMyResume(
+            Long memberId
+    ) {
+        Member member = findMemberById(memberId);
+        Resume mine = findResumeByMember(member);
+
+        return new ResumeGetResponse(
+                mine.getId(),
+                mine.getMember().getId(),
+                mine.getResumeImageS3urls(),
+                mine.getMember().getFaceInfo(),
+                mine.getMember().getBasicInfo(),
+                mine.getMember().getAnalysisInfo(),
+                mine.getCategories(),
+                mine.getContent(),
+                Boolean.TRUE
+        );
+    }
+
     @Transactional
-    public ResumePutResponse putResume(
+    public ResumePostPutResponse putResume(
             Long memberId,
-            Long resumeId,
             List<MultipartFile> images,
             ResumePutRequest request
     ) throws IOException {
@@ -109,41 +128,33 @@ public class ResumeService {
         Member me = findMemberById(memberId);
         Resume mine = findResumeByMember(me); // 영속 상태
 
-        if (resumeId != mine.getId()) {
-            throw new ResumeException(UNAUTHORIZED);
-        }
-
         List<String> resumeImageS3urls = bucketService.updateResumeImages(images, mine);
 
         mine.setResumeImageS3urls(resumeImageS3urls); // dirty check
-        mine.setCategory(Category.valueOf(request.category())); // // dirty check
+        mine.setCategories(request.categories().stream().map(str -> Category.valueOf(str)).collect(Collectors.toSet())); // // dirty check
         mine.setContent(request.content()); // // dirty check
 
-        return new ResumePutResponse(
+        return new ResumePostPutResponse(
                 mine.getId(),
+                memberId,
                 mine.getResumeImageS3urls(),
                 mine.getMember().getFaceInfo(),
                 mine.getMember().getBasicInfo(),
                 mine.getMember().getAnalysisInfo(),
-                mine.getCategory(),
+                mine.getCategories(),
                 mine.getContent()
         );
     }
 
     @Transactional
     public ResumeDeleteResponse deleteResume(
-            Long memberId,
-            Long resumeId
+            Long memberId
     ) {
         Member me = findMemberById(memberId);
         Resume mine = findResumeByMember(me);
 
-        if (resumeId != mine.getId()) { // if resumeId is not mine
-            throw new ResumeException(UNAUTHORIZED);
-        }
-
         bucketService.deleteResumeImages(mine);
-        resumeRepository.deleteResumeById(resumeId);
+        resumeRepository.deleteResumeById(mine.getId());
 
         return new ResumeDeleteResponse(DELETE_SUCCESS_MESSAGE);
     }

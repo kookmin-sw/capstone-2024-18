@@ -87,7 +87,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
                         resume.member.faceInfo.generatedS3url.as("thumbnailS3url")))
                 .from(resume)
                 .leftJoin(resume.member, QMember.member) // left join
-                .where(resume.category.eq(Resume.Category.valueOf(category)))
+                .where(resume.categories.contains(Resume.Category.valueOf(category)))
                 .orderBy(resume.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -97,7 +97,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
                 .select(resume)
                 .from(resume)
                 .leftJoin(resume.member, QMember.member) // left join
-                .where(resume.category.eq(Resume.Category.valueOf(category)))
+                .where(resume.categories.contains(Resume.Category.valueOf(category)))
                 .fetch()
                 .size();
 
