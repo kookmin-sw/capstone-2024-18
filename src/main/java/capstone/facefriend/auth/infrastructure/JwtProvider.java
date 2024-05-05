@@ -102,8 +102,9 @@ public class JwtProvider implements TokenProvider {
     @Override
     public Long extractId(String token) {
         try {
-            Claims claims = Jwts.parser()
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secret.getBytes())
+                    .build()
                     .parseClaimsJws(token)
                     .getBody();
             return claims.get("id", Long.class);
@@ -124,8 +125,9 @@ public class JwtProvider implements TokenProvider {
     @Override
     public Long extractIdIgnoringExpiration(String token) {
         try {
-            Claims claims = Jwts.parser()
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secret.getBytes())
+                    .build()
                     .parseClaimsJws(token)
                     .getBody();
             return claims.get("id", Long.class);
