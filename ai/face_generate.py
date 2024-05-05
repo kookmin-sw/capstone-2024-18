@@ -7,6 +7,7 @@ from PIL import Image
 import base64
 from face_maker.DualStyleGAN.style_transfer import *
 import io, glob
+from rembg import remove
 
 app = Flask(__name__)
 face_maker = StyleTransfer()
@@ -25,11 +26,14 @@ def generate_image():
     print('----------------------------------------\n')
 
     # 파일 저장 위치 만들기
-    file_path = request.values['user_id'] + '.jpeg'
+    file_path = request.values['user_id'] + '.png'
 
     # 파일 저장
-    request.files['image'].save(file_path)
-        
+    #request.files['image'].save(file_path)
+    
+    image = Image.open(request.files['image'])
+    image = remove(image)
+    image.save(file_path)
     # 관상 이미지 생성
     virtual_face = face_maker.generate(file_path, int(request.values['style_id']),weight=[1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
     
@@ -37,8 +41,9 @@ def generate_image():
     pil_virutal_face = Image.fromarray(virtual_face.astype('uint8'))
     file_object = io.BytesIO()
 
+    pil_virutal_face.save('result.png')
     # 이미지를 바이너리로 저장
-    pil_virutal_face.save(file_object, format='JPEG')
+    pil_virutal_face.save(file_object, format='PNG')
     image_binary = file_object.getvalue()
 
     response_data = {'image_binary':base64.b64encode(image_binary).decode('utf-8')}
