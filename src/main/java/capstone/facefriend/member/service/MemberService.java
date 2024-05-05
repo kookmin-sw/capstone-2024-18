@@ -16,6 +16,7 @@ import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.service.dto.member.FindEmailResponse;
 import capstone.facefriend.member.service.dto.member.SignInRequest;
 import capstone.facefriend.member.service.dto.member.SignUpRequest;
+import capstone.facefriend.member.service.dto.member.SignupResponse;
 import capstone.facefriend.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,7 +95,7 @@ public class MemberService {
     }
 
     @Transactional
-    public String signUp(SignUpRequest request) {
+    public SignupResponse signUp(SignUpRequest request) {
         String encodedPassword = passwordEncoder.encode(request.password());
 
         // 기본정보 초기값
@@ -139,7 +140,7 @@ public class MemberService {
                 .build();
         memberRepository.save(member);
 
-        return SIGN_UP_SUCCESS_MESSAGE;
+        return new SignupResponse(member.getId());
     }
 
     @Transactional
