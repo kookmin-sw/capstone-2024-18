@@ -36,6 +36,11 @@
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
+gradle/caches
+gradle/.tmp
+gradle/daemon
+gradle/jdks
+gradle/native
 
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,
@@ -291,3 +296,6 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,gradle,macos,windows,intellij+all
+
+application-dev.yml
+.env
