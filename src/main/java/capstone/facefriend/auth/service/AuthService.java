@@ -39,7 +39,7 @@ public class AuthService {
                 .orElseGet(() -> memberRepository.save(newMember));
 
         Long memberId = member.getId();
-        return new TokenResponse(getAccessToken(memberId), getRefreshToken(memberId));
+        return new TokenResponse(getAccessToken(memberId), getRefreshToken(memberId), memberId);
     }
 
     private String getAccessToken(Long memberId) {

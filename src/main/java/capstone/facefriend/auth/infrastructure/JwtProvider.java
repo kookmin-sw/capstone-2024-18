@@ -45,7 +45,7 @@ public class JwtProvider implements TokenProvider {
     public TokenResponse createTokens(Long memberId) {
         String accessToken = createAccessToken(memberId);
         String refreshToken = createRefreshToken(memberId);
-        return new TokenResponse(accessToken, refreshToken);
+        return new TokenResponse(accessToken, refreshToken, memberId);
     }
 
     @Override
