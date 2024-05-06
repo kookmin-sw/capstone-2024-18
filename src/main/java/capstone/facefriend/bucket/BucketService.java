@@ -1,14 +1,11 @@
 package capstone.facefriend.bucket;
 
 
-import capstone.facefriend.member.domain.faceInfo.FaceInfo;
-import capstone.facefriend.member.domain.faceInfo.FaceInfoRepository;
 import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.domain.member.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.exception.member.MemberExceptionType;
 import capstone.facefriend.member.multipartFile.ByteArrayMultipartFile;
-import capstone.facefriend.member.service.dto.faceInfo.FaceInfoResponse;
 import capstone.facefriend.resume.domain.Resume;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -127,14 +124,20 @@ public class BucketService {
     }
 
 
-
     // Resume : images 업로드
     public List<String> uploadResumeImages(
             List<MultipartFile> images
     ) throws IOException {
+
         List<String> resumeImageS3urls = new ArrayList<>();
 
         for (MultipartFile image : images) {
+
+            log.info("size = {}", image.getSize());
+            if (image.isEmpty() || image.getSize() == 0) {
+                return List.of();
+            }
+
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(image.getInputStream().available());
             metadata.setContentType(image.getContentType());

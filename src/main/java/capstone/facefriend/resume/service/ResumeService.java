@@ -37,20 +37,15 @@ public class ResumeService {
     private static final String DELETE_SUCCESS_MESSAGE = "자기소개서 삭제 완료!";
 
     // 정적 쿼리
-    public ResumePostPutResponse postResume(
+    public ResumePostPutResponse postMyResume(
             Long memberId,
             List<MultipartFile> images,
             ResumePostRequest request
     ) throws IOException {
 
-        if (images.size() == 0) {
-            throw new ResumeException(AT_LEAST_ONE_IMAGE);
-        }
-
-        Member member = findMemberById(memberId);
-        if (resumeRepository.findResumeByMember(member).isPresent()) {
-            throw new ResumeException(ALREADY_HAS_RESUME);
-        }
+        validateCategories(request.categories());
+        validateContent(request.content());
+        Member member = validateMemberHasResume(memberId);
 
         List<String> resumeImagesS3url = bucketService.uploadResumeImages(images);
 
@@ -119,11 +114,14 @@ public class ResumeService {
     }
 
     @Transactional
-    public ResumePostPutResponse putResume(
+    public ResumePostPutResponse putMyResume(
             Long memberId,
             List<MultipartFile> images,
             ResumePutRequest request
     ) throws IOException {
+
+        validateCategories(request.categories());
+        validateContent(request.content());
 
         Member me = findMemberById(memberId);
         Resume mine = findResumeByMember(me); // 영속 상태
@@ -147,7 +145,7 @@ public class ResumeService {
     }
 
     @Transactional
-    public ResumeDeleteResponse deleteResume(
+    public ResumeDeleteResponse deleteMyResume(
             Long memberId
     ) {
         Member me = findMemberById(memberId);
@@ -177,5 +175,25 @@ public class ResumeService {
     private Resume findResumeByMember(Member member) {
         return resumeRepository.findResumeByMember(member)
                 .orElseThrow(() -> new ResumeException(NO_RESUME));
+    }
+
+    private void validateContent(String content) {
+        if (content.trim().length() == 0 || content == null || content.isEmpty()) {
+            throw new ResumeException(MUST_FILL_CONTENT);
+        }
+    }
+
+    private void validateCategories(List<String> categories) {
+        if (categories.size() == 0 || categories == null || categories.isEmpty()) {
+            throw new ResumeException(MUST_SELECT_ONE_CATEGORY);
+        }
+    }
+
+    private Member validateMemberHasResume(Long memberId){
+        Member member = findMemberById(memberId);
+        if (resumeRepository.findResumeByMember(member).isPresent()) {
+            throw new ResumeException(ALREADY_HAS_RESUME);
+        }
+        return member;
     }
 }
