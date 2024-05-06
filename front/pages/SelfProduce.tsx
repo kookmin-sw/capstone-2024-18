@@ -147,7 +147,7 @@ const SelfProduce = () => {
   }))
 
   const [ categories, setCategories ] = useState(Object.keys(category).map((key, index) => {
-    return {id: index, text: category[key as keyof Category], selected: true}
+    return {id: index, text: category[key as keyof Category], selected: false}
   }))
   const [ essay, setEssay ] = useState('DEFAULT');
 
@@ -177,15 +177,18 @@ const SelfProduce = () => {
         await handleAddImageAtIndex(1, {id: uuidv4(), type: 'basic', source: {uri: response.faceInfo.originS3url}});
 
         // 카테고리 설정
-        response.category.forEach(selectedCategory => {
-          const newCategories = categories.map(_category => {
+        const newCategories = categories.map(_category => {
+          // response로 받은 선택된 카테고리면 selected true 설정
+          for (const selectedCategory of response.category) {
             if (_category.text === category[selectedCategory as keyof Category]) {
               return { ..._category, selected: true };
-            } 
-            return _category;
-          });
-          setCategories(newCategories);
-        })
+            }
+          }
+          // selected false 설정
+          return { ..._category, selected: false };
+        });
+        console.log(newCategories);
+        setCategories(newCategories);
 
         // 소개 설정
         setEssay(response.content);
