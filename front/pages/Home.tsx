@@ -3,7 +3,7 @@ import { View } from "react-native"
 import AutoHeightImage from 'react-native-auto-height-image';
 
 import { AuthContext } from '../store/auth-context.tsx';
-import { errorResponse, getAnalysisInfoFull, getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, isValidResponse } from "../util/auth";
+import { errorResponse, getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isValidResponse } from "../util/auth";
 import { createAlertMessage } from "../util/alert.tsx";
 import { useFocusEffect } from "@react-navigation/native";
 

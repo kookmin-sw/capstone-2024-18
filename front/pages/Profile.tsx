@@ -30,9 +30,9 @@ const Profile = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else {
-        setGeneratedS3Url(response.generatedS3Url);
+        setGeneratedS3Url(response.generatedS3url);
         setHaveGeneratedS3Url(true);
-        setOriginS3Url(response.originS3Url);
+        setOriginS3Url(response.originS3url);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");

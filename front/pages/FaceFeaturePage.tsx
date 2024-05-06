@@ -10,6 +10,7 @@ import { getFaceInfo, isAnalysisFullInfoResponse, isErrorResponse, isFaceInfoDef
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { IconButton } from 'react-native-paper';
+import CustomBackHandler from '../components/CustomBackHandler.tsx';
 
 const FaceFeaturePage = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
@@ -51,7 +52,7 @@ const FaceFeaturePage = ({navigation}: any) => {
       if (isFaceInfoDefaultResponse(response)) {
         setHaveGeneratedS3Url(false);
       } else if (isFaceInfoResponse(response)) {
-        setGeneratedS3Url(response.generatedS3Url);
+        setGeneratedS3Url(response.generatedS3url);
         setHaveGeneratedS3Url(true);
       }
     } else { // 실제에서는 절대 없는 예외 상황
@@ -70,7 +71,7 @@ const FaceFeaturePage = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else if (isFaceInfoDefaultResponse(response)) {
-        setGeneratedS3Url(response.generatedS3Url);
+        setGeneratedS3Url(response.generatedS3url);
         setHaveGeneratedS3Url(true);
       } else {
         setHaveGeneratedS3Url(false);
@@ -183,6 +184,7 @@ const FaceFeaturePage = ({navigation}: any) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <CustomBackHandler onBack={navigation.goBack}/>
       <IconText 
         icon={{source: 'chat-question', color: colors.gray7}} 
         containerStyle={styles.hintContainer}

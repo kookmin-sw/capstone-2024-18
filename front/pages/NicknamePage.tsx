@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, useWindowDimensions, Dimensions, KeyboardAvoidingView, ScrollView } from "react-native";
 import { Card, IconButton } from "react-native-paper";
 
 import IconText from "../components/IconText";
@@ -11,9 +11,11 @@ import { colors } from "../assets/colors";
 import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse, isValidResponse, putBasicInfo } from "../util/auth";
 import { createAlertMessage } from "../util/alert";
 import ImageWithIconOverlay from "../components/ImageWithIconOverlay";
+import CustomBackHandler from "../components/CustomBackHandler";
 
 const NicknamePage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
+  const height = Dimensions.get('window').height;
 
   const [nickname, setNickName] = useState('');
   const [nicknameState, setNickNameState] = useState("DEFAULT");
@@ -36,7 +38,7 @@ const NicknamePage = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else {
-        setGeneratedS3Url(response.generatedS3Url);
+        setGeneratedS3Url(response.generatedS3url);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
@@ -82,7 +84,9 @@ const NicknamePage = ({navigation}: any) => {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <KeyboardAvoidingView style={{flex: 1, minHeight: height}}>
+    <ScrollView style={{ height: height}}>
+      <CustomBackHandler onBack={navigation.goBack}/>
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Card style={styles.card}>
@@ -116,7 +120,8 @@ const NicknamePage = ({navigation}: any) => {
           >완료</CustomButton>
         </View>
       </View>
-    </SafeAreaView>
+    </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -127,12 +132,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white", 
     flex: 1, 
     paddingHorizontal: 32, 
+    height: '100%'
   },
   innerContainer: {
     paddingHorizontal: 8,
     alignItems: "center",
     width: "100%",
     flex: 1,
+    backgroundColor: 'red'
   },
   bottomContainer: {
     alignItems: "center",
