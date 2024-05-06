@@ -630,27 +630,21 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
 }
 
 // 2.
-export const getMyResume = async (accessToken: string): Promise<resumeResponse | errorResponse> => {
-  const method = "getMyResume";
-  const endpoint = `${LOCALHOST}/my-resume`;
+export const getOtherResume = async (accessToken: string, resumeId?: number): Promise<resumeResponse | errorResponse> => {
+  const method = "getResume";
+  const endpoint = `${LOCALHOST}/resume?resumeId=${resumeId}`;
   const config = { 
-    headers: { 
-      Authorization: 'Bearer ' + accessToken
-    }
+    headers: { Authorization: 'Bearer ' + accessToken }
   };
 
   try {
-    console.log("get 시도 시작")
     const response = await axios.get(endpoint, config);
-    console.log("get 완료", response);
-    const { resumeId, memberId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
-    console.log("자동 변환")
+    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
     const responseInfo = {
       method,
       status: response.status,
-      message: "자신의 자기소개서를 로딩했습니다.",
+      message: "타유저의 자기소개서를 로딩했습니다.",
       resumeId,
-      memberId, 
       resumeImageS3urls,
       faceInfo, 
       basicInfo, 
@@ -668,21 +662,24 @@ export const getMyResume = async (accessToken: string): Promise<resumeResponse |
 }
 
 // 3.
-export const getOtherResume = async (accessToken: string, resumeId?: number): Promise<resumeResponse | errorResponse> => {
-  const method = "getResume";
-  const endpoint = `${LOCALHOST}/resume?resumeId=${resumeId}`;
+export const getMyResume = async (accessToken: string): Promise<resumeResponse | errorResponse> => {
+  const method = "getMyResume";
+  const endpoint = `${LOCALHOST}/my-resume`;
   const config = { 
-    headers: { Authorization: 'Bearer ' + accessToken }
+    headers: { 
+      Authorization: 'Bearer ' + accessToken
+    }
   };
 
   try {
     const response = await axios.get(endpoint, config);
-    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
+    const { resumeId, memberId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
     const responseInfo = {
       method,
       status: response.status,
-      message: "타유저의 자기소개서를 로딩했습니다.",
+      message: "자신의 자기소개서를 로딩했습니다.",
       resumeId,
+      memberId, 
       resumeImageS3urls,
       faceInfo, 
       basicInfo, 
@@ -762,8 +759,57 @@ export const deleteMyResume = async (accessToken: string): Promise<validResponse
   }
 }
 
-// 6.
+// 노션에 있는 형태와 좀 다릅니다. 노션에 있는 건 안 쓰는 key도 많고, 중복도 있는 것 같아, 쓸 것 같은 key만 일단 넣었습니다. 
+interface resumesResponse extends validResponse {
+  number: number, // 현재 페이지
+  totalPages: number, // 전체 페이지
+  totalElements: number, // 총 객체 갯수
+  size: number, // 한 페이지에 들어간 객체의 갯수
+  first: boolean,
+  last: boolean,
+  content: [ 
+    {
+      resumeId: number,
+      thumbnailS3url: string
+    }
+  ],
+  pageable: {
+    offset: number, // 건너 뛴 객체의 갯수(page * size)
+    pageNumber: number, // 현재 페이지
+    pageSize: number // 한 페이지에 들어간 객체의 갯수
+  },
+}
 
+// 6.
+export const getGoodCombi = async (accessToken: string, page: number, size: number): Promise<resumeResponse | errorResponse> => {
+  const method = "getGoodCombi";
+  const endpoint = `${LOCALHOST}/resume-by-good-combi?page=${page}&size=${size}`;
+  const config = { 
+    headers: { 
+      Authorization: 'Bearer ' + accessToken
+    }
+  };
+
+  try {
+    const response = await axios.get(endpoint, config);
+    const { pageable, totalPages, content } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "자신의 자기소개서를 로딩했습니다.",
+      pageNumber: pageable.pageNumber,
+      totalPages,
+      pageSize: pageable.pageSize,
+      content, 
+      offset: pageable.offset,
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
 
 export const isValidResponse = (response: validResponse | errorResponse): response is validResponse => {
   const validStatus = [200, 201, 202, 203, 204, 205, 206];
@@ -804,4 +850,8 @@ export const isAnalysisShortInfoResponse = (response: validResponse | errorRespo
 
 export const isResumeResponse = (response: validResponse | errorResponse): response is resumeResponse => {
   return (response as resumeResponse).resumeId !== undefined;
+}
+
+export const isResumesResponse = (response: validResponse | errorResponse): response is resumesResponse => {
+  return (response as resumesResponse).size !== undefined;
 }
