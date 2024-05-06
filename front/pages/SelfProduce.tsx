@@ -182,9 +182,7 @@ const SelfProduce = () => {
             if (_category.text === category[selectedCategory as keyof Category]) {
               return { ..._category, selected: true };
             } 
-            else {
-              return { ..._category, selected: false };
-            }
+            return _category;
           });
           setCategories(newCategories);
         })
