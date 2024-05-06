@@ -24,12 +24,12 @@ public class ResumeController {
 
     // 정적 쿼리
     @PostMapping("/my-resume")
-    public ResponseEntity<ResumePostPutResponse> postResume(
+    public ResponseEntity<ResumePostPutResponse> postMyResume(
             @AuthMember Long memberId,
             @RequestPart("images") List<MultipartFile> images,
             @RequestPart("request") ResumePostRequest request
     ) throws IOException {
-        return ResponseEntity.ok(resumeService.postResume(memberId, images, request));
+        return ResponseEntity.ok(resumeService.postMyResume(memberId, images, request));
     }
 
     @GetMapping("/resume")
@@ -53,14 +53,14 @@ public class ResumeController {
             @RequestPart("images") List<MultipartFile> images,
             @RequestPart("request") ResumePutRequest request
     ) throws IOException {
-        return ResponseEntity.ok(resumeService.putResume(memberId, images, request));
+        return ResponseEntity.ok(resumeService.putMyResume(memberId, images, request));
     }
 
     @DeleteMapping("/my-resume")
     public ResponseEntity<ResumeDeleteResponse> deleteMyResume(
             @AuthMember Long memberId
     ) {
-        return ResponseEntity.ok(resumeService.deleteResume(memberId));
+        return ResponseEntity.ok(resumeService.deleteMyResume(memberId));
     }
 
     // 동적 쿼리
