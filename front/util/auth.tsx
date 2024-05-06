@@ -1,6 +1,8 @@
 import axios from 'axios';
 import RNFS from 'react-native-fs';
 import Config from 'react-native-config';
+import { Category } from './categoryFormat';
+import { useState } from 'react';
 
 const LOCALHOST = Config.LOCALHOST;
 
@@ -38,13 +40,15 @@ export const handleError = (error: unknown, method: string): errorResponse => {
 
     // 요청이 전송되었고, 서버는 2xx 외의 상태 코드로 응답했습니다.
     if (error.response) {
+      console.log(error.response)
       const httpErrorCode = error.response.status;
       const errorDetails = error.response?.data ? { ...error.response.data } : {};  
       
       errorInfo = {
         method,
         status: httpErrorCode,
-        message: toString(errorDetails), // exceptionCode, message
+        message: errorDetails.message,
+        exceptionCode: errorDetails.exceptionCode,
       };
     }
 
@@ -84,7 +88,7 @@ export const handleError = (error: unknown, method: string): errorResponse => {
     }
   }
   
-  console.log("handleError:", JSON.stringify(error));
+  console.log("handleError:", JSON.stringify(errorInfo));
   return errorInfo;
 }
 
@@ -326,11 +330,11 @@ export const putBasicInfo = async (
 }
 
 interface faceInfoResponse extends validResponse {
-  originS3Url: string,
-  generatedS3Url: string
+  originS3url: string,
+  generatedS3url: string
 }
 
-// 14.
+// 15.
 export const getFaceInfo = async (accessToken: string): Promise<faceInfoResponse | errorResponse> => {
   const method = "getFaceInfo";
   const endpoint =  `${LOCALHOST}/face-info`;
@@ -339,13 +343,13 @@ export const getFaceInfo = async (accessToken: string): Promise<faceInfoResponse
   };
   try {
     const response = await axios.get(endpoint, config);
-    const { originS3Url, generatedS3Url } = response.data;
+    const { originS3url, generatedS3url } = response.data;
     const responseInfo = {
       method,
       status: response.status,
       message: "관상 이미지를 로드했습니다.",
-      originS3Url, 
-      generatedS3Url
+      originS3url, 
+      generatedS3url
     }
     console.log(responseInfo);
     return responseInfo;
@@ -369,7 +373,7 @@ const getMimeTypeFromExtension = (extension: string | undefined) => {
   }
 };
 
-// 16.
+// 17.
 export const putFaceInfo = async (accessToken: string, fileUri: string, styleId: number): Promise<faceInfoResponse | errorResponse> => {
   // 파일의 확장자를 추출
   const extension = fileUri.split('.').pop()?.toLowerCase();
@@ -410,21 +414,22 @@ export const putFaceInfo = async (accessToken: string, fileUri: string, styleId:
   }
 }
 
-// 14.
-export const getAnalysisInfoFull = async (accessToken: string): Promise<faceInfoResponse | errorResponse> => {
-  const method = "getAnalysisInfoFull";
-  const endpoint =  `${LOCALHOST}/analysis-info/full`;
+// 18.
+export const deleteFaceInfo = async (accessToken: string): Promise<faceInfoResponse | errorResponse> => {
+  const method = "deleteFaceInfo";
+  const endpoint =  `${LOCALHOST}/face-info`;
   const config = { 
     headers: { Authorization: 'Bearer ' + accessToken } 
   };
   try {
-    const response = await axios.get(endpoint, config);
-    const { analysisFull } = response.data;
+    const response = await axios.delete(endpoint, config);
+    const { originS3url, generatedS3url } = response.data;
     const responseInfo = {
       method,
       status: response.status,
-      message: "관상 분석을 로드했습니다.",
-      analysisFull
+      message: "관상 이미지를 초기화했습니다.",
+      originS3url, 
+      generatedS3url
     }
     console.log(responseInfo);
     return responseInfo;
@@ -439,9 +444,10 @@ interface analysisResponse extends validResponse {
   analysisFull: {string: string};
 }
 
-export const getAnalysisInfo = async (accessToken: string): Promise<faceInfoResponse | errorResponse> => {
+// 19.
+export const getAnalysisInfo = async (accessToken: string): Promise<analysisResponse | errorResponse> => {
   const method = "getAnalysisInfo";
-  const endpoint =  `${LOCALHOST}/analysis-info`;
+  const endpoint =  `${LOCALHOST}/analysis-info/full-short`;
   const config = { 
     headers: { Authorization: 'Bearer ' + accessToken } 
   };
@@ -463,32 +469,8 @@ export const getAnalysisInfo = async (accessToken: string): Promise<faceInfoResp
   }
 }
 
-// 14.
-export const getAnalysisInfoShort = async (accessToken: string): Promise<faceInfoResponse | errorResponse> => {
-  const method = "getAnalysisInfoShort";
-  const endpoint =  `${LOCALHOST}/analysis-info/short`;
-  const config = { 
-    headers: { Authorization: 'Bearer ' + accessToken } 
-  };
-  try {
-    const response = await axios.get(endpoint, config);
-    const { analysisShort } = response.data;
-    const responseInfo = {
-      method,
-      status: response.status,
-      message: "관상 분석을 로드했습니다.",
-      analysisShort
-    }
-    console.log(responseInfo);
-    return responseInfo;
-  }
-  catch (error) {
-    return handleError(error, method);
-  }
-}
-
-// 16.
-export const putAnalysisInfo = async (accessToken: string, fileUri: string): Promise<faceInfoResponse | errorResponse> => {
+// 20.
+export const putAnalysisInfo = async (accessToken: string, fileUri: string): Promise<analysisResponse | errorResponse> => {
   // 파일의 확장자를 추출
   const extension = fileUri.split('.').pop()?.toLowerCase();
   // 파일(이미지)의 타입을 결정
@@ -502,7 +484,7 @@ export const putAnalysisInfo = async (accessToken: string, fileUri: string): Pro
     type: mimeType,
   });
 
-  const method = "putAnalysisInfoFull";
+  const method = "putAnalysisInfo";
   const endpoint = `${LOCALHOST}/analysis-info`;
   const config = { 
     headers: { 
@@ -527,8 +509,265 @@ export const putAnalysisInfo = async (accessToken: string, fileUri: string): Pro
   }
 }
 
+// 21.
+export const getAnalysisInfoFull = async (accessToken: string): Promise<analysisResponse | errorResponse> => {
+  const method = "getAnalysisInfoFull";
+  const endpoint =  `${LOCALHOST}/analysis-info/full`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken } 
+  };
+  try {
+    const response = await axios.get(endpoint, config);
+    const { analysisFull } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "관상 분석을 로드했습니다.",
+      analysisFull
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 22.
+export const getAnalysisInfoShort = async (accessToken: string): Promise<analysisResponse | errorResponse> => {
+  const method = "getAnalysisInfoShort";
+  const endpoint =  `${LOCALHOST}/analysis-info/short`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken } 
+  };
+  try {
+    const response = await axios.get(endpoint, config);
+    const { analysisShort } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "관상 분석을 로드했습니다.",
+      analysisShort
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+interface resumeResponse extends validResponse {
+  resumeId: number,
+  memberId: number,
+  resumeImageS3urls: string[],
+  faceInfo: {
+    id: number
+  } & faceInfoResponse,
+  basicInfo: {
+    id: number
+  } & basicInfoResponse,
+  analysisInfo: {
+    id: number, 
+    faceShapeIdNum: number,
+  } & analysisResponse,
+  category: string[],
+  content: string,
+  isMine: boolean
+}
+
+// 1.
+export const postMyResume = async (accessToken: string): Promise<resumeResponse | errorResponse> => {
+  const method = "postMyResume";
+  const endpoint = `${LOCALHOST}/my-resume`;
+  const config = { 
+    headers: { 
+      Authorization: 'Bearer ' + accessToken,
+      'Content-Type': 'multipart/form-data',
+    }
+  };
+  const formData = new FormData();
+  const [test, useTest] = useState([]);
+
+  test.forEach((file, index) => {
+    formData.append(`images[${index}]`, file);
+  });
+  formData.append('request', 
+    new Blob(
+      [JSON.stringify({
+        'category': [
+          'MOVIE' as keyof Category
+        ], 
+        'content': ''
+      })], {type: "application/json", lastModified: Date.now()}
+    ));
+
+  console.log(config, formData);
+
+  try {
+    const response = await axios.post(endpoint, formData, config);
+    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "자신의 자기소개서를 업로드했습니다.",
+      resumeId,
+      resumeImageS3urls,
+      faceInfo, 
+      basicInfo, 
+      analysisInfo, 
+      category, 
+      content,
+      isMine
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    console.log(error);
+    return handleError(error, method);
+  }
+}
+
+// 2.
+export const getMyResume = async (accessToken: string): Promise<resumeResponse | errorResponse> => {
+  const method = "getMyResume";
+  const endpoint = `${LOCALHOST}/my-resume`;
+  const config = { 
+    headers: { 
+      Authorization: 'Bearer ' + accessToken
+    }
+  };
+
+  try {
+    console.log("get 시도 시작")
+    const response = await axios.get(endpoint, config);
+    console.log("get 완료", response);
+    const { resumeId, memberId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
+    console.log("자동 변환")
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "자신의 자기소개서를 로딩했습니다.",
+      resumeId,
+      memberId, 
+      resumeImageS3urls,
+      faceInfo, 
+      basicInfo, 
+      analysisInfo, 
+      category, 
+      content,
+      isMine
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 3.
+export const getOtherResume = async (accessToken: string, resumeId?: number): Promise<resumeResponse | errorResponse> => {
+  const method = "getResume";
+  const endpoint = `${LOCALHOST}/resume?resumeId=${resumeId}`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken }
+  };
+
+  try {
+    const response = await axios.get(endpoint, config);
+    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "타유저의 자기소개서를 로딩했습니다.",
+      resumeId,
+      resumeImageS3urls,
+      faceInfo, 
+      basicInfo, 
+      analysisInfo, 
+      category, 
+      content,
+      isMine
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 4.
+export const putResume = async (accessToken: string, resumeId: number, category: string[], content: string): Promise<resumeResponse | errorResponse> => {
+  const method = "putResume";
+  const endpoint = `${LOCALHOST}/resume?resumeId=${resumeId}`;
+  const config = { 
+    headers: { 
+      Authorization: 'Bearer ' + accessToken,
+      'Content-Type': 'multipart/form-data',
+    }
+  };
+  const body = new FormData();
+  body.append('request', {
+    'category': category, 
+    'content': content}
+  );
+
+  try {
+    const response = await axios.put(endpoint, body, config);
+    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "자기소개서를 수정했습니다.",
+      resumeId,
+      resumeImageS3urls,
+      faceInfo, 
+      basicInfo, 
+      analysisInfo, 
+      category, 
+      content
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 5.
+export const deleteMyResume = async (accessToken: string): Promise<validResponse | errorResponse> => {
+  const method = "deleteResume";
+  const endpoint = `${LOCALHOST}/my-resume`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken}
+  };
+
+  try {
+    const response = await axios.delete(endpoint, config);
+    const { message } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: message,
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 6.
+
+
 export const isValidResponse = (response: validResponse | errorResponse): response is validResponse => {
-  return (response as errorResponse).exceptionCode === undefined;
+  const validStatus = [200, 201, 202, 203, 204, 205, 206];
+  return validStatus.includes(response.status)
 }
 
 export const isErrorResponse = (response: validResponse | errorResponse): response is errorResponse => {
@@ -544,11 +783,11 @@ export const isBasicInfoResponse = (response: validResponse | errorResponse): re
 }
 
 export const isFaceInfoResponse = (response: validResponse | errorResponse): response is faceInfoResponse => {
-  return (response as faceInfoResponse).generatedS3Url !== undefined;
+  return (response as faceInfoResponse).generatedS3url !== undefined;
 }
 
 export const isFaceInfoDefaultResponse = (response: validResponse | errorResponse): response is faceInfoResponse => {
-  return (response as faceInfoResponse).generatedS3Url === (response as faceInfoResponse).originS3Url;
+  return (response as faceInfoResponse).generatedS3url === (response as faceInfoResponse).originS3url;
 }
 
 export const isAnalysisInfoResponse = (response: validResponse | errorResponse): response is analysisResponse => {
@@ -560,5 +799,9 @@ export const isAnalysisFullInfoResponse = (response: validResponse | errorRespon
 }
 
 export const isAnalysisShortInfoResponse = (response: validResponse | errorResponse): response is analysisResponse => {
-  return (response as analysisResponse).analysisShort !== undefined;
+  return (response as analysisResponse).analysisShort[0] !== "관상 분석 태그가 없습니다!";
+}
+
+export const isResumeResponse = (response: validResponse | errorResponse): response is resumeResponse => {
+  return (response as resumeResponse).resumeId !== undefined;
 }

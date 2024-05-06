@@ -9,7 +9,7 @@ import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 
-import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { deleteMyResume, getMyResume, isErrorResponse, isResumeResponse, isValidResponse, postMyResume } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context";
 
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
@@ -17,6 +17,7 @@ import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { createAlertMessage } from '../util/alert.tsx';
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
+import { Category, category } from '../util/categoryFormat.tsx';
 
 
 const SelfProduce = () => {
@@ -24,7 +25,7 @@ const SelfProduce = () => {
   const authCtx = useContext(AuthContext);
 
   // 자기소개서가 있는지 확인 (현재는 auth 연결 아직 안함)
-  const [ haveSelfProduce, setHaveSelfProduce ] = useState(true);
+  const [ haveSelfProduce, setHaveSelfProduce ] = useState(false);
 
   // 자기소개서 삭제 관련 기능
   function deleteAlert() {
@@ -43,11 +44,17 @@ const SelfProduce = () => {
       ])
   }
 
-  function deleteSelfProduce() {
+  const deleteSelfProduce = async () => {
     // UI 상에서 자기소개 만들기
     setHaveSelfProduce(false);
 
     // 자기소개서 삭제하는 요청 전송
+    if (authCtx.accessToken) {
+      deleteMyResume(authCtx.accessToken)
+    } 
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
   }
 
   // 자기소개서 edit 기능 조절 변수
@@ -133,68 +140,104 @@ const SelfProduce = () => {
   }))
   const [nickname, setNickname] = useState('DEFAULT');
 
-  const createBasicInfo = async () => {
-    if (authCtx.accessToken) {
-      const response = await getBasicInfo(
-        authCtx.accessToken
-      );  
-      if (isBasicInfoResponse(response)) {
-        const newBasic = [ 
-          gender[response.gender as keyof Gender], 
-          ageGroup[response.ageGroup as keyof AgeGroup] + ageDegree[response.ageDegree as keyof AgeDegree], 
-          heightGroup[response.heightGroup as keyof HeightGroup], 
-          '서울 ' + region['SEOUL'][response.region as keyof Region['SEOUL']]];
-        setBasic(newBasic.map((_basic, index) => {
-          return {id: index, text: _basic}
-        }))
-        setNickname(response.nickname);
-      }
-      if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
-      }
-    }
-    else {
-      console.log("로그인 정보가 없습니다.");
-    }
-  }
-
-  // 슬라이더의 1, 2 페이지에 관상 이미지 가져와서 display (사용자 변경 불가)
-  const createFaceImage = async () => {
-    if (authCtx.accessToken) {
-      const response = await getFaceInfo(
-        authCtx.accessToken
-      );  
-      if (isFaceInfoResponse(response)) {
-        await handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.generatedS3Url}});
-        await handleAddImageAtIndex(1, {id: uuidv4(), type: 'basic', source: {uri: response.originS3Url}});
-      }
-      if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
-      }
-    }
-    else {
-      console.log("로그인 정보가 없습니다.");
-    }
-  }
-
   // 관상 분석
   const _analysis = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
   const [ analysis, setAnalysis ] = useState(_analysis.map((_a, index)=> {
     return {id: index, text: _a};
   }))
 
-  const createAnalysisInfo = async () => {
+  const [ categories, setCategories ] = useState(Object.keys(category).map((key, index) => {
+    return {id: index, text: category[key as keyof Category], selected: true}
+  }))
+  const [ essay, setEssay ] = useState('DEFAULT');
+
+  const tryGetMyResume = async () => {
     if (authCtx.accessToken) {
-      const response = await getAnalysisInfoShort(
+      const response = await getMyResume(
         authCtx.accessToken
-      );  
-      if (isAnalysisShortInfoResponse(response)) {
-        setAnalysis(response.analysisShort.map((_analysis, index) => {
-          return {id: index, text: _analysis};
+      );
+      if (isResumeResponse(response)) {
+        console.log("??", response);
+        setHaveSelfProduce(true);
+
+        // 기본 정보 설정
+        const newBasic = [ 
+          gender[response.basicInfo.gender as keyof Gender], 
+          ageGroup[response.basicInfo.ageGroup as keyof AgeGroup] + ageDegree[response.basicInfo.ageDegree as keyof AgeDegree], 
+          heightGroup[response.basicInfo.heightGroup as keyof HeightGroup], 
+          '서울 ' + region['SEOUL'][response.basicInfo.region as keyof Region['SEOUL']]];
+        setBasic(newBasic.map((_basic, index) => {
+          return {id: index, text: _basic}
         }))
-      }
+        setNickname(response.basicInfo.nickname);
+
+        // faceInfo 설정
+        console.log(response.faceInfo);
+        await handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.faceInfo.generatedS3url}});
+        await handleAddImageAtIndex(1, {id: uuidv4(), type: 'basic', source: {uri: response.faceInfo.originS3url}});
+
+        // 카테고리 설정
+        response.category.forEach(selectedCategory => {
+          const newCategories = categories.map(_category => {
+            if (_category.text === category[selectedCategory as keyof Category]) {
+              return { ..._category, selected: true };
+            } 
+            else {
+              return { ..._category, selected: false };
+            }
+          });
+          setCategories(newCategories);
+        })
+
+        // 소개 설정
+        setEssay(response.content);
+
+        // face analysis 설정
+        // 왜인지 몰라도 코드를 카테고리 설정 위에 놓으면, 중간에 return 됨. 아니..기본 정보는 되면서...
+        setAnalysis(response.analysisInfo.analysisShort.map((_analysis, index) => {
+          return {id: index, text: _analysis}
+        }))
+      } 
+      if (isErrorResponse(response)) {
+        setHaveSelfProduce(false);
+      } 
+    }
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+  }
+
+  const createMyResume = async () => {
+    if (authCtx.accessToken) {
+      const response = await postMyResume(
+        authCtx.accessToken,
+      );  
+      if (isResumeResponse(response)) {
+        console.log("?", response);
+      } 
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
+      }
+    }
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+  }
+
+  const writeResume = () => {
+    setHaveSelfProduce(true);
+  };
+
+  const deleteResume = async () => {
+    if (authCtx.accessToken) {
+      const response = await deleteMyResume(
+        authCtx.accessToken
+      );
+      if (isValidResponse(response)) {
+        createAlertMessage(response.message, () => setHaveSelfProduce(false))
+      }
+      if (isErrorResponse(response)) {
+        console.log(response);
       }
     }
     else {
@@ -232,24 +275,10 @@ const SelfProduce = () => {
   }, [edit])
 
   useEffect(() => {
-    createBasicInfo();
-    createFaceImage();
-    createAnalysisInfo();
+    tryGetMyResume();
   }, [])
 
   // 아직 api 연동 못한 것 -> 나중에 default 등 처리 예정
-  const [ categories, setCategories ] = useState([
-    {id: 0, text: "운동", selected: true},
-    {id: 1, text: "음식", selected: false},
-    {id: 2, text: "영화", selected: false},
-    {id: 3, text: "패션", selected: true},
-    {id: 4, text: "공부", selected: true},
-    {id: 5, text: "연애", selected: true},
-    {id: 6, text: "음악", selected: true},
-    {id: 7, text: "자유", selected: true},
-  ])
-  const [ essay, setEssay ] = useState('안녕하세요! 저는 Anna 이에요!\n저는 서울 소재 대학교에서 4학년 재학 중인 Jenny에요!\n\n저는 평일에 학교 근처에서 복싱장을 같이 다닐 사람을 구하고 있어요! 혼자 다니면 금방 질려서 그만두게 되더라구요.\n복싱장을 다녀온 이후에는 가볍게 맥주 한잔 정도는 괜찮은 것 같아요!\n\n대화를 나눠보고 찐친이 될 가능성이 보인다면 AI 관상을 지울게요~~');
-
   // 특정 인덱스의 카테고리를 선택, 선택 취소
   function handleCategorySelect(changeIdx: number) {
     const nextCategory = categories.map((category) => {
@@ -281,7 +310,7 @@ const SelfProduce = () => {
         </View>
         <CustomButton 
           containerStyle={{backgroundColor: colors.point}}
-          onPress={()=>{setHaveSelfProduce(!haveSelfProduce)}}
+          onPress={createMyResume}
           textStyle={{color: colors.white}}>자기소개서 작성하기
         </CustomButton>
       </View>
