@@ -56,7 +56,7 @@ public class Resume {
         FASHION("패션"),
         DATING("연애"),
         MUSIC("음악"),
-        STUDY("영화"),
+        STUDY("공부"),
         ETC("기타");
 
         private final String value;
