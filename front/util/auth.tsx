@@ -663,7 +663,7 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
 }
 
 // 2.
-export const getOtherResume = async (accessToken: string, resumeId?: number): Promise<resumeResponse | errorResponse> => {
+export const getOtherResume = async (accessToken: string, resumeId: number): Promise<resumeResponse | errorResponse> => {
   const method = "getResume";
   const endpoint = `${LOCALHOST}/resume?resumeId=${resumeId}`;
   const config = { 

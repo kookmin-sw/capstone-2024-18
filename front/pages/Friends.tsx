@@ -16,7 +16,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { Category, category as categoryForm } from '../util/categoryFormat.tsx';
 
 
-const Friends = () => {
+const Friends = ({navigation}: any) => {
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
 
@@ -101,11 +101,6 @@ const Friends = () => {
       console.log("로그인 정보가 없습니다.");
     }
   }
-
-  const cardView = ({imageUrl, id}: any) =>
-    <TouchableOpacity key={id} style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 6}} onPress={() => console.log(id)}>
-      <Image source={{uri: imageUrl}} width={150} height={150}/>
-    </TouchableOpacity>;
 
   interface Content {
     resumeId: number;
@@ -197,7 +192,7 @@ const Friends = () => {
 
   const renderCardItem = ({item}: {item: Content}) => {{
     return (
-      <TouchableOpacity key={item.resumeId} style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 6}} onPress={() => console.log(item.resumeId)}>
+      <TouchableOpacity key={item.resumeId} style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 6}} onPress={() => navigation.navigate("OtherSelfProduce", {resumeId: item.resumeId})}>
         <Image source={{uri: item.thumbnailS3url}} width={150} height={150}/>
       </TouchableOpacity>);
   }}
