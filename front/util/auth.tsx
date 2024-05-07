@@ -44,7 +44,8 @@ export const handleError = (error: unknown, method: string): errorResponse => {
       errorInfo = {
         method,
         status: httpErrorCode,
-        message: toString(errorDetails), // exceptionCode, message
+        message: errorDetails.message,
+        exceptionCode: errorDetails.exceptionCode,
       };
     }
 
@@ -83,8 +84,8 @@ export const handleError = (error: unknown, method: string): errorResponse => {
       message: `${method}에서 처리할 수 없는 예상치 못한 에러 발생`,
     }
   }
-  
-  console.log("handleError:", JSON.stringify(error));
+    
+  console.log("handleError:", JSON.stringify(errorInfo));
   return errorInfo;
 }
 
@@ -412,7 +413,8 @@ export const putFaceInfo = async (accessToken: string, fileUri: string, styleId:
 }
 
 export const isValidResponse = (response: validResponse | errorResponse): response is validResponse => {
-  return (response as errorResponse).exceptionCode === undefined;
+  const validStatus = [200, 201, 202, 203, 204, 205, 206];
+  return validStatus.includes(response.status)
 }
 
 export const isErrorResponse = (response: validResponse | errorResponse): response is errorResponse => {
