@@ -1,7 +1,8 @@
 import axios from 'axios';
 import RNFS from 'react-native-fs';
+// import RNFetchBlob from 'rn-fetch-blob';
 import Config from 'react-native-config';
-import { Category } from './categoryFormat';
+import { Category, category as categoryFormat } from './categoryFormat';
 import { useState } from 'react';
 
 const LOCALHOST = Config.LOCALHOST;
@@ -40,7 +41,7 @@ export const handleError = (error: unknown, method: string): errorResponse => {
 
     // 요청이 전송되었고, 서버는 2xx 외의 상태 코드로 응답했습니다.
     if (error.response) {
-      console.log(error.response)
+      console.log(error)
       const httpErrorCode = error.response.status;
       const errorDetails = error.response?.data ? { ...error.response.data } : {};  
       
@@ -571,10 +572,20 @@ interface resumeResponse extends validResponse {
     id: number, 
     faceShapeIdNum: number,
   } & analysisResponse,
-  category: string[],
+  categories: string[],
   content: string,
   isMine: boolean
 }
+
+export const convertURLtoFile = async (url: string) => {
+  const response = await fetch(url);
+  const data = await response.blob();
+  const ext = url.split(".").pop(); // url 구조에 맞게 수정할 것
+  const filename = url.split("/").pop(); // url 구조에 맞게 수정할 것
+  const metadata = { type: `image/${ext}`, lastModified: Date.now() };
+  const file = new File([data], filename!, metadata)
+  return file;
+};
 
 // 1.
 export const postMyResume = async (accessToken: string): Promise<resumeResponse | errorResponse> => {
@@ -584,28 +595,51 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
     headers: { 
       Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'multipart/form-data',
-    }
+    },
   };
   const formData = new FormData();
-  const [test, useTest] = useState([]);
 
-  test.forEach((file, index) => {
-    formData.append(`images[${index}]`, file);
-  });
-  formData.append('request', 
-    new Blob(
-      [JSON.stringify({
-        'category': [
-          'MOVIE' as keyof Category
-        ], 
-        'content': ''
-      })], {type: "application/json", lastModified: Date.now()}
-    ));
+  const appendImg = async () => {
+    const exImgs = ['https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png', 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png'];
+    for (const [index, file] of exImgs.entries()) {
+      // const img = await convertURLtoFile(file);
+      // 파일의 확장자를 추출
+      const extension = file.split('.').pop()?.toLowerCase();
+      // 파일(이미지)의 타입을 결정
+      const mimeType = getMimeTypeFromExtension(extension);
+      
+      // FormData 객체를 생성합니다.
+      const img = {
+        uri: file,
+        name: `file.${extension}`,
+        type: mimeType,
+      }
+      console.log("img", img);
+
+      formData.append(`image${index+1}`, img);
+    };
+  }
+
+  const appendRequest = async () => {
+    const requestBlob = new Blob([JSON.stringify({
+      'categories': Object.keys(categoryFormat), 
+      'content': ''
+    })], {type: 'application/json', lastModified: Date.now()});
+  
+    formData.append('request', {
+      'categories': Object.keys(categoryFormat), 
+      'content': ''
+    });
+  }
+  
+  await appendImg();
+  await appendRequest();
 
   console.log(config, formData);
-
+        
   try {
     const response = await axios.post(endpoint, formData, config);
+    console.log(response);
     const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
     const responseInfo = {
       method,
@@ -624,7 +658,6 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
     return responseInfo;
   }
   catch (error) {
-    console.log(error);
     return handleError(error, method);
   }
 }
@@ -639,7 +672,7 @@ export const getOtherResume = async (accessToken: string, resumeId?: number): Pr
 
   try {
     const response = await axios.get(endpoint, config);
-    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
+    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, categories, content, isMine } = response.data;
     const responseInfo = {
       method,
       status: response.status,
@@ -649,7 +682,7 @@ export const getOtherResume = async (accessToken: string, resumeId?: number): Pr
       faceInfo, 
       basicInfo, 
       analysisInfo, 
-      category, 
+      categories, 
       content,
       isMine
     }
@@ -673,7 +706,7 @@ export const getMyResume = async (accessToken: string): Promise<resumeResponse |
 
   try {
     const response = await axios.get(endpoint, config);
-    const { resumeId, memberId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
+    const { resumeId, memberId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, categories, content, isMine } = response.data;
     const responseInfo = {
       method,
       status: response.status,
@@ -684,7 +717,7 @@ export const getMyResume = async (accessToken: string): Promise<resumeResponse |
       faceInfo, 
       basicInfo, 
       analysisInfo, 
-      category, 
+      categories, 
       content,
       isMine
     }
@@ -697,24 +730,47 @@ export const getMyResume = async (accessToken: string): Promise<resumeResponse |
 }
 
 // 4.
-export const putResume = async (accessToken: string, resumeId: number, category: string[], content: string): Promise<resumeResponse | errorResponse> => {
+export const putResume = async (accessToken: string, fileUris: string[], _category: string[], _content: string): Promise<resumeResponse | errorResponse> => {
   const method = "putResume";
-  const endpoint = `${LOCALHOST}/resume?resumeId=${resumeId}`;
+  const endpoint = `${LOCALHOST}/my-resume`;
   const config = { 
     headers: { 
       Authorization: 'Bearer ' + accessToken,
       'Content-Type': 'multipart/form-data',
-    }
+    },
   };
-  const body = new FormData();
-  body.append('request', {
-    'category': category, 
-    'content': content}
-  );
+
+  const formData = new FormData();
+
+  const images = fileUris.map((fileUri => {
+    // formData.append('images', convertURLtoFile(fileUri))
+    const tmp = convertURLtoFile(fileUri);
+    console.log("?", tmp);
+    return tmp
+  }))
+  const imageBlob = new Blob([JSON.stringify(
+    images
+  )], {type: 'multipart/form-data', lastModified: Date.now()});
+  
+  const requestBlob = new Blob([JSON.stringify({
+    'categories': _category, 
+    'content': _content
+  })]);
+
+  formData.append('images', imageBlob);
+  formData.append('request', requestBlob);
+
+  const body = {
+    images: imageBlob,
+    request: requestBlob
+  }
+
+  console.log(body)
 
   try {
-    const response = await axios.put(endpoint, body, config);
-    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content } = response.data;
+    const response = await axios.put(endpoint, formData, config);
+    console.log("response", response);
+    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, categories, content } = response.data;
     const responseInfo = {
       method,
       status: response.status,
@@ -724,10 +780,9 @@ export const putResume = async (accessToken: string, resumeId: number, category:
       faceInfo, 
       basicInfo, 
       analysisInfo, 
-      category, 
+      categories, 
       content
     }
-    console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
@@ -792,16 +847,49 @@ export const getGoodCombi = async (accessToken: string, page: number, size: numb
 
   try {
     const response = await axios.get(endpoint, config);
-    const { pageable, totalPages, content } = response.data;
+    const { pageable, totalPages, content, last } = response.data;
     const responseInfo = {
       method,
       status: response.status,
-      message: "자신의 자기소개서를 로딩했습니다.",
+      message: "잘 맞는 궁합 유저를 로딩했습니다.",
       pageNumber: pageable.pageNumber,
       totalPages,
       pageSize: pageable.pageSize,
       content, 
       offset: pageable.offset,
+      last,
+    }
+    console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
+// 7.
+export const getCategoryUser = async (accessToken: string, page: number, size: number, category: string): Promise<resumeResponse | errorResponse> => {
+  const method = "getGoodCombi";
+  const endpoint = `${LOCALHOST}/resume-by-category?page=${page}&size=${size}&category=${category}`;
+  const config = { 
+    headers: { 
+      Authorization: 'Bearer ' + accessToken
+    }
+  };
+
+  try {
+    const response = await axios.get(endpoint, config);
+    const { pageable, totalPages, content, last } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: `${category} 카테고리의 유저를 로딩했습니다.`,
+      pageNumber: pageable.pageNumber,
+      totalPages,
+      pageSize: pageable.pageSize,
+      content, 
+      offset: pageable.offset,
+      last,
     }
     console.log(responseInfo);
     return responseInfo;
@@ -853,5 +941,5 @@ export const isResumeResponse = (response: validResponse | errorResponse): respo
 }
 
 export const isResumesResponse = (response: validResponse | errorResponse): response is resumesResponse => {
-  return (response as resumesResponse).size !== undefined;
+  return (response as resumesResponse).content !== undefined;
 }

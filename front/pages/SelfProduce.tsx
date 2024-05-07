@@ -9,7 +9,7 @@ import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 
-import { deleteMyResume, getMyResume, isErrorResponse, isResumeResponse, isValidResponse, postMyResume } from '../util/auth.tsx';
+import { deleteMyResume, getMyResume, isErrorResponse, isResumeResponse, isValidResponse, postMyResume, putResume } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context";
 
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
@@ -45,12 +45,15 @@ const SelfProduce = () => {
   }
 
   const deleteSelfProduce = async () => {
-    // UI 상에서 자기소개 만들기
-    setHaveSelfProduce(false);
-
     // 자기소개서 삭제하는 요청 전송
     if (authCtx.accessToken) {
-      deleteMyResume(authCtx.accessToken)
+      const response = await deleteMyResume(authCtx.accessToken);
+      if (isValidResponse(response)) {
+        setHaveSelfProduce(false);
+      }
+      if (isErrorResponse(response)) {
+        createAlertMessage(response.message);
+      }
     } 
     else {
       console.log("로그인 정보가 없습니다.");
@@ -59,6 +62,26 @@ const SelfProduce = () => {
 
   // 자기소개서 edit 기능 조절 변수
   const [ edit, setEdit ] = useState(false);
+  const [ resumeId, setResumeId ] = useState(-1);
+
+  const handleEditButton = async () => {
+    if (edit) {
+      if (authCtx.accessToken) {
+        const response = putResume(
+          authCtx.accessToken, 
+          ['https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png', 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png'], 
+          ["MOVIE"],
+          essay
+        )
+        console.log(response);
+      }
+      
+      setEdit(false);
+    }
+    else {
+      setEdit(true);
+    }
+  }
 
   // CarouselSlider의 필수 파라미터, pageWidth, offset, gap 설정
   const width = Dimensions.get('window').width;
@@ -147,7 +170,7 @@ const SelfProduce = () => {
   }))
 
   const [ categories, setCategories ] = useState(Object.keys(category).map((key, index) => {
-    return {id: index, text: category[key as keyof Category], selected: false}
+    return {id: index, text: key as keyof Category, selected: false}
   }))
   const [ essay, setEssay ] = useState('DEFAULT');
 
@@ -180,7 +203,7 @@ const SelfProduce = () => {
         const newCategories = categories.map(_category => {
           // response로 받은 선택된 카테고리면 selected true 설정
           for (const selectedCategory of response.category) {
-            if (_category.text === category[selectedCategory as keyof Category]) {
+            if (_category.text === selectedCategory as keyof Category) {
               return { ..._category, selected: true };
             }
           }
@@ -192,6 +215,9 @@ const SelfProduce = () => {
 
         // 소개 설정
         setEssay(response.content);
+
+        // resume Id 저장
+        setResumeId(response.resumeId);
 
         // face analysis 설정
         // 왜인지 몰라도 코드를 카테고리 설정 위에 놓으면, 중간에 return 됨. 아니..기본 정보는 되면서...
@@ -416,7 +442,7 @@ const SelfProduce = () => {
                     }}
                     containerStyle={styles.uneditableTag} 
                     onPress={() => {handleCategorySelect(item.id)}}
-                    textStyle={styles.uneditableText} children={item.text}/>
+                    textStyle={styles.uneditableText} children={category[item.text]}/>
                 );
               })
             }
@@ -445,7 +471,7 @@ const SelfProduce = () => {
             </View>
             <View style={{width: edit ? "100%" : "50%"}}>
               <CustomButton 
-                containerStyle={{backgroundColor: colors.point, marginHorizontal: 5}} onPress={() => {setEdit(!edit)}}
+                containerStyle={{backgroundColor: colors.point, marginHorizontal: 5}} onPress={handleEditButton}
                 textStyle={{color: colors.white}}>
                 {edit ? "완료" : "수정하기"}
               </CustomButton>
