@@ -202,7 +202,7 @@ const SelfProduce = () => {
         // 카테고리 설정
         const newCategories = categories.map(_category => {
           // response로 받은 선택된 카테고리면 selected true 설정
-          for (const selectedCategory of response.category) {
+          for (const selectedCategory of response.categories) {
             if (_category.text === selectedCategory as keyof Category) {
               return { ..._category, selected: true };
             }
