@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,10 +24,10 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     // 정적 쿼리
-    @PostMapping("/my-resume")
+    @PostMapping(value = "/my-resume", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ResumePostPutResponse> postMyResume(
             @AuthMember Long memberId,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images,
+            @RequestPart(value = "images") List<MultipartFile> images,
             @RequestPart(value = "request") ResumePostRequest request
     ) throws IOException {
         return ResponseEntity.ok(resumeService.postMyResume(memberId, images, request));
@@ -47,7 +48,7 @@ public class ResumeController {
         return ResponseEntity.ok(resumeService.getMyResume(memberId));
     }
 
-    @PutMapping("/my-resume")
+    @PutMapping(value = "/my-resume", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ResumePostPutResponse> putMyResume(
             @AuthMember Long memberId,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
