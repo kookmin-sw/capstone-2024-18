@@ -1,21 +1,24 @@
 package capstone.facefriend.chat.service;
 
-import capstone.facefriend.chat.domain.ChatMessage;
-import capstone.facefriend.chat.domain.ChatRoom;
-import capstone.facefriend.chat.domain.ChatRoomMember;
+import capstone.facefriend.chat.domain.*;
+import capstone.facefriend.chat.exception.ChatException;
+import capstone.facefriend.chat.exception.ChatExceptionType;
 import capstone.facefriend.chat.repository.ChatMessageRepository;
+import capstone.facefriend.chat.repository.ChatRoomInfoRedisRepository;
 import capstone.facefriend.chat.repository.ChatRoomMemberRepository;
-import capstone.facefriend.chat.service.dto.chatroom.ChatRoomEmptyResponse;
-import capstone.facefriend.chat.service.dto.chatroom.ChatRoomHeartResponse;
-import capstone.facefriend.chat.service.dto.chatroom.ChatRoomMessageResponse;
-import capstone.facefriend.chat.service.dto.chatroom.ChatRoomOpenResponse;
+import capstone.facefriend.chat.service.dto.chatroom.*;
 import capstone.facefriend.chat.service.dto.heart.GetSendHeartResponse;
 import capstone.facefriend.member.domain.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +31,7 @@ public class ChatRoomService {
 
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomInfoRedisRepository chatRoomInfoRedisRepository;
     private static final String EMPTY_MESSAGE = "채팅을 시작하지 않았습니다.";
     private static final String OPEN_MESSAGE = "채팅을 시작해보세요!";
 
@@ -37,6 +41,13 @@ public class ChatRoomService {
 
     private List<ChatRoomMember> findAllChatRoomMemberByReceiverId(Long memberId) {
         return chatRoomMemberRepository.findAllByReceiverId(memberId).orElse(new ArrayList<>());
+    }
+
+    private ChatRoomInfo findChatRoomInfo(Long roomId, Long memberId) {
+        ChatRoomInfoId id = new ChatRoomInfoId(roomId, memberId);
+        ChatRoomInfo chatRoomInfo = chatRoomInfoRedisRepository.findById(id)
+                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+        return chatRoomInfo;
     }
 
     @Transactional
@@ -89,4 +100,22 @@ public class ChatRoomService {
 
         return chatRooms;
     }
+    public ChatRoomEnterResponse enterRoom(Long roomId, Long memberId) {
+        ChatRoomInfoId id = new ChatRoomInfoId(roomId, memberId);
+        ChatRoomInfo chatRoomInfo = new ChatRoomInfo();
+        chatRoomInfo.setId(id);
+        chatRoomInfo.setEnterTime(LocalDateTime.now());
+        chatRoomInfoRedisRepository.save(chatRoomInfo);
+        return ChatRoomEnterResponse.of(chatRoomInfo);
+    }
+
+
+    public ChatRoomExitResponse exitRoom(Long roomId, Long memberId) {
+        ChatRoomInfo chatRoomInfo = findChatRoomInfo(roomId, memberId);
+        chatRoomInfoRedisRepository.delete(chatRoomInfo);
+        LocalDateTime exitChatRoomTime = LocalDateTime.now();
+        return ChatRoomExitResponse.of(roomId, memberId, exitChatRoomTime);
+    }
+
+
 }
