@@ -31,19 +31,12 @@ public class DummyInitializer {
     private final MemberRepository memberRepository;
 
     private final AnalysisInfoRepository analysisInfoRepository;
-    private final AnalysisInfoService analysisInfoService;
-
-    private final ResumeService resumeService;
     private final ResumeRepository resumeRepository;
-
 
     @PostConstruct
     @Transactional
     public void init() {
         Random random = new Random();
-
-        List<Integer> GOOD_COMBI = new ArrayList<>();
-
 
         List<List<String>> CATEGORY = List.of(
                 List.of("FOOD"),
@@ -183,8 +176,6 @@ public class DummyInitializer {
                     .member(member)
                     .build();
             resumeRepository.save(resume);
-
-            // Resume.Category.valueOf(CATEGORY.get(random.nextInt(size-1))
         }
     }
 }

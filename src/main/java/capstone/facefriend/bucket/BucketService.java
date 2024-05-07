@@ -133,7 +133,6 @@ public class BucketService {
 
         for (MultipartFile image : images) {
 
-            log.info("size = {}", image.getSize());
             if (image.isEmpty() || image.getSize() == 0) {
                 return List.of();
             }
