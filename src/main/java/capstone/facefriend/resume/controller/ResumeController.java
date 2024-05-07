@@ -14,6 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -24,12 +27,20 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     // 정적 쿼리
-    @PostMapping(value = "/my-resume", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/my-resume")
     public ResponseEntity<ResumePostPutResponse> postMyResume(
             @AuthMember Long memberId,
-            @RequestPart(value = "images") List<MultipartFile> images,
+            @RequestPart(value = "image1", required = false) MultipartFile image1,
+            @RequestPart(value = "image2", required = false) MultipartFile image2,
+            @RequestPart(value = "image3", required = false) MultipartFile image3,
+            @RequestPart(value = "image4", required = false) MultipartFile image4,
+            @RequestPart(value = "image5", required = false) MultipartFile image5,
             @RequestPart(value = "request") ResumePostRequest request
     ) throws IOException {
+        List<MultipartFile> images = Stream.of(image1, image2, image3, image4, image5)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        log.info("size = {}", images.size());
         return ResponseEntity.ok(resumeService.postMyResume(memberId, images, request));
     }
 
@@ -51,9 +62,16 @@ public class ResumeController {
     @PutMapping(value = "/my-resume", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ResumePostPutResponse> putMyResume(
             @AuthMember Long memberId,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images,
+            @RequestPart(value = "image1", required = false) MultipartFile image1,
+            @RequestPart(value = "image2", required = false) MultipartFile image2,
+            @RequestPart(value = "image3", required = false) MultipartFile image3,
+            @RequestPart(value = "image4", required = false) MultipartFile image4,
+            @RequestPart(value = "image5", required = false) MultipartFile image5,
             @RequestPart(value = "request") ResumePutRequest request
     ) throws IOException {
+        List<MultipartFile> images = Stream.of(image1, image2, image3, image4, image5)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(resumeService.putMyResume(memberId, images, request));
     }
 
