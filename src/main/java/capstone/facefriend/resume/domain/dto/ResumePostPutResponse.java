@@ -16,7 +16,7 @@ public record ResumePostPutResponse(
         FaceInfo faceInfo,
         BasicInfo basicInfo,
         AnalysisInfo analysisInfo,
-        Set<Category> category,
+        Set<Category> categories,
         String content
 ) {
 }
