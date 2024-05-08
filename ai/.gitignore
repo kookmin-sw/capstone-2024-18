@@ -2,8 +2,6 @@
 /landmark_model/__pycache__
 /venv
 requirements.txt
-docker-compose.yml
-dockerfile
 _config.yml
 *.jpg
 *.pyc
