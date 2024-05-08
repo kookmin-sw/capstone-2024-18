@@ -42,7 +42,6 @@ public class ResumeService {
     ) throws IOException {
 
         validateCategories(request.categories());
-        validateContent(request.content());
         Member member = validateMemberHasResume(memberId);
 
         List<String> resumeImagesS3url = bucketService.uploadResumeImages(request.images());
@@ -118,7 +117,6 @@ public class ResumeService {
     ) throws IOException {
 
         validateCategories(request.categories());
-        validateContent(request.content());
 
         Member me = findMemberById(memberId);
         Resume mine = findResumeByMember(me); // 영속 상태
@@ -174,14 +172,8 @@ public class ResumeService {
                 .orElseThrow(() -> new ResumeException(NO_RESUME));
     }
 
-    private void validateContent(String content) {
-        if (content.trim().length() == 0 || content == null || content.isEmpty()) {
-            throw new ResumeException(MUST_FILL_CONTENT);
-        }
-    }
-
     private void validateCategories(List<String> categories) {
-        if (categories.size() == 0 || categories == null || categories.isEmpty()) {
+        if (categories == null || categories.size() == 0 || categories.isEmpty()) { // null validation 먼저
             throw new ResumeException(MUST_SELECT_ONE_CATEGORY);
         }
     }
