@@ -7,16 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Slf4j
@@ -30,10 +24,9 @@ public class ResumeController {
     @PostMapping(value = "/my-resume")
     public ResponseEntity<ResumePostPutResponse> postMyResume(
             @AuthMember Long memberId,
-            @RequestPart("images") List<MultipartFile> images,
-            @RequestPart("resumeRequest") ResumeRequest request
+            @ModelAttribute ResumePostPutRequest request
     ) throws IOException {
-        return ResponseEntity.ok(resumeService.postMyResume(memberId, images, request));
+        return ResponseEntity.ok(resumeService.postMyResume(memberId, request));
     }
 
     @GetMapping("/resume")
@@ -54,10 +47,9 @@ public class ResumeController {
     @PutMapping(value = "/my-resume")
     public ResponseEntity<ResumePostPutResponse> putMyResume(
             @AuthMember Long memberId,
-            @RequestPart("images") List<MultipartFile> images,
-            @RequestPart("resumeRequest") ResumeRequest request
+            @ModelAttribute ResumePostPutRequest request
     ) throws IOException {
-        return ResponseEntity.ok(resumeService.putMyResume(memberId, images, request));
+        return ResponseEntity.ok(resumeService.putMyResume(memberId, request));
     }
 
     @DeleteMapping("/my-resume")
