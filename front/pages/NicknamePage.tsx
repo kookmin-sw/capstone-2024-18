@@ -18,7 +18,7 @@ const NicknamePage = ({navigation}: any) => {
   const [nickname, setNickName] = useState('');
   const [nicknameState, setNickNameState] = useState("DEFAULT");
 
-  const [ generatedS3Url, setGeneratedS3Url ] = useState('');
+  const [ generatedS3url, setgeneratedS3url ] = useState('');
 
   const handleNicknameOnChange = (value: string) => {
     const regex = /^[ㄱ-힣A-Za-z0-9]{1,10}$/;
@@ -36,7 +36,7 @@ const NicknamePage = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else {
-        setGeneratedS3Url(response.generatedS3Url);
+        setgeneratedS3url(response.generatedS3url);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
@@ -92,7 +92,7 @@ const NicknamePage = ({navigation}: any) => {
             <Text style={styles.text}>다른 사용자와 관계를 시작하기 전,{"\n"} 서로 최소한의 인적 사항을 참고하기 위함이에요.</Text>
           </View>
           <ImageWithIconOverlay
-            borderRadius={300} source={{uri: generatedS3Url}}
+            borderRadius={300} source={{uri: generatedS3url}}
             containerStyle={styles.resultImageContainer} imageStyle={styles.image}>
             <IconButton icon={'check'} size={30} iconColor={colors.white} style={styles.resultBottomIcon}/>
           </ImageWithIconOverlay>

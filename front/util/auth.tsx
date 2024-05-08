@@ -326,8 +326,8 @@ export const putBasicInfo = async (
 }
 
 interface faceInfoResponse extends validResponse {
-  originS3Url: string,
-  generatedS3Url: string
+  originS3url: string,
+  generatedS3url: string
 }
 
 // 14.
@@ -339,13 +339,13 @@ export const getFaceInfo = async (accessToken: string): Promise<faceInfoResponse
   };
   try {
     const response = await axios.get(endpoint, config);
-    const { originS3Url, generatedS3Url } = response.data;
+    const { originS3url, generatedS3url } = response.data;
     const responseInfo = {
       method,
       status: response.status,
       message: "관상 이미지를 로드했습니다.",
-      originS3Url, 
-      generatedS3Url
+      originS3url, 
+      generatedS3url
     }
     console.log(responseInfo);
     return responseInfo;
@@ -394,13 +394,13 @@ export const putFaceInfo = async (accessToken: string, fileUri: string, styleId:
   };
   try {
     const response = await axios.put(endpoint, formData, config);
-    const { originS3Url, generatedS3Url } = response.data;
+    const { originS3url, generatedS3url } = response.data;
     const responseInfo = {
       method,
       status: response.status,
       message: "관상 이미지를 수정했습니다.",
-      originS3Url, 
-      generatedS3Url
+      originS3url, 
+      generatedS3url
     }
     console.log(responseInfo);
     return responseInfo;
@@ -544,11 +544,11 @@ export const isBasicInfoResponse = (response: validResponse | errorResponse): re
 }
 
 export const isFaceInfoResponse = (response: validResponse | errorResponse): response is faceInfoResponse => {
-  return (response as faceInfoResponse).generatedS3Url !== undefined;
+  return (response as faceInfoResponse).generatedS3url !== undefined;
 }
 
 export const isFaceInfoDefaultResponse = (response: validResponse | errorResponse): response is faceInfoResponse => {
-  return (response as faceInfoResponse).generatedS3Url === (response as faceInfoResponse).originS3Url;
+  return (response as faceInfoResponse).generatedS3url === (response as faceInfoResponse).originS3url;
 }
 
 export const isAnalysisInfoResponse = (response: validResponse | errorResponse): response is analysisResponse => {

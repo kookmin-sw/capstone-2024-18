@@ -90,7 +90,7 @@ const Friends = () => {
         authCtx.accessToken
       );  
       if (isFaceInfoResponse(response)) {
-        setExImageUrl(response.generatedS3Url);
+        setExImageUrl(response.generatedS3url);
       }
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
