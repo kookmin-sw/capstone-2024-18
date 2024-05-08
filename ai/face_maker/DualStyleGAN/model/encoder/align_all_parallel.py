@@ -88,6 +88,7 @@ def align_face(filepath, predictor):
 
 	# read image
 	img = PIL.Image.open(filepath)
+	img = img.convert("RGB")
 
 	output_size = 256
 	transform_size = 256
