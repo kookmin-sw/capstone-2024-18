@@ -10,6 +10,7 @@ import { isFaceInfoResponse, putFaceInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import AutoHeightImage from 'react-native-auto-height-image';
+import { UserContext } from '../store/user-context.tsx';
 
 const FaceInfoPage = ({navigation}: any) => {
   // 이미지 uri path
@@ -17,6 +18,7 @@ const FaceInfoPage = ({navigation}: any) => {
 
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   // 관상 생성 과정 이미지 자동 height 설정
   const [ exImageWidth, setExImageWidth ] = useState(0);
@@ -74,7 +76,10 @@ const FaceInfoPage = ({navigation}: any) => {
           uri, selectedStyleId
         );
 
-        createAlertMessage("이미지 생성이 오래 걸려, 생성이 다 되면, 프로필에서 보실 수 있습니다", ()=>{navigation.goBack()})
+        createAlertMessage("이미지 생성이 오래 걸려, 생성이 다 되면, 프로필에서 보실 수 있습니다", ()=>{
+          userCtx.setStatus('FACE_INFO_EXIST');
+          navigation.goBack();
+        })
           // 임시
       } else { // 실제에서는 절대 없는 예외 상황
         console.log("로그인 정보가 없습니다.");

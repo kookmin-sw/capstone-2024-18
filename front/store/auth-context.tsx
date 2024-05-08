@@ -11,15 +11,13 @@ const LOCALHOST = Config.LOCALHOST;
 interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
+  status: string;
   signin: (accessToken: string, refreshToken: string) => Promise<validResponse | errorResponse>;
   signout: () => Promise<validResponse | errorResponse>;
   reissue: () => Promise<validResponse | errorResponse>;
   reload: () => void;
   handleErrorResponse: (errorResponse: errorResponse) => void;
-  navigate: string;
-  setNavigate: (route: string) => void;
+  userId: string,
 }
 
 const exampleResponse = {
@@ -31,15 +29,13 @@ const exampleResponse = {
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
-  isAuthenticated: false,
-  isLoading: false,
+  status: '',
   signin: async (email: string, password: string): Promise<validResponse | errorResponse> => exampleResponse,
   signout: async (): Promise<validResponse | errorResponse> => exampleResponse,
   reissue: async (): Promise<validResponse | errorResponse> => exampleResponse,
   reload: () => {},
   handleErrorResponse: (errorResponse: errorResponse) => {},
-  navigate: "",
-  setNavigate: () => {},
+  userId: '',
 });
 
 interface AuthProviderProps {
@@ -49,9 +45,9 @@ interface AuthProviderProps {
 const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [navigate, setNavigate] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState('');
   const [reloadCounter, setReloadCounter] = useState(0);
+  const [userId, setUserId] = useState('');
 
   const reload = () => {
     setReloadCounter(reloadCounter + 1);
@@ -68,16 +64,20 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       const response = await axios.post(endpoint, body);
-      const { accessToken, refreshToken } = response.data;
+      const { accessToken, refreshToken, memberId } = response.data;
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
+      setUserId(memberId);
       saveToken("accessToken", accessToken);
       saveToken("refreshToken", refreshToken);
+      setStatus('INITIALIZED');
       const responseInfo = {
         method,
         status: response.status,
         message: "로그인 되었습니다.",
+        ...response.data,
       }
+      console.log(response.data);
       console.log(`${method}: ${JSON.stringify(responseInfo)}`);
       return responseInfo;
     }
@@ -97,6 +97,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await axios.delete(endpoint, config);
       setAccessToken('');
       setRefreshToken('');
+      setUserId('');
       removeToken("accessToken");
       removeToken("refreshToken");
       const responseInfo = {
@@ -120,18 +121,19 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const config = { 
       headers: { Authorization: 'Bearer ' + accessToken } 
     };
-    console.log("accesstoken:"+accessToken);
     try {
       const response = await axios.post(endpoint, body, config);
-      const { newAccessToken, newRefreshToken } = response.data;
-      setAccessToken(newAccessToken);
-      setRefreshToken(newRefreshToken);
-      saveToken("accessToken", newAccessToken);
-      saveToken("refreshToken", newRefreshToken);
+      const { accessToken, refreshToken } = response.data;
+      setAccessToken(accessToken);
+      setRefreshToken(refreshToken);
+      saveToken("accessToken", accessToken);
+      saveToken("refreshToken", refreshToken);
       const responseInfo = {
         method,
         status: response.status,
         message: "액세스토큰을 재발급했습니다.",
+        accessToken,
+        refreshToken,
       }
       console.log(`${method}: ${JSON.stringify(responseInfo)}`);
       return responseInfo;
@@ -146,7 +148,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await signout();
       if (isValidResponse(response)) {
-        setNavigate('Login');
+        setStatus('NOT_EXIST');
       } 
       else {
         reload();
@@ -234,40 +236,41 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (storedRefreshToken) {
         setRefreshToken(storedRefreshToken);
       }
-      setIsLoading(false); 
+      setStatus('LOADED'); 
       console.log("loadInitialToken 종료");
     };
     loadInitialToken();
   }, []);
 
-  // 엑세스 토큰 판별
   useEffect(() => {
-    if (reloadCounter > 5) {
-      logoutAndRedirect();
+    if (status !== 'LOADED') return;
+    if (!accessToken) {
+      setStatus('NOT_EXIST');
+      return;
     }
-    if (isLoading) return;
-    
-    if (accessToken) {
-      console.log("엑세스 토큰 있음")
-    } else {
-      console.log("엑세스 토큰 없음")
-      setNavigate("Login");
+    const reisseInitial = async () => {
+      const response = await reissue();
+
+      setStatus('INITIALIZED');
     }
-  }, [isLoading, accessToken, reloadCounter]);
+    reisseInitial();
+  }, [status])
+
+  useEffect(() => {
+    console.log(status);
+  }, [status])
 
   const value = useMemo(() => ({
     accessToken,
     refreshToken,
-    isAuthenticated: !!accessToken,
-    isLoading: isLoading, 
+    status,
     signin,
     signout,
     reissue,
     reload,
     handleErrorResponse,
-    navigate,
-    setNavigate,
-  }), [accessToken, refreshToken, isLoading]);
+    userId,
+  }), [accessToken, refreshToken, status]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

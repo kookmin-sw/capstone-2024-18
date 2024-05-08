@@ -20,25 +20,21 @@ interface FaceInfo {
   originS3Url: string,
 }
 
-interface UserState {
-  basicinfo: string,
-  faceinfo: string,
-}
-
 interface UserContextType {
   basicinfo: BasicInfo,
   faceinfo: FaceInfo,
-  userState: UserState,
+  status: string,
+  setStatus: (status: string) => void,
 }
 
 const defaultBasicInfo = {ageDegree: '', ageGroup: '', gender: '', heightGroup:'', nickname: '', region: ''};
 const defaultFaceInfo = {generatedS3Url: '', originS3Url: ''};
-const defaultUserState = {basicinfo: 'LOADING', faceinfo: 'LOADING'};
 
 export const UserContext = createContext<UserContextType>({
   basicinfo: defaultBasicInfo,
   faceinfo: defaultFaceInfo,
-  userState: defaultUserState,
+  status: '',
+  setStatus: (status: string) => {},
 });
 
 interface ChatProviderProps {
@@ -48,7 +44,7 @@ interface ChatProviderProps {
 const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const authCtx = useContext(AuthContext);
 
-  const [userState, setUserState] = useState<UserState>({ basicinfo: 'LOADING', faceinfo: 'LOADING' });
+  const [status, setStatus] = useState('');
   const [basicinfo, setBasicinfo] = useState<BasicInfo>(defaultBasicInfo);
   const [faceinfo, setFaceinfo] = useState<FaceInfo>(defaultFaceInfo);
   
@@ -71,9 +67,7 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
             basicInfoResponse.nickname &&
             basicInfoResponse.region) {
             console.log('기본정보 있음');
-            setUserState(prevState => {
-              return { ...prevState, basicinfo: 'EXIST' };
-            });
+            setStatus('BASIC_INFO_EXIST');
             const newBasicInfo = {
               ageDegree: basicInfoResponse.ageDegree,
               ageGroup: basicInfoResponse.ageGroup,
@@ -85,23 +79,18 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
             setBasicinfo(newBasicInfo);
         } else {
           console.log('기본정보 없음');
-          setUserState(prevState => {
-            return { ...prevState, basicinfo: 'NOT_EXIST' };
-          });
-          authCtx.setNavigate('BasicInfo');
+          setStatus('BASIC_INFO_NOT_EXIST');
         }
       }
       if (isErrorResponse(basicInfoResponse)) {
-        setUserState(prevState => {
-          return { ...prevState, basicinfo: 'ERROR' };
-        });
+        setStatus('BASIC_INFO_ERROR');
         authCtx.handleErrorResponse(basicInfoResponse);
       }
     }
   }
 
   // 마스크 이미지 로딩 후 userState.faceinfo 업데이트
-  const setFaceinfoState = async () => {
+  const setFaceInfoState = async () => {
     if (authCtx.accessToken) {
       console.log('마스크 이미지 로딩 중');
       const faceInfoResponse = await getFaceInfo(authCtx.accessToken);
@@ -110,78 +99,41 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
       if (isFaceInfoResponse(faceInfoResponse)) {
         if (faceInfoResponse.generatedS3Url !== 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-profile.png') {
           console.log('마스크 이미지 있음');
-          setUserState(prevState => {
-            return { ...prevState, faceinfo: 'EXIST' };
-          });
-          authCtx.setNavigate('Main');
+          setStatus('FACE_INFO_EXIST');
         }
         else {
           console.log('마스크 이미지 없음');
-          setUserState(prevState => {
-            return { ...prevState, faceinfo: 'NOT_EXIST' };
-          });
-          authCtx.setNavigate('FaceInfo');
+          setStatus('FACE_INFO_NOT_EXIST');
         }
       } else {
         console.log('마스크 이미지 없음');
-        setUserState(prevState => {
-          return { ...prevState, faceinfo: 'NOT_EXIST' };
-        });
-        authCtx.setNavigate('FaceInfo');
+        setStatus('FACE_INFO_NOT_EXIST');
       }
       if (isErrorResponse(faceInfoResponse)) {
-        setUserState(prevState => {
-          return { ...prevState, faceinfo: 'ERROR' };
-        });
+        setStatus('FACE_INFO_ERROR');
         authCtx.handleErrorResponse(faceInfoResponse);
       }
     }
   }
   
-  // 유저 정보 로딩
-  const loadInitialInfo = async () => {
-    console.log('loadInitialInfo', authCtx.accessToken);
-    setBasicInfoState();
-    setFaceinfoState();
-  }
-
-  // 엑세스 토큰이 있을 경우 유저 정보 로딩
   useEffect(() => {
-    if (authCtx.accessToken) {
-      loadInitialInfo();
+    if (authCtx.status === 'INITIALIZED') {
+      setBasicInfoState();
     }
-  }, [authCtx.accessToken]);
+  }, [authCtx.status])
 
-  // 로딩 되었을 경우 라우팅 실행
   useEffect(() => {
-    if (userState.basicinfo !== 'LOADING' && userState.faceinfo !== 'LOADING') {
-      console.log('userState:', JSON.stringify(userState));
-      handleRoute();
+    if (status === 'BASIC_INFO_EXIST') {
+      setFaceInfoState();
     }
-  }, [userState]);
+  }, [authCtx.status, status]);
 
-  // 로딩된 유저 정보에 따라 라우팅
-  const handleRoute = async () => {
-    if (!authCtx.isAuthenticated) return;
-    if (userState.basicinfo === 'NOT_EXIST') {
-      authCtx.setNavigate('BasicInfo');
-      return;
-    }
-    if (userState.faceinfo === 'NOT_EXIST') {
-      authCtx.setNavigate('FaceInfo');
-      return;
-    }
-    if (userState.basicinfo === 'EXIST' && userState.faceinfo === 'EXIST') {
-      authCtx.setNavigate('Main');
-      return;
-    }
-  };
-  
   const value = useMemo(() => ({
     basicinfo,
     faceinfo,
-    userState,
-  }), []);
+    status,
+    setStatus,
+  }), [basicinfo, faceinfo, status]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

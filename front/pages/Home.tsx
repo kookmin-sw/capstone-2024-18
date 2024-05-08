@@ -6,6 +6,7 @@ import { AuthContext } from '../store/auth-context.tsx';
 import { errorResponse, getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse, isValidResponse } from "../util/auth";
 import { createAlertMessage } from "../util/alert.tsx";
 import { useFocusEffect } from "@react-navigation/native";
+import { UserContext } from "../store/user-context.tsx";
 
 interface UserState {
   basicinfo: "LOADING" | "EXIST" | "NOT_EXIST" | "ERROR";
@@ -14,6 +15,7 @@ interface UserState {
 
 const Home = ({ navigation }: any) => {
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
   const [reloadCounter, setReloadCounter] = useState(0);
   const [userState, setUserState] = useState<UserState>({ basicinfo: "LOADING", faceinfo: "LOADING" });
 
@@ -186,7 +188,12 @@ const Home = ({ navigation }: any) => {
   
   // 로딩된 유저 정보에 따라 라우팅
   const handleRoute = async () => {
-    if (!authCtx.isAuthenticated) return;
+    if (authCtx.status === 'NOT_EXIST') {
+      navigation.navigate('Login');
+    }
+    if (authCtx.status === 'INITIALIZED') {
+      navigation.navigate('Main');
+    }
     if (userState.basicinfo === "NOT_EXIST") {
       navigation.navigate("BasicInfo");
       return;
@@ -201,40 +208,28 @@ const Home = ({ navigation }: any) => {
     }
   };
   
-  // 엑세스 토큰 판별
   useFocusEffect(
     useCallback(() => {
-      if (reloadCounter > 5) {
-        logoutAndRedirect();
+      if (!authCtx.status) return;
+      if (authCtx.status === 'LOADED') return
+      if (authCtx.status === 'NOT_EXIST') {
+        navigation.navigate('Login');
       }
-      if (authCtx.isLoading) return;
-      
-      if (authCtx.accessToken) {
-        console.log("엑세스 토큰 있음")
-      } else {
-        console.log("엑세스 토큰 없음")
-        navigation.navigate("Login");
-      }
-    }, [authCtx.isLoading, authCtx.accessToken, reloadCounter])
-  );
-  
-  // 엑세스 토큰이 있을 경우 유저 정보 로딩
-  useFocusEffect(
-    useCallback(() => {
-      if (authCtx.accessToken) {
-        loadInitialInfo();
-      }
-    }, [authCtx.accessToken])
+    }, [authCtx.status])
   );
 
-  // 로딩 되었을 경우 라우팅 실행
   useFocusEffect(
     useCallback(() => {
-      if (userState.basicinfo !== "LOADING" && userState.faceinfo !== "LOADING") {
-        console.log("userState:", JSON.stringify(userState));
-        handleRoute();
+      if (userCtx.status === 'BASIC_INFO_NOT_EXIST') {
+        navigation.navigate('BasicInfo');
       }
-    }, [userState])
+      if (userCtx.status === 'FACE_INFO_NOT_EXIST') {
+        navigation.navigate('FaceInfo');
+      }
+      if (userCtx.status === 'FACE_INFO_EXIST') {
+        navigation.navigate('Main');
+      }
+    }, [userCtx.status])
   );
 
   return (
