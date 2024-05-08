@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,21 +38,20 @@ public class ResumeService {
     // 정적 쿼리
     public ResumePostPutResponse postMyResume(
             Long memberId,
-            List<MultipartFile> images
-//            ResumePostRequest request
+            ResumePostPutRequest request
     ) throws IOException {
 
-//        validateCategories(request.categories());
-//        validateContent(request.content());
+        validateCategories(request.categories());
+        validateContent(request.content());
         Member member = validateMemberHasResume(memberId);
 
-        List<String> resumeImagesS3url = bucketService.uploadResumeImages(images);
+        List<String> resumeImagesS3url = bucketService.uploadResumeImages(request.images());
 
         Resume resume = Resume.builder()
                 .member(member)
                 .resumeImageS3urls(resumeImagesS3url)
-//                .categories(request.categories().stream().map(str -> Category.valueOf(str)).collect(Collectors.toSet()))
-//                .content(request.content())
+                .categories(request.categories().stream().map(str -> Category.valueOf(str)).collect(Collectors.toSet()))
+                .content(request.content())
                 .build();
         resumeRepository.save(resume);
 
@@ -116,21 +114,20 @@ public class ResumeService {
     @Transactional
     public ResumePostPutResponse putMyResume(
             Long memberId,
-            List<MultipartFile> images
-//            ResumePutRequest request
+            ResumePostPutRequest request
     ) throws IOException {
 
-//        validateCategories(request.categories());
-//        validateContent(request.content());
+        validateCategories(request.categories());
+        validateContent(request.content());
 
         Member me = findMemberById(memberId);
         Resume mine = findResumeByMember(me); // 영속 상태
 
-        List<String> resumeImageS3urls = bucketService.updateResumeImages(images, mine);
+        List<String> resumeImageS3urls = bucketService.updateResumeImages(request.images(), mine);
 
         mine.setResumeImageS3urls(resumeImageS3urls); // dirty check
-//        mine.setCategories(request.categories().stream().map(str -> Category.valueOf(str)).collect(Collectors.toSet())); // // dirty check
-//        mine.setContent(request.content()); // // dirty check
+        mine.setCategories(request.categories().stream().map(str -> Category.valueOf(str)).collect(Collectors.toSet())); // dirty check
+        mine.setContent(request.content()); // dirty check
 
         return new ResumePostPutResponse(
                 mine.getId(),
