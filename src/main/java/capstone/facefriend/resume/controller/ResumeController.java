@@ -30,10 +30,10 @@ public class ResumeController {
     @PostMapping(value = "/my-resume")
     public ResponseEntity<ResumePostPutResponse> postMyResume(
             @AuthMember Long memberId,
-            @RequestPart("images") List<MultipartFile> images
-//            @RequestPart("request") ResumePostRequest request
+            @RequestPart("images") List<MultipartFile> images,
+            @RequestPart("resumeRequest") ResumeRequest request
     ) throws IOException {
-        return ResponseEntity.ok(resumeService.postMyResume(memberId, images));
+        return ResponseEntity.ok(resumeService.postMyResume(memberId, images, request));
     }
 
     @GetMapping("/resume")
@@ -54,10 +54,10 @@ public class ResumeController {
     @PutMapping(value = "/my-resume")
     public ResponseEntity<ResumePostPutResponse> putMyResume(
             @AuthMember Long memberId,
-            @RequestPart("images") List<MultipartFile> images
-//            @RequestPart("request") ResumePutRequest request
+            @RequestPart("images") List<MultipartFile> images,
+            @RequestPart("resumeRequest") ResumeRequest request
     ) throws IOException {
-        return ResponseEntity.ok(resumeService.putMyResume(memberId, images));
+        return ResponseEntity.ok(resumeService.putMyResume(memberId, images, request));
     }
 
     @DeleteMapping("/my-resume")
