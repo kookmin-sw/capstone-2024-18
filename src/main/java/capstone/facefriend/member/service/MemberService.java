@@ -49,7 +49,6 @@ public class MemberService {
     private final RedisDao redisDao;
 
     private static final String SIGN_UP_VALID_EMAIL = "사용 가능한 이메일입니다.";
-    private static final String SIGN_UP_SUCCESS_MESSAGE = "회원가입 성공";
     private static final String SIGN_OUT_SUCCESS_MESSAGE = "로그아웃 성공";
     private static final String RESET_PASSWORD_SUCCESS_MESSAGE = "비밀번호 재설정 성공";
     private static final String EXIT_SUCCESS_MESSAGE = "회원탈퇴 성공";
