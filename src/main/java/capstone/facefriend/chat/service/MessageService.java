@@ -1,15 +1,9 @@
 package capstone.facefriend.chat.service;
 
-import capstone.facefriend.chat.domain.ChatMessage;
-import capstone.facefriend.chat.domain.ChatRoom;
-import capstone.facefriend.chat.domain.ChatRoomMember;
-import capstone.facefriend.chat.domain.SocketInfo;
+import capstone.facefriend.chat.domain.*;
 import capstone.facefriend.chat.exception.ChatException;
 import capstone.facefriend.chat.exception.ChatExceptionType;
-import capstone.facefriend.chat.repository.ChatMessageRepository;
-import capstone.facefriend.chat.repository.ChatRoomMemberRepository;
-import capstone.facefriend.chat.repository.ChatRoomRepository;
-import capstone.facefriend.chat.repository.SocketInfoRedisRepository;
+import capstone.facefriend.chat.repository.*;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
 import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
 import capstone.facefriend.chat.service.dto.message.MessageListResponse;
@@ -19,8 +13,6 @@ import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.domain.member.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.exception.member.MemberExceptionType;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -49,7 +41,7 @@ public class MessageService {
     private final ChannelTopic channelTopic;
     private final SocketInfoRedisRepository socketInfoRedisRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private final ObjectMapper objectMapper;
+    private final ChatRoomInfoRedisRepository chatRoomInfoRedisRepository;
 
     private Member findMemberById(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -81,6 +73,11 @@ public class MessageService {
         return socketInfo;
     }
 
+    private ChatRoomInfo findChatRoomInfo(String chatRoomInfoId) {
+        ChatRoomInfo chatRoomInfo = chatRoomInfoRedisRepository.findById(chatRoomInfoId)
+                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+        return chatRoomInfo;
+    }
 
     @Transactional
     public void sendMessage(MessageRequest messageRequest, Long senderId) {
@@ -215,17 +212,21 @@ public class MessageService {
     }
 
     @Transactional
-    public void exitApplication(Long memberId) {
+    public String exitApplication(Long memberId) {
         SocketInfo socketInfo = findSocketInfo(memberId);
         socketInfoRedisRepository.delete(socketInfo);
+        return "성공";
     }
 
-    public List<MessageListResponse> getMessagePage(Long roomId, int pageNo) {
+    public List<MessageListResponse> getMessagePage(Long roomId, Long memberId, int pageNo) {
             pageNo = pageNo - 1;
             int pageSize = 20;
             Sort sort = Sort.by(Sort.Direction.DESC, "sendTime");
             Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-            List<ChatMessage> chatMessagePage = chatMessageRepository.findChatMessagesByChatRoom_Id(roomId, pageable);
+            String chatRoomInfoId = roomId + "/member/" + memberId;
+            ChatRoomInfo chatRoomInfo = findChatRoomInfo(chatRoomInfoId);
+            LocalDateTime time = chatRoomInfo.getEnterTime();
+            List<ChatMessage> chatMessagePage = chatMessageRepository.findChatMessagesByChatRoom_IdAndSendTimeBefore(roomId, time, pageable);
             List<MessageListResponse> messageListResponses = new ArrayList<>();
             for (ChatMessage chatMessage : chatMessagePage){
                 MessageListResponse messageListResponse = MessageListResponse.of(chatMessage);
@@ -258,11 +259,9 @@ public class MessageService {
             for (Long i = messagesListSize; i > 0; i--) {
                 // 맵으로 받음
                 LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
-                // JSON 문자열을 MessageResponse 객체로 변환
                 MessageResponse messageResponse = (MessageResponse) map.get(destination);
                 log.info("messageResponse: {}", messageResponse.toString());
                 redisTemplate.convertAndSend(topic, messageResponse);
-
             }
         }
     }
@@ -274,14 +273,10 @@ public class MessageService {
         log.info("SendHeartListSize: {}", messagesListSize.toString());
         if (messagesListSize > 0) {
             for (Long i = messagesListSize; i > 0; i--) {
-                String jsonString = redisTemplate.opsForList().rightPop(destination).toString();
-                try {
-                    SendHeartResponse sendHeartResponse = objectMapper.readValue(jsonString, SendHeartResponse.class);
-                    log.info("messageResponse: {}", sendHeartResponse.toString());
-                    redisTemplate.convertAndSend(topic, sendHeartResponse);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException("Failed to process message", e);
-                }
+                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
+                SendHeartResponse sendHeartResponse = (SendHeartResponse) map.get(destination);
+                log.info("messageResponse: {}", sendHeartResponse.toString());
+                redisTemplate.convertAndSend(topic, sendHeartResponse);
             }
         }
     }

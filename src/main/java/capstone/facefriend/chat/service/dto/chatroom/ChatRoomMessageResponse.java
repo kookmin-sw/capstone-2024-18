@@ -14,7 +14,7 @@ public record ChatRoomMessageResponse(
         String senderGeneratedFaceS3url,
         String senderOriginFaceS3url,
         ChatRoom chatRoom,
-        ChatMessage chatMessage
+        String content
 
 ){
     public static ChatRoomMessageResponse of(Member member, Member sender, ChatRoom chatRoom, ChatMessage message) {
@@ -28,7 +28,7 @@ public record ChatRoomMessageResponse(
                 sender.getFaceInfo().getGeneratedS3url(),
                 sender.getFaceInfo().getOriginS3url(),
                 chatRoom,
-                message
+                message.getContent()
         );
     }
 }

@@ -161,6 +161,7 @@ public class ChatRoomService {
             if (member != leftMember) {
                 chatRoomMemberRepository.delete(chatRoomMember);
                 chatRoomRepository.delete(chatRoom);
+                return "채팅방을 떠났습니다.";
             } else {
                 return "이미 떠난 채팅방입니다.";
             }

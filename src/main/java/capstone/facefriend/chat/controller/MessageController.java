@@ -36,19 +36,20 @@ public class MessageController {
     }
 
     @PostMapping("/stomp/disconnect")
-    public void exitApp(
+    public String exitApp(
             @AuthMember Long memberId
     ){
-        messageService.exitApplication(memberId);
+        String msg =  messageService.exitApplication(memberId);
+        return msg;
     }
 
-    @PostMapping("/chat/{roomId}/messages")
+    @GetMapping("/chat/{roomId}/messages")
     public ResponseEntity<List<MessageListResponse>> getMessagesPage(
             @PathVariable("roomId") Long roomId,
-//            @AuthMember Long memberId,
+            @AuthMember Long memberId,
             @RequestParam(required = false, defaultValue = "1", value = "page") int pageNo
     ){
-        return ResponseEntity.ok(messageService.getMessagePage(roomId, pageNo));
+        return ResponseEntity.ok(messageService.getMessagePage(roomId, memberId,pageNo));
     }
 
 
