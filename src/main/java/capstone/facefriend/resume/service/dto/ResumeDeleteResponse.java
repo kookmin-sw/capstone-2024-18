@@ -1,4 +1,4 @@
-package capstone.facefriend.resume.domain.dto;
+package capstone.facefriend.resume.service.dto;
 
 public record ResumeDeleteResponse(
         String message

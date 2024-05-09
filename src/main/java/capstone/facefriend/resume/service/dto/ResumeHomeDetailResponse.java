@@ -1,4 +1,4 @@
-package capstone.facefriend.resume.domain.dto;
+package capstone.facefriend.resume.service.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;

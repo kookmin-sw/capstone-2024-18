@@ -1,6 +1,6 @@
 package capstone.facefriend.resume.domain;
 
-import capstone.facefriend.resume.domain.dto.ResumeHomeDetailResponse;
+import capstone.facefriend.resume.service.dto.ResumeHomeDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -1,4 +1,4 @@
-package capstone.facefriend.resume.domain.dto;
+package capstone.facefriend.resume.service.dto;
 
 import capstone.facefriend.member.domain.analysisInfo.AnalysisInfo;
 import capstone.facefriend.member.domain.basicInfo.BasicInfo;
