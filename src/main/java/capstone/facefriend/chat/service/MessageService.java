@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
@@ -254,18 +255,18 @@ public class MessageService {
         log.info("messageList: {}", redisTemplate.opsForList().range(destination, 0, -1));
 
         if (messagesListSize > 0) {
-            for (Long i = messagesListSize; i>0; i--) {
-                String jsonString = redisTemplate.opsForList().rightPop(destination).toString();
-                try {
-                    MessageResponse messageResponse = objectMapper.readValue(jsonString, MessageResponse.class);
-                    log.info("messageResponse: {}", messageResponse.toString());
-                    redisTemplate.convertAndSend(topic, messageResponse);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException("Failed to process message", e);
-                }
+            for (Long i = messagesListSize; i > 0; i--) {
+                // 맵으로 받음
+                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
+                // JSON 문자열을 MessageResponse 객체로 변환
+                MessageResponse messageResponse = (MessageResponse) map.get(destination);
+                log.info("messageResponse: {}", messageResponse.toString());
+                redisTemplate.convertAndSend(topic, messageResponse);
+
             }
         }
     }
+
     private void sendSentHeart(Long receiveId) {
         String topic = channelTopic.getTopic();
         String destination = "/sub/chat" + receiveId + "heart";
