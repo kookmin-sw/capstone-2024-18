@@ -10,10 +10,9 @@ import capstone.facefriend.chat.repository.ChatMessageRepository;
 import capstone.facefriend.chat.repository.ChatRoomMemberRepository;
 import capstone.facefriend.chat.repository.ChatRoomRepository;
 import capstone.facefriend.chat.repository.SocketInfoRedisRepository;
-import capstone.facefriend.chat.service.dto.heart.GetSendHeartResponse;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
 import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
-import capstone.facefriend.chat.service.dto.message.GetMessageResponse;
+import capstone.facefriend.chat.service.dto.message.MessageListResponse;
 import capstone.facefriend.chat.service.dto.message.MessageRequest;
 import capstone.facefriend.chat.service.dto.message.MessageResponse;
 import capstone.facefriend.member.domain.member.Member;
@@ -69,7 +68,7 @@ public class MessageService {
         return chatRoomMember;
     }
 
-    private ChatRoomMember findbyRoomId(Long roomId) {
+    private ChatRoomMember findChatRoomMemberByChatRoomId(Long roomId) {
         ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomId(roomId)
                 .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
         return chatRoomMember;
@@ -90,7 +89,7 @@ public class MessageService {
 
         if (chatRoom.getStatus() == ChatRoom.Status.open) {
             chatRoom.setStatus(ChatRoom.Status.progress);
-            ChatRoomMember chatRoomMember = findbyRoomId(chatRoom.getId());
+            ChatRoomMember chatRoomMember = findChatRoomMemberByChatRoomId(chatRoom.getId());
             chatRoomRepository.save(chatRoom);
             chatRoomMemberRepository.save(chatRoomMember);
         } else if ((chatRoom.getStatus() == ChatRoom.Status.close)) {
@@ -117,6 +116,7 @@ public class MessageService {
         messageResponse.setSenderId(senderId);
         messageResponse.setReceiveId(receiver.getId());
         messageResponse.setSenderNickname(sender.getBasicInfo().getNickname());
+        messageResponse.setSenderFaceInfoS3Url(sender.getFaceInfo().getOriginS3url());
         messageResponse.setContent(chatMessage.getContent());
         messageResponse.setType("message");
         messageResponse.setCreatedAt(chatMessage.getSendTime());
@@ -147,8 +147,8 @@ public class MessageService {
                 .chatRoom(chatRoom)
                 .sender(sender)
                 .receiver(receiver)
-                .isSenderExist(false)
-                .isReceiverExist(false)
+                .isSenderExist(true)
+                .isReceiverExist(true)
                 .isSenderPublic(false)
                 .isReceiverPublic(false)
                 .build();
@@ -219,13 +219,18 @@ public class MessageService {
         socketInfoRedisRepository.delete(socketInfo);
     }
 
-    public List<ChatMessage> getMessagePage(Long roomId, int pageNo) {
+    public List<MessageListResponse> getMessagePage(Long roomId, int pageNo) {
             pageNo = pageNo - 1;
             int pageSize = 20;
             Sort sort = Sort.by(Sort.Direction.DESC, "sendTime");
             Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-            List<ChatMessage> chatMessagePage = chatMessageRepository.findChatMessageByChatRoom(roomId, pageable);
-            return chatMessagePage;
+            List<ChatMessage> chatMessagePage = chatMessageRepository.findChatMessagesByChatRoom_Id(roomId, pageable);
+            List<MessageListResponse> messageListResponses = new ArrayList<>();
+            for (ChatMessage chatMessage : chatMessagePage){
+                MessageListResponse messageListResponse = MessageListResponse.of(chatMessage);
+                messageListResponses.add(messageListResponse);
+            }
+            return messageListResponses;
     }
 
     private Boolean isExistUnReadMessage(Long memberId) {
@@ -244,7 +249,6 @@ public class MessageService {
     private void sendSentMessage(Long receiveId) {
         String topic = channelTopic.getTopic();
         String destination = "/sub/chat" + receiveId + "message";
-        List<MessageResponse> messages = new ArrayList<>();
         Long messagesListSize = redisTemplate.opsForList().size(destination);
         log.info(messagesListSize.toString());
         log.info("messageList: {}", redisTemplate.opsForList().range(destination, 0, -1));
@@ -265,18 +269,19 @@ public class MessageService {
     private void sendSentHeart(Long receiveId) {
         String topic = channelTopic.getTopic();
         String destination = "/sub/chat" + receiveId + "heart";
-        List<SendHeartResponse> messages = new ArrayList<>();
         Long messagesListSize = redisTemplate.opsForList().size(destination);
-        log.info("messagesListSize: {}", messagesListSize.toString());
+        log.info("SendHeartListSize: {}", messagesListSize.toString());
         if (messagesListSize > 0) {
-            for (Long i = messagesListSize; i>0; i--) {
-                messages.add((SendHeartResponse) redisTemplate.opsForList().rightPop(destination));
-            }
-            for (Object msg: messages) {
-
-                redisTemplate.convertAndSend(topic, msg);
+            for (Long i = messagesListSize; i > 0; i--) {
+                String jsonString = redisTemplate.opsForList().rightPop(destination).toString();
+                try {
+                    SendHeartResponse sendHeartResponse = objectMapper.readValue(jsonString, SendHeartResponse.class);
+                    log.info("messageResponse: {}", sendHeartResponse.toString());
+                    redisTemplate.convertAndSend(topic, sendHeartResponse);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException("Failed to process message", e);
+                }
             }
         }
     }
-
 }

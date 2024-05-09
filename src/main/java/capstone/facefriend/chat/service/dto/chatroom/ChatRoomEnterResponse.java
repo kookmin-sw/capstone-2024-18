@@ -9,10 +9,10 @@ public record ChatRoomEnterResponse(
         Long memberId,
         LocalDateTime enterTime
 ) {
-    public static ChatRoomEnterResponse of(ChatRoomInfo chatRoomInfo) {
+    public static ChatRoomEnterResponse of(Long roomId, Long memberId, ChatRoomInfo chatRoomInfo) {
         return new ChatRoomEnterResponse(
-                chatRoomInfo.getId().getRoomId(),
-                chatRoomInfo.getId().getMemberId(),
+                roomId,
+                memberId,
                 chatRoomInfo.getEnterTime()
         );
     }

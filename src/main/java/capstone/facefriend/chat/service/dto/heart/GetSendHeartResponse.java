@@ -3,7 +3,6 @@ package capstone.facefriend.chat.service.dto.heart;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +16,7 @@ public class GetSendHeartResponse {
     private String type;
     private Long roomId;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private LocalDateTime sendTime;
 
 
     public GetSendHeartResponse(SendHeartResponse sendHeartResponse) {
@@ -26,6 +25,6 @@ public class GetSendHeartResponse {
         this.receiveId = sendHeartResponse.getReceiveId();
         this.type = sendHeartResponse.getType();
         this.roomId = sendHeartResponse.getRoomId();
-        this.createdAt = sendHeartResponse.getCreatedAt();
+        this.sendTime = sendHeartResponse.getCreatedAt();
     }
 }
