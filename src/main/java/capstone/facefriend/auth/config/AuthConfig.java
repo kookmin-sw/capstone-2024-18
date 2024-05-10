@@ -56,6 +56,10 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/my-resume", ANY)
                 .addIncludePathPattern("/resume-by-good-combi", ANY)
                 .addIncludePathPattern("/resume-by-category", ANY)
+                .addIncludePathPattern("/room/list", GET)
+                .addIncludePathPattern("/stomp/disconnect", POST)
+                .addIncludePathPattern("/chat/**", GET)
+                .addIncludePathPattern("/room/**", POST)
 
                 .addExcludePathPattern("/auth/reissue/**", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
@@ -74,6 +78,10 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/my-resume", ANY)
                 .addIncludePathPattern("/resume-by-good-combi", ANY)
                 .addIncludePathPattern("/resume-by-category", ANY)
+                .addIncludePathPattern("/room/list", GET)
+                .addIncludePathPattern("/stomp/disconnect", POST)
+                .addIncludePathPattern("/chat/**", GET)
+                .addIncludePathPattern("/room/**", POST)
 
                 .addExcludePathPattern("/auth/reissue", POST); // 토큰 만료 시에는 해당 요청을 가로채지 않아야 합니다.
     }
@@ -99,6 +107,10 @@ public class AuthConfig implements WebMvcConfigurer {
                 .addIncludePathPattern("/my-resume", ANY)
                 .addIncludePathPattern("/resume-by-good-combi", ANY)
                 .addIncludePathPattern("/resume-by-category", ANY)
+                .addIncludePathPattern("/room/list", GET)
+                .addIncludePathPattern("/stomp/disconnect", POST)
+                .addIncludePathPattern("/chat/**", GET)
+                .addIncludePathPattern("/room/**", POST)
                 ;
     }
 
