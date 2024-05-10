@@ -1,22 +1,33 @@
 package capstone.facefriend.chat.service.dto.chatroom;
 
 import capstone.facefriend.chat.domain.ChatRoom;
-import capstone.facefriend.chat.domain.ChatRoomMember;
-import capstone.facefriend.chat.service.dto.heart.GetSendHeartResponse;
+import capstone.facefriend.member.domain.member.Member;
 
 public record ChatRoomHeartResponse (
-        Long sender,
-        Long receiver,
+        Long memberId,
+        String memberNickname,
+        String memberGeneratedS3url,
+        String memberOriginS3url,
+        Long senderId,
+        String senderNickname,
+        String senderGeneratedS3url,
+        String senderOriginS3url,
         ChatRoom chatRoom,
-        GetSendHeartResponse sendHeart
+        Boolean isSender
 
 ) {
-    public static ChatRoomHeartResponse of(ChatRoomMember chatRoomMember, GetSendHeartResponse sendHeartResponse) {
+    public static ChatRoomHeartResponse of(Member member, Member sender, ChatRoom chatRoom, Boolean isSender) {
         return new ChatRoomHeartResponse(
-                chatRoomMember.getSender().getId(),
-                chatRoomMember.getReceiver().getId(),
-                chatRoomMember.getChatRoom(),
-                sendHeartResponse
+                member.getId(),
+                member.getBasicInfo().getNickname(),
+                member.getFaceInfo().getGeneratedS3url(),
+                member.getFaceInfo().getOriginS3url(),
+                sender.getId(),
+                sender.getBasicInfo().getNickname(),
+                sender.getFaceInfo().getGeneratedS3url(),
+                sender.getFaceInfo().getOriginS3url(),
+                chatRoom,
+                isSender
         );
     }
 }
