@@ -49,7 +49,7 @@ def generate_image():
     file_object = io.BytesIO()
 
     # 이미지를 바이너리로 저장
-    pil_virutal_face.save(file_object, format='PNG')
+    #pil_virutal_face.save(file_object, format='PNG')
     image_binary = file_object.getvalue()
 
     response_data = {'image_binary':base64.b64encode(image_binary).decode('utf-8')}
@@ -91,7 +91,7 @@ def generate_image_by_level():
 
     pil_virutal_face.save('result.png')
     # 이미지를 바이너리로 저장
-    pil_virutal_face.save(file_object, format='PNG')
+    #pil_virutal_face.save(file_object, format='PNG')
     image_binary = file_object.getvalue()
 
     response_data = {'image_binary':base64.b64encode(image_binary).decode('utf-8')}
