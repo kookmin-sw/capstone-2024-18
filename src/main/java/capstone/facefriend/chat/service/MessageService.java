@@ -67,6 +67,12 @@ public class MessageService {
         return chatRoomMember;
     }
 
+    private SocketInfo findSocketInfo(Long memberId) {
+        SocketInfo socketInfo = socketInfoRedisRepository.findById(memberId)
+                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+        return socketInfo;
+    }
+
     @Transactional
     public void sendMessage(MessageRequest messageRequest, Long senderId) {
         Member sender = findMemberById(senderId);
@@ -197,6 +203,13 @@ public class MessageService {
         if(isExistUnSendHeart(memberId)) {
             sendSentHeart(memberId);
         }
+    }
+
+    @Transactional
+    public String exitApplication(Long memberId) {
+        SocketInfo socketInfo = findSocketInfo(memberId);
+        socketInfoRedisRepository.delete(socketInfo);
+        return "성공";
     }
 
     private Boolean isExistUnReadMessage(Long memberId) {
