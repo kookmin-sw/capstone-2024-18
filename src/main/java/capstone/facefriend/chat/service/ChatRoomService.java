@@ -53,6 +53,14 @@ public class ChatRoomService {
         return chatRoomMemberRepository.findAllByReceiverId(memberId).orElse(new ArrayList<>());
     }
 
+    private ChatRoomInfo findChatRoomInfo(String chatRoomInfoId) {
+        ChatRoomInfo chatRoomInfo = chatRoomInfoRedisRepository.findById(chatRoomInfoId)
+                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+        return chatRoomInfo;
+    }
+
+
+
     @Transactional
     public Map<String, Object> getChatRoomList(Long memberId) {
 
@@ -120,7 +128,13 @@ public class ChatRoomService {
         return ChatRoomEnterResponse.of(roomId, memberId, chatRoomInfo);
     }
 
-
+    public ChatRoomExitResponse exitRoom(Long roomId, Long memberId) {
+        String chatRoomInfoId = roomId + "/member/" + memberId;
+        ChatRoomInfo chatRoomInfo = findChatRoomInfo(chatRoomInfoId);
+        chatRoomInfoRedisRepository.delete(chatRoomInfo);
+        LocalDateTime exitChatRoomTime = LocalDateTime.now();
+        return ChatRoomExitResponse.of(roomId, memberId, exitChatRoomTime);
+    }
 
 
 
