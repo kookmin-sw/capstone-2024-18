@@ -12,10 +12,10 @@ from rembg import remove
 app = Flask(__name__)
 face_maker = StyleTransfer()
 level_dic = {
-        1 : [1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        2 : [1, 1, 1, 1, 0, 0.5, 0, 1, 0, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3],
-        3 : [1, 1, 1, 1, 0, 0, 0.2, 1, 0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-        4 : [1, 1, 1, 1, 0, 0.5, 0.2, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1] 
+        4 : [1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        3 : [1, 1, 1, 1, 0, 0.5, 0, 1, 0, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3],
+        2 : [1, 1, 1, 1, 0, 0, 0.2, 1, 0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+        1 : [1, 1, 1, 1, 0, 0.5, 0.2, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1] 
 }
     
 
@@ -42,7 +42,7 @@ def generate_image():
     image = remove(image)
     image.save(file_path)
     # 관상 이미지 생성
-    virtual_face = face_maker.generate(file_path, int(request.values['style_id']),weight=[1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+    virtual_face = face_maker.generate(file_path, int(request.values['style_id']),weight=level_dic[1])
     
     # Image 인스턴스로 변환
     pil_virutal_face = Image.fromarray(virtual_face.astype('uint8'))
