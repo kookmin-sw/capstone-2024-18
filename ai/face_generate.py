@@ -74,6 +74,7 @@ def generate_image_by_level():
     # 파일 저장 위치 만들기
     file_path = request.values['user_id'] + '_level' + '.png'
     sys.stdout = open(request.values['user_id']+'.txt','w')
+    print('asdfasdf')
     # 파일 저장
     #request.files['image'].save(file_path)
     
@@ -101,7 +102,7 @@ def generate_image_by_level():
         os.remove(file_path)
     else:
         pass
-    
+    sys.stdout.close()
     return jsonify(response_data)
 
 
