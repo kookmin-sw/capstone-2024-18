@@ -73,6 +73,12 @@ public class MessageService {
         return socketInfo;
     }
 
+    private ChatRoomInfo findChatRoomInfo(String chatRoomInfoId) {
+        ChatRoomInfo chatRoomInfo = chatRoomInfoRedisRepository.findById(chatRoomInfoId)
+                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+        return chatRoomInfo;
+    }
+
     @Transactional
     public void sendMessage(MessageRequest messageRequest, Long senderId) {
         Member sender = findMemberById(senderId);
@@ -210,6 +216,23 @@ public class MessageService {
         SocketInfo socketInfo = findSocketInfo(memberId);
         socketInfoRedisRepository.delete(socketInfo);
         return "성공";
+    }
+
+    public List<MessageListResponse> getMessagePage(Long roomId, Long memberId, int pageNo) {
+        pageNo = pageNo - 1;
+        int pageSize = 20;
+        Sort sort = Sort.by(Sort.Direction.DESC, "sendTime");
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        String chatRoomInfoId = roomId + "/member/" + memberId;
+        ChatRoomInfo chatRoomInfo = findChatRoomInfo(chatRoomInfoId);
+        LocalDateTime time = chatRoomInfo.getEnterTime();
+        List<ChatMessage> chatMessagePage = chatMessageRepository.findChatMessagesByChatRoom_IdAndSendTimeBefore(roomId, time, pageable);
+        List<MessageListResponse> messageListResponses = new ArrayList<>();
+        for (ChatMessage chatMessage : chatMessagePage){
+            MessageListResponse messageListResponse = MessageListResponse.of(chatMessage);
+            messageListResponses.add(messageListResponse);
+        }
+        return messageListResponses;
     }
 
     private Boolean isExistUnReadMessage(Long memberId) {
