@@ -28,11 +28,11 @@ public class AnalysisInfo {
     @Builder.Default
     @ElementCollection
     @CollectionTable(name = "ANALYSIS_INFO_FULL", joinColumns = @JoinColumn(name = "ANALYSIS_INFO_ID"))
-    private Map<String, String> analysisInfoFull = new HashMap<>();
+    private Map<String, String> analysisFull = new HashMap<>();
 
     @Builder.Default
     @ElementCollection
     @CollectionTable(name = "ANALYSIS_INFO_SHORT", joinColumns = @JoinColumn(name = "ANALYSIS_INFO_ID"))
-    private List<String> analysisInfoShort = new ArrayList<>();
+    private List<String> analysisShort = new ArrayList<>();
 }
 
