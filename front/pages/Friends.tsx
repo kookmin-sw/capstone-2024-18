@@ -5,21 +5,27 @@ import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 
-import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { getCategoryUser, getGoodCombi, getMyResume, isErrorResponse, isResumeResponse, isResumesResponse } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context.tsx";
 
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
-import { createAlertMessage } from '../util/alert.tsx';
 import { FlatList } from 'react-native-gesture-handler';
+import { Category, category as categoryForm } from '../util/categoryFormat.tsx';
 
 
-const Friends = () => {
+const Friends = ({navigation}: any) => {
+  interface Content {
+    resumeId: number;
+    thumbnailS3url: string
+  }
+  interface Faces {
+    [key: string]: {content: Content[], last: boolean}
+  }
+
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
 
-  const [exImageUrl, setExImageUrl] = useState('https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-profile.png');
   const [nickname, setNickname] = useState('');
 
   // CarouselSlider의 필수 파라미터, pageWidth, offset, gap 설정
@@ -49,6 +55,11 @@ const Friends = () => {
     },
   ]);
 
+  // 추천 얼굴 이미지 data
+  const [faces, setFaces] = useState<Faces>({
+    FIT: {content: [], last: false}
+  });
+
   /**
    * 이미지 슬라이더에 들어갈 컨텐츠 내용물 데이터를 React.ReactNode로 바꿔주는 함수
    * @param param0 :any
@@ -64,150 +75,140 @@ const Friends = () => {
       );
   }
 
-  const tryGetBasicInfo = async () => {
+  const tryGetGoodCombi = async () => {
     if (authCtx.accessToken) {
-      const response = await getBasicInfo(
-        authCtx.accessToken
-      );  
-      if (isBasicInfoResponse(response)) {
-        setNickname(response.nickname)
-      } else {
-        // 기본 정보 없는 경우
+      const response = await getGoodCombi(
+        authCtx.accessToken, 0, 10
+      )
+      if (isResumesResponse(response)) {
+        setFaces((prev) => ({
+          ...prev,
+          "FIT": {content: response.content, last: response.last}
+        }))
       }
       if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
+        console.log("error")
       }
-    }
-    else {
-      console.log("로그인 정보가 없습니다.");
     }
   }
 
-  // 슬라이더의 1, 2 페이지에 관상 이미지 가져와서 display (사용자 변경 불가)
-  const createFaceImage = async () => {
+  const tryGetMyResume = async () => {
     if (authCtx.accessToken) {
-      const response = await getFaceInfo(
+      const response = await getMyResume(
         authCtx.accessToken
-      );  
-      if (isFaceInfoResponse(response)) {
-        setExImageUrl(response.generatedS3url);
+      )
+      if (isResumeResponse(response)) {
+        for (const category of response.categories) {
+          await tryGetCategoryUser(category);
+        }
+        setNickname(response.basicInfo.nickname)
+      }
+    }
+  }
+
+  const tryGetCategoryUser = async (category: string) => {
+    if (authCtx.accessToken) {
+      const response = await getCategoryUser(
+        authCtx.accessToken, 0, 10, category
+      )
+      if (isResumesResponse(response)) {
+        setFaces((prev) => ({
+          ...prev,
+          [category]: {content: response.content, last: response.last}
+        }))
       }
       if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
+        console.log("error")
       }
     }
-    else {
-      console.log("로그인 정보가 없습니다.");
-    }
   }
 
-  useEffect(() => {
-    tryGetBasicInfo();
-    createFaceImage();
-  }, [])
-
-  const cardView = ({imageUrl, id}: any) =>
-    <TouchableOpacity key={id} style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 6}} onPress={() => console.log(id)}>
-      <Image source={{uri: imageUrl}} width={150} height={150}/>
-    </TouchableOpacity>;
-
-  const defaultImageUrl = [exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl, exImageUrl];
-
-  interface Faces {
-    [key: string]: string[];
-  }
-  const [faces, setFaces] = useState<Faces>({
-    fit: [...defaultImageUrl],
-    unfit: [...defaultImageUrl],
-    sport: [...defaultImageUrl],
-    love: [...defaultImageUrl],
-    food: [...defaultImageUrl],
-    movie: [...defaultImageUrl],
-    fashion: [...defaultImageUrl],
-    study: [...defaultImageUrl],
-    music: [...defaultImageUrl],
-    free: [...defaultImageUrl],
-  });
-
-  const renderCardItem = ({item, idex}: any) => {{
-    return cardView({imageUrl: item, id: uuidv4()});
-  }}
-  const fetchNewData = (type: string) => {
+  const fetchNewData = async (type: string) => {
     if (!(type in faces)) return;
-  
-    setFaces((prev) => ({
-      ...prev,
-      [type]: [...prev[type], ...defaultImageUrl]
-    }));
+    if (faces[`${type}`].last) return;
+
+    if (authCtx.accessToken) {
+      const response = await getGoodCombi(
+        authCtx.accessToken,
+        faces[`${type}`].content.length/10,
+        10
+      );
+
+      if (isResumesResponse(response)){
+        setFaces((prev) => ({
+          ...prev,
+          [type]: {
+            content: [...prev[`${type}`].content, ...response.content], 
+            last: response.last
+          }
+        }));
+      }
+    }
   };
 
-  const categoriesText = [["음식", "맛집 탐방 같이 하실 분", 'food'], ["운동", "헬스 함께 해요", "sport"], ["영화", "듄 함께 보실 분~", "movie"], ["자유", "수다 떠실 분", "free"], ["연애", "고민 상담 해주세요", "love"], ["음악", "음악 추천 드립니다", "music"], ["공부", "같이 카공하실 분", "study"]];
+  const renderCardItem = ({item}: {item: Content}) => {{
+    return (
+      <TouchableOpacity key={item.resumeId} style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 6}} onPress={() => navigation.navigate("OtherSelfProduce", {resumeId: item.resumeId})}>
+        <Image source={{uri: item.thumbnailS3url}} width={150} height={150}/>
+      </TouchableOpacity>);
+  }}
+
+  const categoriesText = [["맛집 탐방 같이 하실 분", 'FOOD'], ["탁구하러 가실 분", "WORKOUT"], ["듄 함께 보실 분~", "MOVIE"], ["패션 참견 해주실 분99", "FASHION"], ["연애 상담 해드립니다~!", "DATING"], ["팝송 러버 여기 모여라", "MUSIC"], ["치타는 웃고 있다", "STUDY"], ["심심한데 이야기하실 분", "ETC"]];
+
+  useEffect(() => {
+    tryGetGoodCombi();
+    tryGetMyResume();
+  }, [])
 
   return (
-    <>
-      <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
-        {/* 이미지 슬라이더 */}
-        <CarouselSlider
-          pageWidth={pageWidth}
-          pageHeight={pageWidth}
-          offset={offset}
-          gap={gap}
-          data={images}
-          onPageChange={setPage}
-          renderItem={renderItem}/>
+    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
+      {/* 이미지 슬라이더 */}
+      <CarouselSlider
+        pageWidth={pageWidth}
+        pageHeight={pageWidth}
+        offset={offset}
+        gap={gap}
+        data={images}
+        onPageChange={setPage}
+        renderItem={renderItem}/>
 
-        <View style={{flexDirection: 'row', alignSelf: 'center', paddingTop: 10}}>
+      <View style={{flexDirection: 'row', alignSelf: 'center', paddingTop: 10}}>
+      {
+        images.map((item, idx) => {
+          return (
+            <View 
+              key={idx}
+              style={{marginHorizontal: 4, width: 8, height: 8, borderRadius: 50,
+              backgroundColor: (idx == page) ? colors.pastel_point : colors.gray2}}/>
+          );
+        })
+      }
+      </View>
+      <View style={styles.personalRecommendTop}>
+        <View style={styles.sectionTitleContainer}>
+          <Text style={styles.sectionTitle}>나와 잘 맞는 관상</Text>
+          <View style={{flex: 1}}/>
+          <TouchableOpacity>
+            <Text>전체 보러가기{">"}</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={{paddingLeft: 27}}>AI가 분석한 {nickname}님의 베스트 매치 관상 추천</Text>
+      </View>
+      <FlatList 
+        horizontal 
+        data={faces.FIT.content} 
+        renderItem={renderCardItem}
+        style={{paddingVertical: 26, paddingHorizontal: 16}}
+        onEndReached={() => fetchNewData("FIT")}/>
+      <View style={{backgroundColor: '#F9F9FF', paddingTop: 20}}>
+        <Text style={styles.categorySectionTitle}>카테고리별 맞춤 추전</Text>
         {
-          images.map((item, idx) => {
-            return (
-              <View 
-                key={idx}
-                style={{marginHorizontal: 4, width: 8, height: 8, borderRadius: 50,
-                backgroundColor: (idx == page) ? colors.pastel_point : colors.gray2}}/>
-            );
-          })
-        }
-        </View>
-        <View style={styles.personalRecommendTop}>
-          <View style={styles.sectionTitleContainer}>
-            <Text style={styles.sectionTitle}>나와 잘 맞는 관상</Text>
-            <View style={{flex: 1}}/>
-            <TouchableOpacity>
-              <Text>전체 보러가기{">"}</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={{paddingLeft: 27}}>AI가 분석한 {nickname}님의 베스트 매치 관상 추천</Text>
-        </View>
-        <FlatList 
-          horizontal 
-          data={faces.fit} 
-          renderItem={renderCardItem}
-          style={{paddingVertical: 26, paddingHorizontal: 16}}
-          onEndReached={() => fetchNewData("fit")}/>
-        <View style={styles.personalRecommendTop}>
-          <View style={styles.sectionTitleContainer}>
-            <Text style={styles.sectionTitle}>나와 다른 관상</Text>
-            <View style={{flex: 1}}/>
-            <TouchableOpacity>
-              <Text>전체 보러가기{">"}</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={{marginHorizontal: 26}}>AI가 분석한 {nickname}님의 다른 관상 추천</Text>
-        </View>
-        <FlatList 
-          horizontal 
-          data={faces.unfit} 
-          renderItem={renderCardItem}
-          style={{paddingVertical: 26, paddingHorizontal: 16}}
-          onEndReached={() => fetchNewData("unfit")}/>
-        <View style={{backgroundColor: '#F9F9FF', paddingTop: 20}}>
-          <Text style={styles.categorySectionTitle}>카테고리별 맞춤 추전</Text>
-          {
-            categoriesText.map(([tag, text], idx) => {
+          categoriesText.map(([text, tag], idx) => {
+            if (faces[`${tag}`]) {
               return (
                 <View key={idx}>
                   <View style={{marginHorizontal: 26, flexDirection: 'row', alignItems: 'center'}}>
-                    <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{tag}</SelectableTag>
+                    <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{categoryForm[tag as keyof Category]}</SelectableTag>
                     <Text style={{paddingLeft: 8}}>{text}</Text>
                     <View style={{flex: 1}}/>
                     <TouchableOpacity>
@@ -216,32 +217,21 @@ const Friends = () => {
                   </View>
                   <FlatList 
                     horizontal 
-                    data={faces.unfit} 
+                    data={faces[tag as keyof Category]?.content} 
                     renderItem={renderCardItem}
                     style={{paddingVertical: 26, paddingHorizontal: 16}}
-                    onEndReached={() => fetchNewData("unfit")}/>
+                    onEndReached={() => fetchNewData(tag)}/>
                 </View>
               );
-            })
-          }
-        </View>
-      </ScrollView>
-    </>
+            }
+          })
+        }
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    margin: "6%",
-    flex: 1,
-  },
-  profileName: {
-    marginLeft: 15, 
-    fontSize: 15, 
-    color: '#000000', 
-    alignSelf: 'center'
-  },
-
   sectionTitle: {
     fontSize: 20,
     color: colors.point

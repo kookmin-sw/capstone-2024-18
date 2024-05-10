@@ -16,9 +16,11 @@ import { isErrorResponse, isValidResponse, putBasicInfo } from "../util/auth";
 import SelectableTag from "../components/SelectableTag";
 import { createAlertMessage } from "../util/alert";
 import CustomBackHandler from "../components/CustomBackHandler";
+import { UserContext } from "../store/user-context";
 
 const BasicInfoPage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
   
   interface BasicInfo {
     nickname: string;         
@@ -129,6 +131,7 @@ const BasicInfoPage = ({navigation}: any) => {
       );  
       if (isValidResponse(response)) {
         createAlertMessage("기본 정보 입력이 완료되었습니다.");
+        userCtx.setStatus('BASIC_INFO_EXIST');
         navigation.goBack();
       }
       if (isErrorResponse(response)) {
@@ -329,7 +332,7 @@ const BasicInfoPage = ({navigation}: any) => {
   }, [basicInfo])
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <ScrollView contentContainerStyle={{ minHeight: '100%' }}>
       <CustomBackHandler onBack={handlePrevPage}/>
       <HeaderBar onPress={handlePrevPage}>기본 정보</HeaderBar>
       <View style={styles.container}>
@@ -352,7 +355,7 @@ const BasicInfoPage = ({navigation}: any) => {
           >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
         </View>
       </View>
-      </SafeAreaView>
+      </ScrollView>
   )
 }
 

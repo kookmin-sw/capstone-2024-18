@@ -56,6 +56,7 @@ const VerifyEmailModal = ({email, setModalVisible, setEmail}: Props) => {
 
   return (
     <Modal
+        style={{height: '100%'}}
         animationType="slide"
         visible={true}>
       <View style={{right: 0}}>
@@ -77,7 +78,8 @@ const VerifyEmailModal = ({email, setModalVisible, setEmail}: Props) => {
           containerStyle={styles.pointButton}
           textStyle={styles.pointButtonText}>인증번호 발송
         </CustomButton>
-        <CustomButton onPress={handleSubmit} containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
+        <CustomButton onPress={handleSubmit} 
+          containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
           textStyle={styles.pointButtonText}>인증번호 입력
         </CustomButton>
       </View>
@@ -91,7 +93,12 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 60,
     paddingHorizontal: 45,
-    flex: 1
+    // flex: 1,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   title: {
     color: colors.gray7,
@@ -121,7 +128,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 9,
     paddingBottom: 12,
-    flexDirection: 'column',
     flex: 1,
   },
   pointButton: {

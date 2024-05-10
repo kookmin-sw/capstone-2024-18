@@ -1,10 +1,10 @@
 import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { View } from "react-native";
-import SubTest1 from '../test/pages/SubTest1.tsx';
 import SelfProduce from "./SelfProduce.tsx";
 import Friends from "./Friends.tsx";
 import Profile from "./Profile.tsx";
+import CustomBackHandler from "../components/CustomBackHandler.tsx";
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -12,6 +12,7 @@ const Tab = createMaterialBottomTabNavigator();
 const Test1 = () => {
   return (
     <View style={{height: "100%"}}>
+      <CustomBackHandler haveExit={true}/>
       <PaperProvider theme={{version: 2}}>
         <Tab.Navigator 
           shifting={true}
@@ -25,7 +26,7 @@ const Test1 = () => {
               tabBarLabel: 'Friends',
             }}/>
           <Tab.Screen 
-            name="sub2" component={SelfProduce} 
+            name="sub2" component={SelfProduce}
             options={{
               tabBarIcon: () => <Icon source={"file"} size={20} color={'#626262'} />,
               tabBarLabel: '자기소개서',

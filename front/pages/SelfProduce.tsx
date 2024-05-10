@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, ImageURISource } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { colors } from '../assets/colors.tsx'
 import CustomButton from '../components/CustomButton';
@@ -9,7 +9,7 @@ import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 
-import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { deleteMyResume, getMyResume, isErrorResponse, isResumeResponse, isValidResponse, postMyResume, putResume, resumeResponse } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context";
 
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
@@ -17,14 +17,46 @@ import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { createAlertMessage } from '../util/alert.tsx';
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
+import { Category, category } from '../util/categoryFormat.tsx';
 
 
 const SelfProduce = () => {
+  interface imageType {
+    id: string,
+    type: 'basic' | 'image' | 'add',
+    source: ImageURISource
+  }
+
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
 
   // 자기소개서가 있는지 확인 (현재는 auth 연결 아직 안함)
-  const [ haveSelfProduce, setHaveSelfProduce ] = useState(true);
+  const [ haveSelfProduce, setHaveSelfProduce ] = useState(false);
+
+  // 기본 정보
+  const defaultSample = "DEFAULT";
+  const defaultSamples = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
+  const [ basic, setBasic ] = useState(defaultSamples.map((_basic, index) => {
+    return {id: index, text: _basic}
+  }))
+  const [nickname, setNickname] = useState(defaultSample);
+
+  // 관상 분석
+  const [ analysis, setAnalysis ] = useState(defaultSamples.map((_a, index)=> {
+    return {id: index, text: _a};
+  }))
+
+  const [ categories, setCategories ] = useState(Object.keys(category).map((key, index) => {
+    return {id: index, text: key as keyof Category, selected: false}
+  }))
+  const [ essay, setEssay ] = useState(defaultSample);
+
+  // 자기소개서 edit 기능 조절 변수
+  const [ edit, setEdit ] = useState(false);
+  const [ resumeId, setResumeId ] = useState(-1);
+
+  // (임시) 이미지 슬라이더의 내부 contents 설정 (api 연동하면, 그냥 빈 array 설정)
+  const [ images, setImages ] = useState<imageType[]>([]);
 
   // 자기소개서 삭제 관련 기능
   function deleteAlert() {
@@ -40,18 +72,9 @@ const SelfProduce = () => {
           text: "네",
           onPress: deleteSelfProduce
         }
-      ])
+      ]
+    )
   }
-
-  function deleteSelfProduce() {
-    // UI 상에서 자기소개 만들기
-    setHaveSelfProduce(false);
-
-    // 자기소개서 삭제하는 요청 전송
-  }
-
-  // 자기소개서 edit 기능 조절 변수
-  const [ edit, setEdit ] = useState(false);
 
   // CarouselSlider의 필수 파라미터, pageWidth, offset, gap 설정
   const width = Dimensions.get('window').width;
@@ -64,21 +87,60 @@ const SelfProduce = () => {
 
   // 이미지 추가 설정 (카메라 or 사진첩)
   const [ modalVisible, setModalVisible ] = useState(false);
+
+  const deleteSelfProduce = async () => {
+    // 자기소개서 삭제하는 요청 전송
+    if (authCtx.accessToken) {
+      const response = await deleteMyResume(authCtx.accessToken);
+      if (isValidResponse(response)) {
+        setHaveSelfProduce(false);
+      }
+      if (isErrorResponse(response)) {
+        createAlertMessage(response.message);
+      }
+    } 
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+  }
+
+  const handleEditButton = async () => {
+    if (edit) {
+      if (authCtx.accessToken) {
+        const imageText = [];
+        const categorieText = [];
+
+        for (var index=1; index<images.length-1; index++) {
+          if (images[index].source.uri !== undefined) {
+            imageText.push(images[index].source.uri ?? '');
+          }
+        };
+        for (const _category of categories) {
+          if (_category.selected) {
+            categorieText.push(_category.text);
+          }
+        };
+        const response = putResume(
+          authCtx.accessToken, 
+          imageText,
+          categorieText,
+          essay
+        )
+        console.log("완료", response);
+      }
+      setEdit(false);
+    }
+    else {
+      setEdit(true);
+    }
+  }
+
   function takePhoto() {
     setModalVisible(true);
   }
   function setPhoto(uri: string) {
     handleAddImageAtIndex(images.length-1, {id: uuidv4(), type: 'image', source: {uri: uri}})
   }
-
-  // (임시) 이미지 슬라이더의 내부 contents 설정 (api 연동하면, 그냥 빈 array 설정)
-  const [ images, setImages ] = useState([
-    {
-      id: uuidv4(),
-      type: 'image',
-      source: require('../assets/images/imageTest1.png')
-    },
-  ]);
 
   // 이미지 슬라이더의 content handler
   const handleAddImageAtIndex = async (index: number, newImage: any) => {
@@ -126,73 +188,79 @@ const SelfProduce = () => {
     } 
   }
 
-  // 기본 정보
-  const _basics = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
-  const [ basic, setBasic ] = useState(_basics.map((_basic, index) => {
-    return {id: index, text: _basic}
-  }))
-  const [nickname, setNickname] = useState('DEFAULT');
+  const resetMyResume = async (response: resumeResponse) => {
+    setHaveSelfProduce(true);
+    setEdit(false);
 
-  const createBasicInfo = async () => {
+    // 기본 정보 설정
+    const newBasic = [ 
+      gender[response.basicInfo.gender as keyof Gender], 
+      ageGroup[response.basicInfo.ageGroup as keyof AgeGroup] + ageDegree[response.basicInfo.ageDegree as keyof AgeDegree], 
+      heightGroup[response.basicInfo.heightGroup as keyof HeightGroup], 
+      '서울 ' + region['SEOUL'][response.basicInfo.region as keyof Region['SEOUL']]];
+    setBasic(newBasic.map((_basic, index) => {
+      return {id: index, text: _basic}
+    }))
+    setNickname(response.basicInfo.nickname);
+
+    // faceInfo 설정
+    console.log(response.faceInfo);
+    setImages([]);
+    await handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.faceInfo.generatedS3url}});
+
+    for (var index = 0; index < response.resumeImageS3urls.length; index++) {
+      await handleAddImageAtIndex(index+1, {id: uuidv4(), type: 'image', source: {uri: response.resumeImageS3urls[index]}});
+    }
+    // 카테고리 설정
+    const newCategories = categories.map(_category => {
+      // response로 받은 선택된 카테고리면 selected true 설정
+      for (const selectedCategory of response.categories) {
+        if (_category.text === selectedCategory as keyof Category) {
+          return { ..._category, selected: true };
+        }
+      }
+      // selected false 설정
+      return { ..._category, selected: false };
+    });
+    setCategories(newCategories);
+
+    // 소개 설정
+    setEssay(response.content);
+
+    console.log(response.analysisInfo)
+    // face analysis 설정
+    // 왜인지 몰라도 코드를 카테고리 설정 위에 놓으면, 중간에 return 됨. 아니..기본 정보는 되면서...
+    setAnalysis(response.analysisInfo.analysisShort.map((_analysis, index) => {
+      return {id: index, text: _analysis}
+    }))
+  }
+
+  const tryGetMyResume = async () => {
     if (authCtx.accessToken) {
-      const response = await getBasicInfo(
+      const response = await getMyResume(
         authCtx.accessToken
-      );  
-      if (isBasicInfoResponse(response)) {
-        const newBasic = [ 
-          gender[response.gender as keyof Gender], 
-          ageGroup[response.ageGroup as keyof AgeGroup] + ageDegree[response.ageDegree as keyof AgeDegree], 
-          heightGroup[response.heightGroup as keyof HeightGroup], 
-          '서울 ' + region['SEOUL'][response.region as keyof Region['SEOUL']]];
-        setBasic(newBasic.map((_basic, index) => {
-          return {id: index, text: _basic}
-        }))
-        setNickname(response.nickname);
-      }
+      );
+      if (isResumeResponse(response)) {
+        await resetMyResume(response);
+      } 
+
       if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
-      }
+        setHaveSelfProduce(false);
+      } 
     }
     else {
       console.log("로그인 정보가 없습니다.");
     }
   }
 
-  // 슬라이더의 1, 2 페이지에 관상 이미지 가져와서 display (사용자 변경 불가)
-  const createFaceImage = async () => {
+  const createMyResume = async () => {
     if (authCtx.accessToken) {
-      const response = await getFaceInfo(
-        authCtx.accessToken
-      );  
-      if (isFaceInfoResponse(response)) {
-        await handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.generatedS3url}});
-        await handleAddImageAtIndex(1, {id: uuidv4(), type: 'basic', source: {uri: response.originS3url}});
-      }
-      if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
-      }
-    }
-    else {
-      console.log("로그인 정보가 없습니다.");
-    }
-  }
-
-  // 관상 분석
-  const _analysis = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
-  const [ analysis, setAnalysis ] = useState(_analysis.map((_a, index)=> {
-    return {id: index, text: _a};
-  }))
-
-  const createAnalysisInfo = async () => {
-    if (authCtx.accessToken) {
-      const response = await getAnalysisInfoShort(
-        authCtx.accessToken
-      );  
-      if (isAnalysisShortInfoResponse(response)) {
-        setAnalysis(response.analysisShort.map((_analysis, index) => {
-          return {id: index, text: _analysis};
-        }))
-      }
+      const response = await postMyResume(
+        authCtx.accessToken,
+      );
+      if (isResumeResponse(response)) {
+        await resetMyResume(response);
+      } 
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
       }
@@ -207,6 +275,8 @@ const SelfProduce = () => {
   useEffect(() => {
     if (!edit) {
       // 이미지 추가 페이지 삭제
+      if (images.length === 0) return
+
       if (images[images.length-1].type == 'add') {
         images.pop()
       }
@@ -232,24 +302,10 @@ const SelfProduce = () => {
   }, [edit])
 
   useEffect(() => {
-    createBasicInfo();
-    createFaceImage();
-    createAnalysisInfo();
+    tryGetMyResume();
   }, [])
 
   // 아직 api 연동 못한 것 -> 나중에 default 등 처리 예정
-  const [ categories, setCategories ] = useState([
-    {id: 0, text: "운동", selected: true},
-    {id: 1, text: "음식", selected: false},
-    {id: 2, text: "영화", selected: false},
-    {id: 3, text: "패션", selected: true},
-    {id: 4, text: "공부", selected: true},
-    {id: 5, text: "연애", selected: true},
-    {id: 6, text: "음악", selected: true},
-    {id: 7, text: "자유", selected: true},
-  ])
-  const [ essay, setEssay ] = useState('안녕하세요! 저는 Anna 이에요!\n저는 서울 소재 대학교에서 4학년 재학 중인 Jenny에요!\n\n저는 평일에 학교 근처에서 복싱장을 같이 다닐 사람을 구하고 있어요! 혼자 다니면 금방 질려서 그만두게 되더라구요.\n복싱장을 다녀온 이후에는 가볍게 맥주 한잔 정도는 괜찮은 것 같아요!\n\n대화를 나눠보고 찐친이 될 가능성이 보인다면 AI 관상을 지울게요~~');
-
   // 특정 인덱스의 카테고리를 선택, 선택 취소
   function handleCategorySelect(changeIdx: number) {
     const nextCategory = categories.map((category) => {
@@ -281,7 +337,7 @@ const SelfProduce = () => {
         </View>
         <CustomButton 
           containerStyle={{backgroundColor: colors.point}}
-          onPress={()=>{setHaveSelfProduce(!haveSelfProduce)}}
+          onPress={createMyResume}
           textStyle={{color: colors.white}}>자기소개서 작성하기
         </CustomButton>
       </View>
@@ -386,7 +442,7 @@ const SelfProduce = () => {
                     }}
                     containerStyle={styles.uneditableTag} 
                     onPress={() => {handleCategorySelect(item.id)}}
-                    textStyle={styles.uneditableText} children={item.text}/>
+                    textStyle={styles.uneditableText} children={category[item.text]}/>
                 );
               })
             }
@@ -415,7 +471,7 @@ const SelfProduce = () => {
             </View>
             <View style={{width: edit ? "100%" : "50%"}}>
               <CustomButton 
-                containerStyle={{backgroundColor: colors.point, marginHorizontal: 5}} onPress={() => {setEdit(!edit)}}
+                containerStyle={{backgroundColor: colors.point, marginHorizontal: 5}} onPress={handleEditButton}
                 textStyle={{color: colors.white}}>
                 {edit ? "완료" : "수정하기"}
               </CustomButton>

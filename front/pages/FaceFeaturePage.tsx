@@ -6,10 +6,11 @@ import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
-import { getFaceInfo, isAnalysisFullInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
+import { getFaceInfo, isAnalysisFullResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { IconButton } from 'react-native-paper';
+import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import { UserContext } from '../store/user-context.tsx';
 
 const FaceFeaturePage = ({navigation}: any) => {
@@ -19,8 +20,8 @@ const FaceFeaturePage = ({navigation}: any) => {
 
   // 이미지 uri path
   const [ uri, setUri ] = useState('');
-  const [ generatedS3url, setgeneratedS3url ] = useState('');
-  const [ havegeneratedS3url, setHavegeneratedS3url ] = useState(false);
+  const [ generatedS3url, setGeneratedS3url ] = useState('');
+  const [ havegeneratedS3url, setHaveGeneratedS3url ] = useState(false);
 
   const [ isImageSetting, setIsImageSetting ] = useState(false);
   const [ isButtonClickable, setIsButtonClickable ] = useState(false);
@@ -51,10 +52,10 @@ const FaceFeaturePage = ({navigation}: any) => {
         createAlertMessage(response.message);
       }
       if (isFaceInfoDefaultResponse(response)) {
-        setHavegeneratedS3url(false);
+        setHaveGeneratedS3url(false);
       } else if (isFaceInfoResponse(response)) {
-        setgeneratedS3url(response.generatedS3url);
-        setHavegeneratedS3url(true);
+        setGeneratedS3url(response.generatedS3url);
+        setHaveGeneratedS3url(true);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
@@ -72,17 +73,17 @@ const FaceFeaturePage = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else if (isFaceInfoDefaultResponse(response)) {
-        setgeneratedS3url(response.generatedS3url);
-        setHavegeneratedS3url(true);
+        setGeneratedS3url(response.generatedS3url);
+        setHaveGeneratedS3url(true);
       } else {
-        setHavegeneratedS3url(false);
+        setHaveGeneratedS3url(false);
       }
 
       const analysisResponse = await putAnalysisInfo(
         authCtx.accessToken, uri
       );
       
-      if (!isAnalysisFullInfoResponse(analysisResponse)) {
+      if (!isAnalysisFullResponse(analysisResponse)) {
         createAlertMessage(analysisResponse.message);
         return;
       } else {
@@ -100,6 +101,7 @@ const FaceFeaturePage = ({navigation}: any) => {
       // 메인 페이지로 이동
       createAlertMessage("관상 분석 내용은 프로필에서 다시 볼 수 있습니다", () => {
         userCtx.setStatus('FACE_FEATURE_EXIST');
+        navigation.goBack();
       })
     } else {
       // ai 관상 이미지 생성
@@ -187,6 +189,7 @@ const FaceFeaturePage = ({navigation}: any) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <CustomBackHandler onBack={navigation.goBack}/>
       <IconText 
         icon={{source: 'chat-question', color: colors.gray7}} 
         containerStyle={styles.hintContainer}

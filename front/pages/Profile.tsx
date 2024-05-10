@@ -17,8 +17,8 @@ const Profile = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
 
   // 이미지 uri path
-  const [ generatedS3url, setgeneratedS3url ] = useState('');
-  const [ havegeneratedS3url, setHavegeneratedS3url ] = useState(false);
+  const [ generatedS3url, setGeneratedS3url ] = useState('');
+  const [ havegeneratedS3url, setHaveGeneratedS3url ] = useState(false);
   const [ originS3url, setOriginS3url ] = useState('');
 
   const tryGetFaceInfo = async () => {
@@ -30,8 +30,8 @@ const Profile = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else {
-        setgeneratedS3url(response.generatedS3url);
-        setHavegeneratedS3url(true);
+        setGeneratedS3url(response.generatedS3url);
+        setHaveGeneratedS3url(true);
         setOriginS3url(response.originS3url);
       }
     } else { // 실제에서는 절대 없는 예외 상황

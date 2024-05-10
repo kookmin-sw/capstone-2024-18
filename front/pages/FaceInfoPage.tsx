@@ -6,11 +6,12 @@ import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
-import { getBasicInfo, isBasicInfoResponse, isFaceInfoResponse, putFaceInfo } from '../util/auth.tsx';
+import { getBasicInfo, isBasicInfoResponse, putFaceInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import AutoHeightImage from 'react-native-auto-height-image';
 import { Gender } from '../util/basicInfoFormat.tsx';
+import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import { UserContext } from '../store/user-context.tsx';
 
 const FaceInfoPage = ({navigation}: any) => {
@@ -141,25 +142,23 @@ const FaceInfoPage = ({navigation}: any) => {
     </View>
   );
   const setImageStyleContent = (
-    <SafeAreaView>
-      <View style={styles.contentContainer}>
-        <IconText 
-          icon={{source: 'chat-question', color: colors.gray7}} 
-          containerStyle={styles.hintContainer}
-          textStyle={{fontSize: 14, color: colors.gray7}}>마스크에 적용하고 싶은 그림 스타일을 선택해주세요!</IconText>
-        {
-          (gender === 'FEMALE' ? womanStyleIdData : manStyleIdData).map(({id, source}: any) => {
-            return (
-              <Pressable key={id} onPress={() => handleSelectedId(id)}>
-                <Image
-                  blurRadius={(id === selectedStyleId || selectedStyleId === -1) ? 0 : 20}
-                  style={styles.styleImage} source={source}/>
-              </Pressable>
-            );
-          })
-        }
-      </View>
-    </SafeAreaView>
+    <View style={styles.contentContainer}>
+      <IconText 
+        icon={{source: 'chat-question', color: colors.gray7}} 
+        containerStyle={styles.hintContainer}
+        textStyle={{fontSize: 14, color: colors.gray7}}>마스크에 적용하고 싶은 그림 스타일을 선택해주세요!</IconText>
+      {
+        (gender === 'FEMALE' ? womanStyleIdData : manStyleIdData).map(({id, source}: any) => {
+          return (
+            <Pressable key={id} onPress={() => handleSelectedId(id)}>
+              <Image
+                blurRadius={(id === selectedStyleId || selectedStyleId === -1) ? 0 : 20}
+                style={styles.styleImage} source={source}/>
+            </Pressable>
+          );
+        })
+      }
+    </View>
   );
 
   // 카메라에서 image를 가져오면 버튼 클릭 가능하게 수정
@@ -192,19 +191,22 @@ const FaceInfoPage = ({navigation}: any) => {
   ];
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View>
-        {contents[pageIndex]}
-      </View>
-      <View style={{flex: 1}}/>
-      <View style={styles.bottomContainer}>
-        <CustomButton 
-          containerStyle={isButtonClickable ? {backgroundColor: colors.point} : {backgroundColor: colors.pastel_point}} 
-          onPress={clickButton}
-          textStyle={{color: colors.white}} disabled={!isButtonClickable}
-          >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
-      </View>
-    </ScrollView>
+    <SafeAreaView>
+      <ScrollView contentContainerStyle={styles.container}>
+        <CustomBackHandler onBack={navigation.goBack}/>
+        <View>
+          {contents[pageIndex]}
+        </View>
+        <View style={{flex: 1}}/>
+        <View style={styles.bottomContainer}>
+          <CustomButton 
+            containerStyle={isButtonClickable ? {backgroundColor: colors.point} : {backgroundColor: colors.pastel_point}} 
+            onPress={clickButton}
+            textStyle={{color: colors.white}} disabled={!isButtonClickable}
+            >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
