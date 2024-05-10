@@ -150,11 +150,11 @@ public class MessageService {
     public void sendHeart(Long senderId, Long receiveId) {
         String exceptionDestination = "/sub/chat/" + senderId;
 
-//        if (chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId).isPresent()){
-//            String exceptionMessage = ChatExceptionType.ALREADY_CHATROOM.message();
-//            simpMessagingTemplate.convertAndSend(exceptionDestination, exceptionMessage);
-//            throw new ChatException(ChatExceptionType.ALREADY_CHATROOM);
-//        }
+        if (chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId).isPresent()){
+            String exceptionMessage = ChatExceptionType.ALREADY_CHATROOM.message();
+            simpMessagingTemplate.convertAndSend(exceptionDestination, exceptionMessage);
+            throw new ChatException(ChatExceptionType.ALREADY_CHATROOM);
+        }
 
         ChatRoom chatRoom = ChatRoom.builder()
                 .status(ChatRoom.Status.set)
@@ -186,6 +186,7 @@ public class MessageService {
         sendHeartResponse.setType("Heart");
 
         String topic = channelTopic.getTopic();
+        simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 요청 성공");
         redisTemplate.convertAndSend(topic, sendHeartResponse);
     }
     @Transactional
@@ -216,7 +217,10 @@ public class MessageService {
         }
         // 동적으로 목적지 설정
         String destination = "/sub/chat/" + sender.getId();
-
+        
+        // 대화 수락
+        simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 수락 성공");
+        
         // 메시지 전송
         simpMessagingTemplate.convertAndSend(destination, message);
     }
@@ -224,6 +228,7 @@ public class MessageService {
 
     @Transactional
     public void enterApplication(Long memberId) {
+        String exceptionDestination = "/sub/chat/" + memberId;
         SocketInfo socketInfo = new SocketInfo();
         socketInfo.setMemberId(memberId);
         socketInfo.setConnectTime(LocalDateTime.now());
@@ -235,6 +240,8 @@ public class MessageService {
         if(isExistUnSendHeart(memberId)) {
             sendSentHeart(memberId);
         }
+        
+        simpMessagingTemplate.convertAndSend(exceptionDestination, "저장 성공");
     }
 
     @Transactional

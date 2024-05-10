@@ -86,5 +86,4 @@ public class MessageController {
 
         messageService.heartReply(heartReplyRequest, receiveId);
     }
-
 }
