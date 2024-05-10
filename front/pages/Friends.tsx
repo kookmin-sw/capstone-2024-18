@@ -12,6 +12,9 @@ import { AuthContext } from "../store/auth-context.tsx";
 import 'react-native-get-random-values';
 import { FlatList } from 'react-native-gesture-handler';
 import { Category, category as categoryForm } from '../util/categoryFormat.tsx';
+import Config from 'react-native-config';
+import axios, { AxiosError } from 'axios';
+import { createAlertMessage } from '../util/alert.tsx';
 
 
 const Friends = ({navigation}: any) => {
@@ -159,6 +162,20 @@ const Friends = ({navigation}: any) => {
     tryGetGoodCombi();
     tryGetMyResume();
   }, [])
+
+  const testButtonHandler = async () => {
+    const method = "getBasicInfo";
+    const endpoint =  `${Config.LOCALHOST}/basic-info`;
+    const config = { 
+      headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
+    };
+    try {
+      const response = await axios.get(endpoint, config);
+      createAlertMessage(response.data);
+    } catch (error: any) {
+      createAlertMessage(error);
+    }
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>

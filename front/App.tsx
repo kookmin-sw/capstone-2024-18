@@ -24,7 +24,7 @@ function App() {
       <UserContextProvider>
         <SafeAreaProvider>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName='Home' screenOptions={{headerShown: false}}>
+            <Stack.Navigator initialRouteName='Main' screenOptions={{headerShown: false}}>
               <Stack.Screen name="Login" component={Login}/>
               <Stack.Screen name="FindEmail" component={FindEmail}/>
               <Stack.Screen name="FindPw" component={FindPw}/>
