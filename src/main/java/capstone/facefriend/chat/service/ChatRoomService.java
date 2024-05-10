@@ -111,6 +111,18 @@ public class ChatRoomService {
         return chatRooms;
     }
 
+    public ChatRoomEnterResponse enterRoom(Long roomId, Long memberId) {
+        String chatRoomInfoId = roomId + "/member/" + memberId;
+        ChatRoomInfo chatRoomInfo = new ChatRoomInfo();
+        chatRoomInfo.setChatRoomInfoId(chatRoomInfoId);
+        chatRoomInfo.setEnterTime(LocalDateTime.now());
+        chatRoomInfoRedisRepository.save(chatRoomInfo);
+        return ChatRoomEnterResponse.of(roomId, memberId, chatRoomInfo);
+    }
+
+
+
+
 
     private Member identifySender(ChatRoomMember chatRoomMember, Long memberId) {
         Member member = findMemberById(memberId);
