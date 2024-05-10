@@ -102,7 +102,7 @@ def generate_image_by_level():
         os.remove(file_path)
     else:
         pass
-    sys.stdout.close()
+    sys.stdout.flush()
     return jsonify(response_data)
 
 
