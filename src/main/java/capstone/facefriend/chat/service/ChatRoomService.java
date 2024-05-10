@@ -59,6 +59,22 @@ public class ChatRoomService {
         return chatRoomInfo;
     }
 
+    private ChatRoom findRoomById(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+        return chatRoom;
+    }
+
+    private ChatRoomMember findChatRoomMemberByChatRoomId(Long roomId) {
+        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomId(roomId)
+                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+        return chatRoomMember;
+    }
+
+    private List<ChatMessage> findChatRoomMessageByChatRoomId(Long roomId) {
+        return chatMessageRepository.findChatMessagesByChatRoomId(roomId);
+    }
+
 
 
     @Transactional
@@ -136,7 +152,39 @@ public class ChatRoomService {
         return ChatRoomExitResponse.of(roomId, memberId, exitChatRoomTime);
     }
 
-
+    @Transactional
+    public String leftRoom(Long roomId, Long memberId) {
+        ChatRoom chatRoom = findRoomById(roomId);
+        ChatRoom.Status status = chatRoom.getStatus();
+        ChatRoomMember chatRoomMember = findChatRoomMemberByChatRoomId(roomId);
+        Member member = findMemberById(memberId);
+        Member leftMember = identifyLeftMember(memberId, chatRoomMember);
+        if (status== ChatRoom.Status.close) {
+            if (member != leftMember) {
+                chatRoomMemberRepository.delete(chatRoomMember);
+                chatRoomRepository.delete(chatRoom);
+                return "채팅방을 떠났습니다.";
+            } else {
+                return "이미 떠난 채팅방입니다.";
+            }
+        }
+        List<ChatMessage> chatMessages = findChatRoomMessageByChatRoomId(roomId);
+        log.info("FindChatRoomIdChatMessage:{}", chatMessages.toString());
+        if(!chatMessages.isEmpty()){
+            chatMessageRepository.deleteAll(chatMessages);
+        }
+        if (chatRoomMember.getSender() == member) {
+            chatRoomMember.setSenderExist(false);
+        } else if (chatRoomMember.getReceiver() == member){
+            chatRoomMember.setReceiverExist(false);
+        } else {
+            return "속해있지 않은 채팅방입니디.";
+        }
+        chatRoom.setStatus(ChatRoom.Status.close);
+        chatRoomRepository.save(chatRoom);
+        chatRoomMemberRepository.save(chatRoomMember);
+        return "채팅방을 떠났습니다";
+    }
 
     private Member identifySender(ChatRoomMember chatRoomMember, Long memberId) {
         Member member = findMemberById(memberId);
