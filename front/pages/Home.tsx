@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { View } from "react-native"
 import AutoHeightImage from 'react-native-auto-height-image';
 
@@ -41,6 +41,10 @@ const Home = ({ navigation }: any) => {
       }
     }, [userCtx.status])
   );
+  
+  useEffect(() => {
+    console.log(userCtx.status)
+  }, [userCtx.status])
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

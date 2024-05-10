@@ -227,6 +227,7 @@ const SelfProduce = () => {
     // 소개 설정
     setEssay(response.content);
 
+    console.log(response.analysisInfo)
     // face analysis 설정
     // 왜인지 몰라도 코드를 카테고리 설정 위에 놓으면, 중간에 return 됨. 아니..기본 정보는 되면서...
     setAnalysis(response.analysisInfo.analysisShort.map((_analysis, index) => {

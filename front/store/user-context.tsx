@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useMemo, useContext} from 'react';
 
-import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth';
+import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse } from '../util/auth';
 import { AuthContext } from './auth-context';
 
 const UUID = '0';
@@ -96,7 +96,7 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
       console.log('마스크 이미지 로딩 끝');
 
       if (isFaceInfoResponse(faceInfoResponse)) {
-        if (faceInfoResponse.generatedS3url !== 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-profile.png') {
+        if (!isFaceInfoDefaultResponse(faceInfoResponse)) {
           console.log('마스크 이미지 있음');
           setStatus('FACE_INFO_EXIST');
         }
@@ -122,7 +122,8 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
       const response = await getAnalysisInfoShort(authCtx.accessToken);
       console.log("관상 분석 로딩 끝");
 
-      if (isAnalysisShortInfoResponse(response)) {
+      console.log(response);
+      if (isAnalysisShortResponse(response)) {
         console.log("관상 분석 있음");
         setStatus("FACE_FEATURE_EXIST");
       } else {

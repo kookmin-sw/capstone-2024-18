@@ -898,14 +898,14 @@ export const isFaceInfoDefaultResponse = (response: validResponse | errorRespons
 }
 
 export const isAnalysisInfoResponse = (response: validResponse | errorResponse): response is analysisResponse => {
-  return isAnalysisFullInfoResponse(response) && isAnalysisShortInfoResponse(response);
+  return isAnalysisFullResponse(response) && isAnalysisShortResponse(response);
 }
 
-export const isAnalysisFullInfoResponse = (response: validResponse | errorResponse): response is analysisResponse => {
+export const isAnalysisFullResponse = (response: validResponse | errorResponse): response is analysisResponse => {
   return (response as analysisResponse).analysisFull !== undefined;
 }
 
-export const isAnalysisShortInfoResponse = (response: validResponse | errorResponse): response is analysisResponse => {
+export const isAnalysisShortResponse = (response: validResponse | errorResponse): response is analysisResponse => {
   return (response as analysisResponse).analysisShort[0] !== "관상 분석 태그가 없습니다!";
 }
 

@@ -6,7 +6,7 @@ import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
-import { getFaceInfo, isAnalysisFullInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
+import { getFaceInfo, isAnalysisFullResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { IconButton } from 'react-native-paper';
@@ -52,7 +52,7 @@ const FaceFeaturePage = ({navigation}: any) => {
         createAlertMessage(response.message);
       }
       if (isFaceInfoDefaultResponse(response)) {
-        setHavegeneratedS3url(false);
+        setHaveGeneratedS3url(false);
       } else if (isFaceInfoResponse(response)) {
         setGeneratedS3url(response.generatedS3url);
         setHaveGeneratedS3url(true);
@@ -75,16 +75,15 @@ const FaceFeaturePage = ({navigation}: any) => {
       } else if (isFaceInfoDefaultResponse(response)) {
         setGeneratedS3url(response.generatedS3url);
         setHaveGeneratedS3url(true);
-
       } else {
-        setHavegeneratedS3url(false);
+        setHaveGeneratedS3url(false);
       }
 
       const analysisResponse = await putAnalysisInfo(
         authCtx.accessToken, uri
       );
       
-      if (!isAnalysisFullInfoResponse(analysisResponse)) {
+      if (!isAnalysisFullResponse(analysisResponse)) {
         createAlertMessage(analysisResponse.message);
         return;
       } else {
@@ -102,6 +101,7 @@ const FaceFeaturePage = ({navigation}: any) => {
       // 메인 페이지로 이동
       createAlertMessage("관상 분석 내용은 프로필에서 다시 볼 수 있습니다", () => {
         userCtx.setStatus('FACE_FEATURE_EXIST');
+        navigation.goBack();
       })
     } else {
       // ai 관상 이미지 생성
