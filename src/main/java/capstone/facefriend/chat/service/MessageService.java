@@ -43,27 +43,44 @@ public class MessageService {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatRoomInfoRedisRepository chatRoomInfoRedisRepository;
 
-    private Member findMemberById(Long memberId) {
+    private Member findMemberById(String destination, Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND));
+                .orElse(null);
+        if (member == null) {
+            simpMessagingTemplate.convertAndSend(destination, MemberExceptionType.NOT_FOUND.message());
+            throw new MemberException(MemberExceptionType.NOT_FOUND);
+        }
+
         return member;
     }
 
-    private ChatRoom findRoomById(Long roomId) {
+    private ChatRoom findRoomById(String destination, Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+                .orElse(null);
+        if (chatRoom == null) {
+            simpMessagingTemplate.convertAndSend(destination, MemberExceptionType.NOT_FOUND.message());
+            throw new MemberException(MemberExceptionType.NOT_FOUND);
+        }
         return chatRoom;
     }
 
-    private ChatRoomMember findSenderReceiver(Long senderId, Long receiveId) {
+    private ChatRoomMember findSenderReceiver(String destination, Long senderId, Long receiveId) {
         ChatRoomMember chatRoomMember = chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId)
-                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+                .orElse(null);
+        if (chatRoomMember == null) {
+            simpMessagingTemplate.convertAndSend(destination, MemberExceptionType.NOT_FOUND.message());
+            throw new MemberException(MemberExceptionType.NOT_FOUND);
+        }
         return chatRoomMember;
     }
 
-    private ChatRoomMember findChatRoomMemberByChatRoomId(Long roomId) {
+    private ChatRoomMember findChatRoomMemberByChatRoomId(String destination, Long roomId) {
         ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomId(roomId)
-                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+                .orElse(null);
+        if (chatRoomMember == null) {
+            simpMessagingTemplate.convertAndSend(destination, MemberExceptionType.NOT_FOUND.message());
+            throw new MemberException(MemberExceptionType.NOT_FOUND);
+        }
         return chatRoomMember;
     }
 
@@ -81,20 +98,24 @@ public class MessageService {
 
     @Transactional
     public void sendMessage(MessageRequest messageRequest, Long senderId) {
-        Member sender = findMemberById(senderId);
-        Member receiver = findMemberById(messageRequest.getReceiveId());
-        ChatRoom chatRoom = findRoomById(messageRequest.getRoomId());
+        String exceptionDestination = "/sub/chat/" + senderId;
+        Member sender = findMemberById(exceptionDestination, senderId);
+        Member receiver = findMemberById(exceptionDestination, messageRequest.getReceiveId());
+        ChatRoom chatRoom = findRoomById(exceptionDestination, messageRequest.getRoomId());
 
         if (chatRoom.getStatus() == ChatRoom.Status.open) {
             chatRoom.setStatus(ChatRoom.Status.progress);
-            ChatRoomMember chatRoomMember = findChatRoomMemberByChatRoomId(chatRoom.getId());
+            ChatRoomMember chatRoomMember = findChatRoomMemberByChatRoomId(exceptionDestination, chatRoom.getId());
             chatRoomRepository.save(chatRoom);
             chatRoomMemberRepository.save(chatRoomMember);
         } else if ((chatRoom.getStatus() == ChatRoom.Status.close)) {
+            simpMessagingTemplate.convertAndSend(exceptionDestination, ChatExceptionType.INVALIDED_CHATROOM.message());
             throw new ChatException(ChatExceptionType.INVALIDED_CHATROOM);
         } else if ((chatRoom.getStatus() == ChatRoom.Status.set)) {
+            simpMessagingTemplate.convertAndSend(exceptionDestination, ChatExceptionType.INVALIDED_CHATROOM.message());
             throw new ChatException(ChatExceptionType.INVALIDED_CHATROOM);
         } else if ((chatRoom.getStatus() == ChatRoom.Status.delete)) {
+            simpMessagingTemplate.convertAndSend(exceptionDestination, ChatExceptionType.INVALIDED_CHATROOM.message());
             throw new ChatException(ChatExceptionType.INVALIDED_CHATROOM);
         }
 
@@ -127,19 +148,22 @@ public class MessageService {
     }
     @Transactional
     public void sendHeart(Long senderId, Long receiveId) {
+        String exceptionDestination = "/sub/chat/" + senderId;
+
+//        if (chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId).isPresent()){
+//            String exceptionMessage = ChatExceptionType.ALREADY_CHATROOM.message();
+//            simpMessagingTemplate.convertAndSend(exceptionDestination, exceptionMessage);
+//            throw new ChatException(ChatExceptionType.ALREADY_CHATROOM);
+//        }
+
         ChatRoom chatRoom = ChatRoom.builder()
                 .status(ChatRoom.Status.set)
                 .isPublic(false)
                 .build();
         chatRoomRepository.save(chatRoom);
 
-        Member sender = findMemberById(senderId);
-        Member receiver = findMemberById(receiveId);
-
-
-        if (chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId).isPresent())
-            throw new ChatException(ChatExceptionType.ALREADY_CHATROOM);
-
+        Member sender = findMemberById(exceptionDestination, senderId);
+        Member receiver = findMemberById(exceptionDestination, receiveId);
 
         ChatRoomMember chatRoomMember = ChatRoomMember.builder()
                 .chatRoom(chatRoom)
@@ -166,13 +190,14 @@ public class MessageService {
     }
     @Transactional
     public void heartReply(HeartReplyRequest heartReplyRequest, Long receiveId) {
+        String exceptionDestination = "/sub/chat/" + receiveId;
         String message = null;
 
-        Member receiver = findMemberById(receiveId);
-        Member sender = findMemberById(heartReplyRequest.getSenderId());
+        Member receiver = findMemberById(exceptionDestination, receiveId);
+        Member sender = findMemberById(exceptionDestination, heartReplyRequest.getSenderId());
 
-        ChatRoomMember chatRoomMember = findSenderReceiver(sender.getId(), receiver.getId());
-        ChatRoom chatRoom = findRoomById(chatRoomMember.getChatRoom().getId());
+        ChatRoomMember chatRoomMember = findSenderReceiver(exceptionDestination, sender.getId(), receiver.getId());
+        ChatRoom chatRoom = findRoomById(exceptionDestination, chatRoomMember.getChatRoom().getId());
 
         if (heartReplyRequest.getIntention().equals("positive")) {
             chatRoom.setStatus(ChatRoom.Status.open);
@@ -186,6 +211,7 @@ public class MessageService {
 
             message = receiver.getBasicInfo().getNickname() + "님이 거절했습니다.";
         } else {
+            simpMessagingTemplate.convertAndSend(exceptionDestination, ChatExceptionType.ALREADY_CHATROOM);
             throw new ChatException(ChatExceptionType.ALREADY_CHATROOM);
         }
         // 동적으로 목적지 설정
