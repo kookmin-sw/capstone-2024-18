@@ -75,8 +75,6 @@ public class ChatRoomService {
         return chatMessageRepository.findChatMessagesByChatRoomId(roomId);
     }
 
-
-
     @Transactional
     public Map<String, Object> getChatRoomList(Long memberId) {
 
