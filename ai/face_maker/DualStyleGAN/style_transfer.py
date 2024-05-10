@@ -10,6 +10,7 @@ import torchvision
 from model.dualstylegan import DualStyleGAN
 from model.encoder.psp import pSp
 import sys
+from datetime import datetime
 
 class TestOptions():
     def __init__(self):
@@ -145,10 +146,12 @@ class StyleTransfer():
             if args.preserve_color and not args.wplus:
                 latent[:,7:18] = instyle[:,7:18]
             # extrinsic styte code
+            
+            print('exstyle:', datetime.now().time())
             exstyle = generator.generator.style(latent.reshape(latent.shape[0]*latent.shape[1], latent.shape[2])).reshape(latent.shape)
             if args.preserve_color and args.wplus:
                 exstyle[:,7:18] = instyle[:,7:18]
-
+            print('exstyle:', datetime.now().time())
             # load style image if it exists
             # S = None
             # if os.path.exists(os.path.join(args.data_path, args.style, 'images/train', stylename)):
@@ -160,8 +163,11 @@ class StyleTransfer():
             # z_plus_latent: instyle is in Z+ space
             # use_res: use extrinsic style path, or the style is not transferred
             # interp_weights: weight vector for style combination of two paths
+            
+            print('image', datetime.now().time())
             img_gen, _ = generator([instyle], exstyle, input_is_latent=input_is_latent, z_plus_latent=z_plus_latent,
                                   truncation=args.truncation, truncation_latent=0, use_res=True, interp_weights=args.weight)
+            print('image', datetime.now().time())
             img_gen = torch.clamp(img_gen.detach(), -1, 1)
             viz += [img_gen]
         print('Generate images successfully!')

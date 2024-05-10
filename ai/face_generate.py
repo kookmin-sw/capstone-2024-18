@@ -26,7 +26,6 @@ def home():
 
 @app.route('/generate_image', methods = ['POST']) #flask는 단일스레드+동기처리를 수행하기 때문에 face_maker는 항상 하나의 요청에서만 접근된다.
 def generate_image():
-
     print('----------------------------------------\n')
     print(type(request.files['image']))
     print(request.values.keys())
@@ -34,7 +33,8 @@ def generate_image():
 
     # 파일 저장 위치 만들기
     file_path = request.values['user_id'] + '.png'
-
+    
+    sys.stdout = open(request.values['user_id']+'.txt','w')
     # 파일 저장
     #request.files['image'].save(file_path)
     
