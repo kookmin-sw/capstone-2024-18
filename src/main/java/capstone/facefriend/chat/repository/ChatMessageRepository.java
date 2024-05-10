@@ -9,6 +9,7 @@ import java.util.List;
 
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
+    ChatMessage findFirstByChatRoomIdOrderBySendTimeDesc(Long roomId);
     ChatMessage save(ChatMessage chatMessage);
     List<ChatMessage> findChatMessagesByChatRoom_IdAndSendTimeBefore(Long roomId, LocalDateTime time, Pageable pageable);
     List<ChatMessage> findChatMessagesByChatRoomId(Long roomId);
