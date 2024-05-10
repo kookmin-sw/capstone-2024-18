@@ -150,10 +150,10 @@ class StyleTransfer():
                 exstyle[:,7:18] = instyle[:,7:18]
 
             # load style image if it exists
-            S = None
-            if os.path.exists(os.path.join(args.data_path, args.style, 'images/train', stylename)):
-                S = load_image(os.path.join(args.data_path, args.style, 'images/train', stylename)).to(device)
-                viz += [S]
+            # S = None
+            # if os.path.exists(os.path.join(args.data_path, args.style, 'images/train', stylename)):
+            #     S = load_image(os.path.join(args.data_path, args.style, 'images/train', stylename)).to(device)
+            #     viz += [S]
 
             # style transfer 
             # input_is_latent: instyle is not in W space
@@ -168,9 +168,9 @@ class StyleTransfer():
         for i in range(len(viz)):
             print(viz[i].shape)
         save_name = args.name+'_%d_%s'%(args.style_id, os.path.basename(args.content).split('.')[0])
-        save_image(torchvision.utils.make_grid(F.adaptive_avg_pool2d(torch.cat(viz, dim=0), 256), 4, 2).cpu(), 
-        os.path.join(args.output_path, save_name+'_overview.jpg'))
-        save_image(img_gen[0].cpu(), os.path.join(args.output_path, save_name+'.jpg'))
+        #save_image(torchvision.utils.make_grid(F.adaptive_avg_pool2d(torch.cat(viz, dim=0), 256), 4, 2).cpu(), 
+        #os.path.join(args.output_path, save_name+'_overview.jpg'))
+        #save_image(img_gen[0].cpu(), os.path.join(args.output_path, save_name+'.jpg'))
         face = ((img_gen[0].detach().numpy().transpose(1, 2, 0) + 1.0) * 127.5).astype(np.uint8)
         return face
 
