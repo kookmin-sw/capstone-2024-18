@@ -87,8 +87,8 @@ public class AnalysisInfoService {
         Integer faceShapeIdNum = extractFaceShapeIdNum(total);
 
         Member member = findMemberById(memberId); // 영속 상태
-        member.getAnalysisInfo().setAnalysisInfoFull(analysisFull); // dirty
-        member.getAnalysisInfo().setAnalysisInfoShort(analysisShort);
+        member.getAnalysisInfo().setAnalysisFull(analysisFull); // dirty
+        member.getAnalysisInfo().setAnalysisShort(analysisShort);
         member.getAnalysisInfo().setFaceShapeIdNum(faceShapeIdNum);
 
         return new AnalysisInfoFullResponse(analysisFull);
@@ -127,19 +127,19 @@ public class AnalysisInfoService {
 
     public AnalysisInfoFullShortResponse getAnalysisInfoFullShort(Long memberId) {
         Member member = findMemberById(memberId);
-        Map<String, String> analysisInfoFull = member.getAnalysisInfo().getAnalysisInfoFull();
-        List<String> analysisInfoShort = member.getAnalysisInfo().getAnalysisInfoShort();
+        Map<String, String> analysisInfoFull = member.getAnalysisInfo().getAnalysisFull();
+        List<String> analysisInfoShort = member.getAnalysisInfo().getAnalysisShort();
         return new AnalysisInfoFullShortResponse(analysisInfoFull, analysisInfoShort);
     }
 
     public AnalysisInfoFullResponse getAnalysisInfoFull(Long memberId) {
         Member member = findMemberById(memberId);
-        return new AnalysisInfoFullResponse(member.getAnalysisInfo().getAnalysisInfoFull());
+        return new AnalysisInfoFullResponse(member.getAnalysisInfo().getAnalysisFull());
     }
 
     public AnalysisInfoShortResponse getAnalysisInfoShort(Long memberId) {
         Member member = findMemberById(memberId);
-        return new AnalysisInfoShortResponse(member.getAnalysisInfo().getAnalysisInfoShort());
+        return new AnalysisInfoShortResponse(member.getAnalysisInfo().getAnalysisShort());
     }
 
     private Member findMemberById(Long memberId) {

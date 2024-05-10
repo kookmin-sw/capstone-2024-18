@@ -117,13 +117,13 @@ public class MemberService {
 
         // 관상 분석 초기값
         AnalysisInfo analysisInfo = AnalysisInfo.builder()
-                .analysisInfoFull(Map.of(
+                .analysisFull(Map.of(
                         INITIAL_ANALYSIS_NAME_EYE, INITIAL_ANALYSIS_DESCRIPTION,
                         INITIAL_ANALYSIS_NAME_FACE_SHAPE, INITIAL_ANALYSIS_DESCRIPTION,
                         INITIAL_ANALYSIS_NAME_LIPS, INITIAL_ANALYSIS_DESCRIPTION,
                         INITIAL_ANALYSIS_NAME_NOSE, INITIAL_ANALYSIS_DESCRIPTION,
                         INITIAL_ANALYSIS_NAME_EYEBROW, INITIAL_ANALYSIS_DESCRIPTION))
-                .analysisInfoShort(List.of(INITIAL_ANALYSIS_TAG))
+                .analysisShort(List.of(INITIAL_ANALYSIS_TAG))
                 .faceShapeIdNum(INITIAL_ANALYSIS_FACE_SHAPE_NUM)
                 .build();
         analysisInfoRepository.save(analysisInfo);
