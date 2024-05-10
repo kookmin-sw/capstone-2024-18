@@ -11,15 +11,17 @@ import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { IconButton } from 'react-native-paper';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
+import { UserContext } from '../store/user-context.tsx';
 
 const FaceFeaturePage = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   // 이미지 uri path
   const [ uri, setUri ] = useState('');
-  const [ generatedS3Url, setGeneratedS3Url ] = useState('');
-  const [ haveGeneratedS3Url, setHaveGeneratedS3Url ] = useState(false);
+  const [ generatedS3url, setGeneratedS3url ] = useState('');
+  const [ havegeneratedS3url, setHaveGeneratedS3url ] = useState(false);
 
   const [ isImageSetting, setIsImageSetting ] = useState(false);
   const [ isButtonClickable, setIsButtonClickable ] = useState(false);
@@ -50,10 +52,10 @@ const FaceFeaturePage = ({navigation}: any) => {
         createAlertMessage(response.message);
       }
       if (isFaceInfoDefaultResponse(response)) {
-        setHaveGeneratedS3Url(false);
+        setHavegeneratedS3url(false);
       } else if (isFaceInfoResponse(response)) {
-        setGeneratedS3Url(response.generatedS3url);
-        setHaveGeneratedS3Url(true);
+        setGeneratedS3url(response.generatedS3url);
+        setHaveGeneratedS3url(true);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
@@ -71,10 +73,11 @@ const FaceFeaturePage = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else if (isFaceInfoDefaultResponse(response)) {
-        setGeneratedS3Url(response.generatedS3url);
-        setHaveGeneratedS3Url(true);
+        setGeneratedS3url(response.generatedS3url);
+        setHaveGeneratedS3url(true);
+
       } else {
-        setHaveGeneratedS3Url(false);
+        setHavegeneratedS3url(false);
       }
 
       const analysisResponse = await putAnalysisInfo(
@@ -97,7 +100,9 @@ const FaceFeaturePage = ({navigation}: any) => {
   const clickButton = async () => {
     if (pageIndex === contents.length - 1) {
       // 메인 페이지로 이동
-      createAlertMessage("관상 분석 내용은 프로필에서 다시 볼 수 있습니다", () => navigation.goBack())
+      createAlertMessage("관상 분석 내용은 프로필에서 다시 볼 수 있습니다", () => {
+        userCtx.setStatus('FACE_FEATURE_EXIST');
+      })
     } else {
       // ai 관상 이미지 생성
       
@@ -140,9 +145,9 @@ const FaceFeaturePage = ({navigation}: any) => {
   );
   const resultContent = (
     <View style={styles.contentContainer}>
-      {haveGeneratedS3Url ? 
+      {havegeneratedS3url ? 
       <ImageWithIconOverlay
-        borderRadius={300} source={{uri: generatedS3Url}}
+        borderRadius={300} source={{uri: generatedS3url}}
         containerStyle={styles.resultImageContainer} imageStyle={styles.image}>
         <IconButton icon={'check'} size={30} iconColor={colors.white} style={styles.resultBottomIcon}/>
       </ImageWithIconOverlay>:<></>

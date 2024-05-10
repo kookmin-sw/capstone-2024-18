@@ -399,13 +399,13 @@ export const putFaceInfo = async (accessToken: string, fileUri: string, styleId:
   };
   try {
     const response = await axios.put(endpoint, formData, config);
-    const { originS3Url, generatedS3Url } = response.data;
+    const { originS3url, generatedS3url } = response.data;
     const responseInfo = {
       method,
       status: response.status,
       message: "관상 이미지를 수정했습니다.",
-      originS3Url, 
-      generatedS3Url
+      originS3url, 
+      generatedS3url
     }
     console.log(responseInfo);
     return responseInfo;

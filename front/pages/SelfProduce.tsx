@@ -242,6 +242,7 @@ const SelfProduce = () => {
       if (isResumeResponse(response)) {
         await resetMyResume(response);
       } 
+
       if (isErrorResponse(response)) {
         setHaveSelfProduce(false);
       } 

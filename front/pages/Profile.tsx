@@ -17,9 +17,9 @@ const Profile = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
 
   // 이미지 uri path
-  const [ generatedS3Url, setGeneratedS3Url ] = useState('');
-  const [ haveGeneratedS3Url, setHaveGeneratedS3Url ] = useState(false);
-  const [ originS3Url, setOriginS3Url ] = useState('');
+  const [ generatedS3url, setGeneratedS3url ] = useState('');
+  const [ havegeneratedS3url, setHaveGeneratedS3url ] = useState(false);
+  const [ originS3url, setOriginS3url ] = useState('');
 
   const tryGetFaceInfo = async () => {
     if (authCtx.accessToken) {
@@ -30,9 +30,9 @@ const Profile = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else {
-        setGeneratedS3Url(response.generatedS3url);
-        setHaveGeneratedS3Url(true);
-        setOriginS3Url(response.originS3url);
+        setGeneratedS3url(response.generatedS3url);
+        setHaveGeneratedS3url(true);
+        setOriginS3url(response.originS3url);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
@@ -118,15 +118,15 @@ const Profile = ({navigation}: any) => {
         <Text style={styles.text}>AI 관상은 서로 모르는 사이에서도 쉽게 다가갈 수 있기 위한 목적으로 사용해요. 만약 채팅을 통해 충분히 친해졌다면 실제 프로필 이미지를 공개할 수 있어요.</Text>
       </View>
       <View style={styles.contentContainer}>
-        {haveGeneratedS3Url ? 
+        {havegeneratedS3url ? 
         <View style={styles.imageRowFlexBox}>
           <ImageWithIconOverlay
-            borderRadius={300} source={{uri: generatedS3Url}}
+            borderRadius={300} source={{uri: generatedS3url}}
             containerStyle={styles.grayImageContainer} imageStyle={styles.image}
             centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
             centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
           <ImageWithIconOverlay
-            borderRadius={300} source={{uri: originS3Url}}
+            borderRadius={300} source={{uri: originS3url}}
             containerStyle={styles.grayImageContainer} imageStyle={styles.image}
             centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
             centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
