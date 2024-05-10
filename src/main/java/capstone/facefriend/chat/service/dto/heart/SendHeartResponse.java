@@ -18,5 +18,4 @@ public class SendHeartResponse implements Serializable {
     private String sessionId;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
-
 }

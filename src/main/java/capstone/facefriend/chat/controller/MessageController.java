@@ -1,18 +1,20 @@
 package capstone.facefriend.chat.controller;
 
+import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.auth.infrastructure.JwtProvider;
-import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
-import capstone.facefriend.chat.service.dto.message.MessageRequest;
-import capstone.facefriend.chat.service.dto.heart.SendHeartRequest;
 import capstone.facefriend.chat.service.MessageService;
+import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
+import capstone.facefriend.chat.service.dto.heart.SendHeartRequest;
+import capstone.facefriend.chat.service.dto.message.MessageListResponse;
+import capstone.facefriend.chat.service.dto.message.MessageRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -21,14 +23,35 @@ public class MessageController {
 
     private static final String BEARER_PREFIX = "Bearer ";
     private final MessageService messageService;
-    private final MappingJackson2HttpMessageConverter converter;
     private final JwtProvider jwtProvider;
 
-    @MessageMapping("/test")
-    @SendTo("/sub/test")
-    public String test() {
-        return "테스트 메시지";
+    @MessageMapping("/stomp/connect")
+    public void enterApp(
+            StompHeaderAccessor headerAccessor
+    ){
+        String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
+        String token = authorizationHeader.substring(BEARER_PREFIX.length());
+        Long memberId = jwtProvider.extractId(token);
+        messageService.enterApplication(memberId);
     }
+
+    @PostMapping("/stomp/disconnect")
+    public String exitApp(
+            @AuthMember Long memberId
+    ){
+        String msg =  messageService.exitApplication(memberId);
+        return msg;
+    }
+
+    @GetMapping("/chat/{roomId}/messages")
+    public ResponseEntity<List<MessageListResponse>> getMessagesPage(
+            @PathVariable("roomId") Long roomId,
+            @AuthMember Long memberId,
+            @RequestParam(required = false, defaultValue = "1", value = "page") int pageNo
+    ){
+        return ResponseEntity.ok(messageService.getMessagePage(roomId, memberId,pageNo));
+    }
+
 
     @MessageMapping("/chat/messages")
     public void message(

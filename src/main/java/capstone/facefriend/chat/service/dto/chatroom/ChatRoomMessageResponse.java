@@ -2,31 +2,33 @@ package capstone.facefriend.chat.service.dto.chatroom;
 
 import capstone.facefriend.chat.domain.ChatMessage;
 import capstone.facefriend.chat.domain.ChatRoom;
-import capstone.facefriend.chat.domain.ChatRoomMember;
-
-import java.time.LocalDateTime;
+import capstone.facefriend.member.domain.member.Member;
 
 public record ChatRoomMessageResponse(
-        Long sender,
-        Long receiver,
-        ChatRoom chatRoom,
-        String content,
-        LocalDateTime sendTime,
+        Long memberId,
+        String memberNickname,
+        String memberGeneratedFaceS3url,
+        String memberOriginFaceS3url,
+        Long senderId,
         String senderNickname,
-        String senderGeneratedFaceInfo,
-        String senderOriginalFaceInfo
+        String senderGeneratedFaceS3url,
+        String senderOriginFaceS3url,
+        ChatRoom chatRoom,
+        String content
 
 ){
-    public static ChatRoomMessageResponse of(ChatRoomMember chatRoomMember, ChatMessage message) {
+    public static ChatRoomMessageResponse of(Member member, Member sender, ChatRoom chatRoom, ChatMessage message) {
         return new ChatRoomMessageResponse(
-                chatRoomMember.getSender().getId(),
-                chatRoomMember.getReceiver().getId(),
-                chatRoomMember.getChatRoom(),
-                message.getContent(),
-                message.getSendTime(),
-                message.getSender().getBasicInfo().getNickname(),
-                message.getSender().getFaceInfo().getGeneratedS3url(),
-                message.getSender().getFaceInfo().getOriginS3url()
+                member.getId(),
+                member.getBasicInfo().getNickname(),
+                member.getFaceInfo().getGeneratedS3url(),
+                member.getFaceInfo().getOriginS3url(),
+                sender.getId(),
+                sender.getBasicInfo().getNickname(),
+                sender.getFaceInfo().getGeneratedS3url(),
+                sender.getFaceInfo().getOriginS3url(),
+                chatRoom,
+                message.getContent()
         );
     }
 }
