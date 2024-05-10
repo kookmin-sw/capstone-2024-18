@@ -1,5 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle } from 'react-native';
-import { Icon } from 'react-native-paper';
+import { View, Text, ScrollView, StyleSheet, Dimensions, StyleProp, ViewStyle } from 'react-native';
 import { colors } from '../assets/colors.tsx'
 import CustomButton from '../components/CustomButton';
 import React, { useContext, useEffect, useState } from 'react';
@@ -7,15 +6,14 @@ import CustomTextInput from '../components/CustomTextInput.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
-import { showModal } from '../components/CameraComponent.tsx';
 
-import { deleteMyResume, getMyResume, getOtherResume, isErrorResponse, isResumeResponse, isValidResponse, postMyResume, putResume } from '../util/auth.tsx';
+import { getOtherResume, isErrorResponse, isResumeResponse } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context";
 
-import { createAlertMessage } from '../util/alert.tsx';
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
 import { Category, category } from '../util/categoryFormat.tsx';
 import { useRoute } from '@react-navigation/native';
+import CustomBackHandler from '../components/CustomBackHandler.tsx';
 
 
 const OtherUserSelfProduce = ({navigation}: any) => {
@@ -41,6 +39,23 @@ const OtherUserSelfProduce = ({navigation}: any) => {
   }
   const [ images, setImages ] = useState<ImageFormat[]>([]);
 
+  // 기본 정보
+  const defaultSamples = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
+  const [ basic, setBasic ] = useState(defaultSamples.map((_basic, index) => {
+    return {id: index, text: _basic}
+  }))
+  const [nickname, setNickname] = useState('DEFAULT');
+
+  // 관상 분석
+  const [ analysis, setAnalysis ] = useState(defaultSamples.map((_a, index)=> {
+    return {id: index, text: _a};
+  }))
+
+  const [ categories, setCategories ] = useState(Object.keys(category).map((key, index) => {
+    return {id: index, text: key as keyof Category, selected: false}
+  }))
+  const [ essay, setEssay ] = useState('DEFAULT');
+
   /**
    * 이미지 슬라이더에 들어갈 컨텐츠 내용물 데이터를 React.ReactNode로 바꿔주는 함수
    * @param param0 :any
@@ -56,26 +71,13 @@ const OtherUserSelfProduce = ({navigation}: any) => {
     );
   }
 
-  // 기본 정보
-  const _basics = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
-  const [ basic, setBasic ] = useState(_basics.map((_basic, index) => {
-    return {id: index, text: _basic}
-  }))
-  const [nickname, setNickname] = useState('DEFAULT');
-
-  // 관상 분석
-  const _analysis = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
-  const [ analysis, setAnalysis ] = useState(_analysis.map((_a, index)=> {
-    return {id: index, text: _a};
-  }))
-
-  const [ categories, setCategories ] = useState(Object.keys(category).map((key, index) => {
-    return {id: index, text: key as keyof Category, selected: false}
-  }))
-  const [ essay, setEssay ] = useState('DEFAULT');
+  const handleHeart = async () => {
+    navigation.goBack();
+  }
 
   const tryGetResume = async () => {
     if (authCtx.accessToken) {
+      console.log(resumeId);
       const response = await getOtherResume(
         authCtx.accessToken, resumeId
       );
@@ -88,15 +90,14 @@ const OtherUserSelfProduce = ({navigation}: any) => {
           '서울 ' + region['SEOUL'][response.basicInfo.region as keyof Region['SEOUL']]];
         setBasic(newBasic.map((_basic, index) => {
           return {id: index, text: _basic}
-        }))
+        }));
         setNickname(response.basicInfo.nickname);
 
-        // faceInfo 설정
-        console.log(response.faceInfo);
-        setImages(prev => [
-          ...prev, 
-          {id: images.length, source: {uri: response.faceInfo.generatedS3url}}
-        ]);
+        // 이미지 설정
+        const imageTexts = [response.faceInfo.generatedS3url, ...response.resumeImageS3urls];
+        setImages(imageTexts.map((imageText, index) => {
+          return {id: index, source: {uri: imageText}}
+        }));
 
         // 카테고리 설정
         const newCategories = categories.map(_category => {
@@ -109,7 +110,6 @@ const OtherUserSelfProduce = ({navigation}: any) => {
           // selected false 설정
           return { ..._category, selected: false };
         });
-        console.log(newCategories);
         setCategories(newCategories);
 
         // 소개 설정
@@ -137,6 +137,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
       {/* 이미지 슬라이더 */}
+      <CustomBackHandler onBack={() => navigation.goBack()}/>
       <CarouselSlider
         pageWidth={pageWidth}
         pageHeight={pageWidth}
@@ -253,7 +254,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
           <View style={{width: "100%"}}>
             <CustomButton 
               containerStyle={{backgroundColor: colors.point, marginHorizontal: 5}}
-              textStyle={{color: colors.white}}>
+              textStyle={{color: colors.white}} onPress={handleHeart}>
               {"하트 보내기"}
             </CustomButton>
           </View>

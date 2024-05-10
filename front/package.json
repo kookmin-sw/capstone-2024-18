@@ -13,7 +13,6 @@
   "dependencies": {
     "@miblanchard/react-native-slider": "^2.6.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
-    "@react-navigation/compat": "^5.3.20",
     "@react-navigation/material-bottom-tabs": "^6.2.28",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/stack": "^6.3.29",

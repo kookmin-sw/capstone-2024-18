@@ -558,7 +558,7 @@ export const getAnalysisInfoShort = async (accessToken: string): Promise<analysi
   }
 }
 
-interface resumeResponse extends validResponse {
+export interface resumeResponse extends validResponse {
   resumeId: number,
   memberId: number,
   resumeImageS3urls: string[],
@@ -579,12 +579,14 @@ interface resumeResponse extends validResponse {
 
 export const convertURLtoFile = async (url: string) => {
   const response = await fetch(url);
-  const data = await response.blob();
-  const ext = url.split(".").pop(); // url 구조에 맞게 수정할 것
-  const filename = url.split("/").pop(); // url 구조에 맞게 수정할 것
-  const metadata = { type: `image/${ext}`, lastModified: Date.now() };
-  const file = new File([data], filename!, metadata)
-  return file;
+  const blob = await response.blob();
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64data = reader.result;
+    return base64data;
+  }
+  reader.readAsDataURL(blob);
+  // return file;
 };
 
 // 1.
@@ -599,44 +601,23 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
   };
   const formData = new FormData();
 
-  const appendImg = async () => {
-    const exImgs = ['https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png', 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png'];
-    for (const [index, file] of exImgs.entries()) {
-      // const img = await convertURLtoFile(file);
-      // 파일의 확장자를 추출
-      const extension = file.split('.').pop()?.toLowerCase();
-      // 파일(이미지)의 타입을 결정
-      const mimeType = getMimeTypeFromExtension(extension);
-      
-      // FormData 객체를 생성합니다.
-      const img = {
-        uri: file,
-        name: `file.${extension}`,
-        type: mimeType,
-      }
-      console.log("img", img);
+  formData.append('categories', Object.keys(categoryFormat));
+  formData.append('content', '');
 
-      formData.append(`image${index+1}`, img);
-    };
-  }
+  const exImgs = ['https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png', 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png'];
+  for (const [index, fileUri] of exImgs.entries()) {
+    // 파일의 확장자를 추출
+    const extension = fileUri.split('.').pop()?.toLowerCase();
+    // 파일(이미지)의 타입을 결정
+    const mimeType = getMimeTypeFromExtension(extension);
 
-  const appendRequest = async () => {
-    const requestBlob = new Blob([JSON.stringify({
-      'categories': Object.keys(categoryFormat), 
-      'content': ''
-    })], {type: 'application/json', lastModified: Date.now()});
-  
-    formData.append('request', {
-      'categories': Object.keys(categoryFormat), 
-      'content': ''
+    formData.append(`images`, {
+      uri: fileUri,
+      name: `file.${extension}`,
+      type: mimeType,
     });
-  }
-  
-  await appendImg();
-  await appendRequest();
+  };
 
-  console.log(config, formData);
-        
   try {
     const response = await axios.post(endpoint, formData, config);
     console.log(response);
@@ -739,49 +720,41 @@ export const putResume = async (accessToken: string, fileUris: string[], _catego
       'Content-Type': 'multipart/form-data',
     },
   };
-
   const formData = new FormData();
 
-  const images = fileUris.map((fileUri => {
-    // formData.append('images', convertURLtoFile(fileUri))
-    const tmp = convertURLtoFile(fileUri);
-    console.log("?", tmp);
-    return tmp
-  }))
-  const imageBlob = new Blob([JSON.stringify(
-    images
-  )], {type: 'multipart/form-data', lastModified: Date.now()});
-  
-  const requestBlob = new Blob([JSON.stringify({
-    'categories': _category, 
-    'content': _content
-  })]);
+  formData.append('categories', _category);
+  formData.append('content', _content);
 
-  formData.append('images', imageBlob);
-  formData.append('request', requestBlob);
+  const exImgs = fileUris;
+  for (const [index, fileUri] of exImgs.entries()) {
+    // 파일의 확장자를 추출
+    const extension = fileUri.split('.').pop()?.toLowerCase();
+    // 파일(이미지)의 타입을 결정
+    const mimeType = getMimeTypeFromExtension(extension);
 
-  const body = {
-    images: imageBlob,
-    request: requestBlob
-  }
-
-  console.log(body)
+    formData.append(`images`, {
+      uri: fileUri,
+      name: `file.${extension}`,
+      type: mimeType,
+    });
+  };
 
   try {
     const response = await axios.put(endpoint, formData, config);
     console.log("response", response);
-    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, categories, content } = response.data;
+    const { resumeId, memberId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, categories, content } = response.data;
     const responseInfo = {
       method,
       status: response.status,
-      message: "자기소개서를 수정했습니다.",
+      message: "자신의 자기소개서를 수정했습니다.",
       resumeId,
+      memberId, 
       resumeImageS3urls,
       faceInfo, 
       basicInfo, 
       analysisInfo, 
       categories, 
-      content
+      content,
     }
     return responseInfo;
   }

@@ -1,5 +1,5 @@
 import { useRef, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity, BackHandler, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity, BackHandler, Alert, ScrollView } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import CustomButton from '../components/CustomButton.tsx';
 import ImageButton from '../components/ImageButton.tsx';
@@ -41,7 +41,7 @@ const Login = ({navigation}: any) => {
   }
 
   return (
-    <View style={{height: '100%'}}>
+    <ScrollView contentContainerStyle={{height: '100%'}}>
       <CustomBackHandler haveExit={true}/>
       <View style={styles.container}>
         <AutoHeightImage
@@ -109,7 +109,7 @@ const Login = ({navigation}: any) => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
