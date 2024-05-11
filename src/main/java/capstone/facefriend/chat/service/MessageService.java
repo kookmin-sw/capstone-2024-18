@@ -5,6 +5,7 @@ import capstone.facefriend.chat.exception.ChatException;
 import capstone.facefriend.chat.exception.ChatExceptionType;
 import capstone.facefriend.chat.repository.*;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
+import capstone.facefriend.chat.service.dto.heart.HeartReplyResponse;
 import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
 import capstone.facefriend.chat.service.dto.message.MessageListResponse;
 import capstone.facefriend.chat.service.dto.message.MessageRequest;
@@ -192,37 +193,38 @@ public class MessageService {
     @Transactional
     public void heartReply(HeartReplyRequest heartReplyRequest, Long receiveId) {
         String exceptionDestination = "/sub/chat/" + receiveId;
-        String message = null;
 
         Member receiver = findMemberById(exceptionDestination, receiveId);
-        Member sender = findMemberById(exceptionDestination, heartReplyRequest.getSenderId());
+        Member sender = findMemberById(exceptionDestination, heartReplyRequest.senderId());
 
         ChatRoomMember chatRoomMember = findSenderReceiver(exceptionDestination, sender.getId(), receiver.getId());
         ChatRoom chatRoom = findRoomById(exceptionDestination, chatRoomMember.getChatRoom().getId());
 
-        if (heartReplyRequest.getIntention().equals("positive")) {
+        if (heartReplyRequest.intention().equals("positive")) {
             chatRoom.setStatus(ChatRoom.Status.open);
             chatRoomRepository.save(chatRoom);
             chatRoomMemberRepository.save(chatRoomMember);
 
-            message = receiver.getBasicInfo().getNickname() + "님이 수락했습니다.";
-        } else if (heartReplyRequest.getIntention().equals("negative")) {
+            // 대화 수락
+            simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 수락");
+
+        } else if (heartReplyRequest.intention().equals("negative")) {
             chatRoomMemberRepository.delete(chatRoomMember);
             chatRoomRepository.delete(chatRoom);
+            // 대화 거절
+            simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 거절");
 
-            message = receiver.getBasicInfo().getNickname() + "님이 거절했습니다.";
         } else {
             simpMessagingTemplate.convertAndSend(exceptionDestination, ChatExceptionType.ALREADY_CHATROOM);
             throw new ChatException(ChatExceptionType.ALREADY_CHATROOM);
         }
         // 동적으로 목적지 설정
         String destination = "/sub/chat/" + sender.getId();
-        
-        // 대화 수락
-        simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 수락 성공");
-        
+
+        HeartReplyResponse heartReplyResponse = HeartReplyResponse.of(receiveId, heartReplyRequest);
+
         // 메시지 전송
-        simpMessagingTemplate.convertAndSend(destination, message);
+        simpMessagingTemplate.convertAndSend(destination, heartReplyResponse);
     }
 
 

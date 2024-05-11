@@ -17,6 +17,7 @@ import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.exception.member.MemberExceptionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class ChatRoomService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomInfoRedisRepository chatRoomInfoRedisRepository;
     private final MemberRepository memberRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
     private static final String EMPTY_MESSAGE = "채팅을 시작하지 않았습니다.";
     private static final String OPEN_MESSAGE = "채팅을 시작해보세요!";
     private static final String CLOSE_MESSAGE = "상대방이 떠났습니다.";
@@ -156,6 +158,7 @@ public class ChatRoomService {
         ChatRoom.Status status = chatRoom.getStatus();
         ChatRoomMember chatRoomMember = findChatRoomMemberByChatRoomId(roomId);
         Member member = findMemberById(memberId);
+        Member sender = identifySender(chatRoomMember, memberId);
         Member leftMember = identifyLeftMember(memberId, chatRoomMember);
         if (status== ChatRoom.Status.close) {
             if (member != leftMember) {
@@ -176,11 +179,13 @@ public class ChatRoomService {
         } else if (chatRoomMember.getReceiver() == member){
             chatRoomMember.setReceiverExist(false);
         } else {
-            return "속해있지 않은 채팅방입니디.";
+            return "속해있지 않은 채팅방입니다.";
         }
         chatRoom.setStatus(ChatRoom.Status.close);
+        simpMessagingTemplate.convertAndSend("/sub/chat/" + sender.getId(), ChatRoomLeftResponse.of(sender, "상대방이 떠났습니다."));
         chatRoomRepository.save(chatRoom);
         chatRoomMemberRepository.save(chatRoomMember);
+
         return "채팅방을 떠났습니다";
     }
 
