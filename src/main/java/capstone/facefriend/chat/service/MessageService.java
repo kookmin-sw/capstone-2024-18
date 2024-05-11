@@ -255,7 +255,7 @@ public class MessageService {
 
     public List<MessageListResponse> getMessagePage(Long roomId, Long memberId, int pageNo) {
         pageNo = pageNo - 1;
-        int pageSize = 20;
+        int pageSize = 40;
         Sort sort = Sort.by(Sort.Direction.DESC, "sendTime");
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         String chatRoomInfoId = roomId + "/member/" + memberId;
