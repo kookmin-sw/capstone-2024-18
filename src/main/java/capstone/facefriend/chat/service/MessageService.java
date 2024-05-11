@@ -192,7 +192,6 @@ public class MessageService {
     @Transactional
     public void heartReply(HeartReplyRequest heartReplyRequest, Long receiveId) {
         String exceptionDestination = "/sub/chat/" + receiveId;
-        String message = null;
 
         Member receiver = findMemberById(exceptionDestination, receiveId);
         Member sender = findMemberById(exceptionDestination, heartReplyRequest.getSenderId());
@@ -205,24 +204,24 @@ public class MessageService {
             chatRoomRepository.save(chatRoom);
             chatRoomMemberRepository.save(chatRoomMember);
 
-            message = receiver.getBasicInfo().getNickname() + "님이 수락했습니다.";
+            // 대화 수락
+            simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 수락");
+
         } else if (heartReplyRequest.getIntention().equals("negative")) {
             chatRoomMemberRepository.delete(chatRoomMember);
             chatRoomRepository.delete(chatRoom);
+            // 대화 거절
+            simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 거절");
 
-            message = receiver.getBasicInfo().getNickname() + "님이 거절했습니다.";
         } else {
             simpMessagingTemplate.convertAndSend(exceptionDestination, ChatExceptionType.ALREADY_CHATROOM);
             throw new ChatException(ChatExceptionType.ALREADY_CHATROOM);
         }
         // 동적으로 목적지 설정
         String destination = "/sub/chat/" + sender.getId();
-        
-        // 대화 수락
-        simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 수락 성공");
-        
+
         // 메시지 전송
-        simpMessagingTemplate.convertAndSend(destination, message);
+        simpMessagingTemplate.convertAndSend(destination, heartReplyRequest);
     }
 
 
