@@ -4,7 +4,7 @@ import capstone.facefriend.chat.domain.*;
 import capstone.facefriend.chat.exception.ChatException;
 import capstone.facefriend.chat.exception.ChatExceptionType;
 import capstone.facefriend.chat.repository.*;
-import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
+import capstone.facefriend.chat.service.dto.heart.HeartReplyRequestResponse;
 import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
 import capstone.facefriend.chat.service.dto.message.MessageListResponse;
 import capstone.facefriend.chat.service.dto.message.MessageRequest;
@@ -190,16 +190,16 @@ public class MessageService {
         redisTemplate.convertAndSend(topic, sendHeartResponse);
     }
     @Transactional
-    public void heartReply(HeartReplyRequest heartReplyRequest, Long receiveId) {
+    public void heartReply(HeartReplyRequestResponse heartReplyRequestResponse, Long receiveId) {
         String exceptionDestination = "/sub/chat/" + receiveId;
 
         Member receiver = findMemberById(exceptionDestination, receiveId);
-        Member sender = findMemberById(exceptionDestination, heartReplyRequest.getSenderId());
+        Member sender = findMemberById(exceptionDestination, heartReplyRequestResponse.senderId());
 
         ChatRoomMember chatRoomMember = findSenderReceiver(exceptionDestination, sender.getId(), receiver.getId());
         ChatRoom chatRoom = findRoomById(exceptionDestination, chatRoomMember.getChatRoom().getId());
 
-        if (heartReplyRequest.getIntention().equals("positive")) {
+        if (heartReplyRequestResponse.intention().equals("positive")) {
             chatRoom.setStatus(ChatRoom.Status.open);
             chatRoomRepository.save(chatRoom);
             chatRoomMemberRepository.save(chatRoomMember);
@@ -207,7 +207,7 @@ public class MessageService {
             // 대화 수락
             simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 수락");
 
-        } else if (heartReplyRequest.getIntention().equals("negative")) {
+        } else if (heartReplyRequestResponse.intention().equals("negative")) {
             chatRoomMemberRepository.delete(chatRoomMember);
             chatRoomRepository.delete(chatRoom);
             // 대화 거절
@@ -221,7 +221,7 @@ public class MessageService {
         String destination = "/sub/chat/" + sender.getId();
 
         // 메시지 전송
-        simpMessagingTemplate.convertAndSend(destination, heartReplyRequest);
+        simpMessagingTemplate.convertAndSend(destination, heartReplyRequestResponse.of(receiveId, heartReplyRequestResponse));
     }
 
 
