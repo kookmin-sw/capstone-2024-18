@@ -5,6 +5,7 @@ import capstone.facefriend.auth.infrastructure.JwtProvider;
 import capstone.facefriend.chat.service.MessageService;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
 import capstone.facefriend.chat.service.dto.heart.SendHeartRequest;
+import capstone.facefriend.chat.service.dto.message.MessageListRequest;
 import capstone.facefriend.chat.service.dto.message.MessageListResponse;
 import capstone.facefriend.chat.service.dto.message.MessageRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,32 @@ public class MessageController {
     private final MessageService messageService;
     private final JwtProvider jwtProvider;
 
+    @MessageMapping("/stomp/connect")
+    public void enterApp(
+            StompHeaderAccessor headerAccessor
+    ){
+        String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
+        String token = authorizationHeader.substring(BEARER_PREFIX.length());
+        Long memberId = jwtProvider.extractId(token);
+        messageService.enterApplication(memberId);
+    }
+
+    @PostMapping("/stomp/disconnect")
+    public String exitApp(
+            @AuthMember Long memberId
+    ){
+        String msg =  messageService.exitApplication(memberId);
+        return msg;
+    }
+
     @GetMapping("/chat/{roomId}/messages")
     public ResponseEntity<List<MessageListResponse>> getMessagesPage(
             @PathVariable("roomId") Long roomId,
-            @AuthMember Long memberId,
-            @RequestParam(required = false, defaultValue = "1", value = "page") int pageNo
+//            @AuthMember Long memberId,
+            @RequestParam(required = false, defaultValue = "1", value = "page") int pageNo,
+            @RequestBody MessageListRequest messageListRequest
     ){
-        return ResponseEntity.ok(messageService.getMessagePage(roomId, memberId,pageNo));
+        return ResponseEntity.ok(messageService.getMessagePage(roomId, pageNo, messageListRequest));
     }
 
 
