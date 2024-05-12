@@ -1,10 +1,11 @@
 import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { View } from "react-native";
-import SubTest1 from '../test/pages/SubTest1.tsx';
 import SelfProduce from "./SelfProduce.tsx";
 import Friends from "./Friends.tsx";
 import Profile from "./Profile.tsx";
+import ChatRoomList from "../components/chat/ChatRoomList.tsx";
+import ReceivedHeartPage from "../components/chat/ReceivedHeartPage.tsx";
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -35,6 +36,18 @@ const Test1 = () => {
             options={{
               tabBarIcon: () => <Icon source={"camera"} size={20} color={'#626262'} />,
               tabBarLabel: 'Profile',
+            }}/>
+          <Tab.Screen 
+            name="sub4" component={ChatRoomList}
+            options={{
+              tabBarIcon: () => <Icon source={"chat"} size={20} color={'#626262'} />,
+              tabBarLabel: 'Chat',
+            }}/>
+          <Tab.Screen 
+            name="sub5" component={ReceivedHeartPage}
+            options={{
+              tabBarIcon: () => <Icon source={"heart"} size={20} color={'#626262'} />,
+              tabBarLabel: 'Heart',
             }}/>
         </Tab.Navigator>
       </PaperProvider>
