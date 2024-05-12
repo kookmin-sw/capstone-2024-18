@@ -33,18 +33,64 @@ public class RedisSubscriber implements MessageListener {
         try {
             // redis에서 발행된 데이터를 받아 역직렬화
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-
             if (publishMessage.contains("message")) {
+                log.info(publishMessage);
                 MessageResponse messageResponse = objectMapper.readValue(publishMessage, MessageResponse.class);
+                log.info(messageResponse.toString());
                 GetMessageResponse chatMessageResponse = new GetMessageResponse(messageResponse);
+                log.info(chatMessageResponse.toString());
+                if (isExistSubscriber(messageResponse.getReceiveId())) {
+                    messagingTemplate.convertAndSend("/sub/chat/" + messageResponse.getReceiveId(), chatMessageResponse);
+                } else {
+                    saveUnReadMessage("/sub/chat" + messageResponse.getReceiveId() + "message", messageResponse);
+                }
+
+
                 messagingTemplate.convertAndSend("/sub/chat/" + messageResponse.getReceiveId(), chatMessageResponse);
             } else if (publishMessage.contains("Heart")) {
                 SendHeartResponse sendHeartResponse = objectMapper.readValue(publishMessage, SendHeartResponse.class);
+
                 GetSendHeartResponse chatSendHeartResponse = new GetSendHeartResponse(sendHeartResponse);
+                if (isExistSubscriber(chatSendHeartResponse.getReceiveId())) {
+                    messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getReceiveId(), chatSendHeartResponse);
+                } else {
+                    saveUnReadHeart("/sub/chat" + sendHeartResponse.getReceiveId() + "heart", sendHeartResponse);
+                }
+
                 messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getReceiveId(), chatSendHeartResponse);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to process message", e);
+        }
+    }
+
+    private Boolean isExistSubscriber(Long memberId) {
+        log.info("isExistSubscriber 호출");
+        Boolean isMember = redisTemplate.opsForSet().isMember("SocketInfo", memberId);
+        log.info("Socket: " + memberId);
+        log.info("SocketInfo: " + isMember);
+
+        return isMember;
+    }
+
+
+
+    private void saveUnReadMessage(String destination, MessageResponse messageResponse) {
+        Boolean isUnRead = redisTemplate.hasKey(destination);
+        log.info(isUnRead.toString());
+        if (isUnRead) {
+            redisTemplate.opsForList().rightPush(destination, messageResponse);
+        } else {
+            redisTemplate.opsForList().rightPush(destination, messageResponse);
+        }
+    }
+
+    private void saveUnReadHeart(String destination, SendHeartResponse sendHeartResponse) {
+        Boolean isUnRead = redisTemplate.hasKey(destination);
+        if (isUnRead) {
+            redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
+        } else {
+            redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
         }
     }
 }
