@@ -1,18 +1,15 @@
 import React, { createContext, useState, useEffect, useMemo, useContext} from 'react';
 import { saveChatHistory, loadChatHistory } from '../util/encryptedStorage';
 import Config from 'react-native-config';
-
-import { io } from 'socket.io-client';
-import StompJs from '@stomp/stompjs';
-
+import StompJs, { Client, IMessage } from '@stomp/stompjs';
 import { ChatProps } from '../components/chat/Chat';
-import { errorResponse, validResponse } from '../util/auth';
 import axios from 'axios';
 import { AuthContext } from './auth-context';
-
+import { UserContext } from './user-context';
 
 const SOCKET_URL = Config.SOCKET_URL;
-const UUID = "0";
+const LOCALHOST = Config.LOCALHOST;
+
 interface ChatContextType {
   chats: ChatProps[];
   setChats: (chats: ChatProps[]) => void;
@@ -20,6 +17,11 @@ interface ChatContextType {
   fetchChatHistory: (page: number) => Promise<ChatProps[] | undefined>;
   handleSaveChatHistory: () => void;
   handleLoadChatHistory: () => void;
+  sendHeart: () => void;
+  subscribe: (receiveId: string) => void;
+  websocket: StompJs.Client | null;
+  receiveId: string;
+  setReceiveId: (receiveId: string) => void;
 }
 
 export const ChatContext = createContext<ChatContextType>({
@@ -29,15 +31,49 @@ export const ChatContext = createContext<ChatContextType>({
   fetchChatHistory: async () => [],
   handleSaveChatHistory: async () => {},
   handleLoadChatHistory: async () => {},
+  sendHeart: () => {},
+  subscribe: (receiveId: string) => {},
+  websocket: null,
+  receiveId: '',
+  setReceiveId: (receiveId: string) => {},
 });
 
 interface ChatProviderProps {
   children: React.ReactNode;
 }
 
+interface ChatRoomHeartItem {
+  sender: string,
+  receiver: string,
+  chatRoom: { createdAt: string, updatedAt: string, id: number, status: string, public: boolean },
+  sendHeart: { senderName: string, senderId: number, receiveId: number, type: string, roomId: number, createdAt: any },
+}
+
+interface ChatRoomOpenItem {
+  senderId: number,
+  senderNickname: string,
+  message: string,
+}
+
+interface ChatRoomMessageList {
+  sender: string,
+  receiver: string,
+  chatRoom: { createdAt: string, updatedAt: string, id: number, status: string, public: boolean },
+  content: string,
+  sendTime: string,
+  senderNickname: string,
+  senderGeneratedFaceInfo: string,
+  senderOriginalFaceInfo: string,
+}
+
 const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [chats, setChats] = useState<ChatProps[]>([]);
   const [sendingChat, setSendingChat] = useState<ChatProps | null>(null);
+  const [websocket, setWebsocket] = useState<StompJs.Client | null>(null);
+  const [receiveId, setReceiveId] = useState('');
+
+  const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   const areDatesEqual = (date1: Date | string | undefined, date2: Date | string | undefined) => {
     console.log("date1:", date1, "date2:", date2);
@@ -63,7 +99,7 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   const getIsSequenceChat = (prevChat: ChatProps | undefined, newChat: ChatProps) => {
     if (prevChat === undefined) return false;
-    return areDatesEqual(prevChat?.timestamp, newChat?.timestamp) && prevChat?.uuid == UUID;
+    return areDatesEqual(prevChat?.timestamp, newChat?.timestamp) && prevChat?.uuid == authCtx.userId;
   }
 
   const addChat = (chat: ChatProps) => {
@@ -116,76 +152,108 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     setChats(chatHistory ? chatHistory as ChatProps[] : []);
   }
 
-  // useEffect(() => {
-  //   const loadChat = async () => { 
-  //     try { 
-  //         console.log("채팅 로딩 시도");
-  //         await handleLoadChatHistory();
-  //         console.log("채팅 로딩 성공");
-  //     } catch (error) { 
-  //         console.error('채팅 로딩 실패:', error); 
-  //     } 
-  //   }
-  //   loadChat();
-  // }, [])
-
-  // const authCtx = useContext(AuthContext);
-
-  // useEffect(() => {
-  //   const client = new StompJs.Client({
-  //     brokerURL: '/api/ws',
-  //     connectHeaders: {
-
-  //     },
-  //     debug: function (str) {
-  //       console.log(str);
-  //     },
-  //     reconnectDelay: 5000, //자동 재 연결
-  //     heartbeatIncoming: 4000,
-  //     heartbeatOutgoing: 4000,
-  //   });
-
-  //   client.onConnect = function (frame) {
-  //     console.log("연결됨");
-  //   };
-
-  //   client.onStompError = function (frame) {
-  //     console.log('Broker reported error: ' + frame.headers['message']);
-  //     console.log('Additional details: ' + frame.body);
-  //   };
-
-  //   client.activate();
-
-  //   return () => {
-  //     client.deactivate();
-  //   }
-    // if (SOCKET_URL) {
-    //   const socket = io(SOCKET_URL, {
-    //     transports: ['websocket'], 
-    //   });
   
-    //   console.log('소켓 통신 연결 시작');
-    //   socket.on('connect', () => {
-    //     console.log('소켓 통신 연결됨');
-    //   });
+  useEffect(() => {
+    if (authCtx.status !== 'INITIALIZED') return;
+    const loadChat = async () => { 
+      try { 
+          console.log("채팅 로딩 시도");
+          await handleLoadChatHistory();
+          console.log("채팅 로딩 성공");
+      } catch (error) { 
+          console.error('채팅 로딩 실패:', error); 
+      } 
+    }
+    const getRoomList = async () => {
+      const endpoint = `${LOCALHOST}/room/list`;
+      const config = { 
+        headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
+      };
+      const response = await axios.get(endpoint, config);
+      const { chatRoomHeartList, chatRoomOpenList, charRoomMessageList } = response.data;
+      chatRoomHeartList.map((chatRoomHeartItem: ChatRoomHeartItem) => {
+        const { sender, receiver, chatRoom, sendHeart } = chatRoomHeartItem;
+        setChats(prevChats => {
+          return {...prevChats, opponentId: [{
+            id: Math.random().toString(), 
+            senderId: sender.toString(),
+            receiveId: receiver.toString(),
+            message: '하트를 보냈습니다.',
+            timestamp: new Date(chatRoom.createdAt),
+            isHeart: true,
+          }]}
+        })
+      })
+    }
+    loadChat();
+  }, [authCtx.status])
+
+  function binaryBodyToString(binaryBody: object) {
+    return String.fromCharCode(...Object.values(binaryBody));
+  }
+
+  useEffect(() => {
+    if (authCtx.status !== 'INITIALIZED') return;
+    // if (!userCtx.status) return;
+    const stompClient = new Client({
+      brokerURL: "ws://52.79.138.7:8080/ws", 
+      reconnectDelay: 5000,
+      connectHeaders: {
+        Authorization: "Bearer " + authCtx.accessToken,
+      },
+      debug: (msg) => {
+        console.log(msg);
+      },
+      forceBinaryWSFrames: true,
+      appendMissingNULLonIncoming: true,
+    });
+
+    stompClient.onConnect = (frame) => {
+      console.log("Connected: " + frame);
+
+      // 메시지 구독
+      stompClient.subscribe("/sub/chat/4", (message) => {
+        console.log(JSON.stringify(message));
+        console.log("binarybody:", binaryBodyToString(message.binaryBody));
+      });
+    };
+
+    stompClient.onStompError = (frame) => {
+      console.error("Broker reported error: " + frame.headers["message"]);
+      console.error("Additional details: " + frame.body);
+    };
+
+    stompClient.activate();
+    setWebsocket(stompClient);
+
+    return () => {
+      stompClient.deactivate();
+    };
+  }, [authCtx.status]);
+
+  const sendHeart = () => {
+    console.log("sendHeart");
+    // 서버로부터 메시지 수신 구독
+    try {
+      websocket?.publish({
+        destination: "/pub/chat/send-heart",
+        body: JSON.stringify({ receiveId: "4" }),
+        headers: {
+          Authorization: "Bearer " + authCtx.accessToken,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
   
-    //   socket.on('message', (newChat: ChatProps) => {
-    //     console.log('New chat:', newChat.message);
-    //     setChats([...chats, newChat]);
-    //   });
-  
-    //   if (sendingChat) {
-    //     const sendingData = { message: sendingChat.message, timestamp: sendingChat.timestamp, userId: sendingChat.uuid };
-    //     console.log(sendingData);
-    //     socket.emit('message', JSON.stringify(sendingData), setSendingChat(null));
-    //   }
-      
-    //   return () => {
-    //     socket.disconnect();
-    //   };
-    // }
-  // }, [sendingChat]);
-  
+  const subscribe = (receiveId: string) => {
+    websocket?.subscribe(`/sub/chat/${receiveId}`, (message: IMessage) => {
+      console.log('Received: ' + message.body);
+    });
+  }
+
+
   const value = useMemo(() => ({
     chats,
     setChats,
@@ -193,6 +261,11 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     fetchChatHistory,
     handleSaveChatHistory,
     handleLoadChatHistory,
+    sendHeart,
+    subscribe,
+    websocket,
+    receiveId,
+    setReceiveId,
   }), [chats]);
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
