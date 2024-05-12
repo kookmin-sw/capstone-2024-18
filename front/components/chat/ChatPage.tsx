@@ -3,70 +3,61 @@ import { useState, useRef, useEffect, useContext } from "react";
 import ChatList from "./ChatList";
 import ChatInput from "./ChatInput";
 import { colors } from "../../assets/colors";
-import { clearChatHistory, loadChatHistory, saveChatHistory } from "../../util/encryptedStorage";
+import { clearChatHistory } from "../../util/encryptedStorage";
 import { ChatProps } from "./Chat";
-import { ChatContext } from "../../store/chat-context";
+import { ChatContext, Chats } from "../../store/chat-context";
+import HeaderBar from "../HeaderBar";
+import { v4 as uuidv4 } from 'uuid';
+import { UserContext } from "../../store/user-context";
+import { AuthContext } from "../../store/auth-context";
 
-const SOCKET_URL = "";
+interface Prop {
+  onBack: () => void,
+  roomId: number,
+}
 
-const UUID = "0";
-
-const ChatPage = () => {
-  const [newId, setNewId] = useState(0);
+const ChatPage = ({ onBack, roomId }: Prop) => {
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [chatHeights, setChatHeights] = useState<number[]>([]);
-  const [sendingChat, setSendingChat] = useState<ChatProps | null>(null);
   
   const ChatListRef = useRef<FlatList<ChatProps> | null>(null);
   const localDate = new Date();
 
   const chatCtx = useContext(ChatContext);
+  const userCtx = useContext(UserContext);
+  const authCtx = useContext(AuthContext);
 
-  const getNewId = () => {
-    setNewId(newId + 1);
-    return newId;
-  }
-  
   const sendChat = (message: string) => {
-    const timestamp = new Date(localDate.getTime());
+    const sendTime = new Date(localDate.getTime());
     const newChat: ChatProps = { 
-      message, 
-      nickname: "nickname",
-      uuid: UUID, 
-      id: Math.random().toString(), 
-      timestamp,
+      id: uuidv4(),
+      senderId: authCtx.userId,
+      senderNickname: userCtx.basicinfo.nickname,
+      senderGeneratedFaceS3url: userCtx.faceinfo.generatedS3url,
+      senderOriginFaceS3url: userCtx.faceinfo.originS3url,      
+      content: message, 
+      sendTime,
     };
-    setSendingChat(newChat);
-    chatCtx.addChat(newChat);
+    chatCtx.addChat(roomId, newChat);
   }
 
-  const handleLoadDummyHistory = async () => {
+  const handleLoadDummyHistory = async (roomId: number) => {
     const array = Array.from({ length: 100 }, (_, index) => index);
     const dummyChats = array.map((item) => {
-      const id = Math.random().toString();
       return { 
-        message: id,
-        uuid: (item % 2).toString(),
-        id,
-        nickname: (item % 2).toString(),
-        isInitial: true,
-        isFinal: true,
-        timestamp: new Date(0),
+        id: uuidv4(),
+        senderId: item % 2,
+        senderNickname: 'nickname' + item % 2,
+        senderGeneratedFaceS3url: userCtx.faceinfo.generatedS3url,
+        senderOriginFaceS3url: userCtx.faceinfo.originS3url,      
+        content: 'message' + item % 2, 
+        sendTime: new Date(0),
         setHeight: (height: number) => { handleSetChatHeight(item, height) },
       }
     });
-    chatCtx.setChats([...chatCtx.chats, ...dummyChats]);
-  }
-
-  const handleClearChatHistory = async() => {
-    clearChatHistory();
-    chatCtx.setChats([]);
-  }
-
-  const handleClearChat = async() => {
-    chatCtx.setChats([]);
+    chatCtx.prependChats(roomId, dummyChats);
   }
 
   const scrollToPosition = (position: number) => {
@@ -87,24 +78,23 @@ const ChatPage = () => {
   }
 
   const scrollToEnd = () => {
-    scrollToIndex(chatCtx.chats.length - 1);
-    // scrollToIndex(1);
+    scrollToIndex(chatCtx.chats[roomId].length - 1);
   };
   
-  const handleFetchChatHistory = async () => {
-    const fetchedChats = await chatCtx.fetchChatHistory(page);
-    if (!fetchedChats) return;
+  // const handleFetchChatHistory = async () => {
+  //   const fetchedChats = await chatCtx.fetchChatHistory(page);
+  //   if (!fetchedChats) return;
 
-    chatCtx.setChats([...fetchedChats, ...chatCtx.chats]);
-    setPage(page + 1);
-    scrollToIndex(fetchedChats.length - 1);
-  }
+  //   chatCtx.setChats([...fetchedChats, ...chatCtx.chats]);
+  //   setPage(page + 1);
+  //   scrollToIndex(fetchedChats.length - 1);
+  // }
 
   const handleOnRefresh = async () => {
     try{
       if (refreshing) return;
       setRefreshing(true);
-      await handleFetchChatHistory();
+      // await handleFetchChatHistory();
       setRefreshing(false);
     } catch (error) {
       console.log("handleOnRefresh:", error);
@@ -153,31 +143,32 @@ const ChatPage = () => {
     scrollToEnd();
   }, [chatCtx.chats]);
 
-  const options = (
-    <View style={{position: "absolute", top: 0}}>
-      <View style={{ flexDirection: "row" }}>
-        <Pressable style={styles.option} onPress={handleClearChat}><Text style
-        ={styles.optionText}>채팅 초기화</Text></Pressable>
-        <Pressable style={styles.option} onPress={handleClearChatHistory}><Text style
-        ={styles.optionText}>캐시 초기화</Text></Pressable>
-        <Pressable style={styles.option} onPress={scrollToEnd}><Text style
-        ={styles.optionText}>아래로</Text></Pressable>
-      </View>
-      <View style={{ flexDirection: "row" }}>
-        <Pressable style={styles.option} onPress={chatCtx.handleSaveChatHistory}><Text style
-        ={styles.optionText}>저장</Text></Pressable>
-        <Pressable style={styles.option} onPress={chatCtx.handleLoadChatHistory}><Text style
-        ={styles.optionText}>불러오기</Text></Pressable>
-        <Pressable style={styles.option} onPress={handleLoadDummyHistory}><Text style
-        ={styles.optionText}>더미 불러오기</Text></Pressable>
-      </View>
-    </View>
-  )
+  // const options = (
+  //   <View style={{position: "absolute", top: 0}}>
+  //     <View style={{ flexDirection: "row" }}>
+  //       <Pressable style={styles.option} onPress={handleClearChat}><Text style
+  //       ={styles.optionText}>채팅 초기화</Text></Pressable>
+  //       <Pressable style={styles.option} onPress={handleClearChatHistory}><Text style
+  //       ={styles.optionText}>캐시 초기화</Text></Pressable>
+  //       <Pressable style={styles.option} onPress={scrollToEnd}><Text style
+  //       ={styles.optionText}>아래로</Text></Pressable>
+  //     </View>
+  //     <View style={{ flexDirection: "row" }}>
+  //       <Pressable style={styles.option} onPress={chatCtx.handleSaveChatHistory}><Text style
+  //       ={styles.optionText}>저장</Text></Pressable>
+  //       <Pressable style={styles.option} onPress={chatCtx.handleLoadChatHistory}><Text style
+  //       ={styles.optionText}>불러오기</Text></Pressable>
+  //       <Pressable style={styles.option} onPress={handleLoadDummyHistory}><Text style
+  //       ={styles.optionText}>더미 불러오기</Text></Pressable>
+  //     </View>
+  //   </View>
+  // )
 
   return (
     <View style={styles.container}>
+      <HeaderBar onPress={onBack}>{roomId}</HeaderBar>
       <ChatList 
-        chats={chatCtx.chats} 
+        chats={chatCtx.chats[roomId]} 
         chatHeights={chatHeights}
         ref={ChatListRef} 
         onRefresh={handleOnRefresh} 
@@ -186,7 +177,7 @@ const ChatPage = () => {
         setChatHeight={handleSetChatHeight}
       />
       <ChatInput sendChat={sendChat}/>
-      {options}
+      {/* {options} */}
     </View>
   ) 
 }

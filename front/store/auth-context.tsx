@@ -17,7 +17,7 @@ interface AuthContextType {
   reissue: () => Promise<validResponse | errorResponse>;
   reload: () => void;
   handleErrorResponse: (errorResponse: errorResponse) => void;
-  userId: string,
+  userId: number,
 }
 
 const exampleResponse = {
@@ -35,7 +35,7 @@ export const AuthContext = createContext<AuthContextType>({
   reissue: async (): Promise<validResponse | errorResponse> => exampleResponse,
   reload: () => {},
   handleErrorResponse: (errorResponse: errorResponse) => {},
-  userId: '',
+  userId: 0,
 });
 
 interface AuthProviderProps {
@@ -47,7 +47,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [status, setStatus] = useState('');
   const [reloadCounter, setReloadCounter] = useState(0);
-  const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState(0);
 
   const reload = () => {
     setReloadCounter(reloadCounter + 1);
@@ -67,7 +67,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { accessToken, refreshToken, memberId } = response.data;
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      setUserId(memberId);
+      setUserId(+memberId);
       saveToken("accessToken", accessToken);
       saveToken("refreshToken", refreshToken);
       setStatus('INITIALIZED');
@@ -97,7 +97,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await axios.delete(endpoint, config);
       setAccessToken('');
       setRefreshToken('');
-      setUserId('');
+      setUserId(0);
       removeToken("accessToken");
       removeToken("refreshToken");
       const responseInfo = {
