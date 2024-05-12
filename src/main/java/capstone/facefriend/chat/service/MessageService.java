@@ -227,32 +227,6 @@ public class MessageService {
         simpMessagingTemplate.convertAndSend(destination, heartReplyResponse);
     }
 
-
-    @Transactional
-    public void enterApplication(Long memberId) {
-        String exceptionDestination = "/sub/chat/" + memberId;
-        SocketInfo socketInfo = new SocketInfo();
-        socketInfo.setMemberId(memberId);
-        socketInfo.setConnectTime(LocalDateTime.now());
-        socketInfoRedisRepository.save(socketInfo);
-        if (isExistUnReadMessage(memberId)) {
-            sendSentMessage(memberId);
-        }
-
-        if(isExistUnSendHeart(memberId)) {
-            sendSentHeart(memberId);
-        }
-        
-        simpMessagingTemplate.convertAndSend(exceptionDestination, "저장 성공");
-    }
-
-    @Transactional
-    public String exitApplication(Long memberId) {
-        SocketInfo socketInfo = findSocketInfo(memberId);
-        socketInfoRedisRepository.delete(socketInfo);
-        return "성공";
-    }
-
     public List<MessageListResponse> getMessagePage(Long roomId, Long memberId, int pageNo) {
         pageNo = pageNo - 1;
         int pageSize = 40;
@@ -268,50 +242,5 @@ public class MessageService {
             messageListResponses.add(messageListResponse);
         }
         return messageListResponses;
-    }
-
-    private Boolean isExistUnReadMessage(Long memberId) {
-        Boolean isUnRead = redisTemplate.hasKey("/sub/chat/" + memberId + "message");
-        log.info(isUnRead.toString());
-        return !isUnRead;
-    }
-
-    private Boolean isExistUnSendHeart(Long memberId) {
-        Boolean isUnRead = redisTemplate.hasKey("/sub/chat/" + memberId + "SendHeart");
-        log.info(isUnRead.toString());
-        return !isUnRead;
-    }
-
-    private void sendSentMessage(Long receiveId) {
-        String topic = channelTopic.getTopic();
-        String destination = "/sub/chat" + receiveId + "message";
-        Long messagesListSize = redisTemplate.opsForList().size(destination);
-        log.info(messagesListSize.toString());
-        log.info("messageList: {}", redisTemplate.opsForList().range(destination, 0, -1));
-
-        if (messagesListSize > 0) {
-            for (Long i = messagesListSize; i > 0; i--) {
-                // 맵으로 받음
-                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
-                MessageResponse messageResponse = (MessageResponse) map.get(destination);
-                log.info("messageResponse: {}", messageResponse.toString());
-                redisTemplate.convertAndSend(topic, messageResponse);
-            }
-        }
-    }
-
-    private void sendSentHeart(Long receiveId) {
-        String topic = channelTopic.getTopic();
-        String destination = "/sub/chat" + receiveId + "heart";
-        Long messagesListSize = redisTemplate.opsForList().size(destination);
-        log.info("SendHeartListSize: {}", messagesListSize.toString());
-        if (messagesListSize > 0) {
-            for (Long i = messagesListSize; i > 0; i--) {
-                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
-                SendHeartResponse sendHeartResponse = (SendHeartResponse) map.get(destination);
-                log.info("messageResponse: {}", sendHeartResponse.toString());
-                redisTemplate.convertAndSend(topic, sendHeartResponse);
-            }
-        }
     }
 }
