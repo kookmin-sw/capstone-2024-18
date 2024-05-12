@@ -25,24 +25,6 @@ public class MessageController {
     private final MessageService messageService;
     private final JwtProvider jwtProvider;
 
-    @MessageMapping("/stomp/connect")
-    public void enterApp(
-            StompHeaderAccessor headerAccessor
-    ){
-        String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
-        String token = authorizationHeader.substring(BEARER_PREFIX.length());
-        Long memberId = jwtProvider.extractId(token);
-        messageService.enterApplication(memberId);
-    }
-
-    @PostMapping("/stomp/disconnect")
-    public String exitApp(
-            @AuthMember Long memberId
-    ){
-        String msg =  messageService.exitApplication(memberId);
-        return msg;
-    }
-
     @GetMapping("/chat/{roomId}/messages")
     public ResponseEntity<List<MessageListResponse>> getMessagesPage(
             @PathVariable("roomId") Long roomId,
