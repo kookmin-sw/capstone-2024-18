@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, Image, TouchableOpacity } from 'react-native';
 import { colors } from '../assets/colors.tsx'
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
@@ -12,6 +12,7 @@ import { AuthContext } from "../store/auth-context.tsx";
 import 'react-native-get-random-values';
 import { FlatList } from 'react-native-gesture-handler';
 import { Category, category as categoryForm } from '../util/categoryFormat.tsx';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const Friends = ({navigation}: any) => {
@@ -155,13 +156,15 @@ const Friends = ({navigation}: any) => {
 
   const categoriesText = [["맛집 탐방 같이 하실 분", 'FOOD'], ["탁구하러 가실 분", "WORKOUT"], ["듄 함께 보실 분~", "MOVIE"], ["패션 참견 해주실 분99", "FASHION"], ["연애 상담 해드립니다~!", "DATING"], ["팝송 러버 여기 모여라", "MUSIC"], ["치타는 웃고 있다", "STUDY"], ["심심한데 이야기하실 분", "ETC"]];
 
-  useEffect(() => {
-    tryGetGoodCombi();
-    tryGetMyResume();
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      tryGetMyResume();
+      tryGetGoodCombi();
+    }, [navigation])
+  )
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{backgroundColor: colors.white}}>
       {/* 이미지 슬라이더 */}
       <CarouselSlider
         pageWidth={pageWidth}
@@ -200,33 +203,35 @@ const Friends = ({navigation}: any) => {
         renderItem={renderCardItem}
         style={{paddingVertical: 26, paddingHorizontal: 16}}
         onEndReached={() => fetchNewData("FIT")}/>
-      <View style={{backgroundColor: '#F9F9FF', paddingTop: 20}}>
-        <Text style={styles.categorySectionTitle}>카테고리별 맞춤 추전</Text>
-        {
-          categoriesText.map(([text, tag], idx) => {
-            if (faces[`${tag}`]) {
-              return (
-                <View key={idx}>
-                  <View style={{marginHorizontal: 26, flexDirection: 'row', alignItems: 'center'}}>
-                    <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{categoryForm[tag as keyof Category]}</SelectableTag>
-                    <Text style={{paddingLeft: 8}}>{text}</Text>
-                    <View style={{flex: 1}}/>
-                    <TouchableOpacity>
-                      <Text>전체 보러가기{">"}</Text>
-                    </TouchableOpacity>
+      {Object.keys(faces).length > 1 ?
+        <View style={{backgroundColor: '#F9F9FF', paddingTop: 20}}>
+          <Text style={styles.categorySectionTitle}>카테고리별 맞춤 추전</Text>
+          {
+            categoriesText.map(([text, tag], idx) => {
+              if (faces[`${tag}`]) {
+                return (
+                  <View key={idx}>
+                    <View style={{marginHorizontal: 26, flexDirection: 'row', alignItems: 'center'}}>
+                      <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{categoryForm[tag as keyof Category]}</SelectableTag>
+                      <Text style={{paddingLeft: 8}}>{text}</Text>
+                      <View style={{flex: 1}}/>
+                      <TouchableOpacity>
+                        <Text>전체 보러가기{">"}</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <FlatList 
+                      horizontal 
+                      data={faces[tag as keyof Category]?.content} 
+                      renderItem={renderCardItem}
+                      style={{paddingVertical: 26, paddingHorizontal: 16}}
+                      onEndReached={() => fetchNewData(tag)}/>
                   </View>
-                  <FlatList 
-                    horizontal 
-                    data={faces[tag as keyof Category]?.content} 
-                    renderItem={renderCardItem}
-                    style={{paddingVertical: 26, paddingHorizontal: 16}}
-                    onEndReached={() => fetchNewData(tag)}/>
-                </View>
-              );
-            }
-          })
-        }
-      </View>
+                );
+              }
+            })
+          }
+        </View> : <></>
+      }
     </ScrollView>
   );
 };

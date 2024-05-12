@@ -120,13 +120,18 @@ const SelfProduce = () => {
             categorieText.push(_category.text);
           }
         };
-        const response = putResume(
+        const response = await putResume(
           authCtx.accessToken, 
           imageText,
           categorieText,
           essay
         )
-        console.log("완료", response);
+        if (isResumeResponse(response)) {
+          console.log("완료", response);
+        }
+        if (isErrorResponse(response)) {
+          createAlertMessage(response.message)
+        }
       }
       setEdit(false);
     }
@@ -335,14 +340,16 @@ const SelfProduce = () => {
             <Text>나를 소개해보세요</Text>
           </View>
         </View>
-        <CustomButton 
-          containerStyle={{backgroundColor: colors.point}}
-          onPress={createMyResume}
-          textStyle={{color: colors.white}}>자기소개서 작성하기
-        </CustomButton>
+        <View style={styles.bottomContainer}>
+          <CustomButton 
+            containerStyle={{backgroundColor: colors.point}}
+            onPress={createMyResume}
+            textStyle={{color: colors.white}}>자기소개서 작성하기
+          </CustomButton>
+        </View>
       </View>
       : 
-      <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: colors.white}}>
         {/* 이미지 슬라이더 */}
         <CarouselSlider
           pageWidth={pageWidth}
@@ -462,7 +469,7 @@ const SelfProduce = () => {
               children={essay}/>
           </View>
 
-          <View style={{...styles.section, flexDirection: 'row'}}>
+          <View style={[styles.section, {flexDirection: 'row'}, styles.bottomContainer]}>
             <View style={{width: "50%", display: edit ? 'none' : 'flex'}}>
               <CustomButton 
                 containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 5}} onPress={deleteAlert}
@@ -485,8 +492,9 @@ const SelfProduce = () => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: "6%",
+    paddingHorizontal: 32,
     flex: 1,
+    backgroundColor: colors.white
   },
   profileName: {
     fontSize: 20, 
@@ -541,6 +549,11 @@ const styles = StyleSheet.create({
     padding: 15, 
     borderRadius: 15,
     height: undefined
+  },
+  bottomContainer: {
+    alignItems: "center",
+    marginBottom: 23,
+    paddingHorizontal: 8,
   },
 });
 

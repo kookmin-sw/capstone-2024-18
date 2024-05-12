@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, BackHandler } from "react-native";
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from "react-native";
 import { Card } from "react-native-paper";
 
 import IconText from "../components/IconText";
@@ -21,6 +21,8 @@ import { UserContext } from "../store/user-context";
 const BasicInfoPage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+
+  const {height} = useWindowDimensions();
   
   interface BasicInfo {
     nickname: string;         
@@ -332,7 +334,7 @@ const BasicInfoPage = ({navigation}: any) => {
   }, [basicInfo])
 
   return (
-    <ScrollView contentContainerStyle={{ minHeight: '100%' }}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ height: height }}>
       <CustomBackHandler onBack={handlePrevPage}/>
       <HeaderBar onPress={handlePrevPage}>기본 정보</HeaderBar>
       <View style={styles.container}>
@@ -355,7 +357,7 @@ const BasicInfoPage = ({navigation}: any) => {
           >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
         </View>
       </View>
-      </ScrollView>
+    </ScrollView>
   )
 }
 
@@ -363,14 +365,13 @@ export default BasicInfoPage;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white", 
+    backgroundColor: colors.white, 
     flex: 1, 
     paddingHorizontal: 32, 
   },
   innerContainer: {
     paddingHorizontal: 8,
     alignItems: "center",
-    width: "100%",
     flex: 1,
   },
   bottomContainer: {

@@ -1,5 +1,5 @@
-import { useRef, useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity, ScrollView, Image, Pressable, Alert } from 'react-native';
+import { useState, useContext, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Alert, SafeAreaView, useWindowDimensions } from 'react-native';
 import CustomButton from '../components/CustomButton.tsx';
 
 import { colors } from '../assets/colors.tsx';
@@ -12,11 +12,14 @@ import { createAlertMessage } from '../util/alert.tsx';
 import { IconButton } from 'react-native-paper';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import { UserContext } from '../store/user-context.tsx';
+import HeaderBar from '../components/HeaderBar.tsx';
 
 const FaceFeaturePage = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+
+  const {height} = useWindowDimensions();
 
   // 이미지 uri path
   const [ uri, setUri ] = useState('');
@@ -49,7 +52,7 @@ const FaceFeaturePage = ({navigation}: any) => {
       );
       
       if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
+        createAlertMessage(response.exceptionCode + response.message);
       }
       if (isFaceInfoDefaultResponse(response)) {
         setHaveGeneratedS3url(false);
@@ -187,33 +190,44 @@ const FaceFeaturePage = ({navigation}: any) => {
     resultContent
   ];
 
+  const handleBack = () => {
+    if (pageIndex === 0) {
+      navigation.goBack();
+    }
+    else {
+      setPageIndex(0);
+    }
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <CustomBackHandler onBack={navigation.goBack}/>
-      <IconText 
-        icon={{source: 'chat-question', color: colors.gray7}} 
-        containerStyle={styles.hintContainer}
-        textStyle={{fontSize: 14, color: colors.gray7}}>AI 관상 분석은 무엇인가요? 🤔</IconText>
-      <View>
-        {contents[pageIndex]}
-      </View>
-      <View style={{flex: 1}}/>
-      <View style={styles.bottomContainer}>
-        <CustomButton 
-          containerStyle={isButtonClickable ? {backgroundColor: colors.point} : {backgroundColor: colors.pastel_point}} 
-          onPress={clickButton}
-          textStyle={{color: colors.white}} disabled={!isButtonClickable}
-          >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
-      </View>
-    </ScrollView>
+    <SafeAreaView>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{minHeight: height}}>
+        <CustomBackHandler onBack={navigation.goBack}/>
+        <HeaderBar onPress={handleBack}>AI 관상 분석</HeaderBar>
+        <View style={styles.container}>
+          <IconText 
+            icon={{source: 'chat-question', color: colors.gray7}} 
+            containerStyle={styles.hintContainer}
+            textStyle={{fontSize: 14, color: colors.gray7}}>AI 관상 분석은 무엇인가요? 🤔</IconText>
+          {contents[pageIndex]}
+          <View style={styles.bottomContainer}>
+            <CustomButton 
+              containerStyle={isButtonClickable ? {backgroundColor: colors.point} : {backgroundColor: colors.pastel_point}} 
+              onPress={clickButton}
+              textStyle={{color: colors.white}} disabled={!isButtonClickable}
+              >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 30,
-    minHeight: '100%',
-    justifyContent: 'center'
+    backgroundColor: "white", 
+    flex: 1, 
+    paddingHorizontal: 32, 
   },
   contentContainer: {
     justifyContent: 'center',
@@ -227,7 +241,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 15, 
     alignSelf: 'center',
-    marginVertical: 17
+    marginBottom: 17
   },
 
   // 회색 tip, result 상자

@@ -1,5 +1,5 @@
 import { useRef, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity, BackHandler, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity, BackHandler, Alert, ScrollView, useWindowDimensions } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import CustomButton from '../components/CustomButton.tsx';
 import ImageButton from '../components/ImageButton.tsx';
@@ -46,7 +46,7 @@ const Login = ({navigation}: any) => {
       <View style={styles.container}>
         <AutoHeightImage
           width={parentWidth}
-          style={{alignSelf:"center", marginHorizontal: 80}}
+          style={{alignSelf:"center"}}
           source={require('../assets/images/logo_origin.png')}
         />
 
@@ -115,9 +115,10 @@ const Login = ({navigation}: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: "14%",
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    paddingHorizontal: 46,
+    backgroundColor: colors.white
   },
   // 클릭 가능한 text를 위한 설정(custom button 파일 사용)
   fit_content: {

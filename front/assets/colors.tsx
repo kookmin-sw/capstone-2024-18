@@ -1,6 +1,7 @@
 export const colors = {
     transparent: "#00000000",
     white: "#FFFFFF",
+    white_smoke: "#F5F5F5",
     point: "#FF7269",
     pastel_point: "#FFD0CD",
     light_pink: "#FFECEB",

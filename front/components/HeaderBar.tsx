@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     height: 83,
+    backgroundColor: colors.white
   },
   text: {
     color: colors.point,

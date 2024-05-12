@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import {View, Text, Alert, StyleSheet, Pressable, Modal, Platform} from 'react-native'
 import {launchCamera,launchImageLibrary, CameraOptions, ImagePickerResponse, ImageLibraryOptions, Asset} from 'react-native-image-picker';
 import {PermissionsAndroid} from 'react-native';
+import { colors } from "../assets/colors";
 
 
 /**
@@ -38,11 +39,11 @@ export const showModal = (visible: boolean, onClose: () => void, setImageUrl?: (
         <View style={styles.whiteBox}>
 
           <Pressable style={styles.actionButton} onPress={pressCamera}>
-            <Text>카메라로 촬영하기</Text>
+            <Text style={{color: colors.gray8, fontSize: 18}}>카메라로 촬영하기</Text>
           </Pressable>
 
           <Pressable style={styles.actionButton} onPress={pressPhoto}>
-            <Text>사진 선택하기</Text>
+            <Text style={{color: colors.gray8, fontSize: 18}}>사진 선택하기</Text>
           </Pressable>
 
         </View>
