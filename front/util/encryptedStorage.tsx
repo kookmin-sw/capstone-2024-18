@@ -63,16 +63,6 @@ export const loadChatHistory = async () => {
     }
 }
 
-export const removeChatHistoryByUuid = async (uuid: string) => {
-    try {
-        const chatHistory = await loadChatHistory() as ChatProps[];
-        const newChatHistory = chatHistory.filter((chat) => chat.uuid !== uuid);
-        saveChatHistory(newChatHistory);
-    } catch (error) {
-        console.log("채팅 내역 삭제 실패", error);
-    }
-};
-
 export const clearChatHistory = async () => {
     try {
         const JSONChatHistory = JSON.stringify([]);
@@ -82,3 +72,29 @@ export const clearChatHistory = async () => {
         console.log("채팅 내역 초기화 실패");
     }
 };
+
+export const saveData = async (userId: number, data: object) => {
+    try {
+        const JSONData = JSON.stringify(data);
+        await EncryptedStorage.setItem(userId.toString(), JSONData);
+        console.log("데이터 저장 성공: ", data);
+    } catch (error) {
+        console.log("데이터 저장 실패", error);
+    }
+};
+
+export const loadData = async (userId: number) => {
+    try {
+        const JSONData = await EncryptedStorage.getItem(userId.toString());
+        const data = JSONData ? JSON.parse(JSONData) : { chats: {} };
+        if (data) {
+            console.log("데이터 로딩 성공:", data);
+        }
+        else {
+            console.log("데이터 로딩 실패");
+        }
+        return data;
+    } catch (error) {
+        console.log("데이터 로딩 실패", error);
+    }
+}
