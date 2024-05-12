@@ -160,8 +160,8 @@ const SelfProduce = () => {
         authCtx.accessToken
       );  
       if (isFaceInfoResponse(response)) {
-        handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.generatedS3Url}});
-        handleAddImageAtIndex(1, {id: uuidv4(), type: 'basic', source: {uri: response.originS3Url}});
+        handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.generatedS3url}});
+        handleAddImageAtIndex(1, {id: uuidv4(), type: 'basic', source: {uri: response.originS3url}});
       }
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);

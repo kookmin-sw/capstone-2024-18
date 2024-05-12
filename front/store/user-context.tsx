@@ -16,8 +16,8 @@ interface BasicInfo {
 }
 
 interface FaceInfo {
-  generatedS3Url: string,
-  originS3Url: string,
+  generatedS3url: string,
+  originS3url: string,
 }
 
 interface UserContextType {
@@ -28,7 +28,7 @@ interface UserContextType {
 }
 
 const defaultBasicInfo = {ageDegree: '', ageGroup: '', gender: '', heightGroup:'', nickname: '', region: ''};
-const defaultFaceInfo = {generatedS3Url: '', originS3Url: ''};
+const defaultFaceInfo = {generatedS3url: '', originS3url: ''};
 
 export const UserContext = createContext<UserContextType>({
   basicinfo: defaultBasicInfo,
@@ -97,7 +97,7 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
       console.log('마스크 이미지 로딩 끝');
 
       if (isFaceInfoResponse(faceInfoResponse)) {
-        if (faceInfoResponse.generatedS3Url !== 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-profile.png') {
+        if (faceInfoResponse.generatedS3url !== 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-profile.png') {
           console.log('마스크 이미지 있음');
           setStatus('FACE_INFO_EXIST');
         }
