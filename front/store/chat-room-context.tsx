@@ -13,6 +13,7 @@ interface ChatRoomContextType {
   websocket: StompJs.Client | null,
   receivedHeartList: ChatUserListItem[],
   chatUserList: ChatUserListItem[],
+  getChatRoomList: () => void;
   sendHeart: (receiveId: number) => void,
   acceptHeart: (receiveId: number) => void,
   rejectHeart: (receiveId: number) => void,
@@ -22,6 +23,7 @@ export const ChatRoomContext = createContext<ChatRoomContextType>({
   websocket: null,
   receivedHeartList: [],
   chatUserList: [],
+  getChatRoomList: () => {},
   sendHeart: (receiveId: number) => {},
   acceptHeart: (receiveId: number) => {},
   rejectHeart: (receiveId: number) => {},
@@ -87,79 +89,160 @@ export interface ChatUserListItem extends ChatRoom {
   content: string,
 }
 
-const DUMMY_RESPONSE = "";
-
 const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) => {
   
   const DUMMY_LIST: ChatUserListItem[] = [1,2,3,4,5,6,7,8,9,10].map(item => {
     return {id: item, nickname: `nickname${item}`, generatedFaceS3url: '', originFaceS3url: '', content: 'ㅎㅇㅇ', createdAt: new Date(0), updatedAt: new Date(0), status: 'set', public: true}
   })
 
+  const DUMMY_LIST2: ChatUserListItem[] = [11,12,13,14,15,16,17,18,19,20].map(item => {
+    return {id: item, nickname: `nickname${item}`, generatedFaceS3url: '', originFaceS3url: '', content: '', createdAt: new Date(0), updatedAt: new Date(0), status: 'set', public: true}
+  })
+
   const [websocket, setWebsocket] = useState<StompJs.Client | null>(null);
-  const [chatUserList, setChatUserList] = useState<ChatUserListItem[]>([]);
+  const [chatUserList, setChatUserList] = useState<ChatUserListItem[]>(DUMMY_LIST);
   const [sentHeartList, setSentHeartList] = useState<number[]>([]);
-  const [receivedHeartList, setReceivedHeartList] = useState<ChatUserListItem[]>(DUMMY_LIST);
+  const [receivedHeartList, setReceivedHeartList] = useState<ChatUserListItem[]>(DUMMY_LIST2);
 
   const authCtx = useContext(AuthContext);
 
   const getChatRoomList = async () => {
-    console.log('getChatRoomList');
-    const endpoint = `${LOCALHOST}/room/list`;
+    try {
+      console.log('getChatRoomList');
+      const endpoint = `${LOCALHOST}/room/list`;
+      const config = { 
+        headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
+      };
+      const response = await axios.get(endpoint, config);
+      const { chatRoomHeartList, chatRoomOpenList, chatRoomMessageList, chatRoomCloseList }: ChatRoomListResponse = response.data;
+      
+      chatRoomHeartList.map(chatRoomHeartListItem => {
+        if (chatRoomHeartListItem.isSender) {
+          setSentHeartList(prevIds => [...prevIds, chatRoomHeartListItem.senderId]);
+        } else {
+          const newUserListItem: ChatUserListItem = {
+            createdAt: chatRoomHeartListItem.chatRoom.createdAt,
+            updatedAt: chatRoomHeartListItem.chatRoom.updatedAt,
+            status: chatRoomHeartListItem.chatRoom.status,
+            public: chatRoomHeartListItem.chatRoom.public,
+            id: chatRoomHeartListItem.senderId,
+            nickname: chatRoomHeartListItem.senderNickname,
+            generatedFaceS3url: chatRoomHeartListItem.senderGeneratedS3url,
+            originFaceS3url: chatRoomHeartListItem.senderOriginS3url,
+            content: '',
+          }
+          setReceivedHeartList(prevUserListItem => [...prevUserListItem, newUserListItem]);
+        }
+      });
+
+      chatRoomOpenList.map(chatRoomOpenListItem => {
+        const newUserListItem: ChatUserListItem = {
+          createdAt: chatRoomOpenListItem.chatRoom.createdAt,
+          updatedAt: chatRoomOpenListItem.chatRoom.updatedAt,
+          status: chatRoomOpenListItem.chatRoom.status,
+          public: chatRoomOpenListItem.chatRoom.public,
+          id: chatRoomOpenListItem.senderId,
+          nickname: chatRoomOpenListItem.senderNickname,
+          generatedFaceS3url: chatRoomOpenListItem.senderGeneratedS3url,
+          originFaceS3url: chatRoomOpenListItem.senderOriginS3url,
+          content: '',
+        };
+        setChatUserList(prevUserListItem => [...prevUserListItem, newUserListItem]);
+      });
+
+      chatRoomMessageList.map(chatRoomMessageListItem => {
+        const newUserListItem: ChatUserListItem = {
+          createdAt: chatRoomMessageListItem.chatRoom.createdAt,
+          updatedAt: chatRoomMessageListItem.chatRoom.updatedAt,
+          status: chatRoomMessageListItem.chatRoom.status,
+          public: chatRoomMessageListItem.chatRoom.public,
+          id: chatRoomMessageListItem.senderId,
+          nickname: chatRoomMessageListItem.senderNickname,
+          generatedFaceS3url: chatRoomMessageListItem.senderGeneratedS3url,
+          originFaceS3url: chatRoomMessageListItem.senderOriginS3url,
+          content: chatRoomMessageListItem.content,
+        };
+        setChatUserList(prevUserListItem => [...prevUserListItem, newUserListItem]);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const enterRoom = async (roomId: number) => {
+    const method = "enterRoom";
+    const endpoint = `${LOCALHOST}/chat/${roomId}/enter`;
     const config = { 
       headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
     };
-    const response = await axios.get(endpoint, config);
-    const { chatRoomHeartList, chatRoomOpenList, chatRoomMessageList, chatRoomCloseList }: ChatRoomListResponse = response.data;
-    
-    chatRoomHeartList.map(chatRoomHeartListItem => {
-      if (chatRoomHeartListItem.isSender) {
-        setSentHeartList(prevIds => [...prevIds, chatRoomHeartListItem.senderId]);
-      } else {
-        const newUserListItem: ChatUserListItem = {
-          createdAt: chatRoomHeartListItem.chatRoom.createdAt,
-          updatedAt: chatRoomHeartListItem.chatRoom.updatedAt,
-          status: chatRoomHeartListItem.chatRoom.status,
-          public: chatRoomHeartListItem.chatRoom.public,
-          id: chatRoomHeartListItem.senderId,
-          nickname: chatRoomHeartListItem.senderNickname,
-          generatedFaceS3url: chatRoomHeartListItem.senderGeneratedS3url,
-          originFaceS3url: chatRoomHeartListItem.senderOriginS3url,
-          content: '',
-        }
-        setReceivedHeartList(prevUserListItem => [...prevUserListItem, newUserListItem]);
+    try {
+      const response = await axios.post(endpoint, config);
+      console.log(response.data);
+    } catch (error) {
+      console.log(method, error);
+    }
+  }
+
+  const exitRoom = async (roomId: number) => {
+    const method = "exitRoom";
+    const endpoint = `${LOCALHOST}/chat/${roomId}/exit`;
+    const config = { 
+      headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
+    };
+    try {
+      const response = await axios.post(endpoint, config);
+      console.log(response.data);
+    } catch (error) {
+      console.log(method, error);
+    }
+  }
+  
+  const leftRoom = async (roomId: number) => {
+    const method = "leftRoom";
+    const endpoint = `${LOCALHOST}/chat/${roomId}/left`;
+    const config = { 
+      headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
+    };
+    try {
+      const response = await axios.get(endpoint, config);
+      console.log(response.data);
+    } catch (error) {
+      console.log(method, error);
+    }
+  }
+
+  const loadChat = async (roomId: number, pageNo: number) => {
+    const method = "loadChat";
+    const endpoint = `${LOCALHOST}/chat/${roomId}/messages?page=${pageNo}`;
+    const config = { 
+      headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
+    };
+    try {
+      const response = await axios.get(endpoint, config);
+      if (response.status === 200) {
+        return response;
+      } 
+      else {
+        throw new Error(response.statusText);
       }
-    });
+    } catch(error) {
+      console.log(method, error);
+    }
+  }
 
-    chatRoomOpenList.map(chatRoomOpenListItem => {
-      const newUserListItem: ChatUserListItem = {
-        createdAt: chatRoomOpenListItem.chatRoom.createdAt,
-        updatedAt: chatRoomOpenListItem.chatRoom.updatedAt,
-        status: chatRoomOpenListItem.chatRoom.status,
-        public: chatRoomOpenListItem.chatRoom.public,
-        id: chatRoomOpenListItem.senderId,
-        nickname: chatRoomOpenListItem.senderNickname,
-        generatedFaceS3url: chatRoomOpenListItem.senderGeneratedS3url,
-        originFaceS3url: chatRoomOpenListItem.senderOriginS3url,
-        content: '',
-      };
-      setChatUserList(prevUserListItem => [...prevUserListItem, newUserListItem]);
+  const sendChat = (receiveId: number, message: string) => {
+    websocket?.publish({
+      destination: '/pub/chat/messages',
+      headers: {
+        Authorization: "Bearer " + authCtx.accessToken,
+      },
+      body: JSON.stringify({ 
+        roomId: receiveId.toString(), 
+        receiveId: receiveId.toString(), 
+        content: message 
+      })
     });
-
-    chatRoomMessageList.map(chatRoomMessageListItem => {
-      const newUserListItem: ChatUserListItem = {
-        createdAt: chatRoomMessageListItem.chatRoom.createdAt,
-        updatedAt: chatRoomMessageListItem.chatRoom.updatedAt,
-        status: chatRoomMessageListItem.chatRoom.status,
-        public: chatRoomMessageListItem.chatRoom.public,
-        id: chatRoomMessageListItem.senderId,
-        nickname: chatRoomMessageListItem.senderNickname,
-        generatedFaceS3url: chatRoomMessageListItem.senderGeneratedS3url,
-        originFaceS3url: chatRoomMessageListItem.senderOriginS3url,
-        content: chatRoomMessageListItem.content,
-      };
-      setChatUserList(prevUserListItem => [...prevUserListItem, newUserListItem]);
-    });
-  };
+  }
 
   const sendHeart = (receiveId: number) => {
     websocket?.publish({
@@ -183,7 +266,6 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     const [ newUserListItem ] = receivedHeartList.filter(item => item.id === receiveId);
     setChatUserList(prevUserListItem => [...prevUserListItem, newUserListItem]);
     setReceivedHeartList(prevList => prevList.filter(item => item.id !== receiveId));
-
   }
 
   const rejectHeart = (receiveId: number) => {
@@ -242,10 +324,15 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     };
   }, []);
 
+  useEffect(() => {
+    console.log("chatUserList:", chatUserList);
+  }, [chatUserList])
+
   const value = useMemo(() => ({
     websocket,
     receivedHeartList,
     chatUserList,
+    getChatRoomList,
     sendHeart,
     acceptHeart,
     rejectHeart,
