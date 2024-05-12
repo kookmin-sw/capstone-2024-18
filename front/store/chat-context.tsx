@@ -7,7 +7,9 @@ import { areMinutesEqual, areDatesEqual } from '../util/dateTimeUtils';
 interface ChatContextType {
   chats: { [roomId: number]: ChatProps[] };
   setChats: (chats: { [roomId: number]: ChatProps[] }) => void;
-  addChat: (userId: number, chat: ChatProps) => void;
+  addChat: (roomId: number, chat: ChatProps) => void;
+  prependChats: (roomId: number, newChats: ChatProps[]) => void;
+  appendChats: (roomId: number, newChats: ChatProps[]) => void;
   handleSaveChatHistory: (userId: number) => void;
   handleLoadChatHistory: (userId: number) => void;
 }
@@ -15,7 +17,9 @@ interface ChatContextType {
 export const ChatContext = createContext<ChatContextType>({
   chats: [],
   setChats: ({}) => {},
-  addChat: (userId: number, chat: ChatProps) => {},
+  addChat: (roomId: number, chat: ChatProps) => {},
+  prependChats: (roomId: number, newChats: ChatProps[]) => {},
+  appendChats: (roomId: number, newChats: ChatProps[]) => {},
   handleSaveChatHistory: async (userId: number) => {},
   handleLoadChatHistory: async (userId: number) => {},
 });
@@ -116,6 +120,8 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     chats,
     setChats,
     addChat,
+    prependChats,
+    appendChats,
     handleSaveChatHistory,
     handleLoadChatHistory,
   }), [chats]);
