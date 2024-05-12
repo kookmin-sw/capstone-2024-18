@@ -4,8 +4,10 @@ import { ChatProps } from '../components/chat/Chat';
 import { AuthContext } from './auth-context';
 import { areMinutesEqual, areDatesEqual } from '../util/dateTimeUtils';
 
+export type Chats = { [roomId: number]: ChatProps[] };
+
 interface ChatContextType {
-  chats: { [roomId: number]: ChatProps[] };
+  chats: Chats;
   setChats: (chats: { [roomId: number]: ChatProps[] }) => void;
   addChat: (roomId: number, chat: ChatProps) => void;
   prependChats: (roomId: number, newChats: ChatProps[]) => void;
