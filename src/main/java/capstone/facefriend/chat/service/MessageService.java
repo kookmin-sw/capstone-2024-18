@@ -7,6 +7,7 @@ import capstone.facefriend.chat.repository.*;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyResponse;
 import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
+import capstone.facefriend.chat.service.dto.message.MessageListRequest;
 import capstone.facefriend.chat.service.dto.message.MessageListResponse;
 import capstone.facefriend.chat.service.dto.message.MessageRequest;
 import capstone.facefriend.chat.service.dto.message.MessageResponse;
@@ -227,20 +228,88 @@ public class MessageService {
         simpMessagingTemplate.convertAndSend(destination, heartReplyResponse);
     }
 
-    public List<MessageListResponse> getMessagePage(Long roomId, Long memberId, int pageNo) {
+    public List<MessageListResponse> getMessagePage(Long roomId, int pageNo, MessageListRequest messageListRequest) {
         pageNo = pageNo - 1;
         int pageSize = 40;
         Sort sort = Sort.by(Sort.Direction.DESC, "sendTime");
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-        String chatRoomInfoId = roomId + "/member/" + memberId;
-        ChatRoomInfo chatRoomInfo = findChatRoomInfo(chatRoomInfoId);
-        LocalDateTime time = chatRoomInfo.getEnterTime();
-        List<ChatMessage> chatMessagePage = chatMessageRepository.findChatMessagesByChatRoom_IdAndSendTimeBefore(roomId, time, pageable);
+        LocalDateTime time2 = messageListRequest.sendTime();
+        List<ChatMessage> chatMessagePage = chatMessageRepository.findChatMessagesByChatRoom_IdAndSendTimeBefore(roomId, time2, pageable);
         List<MessageListResponse> messageListResponses = new ArrayList<>();
         for (ChatMessage chatMessage : chatMessagePage){
             MessageListResponse messageListResponse = MessageListResponse.of(chatMessage);
             messageListResponses.add(messageListResponse);
         }
         return messageListResponses;
+    }
+
+    @Transactional
+    public void enterApplication(Long memberId) {
+        String exceptionDestination = "/sub/chat/" + memberId;
+        SocketInfo socketInfo = new SocketInfo();
+        socketInfo.setMemberId(memberId);
+        socketInfo.setConnectTime(LocalDateTime.now());
+        socketInfoRedisRepository.save(socketInfo);
+        if (isExistUnReadMessage(memberId)) {
+            sendSentMessage(memberId);
+        }
+
+        if(isExistUnSendHeart(memberId)) {
+            sendSentHeart(memberId);
+        }
+
+        simpMessagingTemplate.convertAndSend(exceptionDestination, "저장 성공");
+    }
+
+    @Transactional
+    public String exitApplication(Long memberId) {
+        SocketInfo socketInfo = findSocketInfo(memberId);
+        socketInfoRedisRepository.delete(socketInfo);
+        return "성공";
+    }
+
+    private Boolean isExistUnReadMessage(Long memberId) {
+        Boolean isUnRead = redisTemplate.hasKey("/sub/chat/" + memberId + "message");
+        log.info(isUnRead.toString());
+        return !isUnRead;
+    }
+
+    private Boolean isExistUnSendHeart(Long memberId) {
+        Boolean isUnRead = redisTemplate.hasKey("/sub/chat/" + memberId + "SendHeart");
+        log.info(isUnRead.toString());
+        return !isUnRead;
+    }
+
+    private void sendSentMessage(Long receiveId) {
+        String topic = channelTopic.getTopic();
+        String destination = "/sub/chat" + receiveId + "message";
+        Long messagesListSize = redisTemplate.opsForList().size(destination);
+        log.info(messagesListSize.toString());
+        log.info("messageList: {}", redisTemplate.opsForList().range(destination, 0, -1));
+
+        if (messagesListSize > 0) {
+            for (Long i = messagesListSize; i > 0; i--) {
+                // 맵으로 받음
+                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
+                MessageResponse messageResponse = (MessageResponse) map.get(destination);
+                log.info("messageResponse: {}", messageResponse.toString());
+                redisTemplate.convertAndSend(topic, messageResponse);
+            }
+        }
+    }
+
+    private void sendSentHeart(Long receiveId) {
+        String topic = channelTopic.getTopic();
+        String destination = "/sub/chat" + receiveId + "heart";
+        Long messagesListSize = redisTemplate.opsForList().size(destination);
+        log.info("SendHeartListSize: {}", messagesListSize.toString());
+        if (messagesListSize > 0) {
+            for (Long i = messagesListSize; i > 0; i--) {
+                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
+                SendHeartResponse sendHeartResponse = (SendHeartResponse) map.get(destination);
+                log.info("messageResponse: {}", sendHeartResponse.toString());
+                redisTemplate.convertAndSend(topic, sendHeartResponse);
+            }
+        }
     }
 }
