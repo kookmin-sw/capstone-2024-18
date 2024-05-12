@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import IconText from '../components/IconText.tsx';
-import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { Icon } from 'react-native-paper';
@@ -82,7 +82,7 @@ const Profile = ({navigation}: any) => {
       const response = await getAnalysisInfoShort(
         authCtx.accessToken
       );  
-      if (isAnalysisShortInfoResponse(response)) {
+      if (isAnalysisShortResponse(response)) {
         setAnalysis(response.analysisShort.map((_analysis, index) => {
           return '#' + _analysis;
         }))
