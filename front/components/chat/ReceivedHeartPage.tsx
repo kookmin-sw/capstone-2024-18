@@ -1,9 +1,8 @@
 import { View, ScrollView, StyleSheet, Text, Pressable  } from "react-native";
 import HeaderBar from "../HeaderBar";
 import { useContext } from "react";
-import { ChatRoomContext, ChatUserListItem } from "../../store/chat-room-context";
+import { ChatRoomContext } from "../../store/chat-room-context";
 import { colors } from "../../assets/colors";
-import CustomButton from "../CustomButton";
 
 const ReceivedHeartPage = () => {
   const chatRoomCtx = useContext(ChatRoomContext);  
@@ -18,7 +17,6 @@ const ReceivedHeartPage = () => {
             <View style={styles.profile} />
             <View style={{ flex: 1 }}>
               <Text style={styles.nickname}>{item.nickname}</Text>
-              <Text style={styles.chatContent}>{item.content}</Text>
             </View>
             <Pressable onPress={() => { chatRoomCtx.acceptHeart(item.id) }}>
               <View style={styles.acceptButton}>
@@ -52,7 +50,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 10,
     backgroundColor: colors.gray1,
-    height: 90,
+    height: 75,
     alignItems: 'center',
   },
   listItemText: {
