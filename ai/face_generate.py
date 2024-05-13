@@ -8,6 +8,8 @@ import base64
 from face_maker.DualStyleGAN.style_transfer import *
 import io, glob
 from rembg import remove
+import random
+
 
 app = Flask(__name__)
 face_maker = StyleTransfer()
@@ -17,7 +19,8 @@ level_dic = {
         2 : [1, 1, 1, 1, 0, 0, 0.2, 1, 0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
         1 : [1, 1, 1, 1, 0, 0.5, 0.2, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1] 
 }
-    
+
+seed = random.randint(1,100)
 
 @app.route('/')
 def home():
@@ -74,7 +77,7 @@ def generate_image_by_level():
     # 파일 저장 위치 만들기
     file_path = request.values['user_id'] + '_level' + '.png'
     sys.stdout = open(request.values['user_id']+'.txt','w')
-    print('asdfasdf')
+    print('seed: ', seed)
     # 파일 저장
     #request.files['image'].save(file_path)
     
