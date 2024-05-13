@@ -16,7 +16,7 @@ interface BasicInfo {
 
 interface FaceInfo {
   generatedS3url: string,
-  originS3Url: string,
+  originS3url: string,
 }
 
 interface UserContextType {
@@ -27,7 +27,7 @@ interface UserContextType {
 }
 
 const defaultBasicInfo = {ageDegree: '', ageGroup: '', gender: '', heightGroup:'', nickname: '', region: ''};
-const defaultFaceInfo = {generatedS3url: '', originS3Url: ''};
+const defaultFaceInfo = {generatedS3url: '', originS3url: ''};
 
 export const UserContext = createContext<UserContextType>({
   basicinfo: defaultBasicInfo,
