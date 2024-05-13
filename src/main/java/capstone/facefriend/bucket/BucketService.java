@@ -131,27 +131,24 @@ public class BucketService {
 
         List<String> resumeImageS3urls = new ArrayList<>();
 
-        for (MultipartFile image : images) {
+        if (images != null) {
+            for (MultipartFile image : images) {
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(image.getInputStream().available());
+                metadata.setContentType(image.getContentType());
 
-            if (image.isEmpty() || image.getSize() == 0) {
-                return List.of();
+                String imageObjectName = UUID.randomUUID() + resumePostfix;
+
+                amazonS3.putObject(
+                        new PutObjectRequest(
+                                bucketName,
+                                imageObjectName,
+                                image.getInputStream(),
+                                metadata
+                        ).withCannedAcl(CannedAccessControlList.PublicRead)
+                );
+                resumeImageS3urls.add(amazonS3.getUrl(bucketName, imageObjectName).toString());
             }
-
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(image.getInputStream().available());
-            metadata.setContentType(image.getContentType());
-
-            String imageObjectName = UUID.randomUUID() + resumePostfix;
-
-            amazonS3.putObject(
-                    new PutObjectRequest(
-                            bucketName,
-                            imageObjectName,
-                            image.getInputStream(),
-                            metadata
-                    ).withCannedAcl(CannedAccessControlList.PublicRead)
-            );
-            resumeImageS3urls.add(amazonS3.getUrl(bucketName, imageObjectName).toString());
         }
         return resumeImageS3urls;
     }
