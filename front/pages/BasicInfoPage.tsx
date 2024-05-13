@@ -332,7 +332,7 @@ const BasicInfoPage = ({navigation}: any) => {
   }, [basicInfo])
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <ScrollView contentContainerStyle={{ minHeight: '100%' }}>
       <CustomBackHandler onBack={handlePrevPage}/>
       <HeaderBar onPress={handlePrevPage}>기본 정보</HeaderBar>
       <View style={styles.container}>
@@ -355,7 +355,7 @@ const BasicInfoPage = ({navigation}: any) => {
           >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
         </View>
       </View>
-      </SafeAreaView>
+      </ScrollView>
   )
 }
 

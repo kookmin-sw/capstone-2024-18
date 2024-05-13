@@ -54,7 +54,7 @@ const FindEmail = ({navigation}: any) => {
 
     if (isFindEmailResponse(response)) {
       createAlertMessage(response.message, () => navigation.goBack());
-    }
+    } 
     if (isErrorResponse(response)){ // 나머지 에러
       createAlertMessage(response.message);
     }

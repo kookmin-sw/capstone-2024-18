@@ -67,7 +67,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { accessToken, refreshToken, memberId } = response.data;
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      setUserId(+memberId);
+      setUserId(memberId);
       saveToken("accessToken", accessToken);
       saveToken("refreshToken", refreshToken);
       setStatus('INITIALIZED');
@@ -126,8 +126,8 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { accessToken, refreshToken } = response.data;
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      saveToken("accessToken", accessToken);
-      saveToken("refreshToken", refreshToken);
+      await saveToken("accessToken", accessToken);
+      await saveToken("refreshToken", refreshToken);
       const responseInfo = {
         method,
         status: response.status,
@@ -249,8 +249,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
     const reisseInitial = async () => {
-      const response = await reissue();
-
+      await reissue();
       setStatus('INITIALIZED');
     }
     reisseInitial();

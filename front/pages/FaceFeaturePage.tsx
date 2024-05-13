@@ -6,19 +6,22 @@ import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
-import { getFaceInfo, isFaceInfoDefaultResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { getFaceInfo, isAnalysisFullResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { IconButton } from 'react-native-paper';
+import CustomBackHandler from '../components/CustomBackHandler.tsx';
+import { UserContext } from '../store/user-context.tsx';
 
 const FaceFeaturePage = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   // 이미지 uri path
   const [ uri, setUri ] = useState('');
-  const [ generatedS3Url, setGeneratedS3Url ] = useState('');
-  const [ haveGeneratedS3Url, setHaveGeneratedS3Url ] = useState(false);
+  const [ generatedS3url, setGeneratedS3url ] = useState('');
+  const [ havegeneratedS3url, setHaveGeneratedS3url ] = useState(false);
 
   const [ isImageSetting, setIsImageSetting ] = useState(false);
   const [ isButtonClickable, setIsButtonClickable ] = useState(false);
@@ -45,37 +48,49 @@ const FaceFeaturePage = ({navigation}: any) => {
         authCtx.accessToken
       );
       
-      if (!isFaceInfoResponse(response)) {
+      if (isErrorResponse(response)) {
         createAlertMessage(response.message);
-      } else if (isFaceInfoDefaultResponse(response)) {
-        setGeneratedS3Url(response.generatedS3Url);
-        setHaveGeneratedS3Url(true);
-      } else {
-        setHaveGeneratedS3Url(false);
+      }
+      if (isFaceInfoDefaultResponse(response)) {
+        setHaveGeneratedS3url(false);
+      } else if (isFaceInfoResponse(response)) {
+        setGeneratedS3url(response.generatedS3url);
+        setHaveGeneratedS3url(true);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
     }
   }
 
-  const tryPostFaceFeature = async () => {
-    // 아직 관상 분석 메소드 없음. postFaceFeature?
-    if (authCtx.accessToken) {
-      // const response = await getFaceInfo(
-      //   authCtx.accessToken
-      // );
-      
-      // if (!isFaceInfoResponse(response)) {
-      //   createAlertMessage(response.message);
-      // } else if (isFaceInfoDefaultResponse(response)) {
-      //   setGeneratedS3Url(response.generatedS3Url);
-      //   setHaveGeneratedS3Url(true);
-      // } else {
-      //   setHaveGeneratedS3Url(false);
-      // }
+  const [results, setResults] = useState<Record<string, string>>({});
 
-      // 임시로 그냥 넘어감
-      setPageIndex(1)
+  const tryPostFaceFeature = async () => {
+    if (authCtx.accessToken) {
+      const response = await getFaceInfo(
+        authCtx.accessToken
+      );
+      
+      if (!isFaceInfoResponse(response)) {
+        createAlertMessage(response.message);
+      } else if (isFaceInfoDefaultResponse(response)) {
+        setGeneratedS3url(response.generatedS3url);
+        setHaveGeneratedS3url(true);
+      } else {
+        setHaveGeneratedS3url(false);
+      }
+
+      const analysisResponse = await putAnalysisInfo(
+        authCtx.accessToken, uri
+      );
+      
+      if (!isAnalysisFullResponse(analysisResponse)) {
+        createAlertMessage(analysisResponse.message);
+        return;
+      } else {
+        setResults(analysisResponse.analysisFull);
+      }
+
+      setPageIndex(1);
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
     }
@@ -84,7 +99,10 @@ const FaceFeaturePage = ({navigation}: any) => {
   const clickButton = async () => {
     if (pageIndex === contents.length - 1) {
       // 메인 페이지로 이동
-      createAlertMessage("관상 분석 내용은 프로필에서 다시 볼 수 있습니다", () => navigation.goBack())
+      createAlertMessage("관상 분석 내용은 프로필에서 다시 볼 수 있습니다", () => {
+        userCtx.setStatus('FACE_FEATURE_EXIST');
+        navigation.goBack();
+      })
     } else {
       // ai 관상 이미지 생성
       
@@ -127,21 +145,25 @@ const FaceFeaturePage = ({navigation}: any) => {
   );
   const resultContent = (
     <View style={styles.contentContainer}>
-      {haveGeneratedS3Url ? 
+      {havegeneratedS3url ? 
       <ImageWithIconOverlay
-        borderRadius={300} source={{uri: generatedS3Url}}
+        borderRadius={300} source={{uri: generatedS3url}}
         containerStyle={styles.resultImageContainer} imageStyle={styles.image}>
         <IconButton icon={'check'} size={30} iconColor={colors.white} style={styles.resultBottomIcon}/>
       </ImageWithIconOverlay>:<></>
       }
       {/* 이 부분 코드는 나중에 관상 분석 결과 내용 나오면 수정 */}
       <View style={styles.resultContainer}>
-        <Text style={styles.resultTitle}>위쪽으로 올라간 입꼬리</Text>
-        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
-        <Text style={styles.resultTitle}>살짝 튀어나온 광대</Text>
-        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
-        <Text style={styles.resultTitle}>평평한 눈썹</Text>
-        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text>
+        {
+          Object.entries(results).map(([key, value]) => (
+            <>
+              <Text style={styles.resultTitle}>{key}</Text>
+              <Text style={styles.resultContent}>{value}</Text>
+            </>
+          ))
+        }
+        {/* <Text style={styles.resultTitle}>위쪽으로 올라간 입꼬리</Text>
+        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text> */}
       </View>
       <CustomButton containerStyle={{width: 73, height: 26}} textStyle={{fontSize: 12, color: colors.white}}>
         자세히 보기
@@ -167,6 +189,7 @@ const FaceFeaturePage = ({navigation}: any) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <CustomBackHandler onBack={navigation.goBack}/>
       <IconText 
         icon={{source: 'chat-question', color: colors.gray7}} 
         containerStyle={styles.hintContainer}

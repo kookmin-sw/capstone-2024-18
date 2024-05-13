@@ -4,20 +4,22 @@ import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import IconText from '../components/IconText.tsx';
-import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { Icon } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
+
 
 const Profile = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
 
   // 이미지 uri path
-  const [ generatedS3Url, setGeneratedS3Url ] = useState('');
-  const [ haveGeneratedS3Url, setHaveGeneratedS3Url ] = useState(false);
-  const [ originS3Url, setOriginS3Url ] = useState('');
+  const [ generatedS3url, setGeneratedS3url ] = useState('');
+  const [ havegeneratedS3url, setHaveGeneratedS3url ] = useState(false);
+  const [ originS3url, setOriginS3url ] = useState('');
 
   const tryGetFaceInfo = async () => {
     if (authCtx.accessToken) {
@@ -28,9 +30,9 @@ const Profile = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else {
-        setGeneratedS3Url(response.generatedS3Url);
-        setHaveGeneratedS3Url(true);
-        setOriginS3Url(response.originS3Url);
+        setGeneratedS3url(response.generatedS3url);
+        setHaveGeneratedS3url(true);
+        setOriginS3url(response.originS3url);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
@@ -48,7 +50,11 @@ const Profile = ({navigation}: any) => {
       );  
       if (isBasicInfoResponse(response)) {
         setNickName(response.nickname);
-        const newBasic = [ response.gender, response.ageGroup + response.ageDegree, response.heightGroup, '서울 ' + response.region];
+        const newBasic = [ 
+          gender[response.gender as keyof Gender], 
+          ageGroup[response.ageGroup as keyof AgeGroup] + ageDegree[response.ageDegree as keyof AgeDegree], 
+          heightGroup[response.heightGroup as keyof HeightGroup], 
+          '서울 ' + region['SEOUL'][response.region as keyof Region['SEOUL']]];
         setBasic(newBasic.map((_basic) => {
           return ('#' + _basic);
         }))
@@ -64,18 +70,37 @@ const Profile = ({navigation}: any) => {
     }
   }
 
-  // 아직 api 연동 못한 것 -> 나중에 default 등 처리 예정
-  const _faces = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
-  const [ face, setFace ] = useState(
-    _faces.map((_face) => {
-      return '#' + _face;
+  const _analysis = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
+  const [ analysis, setAnalysis ] = useState(
+    _analysis.map((_a) => {
+      return '#' + _a;
     })
   )
+
+  const createAnalysisInfo = async () => {
+    if (authCtx.accessToken) {
+      const response = await getAnalysisInfoShort(
+        authCtx.accessToken
+      );  
+      if (isAnalysisShortInfoResponse(response)) {
+        setAnalysis(response.analysisShort.map((_analysis, index) => {
+          return '#' + _analysis;
+        }))
+      }
+      if (isErrorResponse(response)) {
+        createAlertMessage(response.message);
+      }
+    }
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+  }
 
   useFocusEffect(
     useCallback(() => {
       createBasicInfo();
       tryGetFaceInfo();
+      createAnalysisInfo();
     }, [])
   );
 
@@ -93,15 +118,15 @@ const Profile = ({navigation}: any) => {
         <Text style={styles.text}>AI 관상은 서로 모르는 사이에서도 쉽게 다가갈 수 있기 위한 목적으로 사용해요. 만약 채팅을 통해 충분히 친해졌다면 실제 프로필 이미지를 공개할 수 있어요.</Text>
       </View>
       <View style={styles.contentContainer}>
-        {haveGeneratedS3Url ? 
+        {havegeneratedS3url ? 
         <View style={styles.imageRowFlexBox}>
           <ImageWithIconOverlay
-            borderRadius={300} source={{uri: generatedS3Url}}
+            borderRadius={300} source={{uri: generatedS3url}}
             containerStyle={styles.grayImageContainer} imageStyle={styles.image}
             centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
             centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
           <ImageWithIconOverlay
-            borderRadius={300} source={{uri: originS3Url}}
+            borderRadius={300} source={{uri: originS3url}}
             containerStyle={styles.grayImageContainer} imageStyle={styles.image}
             centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
             centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
@@ -122,9 +147,9 @@ const Profile = ({navigation}: any) => {
         <View style={styles.grayContainer}>
           <View style={styles.rowFlexBox}>
             <Text style={styles.grayTitle}>관상 정보</Text>
-            {editButton(() => {navigation.navigate('FaceFeature')})}
+            {editButton(() => {navigation.navigate('AnalysisInfo')})}
           </View>
-          <Text style={styles.grayContent}>{face.join(' ')}</Text>
+          <Text style={styles.grayContent}>{analysis.join(' ')}</Text>
         </View>
       </View>
       <View style={{flex: 1}}/>

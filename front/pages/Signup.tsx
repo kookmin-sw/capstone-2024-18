@@ -11,6 +11,7 @@ import { isValidResponse, signup, verifyDuplicationEmail } from "../util/auth.ts
 import { createAlertMessage } from "../util/alert.tsx";
 
 import VerifyEmailModal from "./VerifyEmailModal.tsx";
+import CustomBackHandler from "../components/CustomBackHandler.tsx";
 
 const Signup = ({navigation}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -169,6 +170,7 @@ const Signup = ({navigation}: any) => {
   
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45 }}>
+      <CustomBackHandler onBack={() => navigation.goBack()}/>
       {modalVisible && <VerifyEmailModal setModalVisible={setModalVisible} email={email} setEmail={setEmail}/>}
       <View style={styles.container}>
         <View style={[styles.sectionContainer, { borderTopWidth: 0 }]}>

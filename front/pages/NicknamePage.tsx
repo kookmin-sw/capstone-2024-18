@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, useWindowDimensions, Dimensions, KeyboardAvoidingView, ScrollView } from "react-native";
 import { Card, IconButton } from "react-native-paper";
 
 import IconText from "../components/IconText";
@@ -11,14 +11,16 @@ import { colors } from "../assets/colors";
 import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse, isValidResponse, putBasicInfo } from "../util/auth";
 import { createAlertMessage } from "../util/alert";
 import ImageWithIconOverlay from "../components/ImageWithIconOverlay";
+import CustomBackHandler from "../components/CustomBackHandler";
 
 const NicknamePage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
+  const height = Dimensions.get('window').height;
 
   const [nickname, setNickName] = useState('');
   const [nicknameState, setNickNameState] = useState("DEFAULT");
 
-  const [ generatedS3Url, setGeneratedS3Url ] = useState('');
+  const [ generatedS3url, setGeneratedS3url ] = useState('');
 
   const handleNicknameOnChange = (value: string) => {
     const regex = /^[ㄱ-힣A-Za-z0-9]{1,10}$/;
@@ -36,7 +38,7 @@ const NicknamePage = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else {
-        setGeneratedS3Url(response.generatedS3Url);
+        setGeneratedS3url(response.generatedS3url);
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
@@ -82,7 +84,9 @@ const NicknamePage = ({navigation}: any) => {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <KeyboardAvoidingView style={{flex: 1, minHeight: height}}>
+    <ScrollView style={{ height: height}}>
+      <CustomBackHandler onBack={navigation.goBack}/>
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Card style={styles.card}>
@@ -92,7 +96,7 @@ const NicknamePage = ({navigation}: any) => {
             <Text style={styles.text}>다른 사용자와 관계를 시작하기 전,{"\n"} 서로 최소한의 인적 사항을 참고하기 위함이에요.</Text>
           </View>
           <ImageWithIconOverlay
-            borderRadius={300} source={{uri: generatedS3Url}}
+            borderRadius={300} source={{uri: generatedS3url}}
             containerStyle={styles.resultImageContainer} imageStyle={styles.image}>
             <IconButton icon={'check'} size={30} iconColor={colors.white} style={styles.resultBottomIcon}/>
           </ImageWithIconOverlay>
@@ -116,7 +120,8 @@ const NicknamePage = ({navigation}: any) => {
           >완료</CustomButton>
         </View>
       </View>
-    </SafeAreaView>
+    </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -127,12 +132,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white", 
     flex: 1, 
     paddingHorizontal: 32, 
+    height: '100%'
   },
   innerContainer: {
     paddingHorizontal: 8,
     alignItems: "center",
     width: "100%",
     flex: 1,
+    backgroundColor: 'red'
   },
   bottomContainer: {
     alignItems: "center",

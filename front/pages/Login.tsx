@@ -1,5 +1,5 @@
 import { useRef, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity, BackHandler, Alert, ScrollView } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import CustomButton from '../components/CustomButton.tsx';
 import ImageButton from '../components/ImageButton.tsx';
@@ -9,6 +9,7 @@ import { AuthContext } from '../store/auth-context.tsx';
 import { colors } from '../assets/colors.tsx';
 import { isErrorResponse, isValidResponse } from '../util/auth.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
+import CustomBackHandler from '../components/CustomBackHandler.tsx';
 
 const Login = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
@@ -31,12 +32,7 @@ const Login = ({navigation}: any) => {
 
     if (isValidResponse(response)) {
       console.log("tryLogin: isValidResponse");
-      if (response.status === 200) {
-        navigation.navigate('Home');
-      }
-      else {
-        createAlertMessage(response.message);
-      }
+      navigation.navigate('Home');
     }
     if (isErrorResponse(response)) {
       console.log("tryLogin: isErrorResponse");
@@ -45,7 +41,8 @@ const Login = ({navigation}: any) => {
   }
 
   return (
-    <View style={{height: '100%'}}>
+    <ScrollView contentContainerStyle={{height: '100%'}}>
+      <CustomBackHandler haveExit={true}/>
       <View style={styles.container}>
         <AutoHeightImage
           width={parentWidth}
@@ -112,7 +109,7 @@ const Login = ({navigation}: any) => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

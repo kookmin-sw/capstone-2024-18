@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect, useMemo, useContext} from 'react';
-import Config from 'react-native-config';
 
-import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth';
+import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse } from '../util/auth';
 import { AuthContext } from './auth-context';
 
 const UUID = '0';
@@ -17,7 +16,7 @@ interface BasicInfo {
 
 interface FaceInfo {
   generatedS3url: string,
-  originS3url: string,
+  originS3Url: string,
 }
 
 interface UserContextType {
@@ -28,7 +27,7 @@ interface UserContextType {
 }
 
 const defaultBasicInfo = {ageDegree: '', ageGroup: '', gender: '', heightGroup:'', nickname: '', region: ''};
-const defaultFaceInfo = {generatedS3url: '', originS3url: ''};
+const defaultFaceInfo = {generatedS3url: '', originS3Url: ''};
 
 export const UserContext = createContext<UserContextType>({
   basicinfo: defaultBasicInfo,
@@ -97,7 +96,7 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
       console.log('마스크 이미지 로딩 끝');
 
       if (isFaceInfoResponse(faceInfoResponse)) {
-        if (faceInfoResponse.generatedS3url !== 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-profile.png') {
+        if (!isFaceInfoDefaultResponse(faceInfoResponse)) {
           console.log('마스크 이미지 있음');
           setStatus('FACE_INFO_EXIST');
         }
@@ -116,17 +115,41 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     }
   }
   
+  // 마스크 이미지 로딩 후 userState.faceinfo 업데이트
+  const setAnalysisInfoState = async () => {
+    if (authCtx.accessToken) {
+      console.log("관상 분석 로딩 중");
+      const response = await getAnalysisInfoShort(authCtx.accessToken);
+      console.log("관상 분석 로딩 끝");
+
+      console.log(response);
+      if (isAnalysisShortResponse(response)) {
+        console.log("관상 분석 있음");
+        setStatus("FACE_FEATURE_EXIST");
+      } else {
+        console.log("관상 분석 없음");
+        setStatus("FACE_FEATURE_NOT_EXIST");
+      }
+      if (isErrorResponse(response)) {
+        console.log("관상 분석 에러");
+        setStatus("FACE_FEATURE_ERROR");
+      }
+    }
+  }
   useEffect(() => {
     if (authCtx.status === 'INITIALIZED') {
       setBasicInfoState();
-    }
+    };
   }, [authCtx.status])
 
   useEffect(() => {
     if (status === 'BASIC_INFO_EXIST') {
       setFaceInfoState();
-    }
-  }, [authCtx.status, status]);
+    };
+    if (status === 'FACE_INFO_EXIST') {
+      setAnalysisInfoState();
+    };
+  }, [authCtx.status, status])
 
   const value = useMemo(() => ({
     basicinfo,
