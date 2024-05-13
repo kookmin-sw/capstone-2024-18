@@ -100,6 +100,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUserId(0);
       removeToken("accessToken");
       removeToken("refreshToken");
+      setStatus('NOT_EXIST');
       const responseInfo = {
         method,
         status: response.status,
@@ -269,7 +270,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
     reload,
     handleErrorResponse,
     userId,
-  }), [accessToken, refreshToken, status]);
+  }), [accessToken, refreshToken, status, userId]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
