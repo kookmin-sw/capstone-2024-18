@@ -14,6 +14,7 @@ import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, 
 import { Category, category } from '../util/categoryFormat.tsx';
 import { useRoute } from '@react-navigation/native';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
+import { ChatRoomContext } from '../store/chat-room-context.tsx';
 
 
 const OtherUserSelfProduce = ({navigation}: any) => {
@@ -56,6 +57,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
   }))
   const [ essay, setEssay ] = useState('DEFAULT');
 
+  const chatRoomCtx = useContext(ChatRoomContext);
   /**
    * 이미지 슬라이더에 들어갈 컨텐츠 내용물 데이터를 React.ReactNode로 바꿔주는 함수
    * @param param0 :any
@@ -72,6 +74,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
   }
 
   const handleHeart = async () => {
+    chatRoomCtx.sendHeart(resumeId);
     navigation.goBack();
   }
 
@@ -91,7 +94,9 @@ const OtherUserSelfProduce = ({navigation}: any) => {
         setBasic(newBasic.map((_basic, index) => {
           return {id: index, text: _basic}
         }));
-        setNickname(response.basicInfo.nickname);
+        // setNickname(response.basicInfo.nickname);
+        setNickname(response.basicInfo.nickname ? response.basicInfo.nickname : `nickname${resumeId}`);
+
 
         // 이미지 설정
         const imageTexts = [response.faceInfo.generatedS3url, ...response.resumeImageS3urls];
