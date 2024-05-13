@@ -1,4 +1,8 @@
-export const formatTimeDifference = (pastDate: Date) => {
+export const formatTimeDifference = (date: Date | string | undefined) => {
+    
+    const pastDate = (typeof date === 'string' || date instanceof Date) ? new Date(date) : date;
+    if (pastDate === undefined) return '';
+
     // 두 날짜의 차이를 밀리초 단위로 계산
     const currentDate = Date.now();
     const difference = currentDate - Number(pastDate);
