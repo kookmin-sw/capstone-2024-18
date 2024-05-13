@@ -110,13 +110,6 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {
-    chatRoomCtx.enterRoom(roomId);
-    return () => {
-      chatRoomCtx.exitRoom(roomId);
-    }
-  }, [])
-
-  useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', (event) => {
       setKeyboardHeight(event.endCoordinates.height);
     });

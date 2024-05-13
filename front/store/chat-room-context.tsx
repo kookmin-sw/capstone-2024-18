@@ -5,7 +5,7 @@ import Config from 'react-native-config';
 import StompJs, { IMessage, Client } from '@stomp/stompjs';
 import { AuthContext } from './auth-context';
 import { binaryBodyToString } from '../util/binaryBodyToString';
-import { ChatContext } from './chat-context';
+import { ChatContext, Chats } from './chat-context';
 import { ChatProps } from '../components/chat/Chat';
 import { v4 as uuidv4 } from 'uuid';
 import { UserContext } from './user-context';
@@ -22,8 +22,6 @@ interface ChatRoomContextType {
   sendHeart: (receiveId: number) => void,
   acceptHeart: (receiveId: number) => void,
   rejectHeart: (receiveId: number) => void,
-  enterRoom: (roomId: number) => void,
-  exitRoom: (roomId: number) => void,
   leftRoom: (roomId: number) => void,
   fetchChat: (roomId: number, sendTime: Date, pageNo: number) => void,
   sendChat: (roomId: number, message: string) => void,
@@ -38,8 +36,6 @@ export const ChatRoomContext = createContext<ChatRoomContextType>({
   sendHeart: (receiveId: number) => {},
   acceptHeart: (receiveId: number) => {},
   rejectHeart: (receiveId: number) => {},
-  enterRoom: (roomId: number) => {},
-  exitRoom: (roomId: number) => {},
   leftRoom: (roomId: number) => {},
   fetchChat: (roomId: number, sendTime: Date, pageNo: number) => {},
   sendChat: (roomId: number, message: string) => {},
@@ -189,37 +185,9 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     }
   };
 
-  const enterRoom = async (roomId: number) => {
-    const method = "enterRoom";
-    const endpoint = `${LOCALHOST}/chat/${roomId}/enter`;
-    const config = { 
-      headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
-    };
-    try {
-      const response = await axios.post(endpoint, config);
-      console.log(response.data);
-    } catch (error) {
-      console.log(method, error);
-    }
-  }
-
-  const exitRoom = async (roomId: number) => {
-    const method = "exitRoom";
-    const endpoint = `${LOCALHOST}/chat/${roomId}/exit`;
-    const config = { 
-      headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
-    };
-    try {
-      const response = await axios.post(endpoint, config);
-      console.log(response.data);
-    } catch (error) {
-      console.log(method, error);
-    }
-  }
-  
   const leftRoom = async (roomId: number) => {
     const method = "leftRoom";
-    const endpoint = `${LOCALHOST}/chat/${roomId}/left`;
+    const endpoint = `${LOCALHOST}/room/${roomId}/left`;
     const config = { 
       headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
     };
@@ -231,18 +199,20 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     }
   }
 
-  const fetchChat = async (roomId: number, sendTime: Date, pageNo: number) => {
+  const fetchChat = async (roomId: number, sendTime: Date) => {
     const method = "fetchChat";
-    const endpoint = `${LOCALHOST}/chat/${roomId}/messages?page=${pageNo}`;
-    const body = { sendTime: sendTime.toISOString() };
+    const endpoint = `${LOCALHOST}/chat/${roomId}/messages`;
+    const body = { sendTime: "2024-05-13T13:57:56" };
     const config = { 
       headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
     };
+    console.log(body);
     try {
       const response = await axios.post(endpoint, body, config);
       if (response.status === 200) {
-        console.log(response);
-        // TODO: response의 채팅들을 prependChat에 전달
+        console.log(response.data);
+        // TODO
+        // chatCtx.prependChats()
         return response;
       } 
       else {
@@ -254,6 +224,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }
 
   const sendChat = (receiveId: number, message: string) => {
+    if (!websocket?.connected) return;
     websocket?.publish({
       destination: '/pub/chat/messages',
       headers: {
@@ -350,10 +321,20 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       setTimeout(() => {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/sub/chat/${authCtx.userId}`, (message) => {
-          console.log(JSON.stringify(message));
-          console.log("binarybody:", binaryBodyToString(message.binaryBody));
+          const { binaryBody, ...response } = message;
+          console.log("\n\n\n\n\n", JSON.stringify(response));
+          console.log("binarybody:", binaryBodyToString(binaryBody));
         });
       }, 1000);
+
+      setTimeout(() => {
+        stompClient.publish({
+          destination: '/pub/stomp/connect',
+          headers: {
+            Authorization: "Bearer " + authCtx.accessToken,
+          },
+        })
+      }, 2500);
     };
 
     stompClient.onStompError = (frame) => {
@@ -382,8 +363,6 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     sendHeart,
     acceptHeart,
     rejectHeart,
-    enterRoom,
-    exitRoom,
     leftRoom,
     fetchChat,
     sendChat,
