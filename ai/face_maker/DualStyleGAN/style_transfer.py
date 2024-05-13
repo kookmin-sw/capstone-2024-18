@@ -136,10 +136,15 @@ class StyleTransfer():
             viz += [I]
 
             # reconstructed content image and its intrinsic style code
+            a = datetime.now().time()
+            print('reconstrct:', a)
             img_rec, instyle = encoder(F.adaptive_avg_pool2d(I, 256), randomize_noise=False, return_latents=True, 
                                        z_plus_latent=z_plus_latent, return_z_plus_latent=return_z_plus_latent, resize=False)  
             img_rec = torch.clamp(img_rec.detach(), -1, 1)
             viz += [img_rec]
+            b = datetime.now().time()
+            print('reconstrct:', b)
+            print('reconstrct:', b-a)
 
             stylename = list(exstyles.keys())[args.style_id]
             latent = torch.tensor(exstyles[stylename]).to(device)
@@ -147,11 +152,14 @@ class StyleTransfer():
                 latent[:,7:18] = instyle[:,7:18]
             # extrinsic styte code
             
-            print('exstyle:', datetime.now().time())
+            a = datetime.now().time()
+            print('exstyle:', a)
             exstyle = generator.generator.style(latent.reshape(latent.shape[0]*latent.shape[1], latent.shape[2])).reshape(latent.shape)
             if args.preserve_color and args.wplus:
                 exstyle[:,7:18] = instyle[:,7:18]
-            print('exstyle:', datetime.now().time())
+            b =datetime.now().time()
+            print('exstyle:', b)
+            print('exstyle', b-a)
             # load style image if it exists
             # S = None
             # if os.path.exists(os.path.join(args.data_path, args.style, 'images/train', stylename)):
