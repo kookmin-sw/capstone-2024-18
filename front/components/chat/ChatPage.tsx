@@ -3,9 +3,8 @@ import { useState, useRef, useEffect, useContext } from "react";
 import ChatList from "./ChatList";
 import ChatInput from "./ChatInput";
 import { colors } from "../../assets/colors";
-import { clearChatHistory } from "../../util/encryptedStorage";
 import { ChatProps } from "./Chat";
-import { ChatContext, Chats } from "../../store/chat-context";
+import { ChatContext } from "../../store/chat-context";
 import HeaderBar from "../HeaderBar";
 import { v4 as uuidv4 } from 'uuid';
 import { UserContext } from "../../store/user-context";
@@ -25,25 +24,14 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   const [chatHeights, setChatHeights] = useState<number[]>([]);
   
   const ChatListRef = useRef<FlatList<ChatProps> | null>(null);
-  const localDate = new Date();
 
   const chatCtx = useContext(ChatContext);
   const chatRoomCtx = useContext(ChatRoomContext);
   const userCtx = useContext(UserContext);
   const authCtx = useContext(AuthContext);
 
-  const sendChat = (message: string) => {
-    const sendTime = new Date(localDate.getTime());
-    const newChat: ChatProps = { 
-      id: uuidv4(),
-      senderId: authCtx.userId,
-      senderNickname: userCtx.basicinfo.nickname,
-      senderGeneratedFaceS3url: userCtx.faceinfo.generatedS3url,
-      senderOriginFaceS3url: userCtx.faceinfo.originS3url,      
-      content: message, 
-      sendTime,
-    };
-    chatCtx.addChat(roomId, newChat);
+  const handleSendChat = (message: string) => {
+    chatRoomCtx.sendChat(roomId, message);
   }
 
   const handleLoadDummyHistory = async (roomId: number) => {
@@ -97,7 +85,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     try{
       if (refreshing) return;
       setRefreshing(true);
-      const sendTime = chatCtx.chats[roomId][0].sendTime;
+      const sendTime = chatCtx.chats[roomId].length ? chatCtx.chats[roomId][0].sendTime : new Date();
       await chatRoomCtx.fetchChat(roomId, sendTime, page);
       setPage(prevPage => prevPage + 1);
       setRefreshing(false);
@@ -122,6 +110,13 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {
+    chatRoomCtx.enterRoom(roomId);
+    return () => {
+      chatRoomCtx.exitRoom(roomId);
+    }
+  }, [])
+
+  useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', (event) => {
       setKeyboardHeight(event.endCoordinates.height);
     });
@@ -136,38 +131,13 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   }, []);
 
   useEffect(() => {
-    console.log("keyboardHeight:", keyboardHeight);
+    // console.log("keyboardHeight:", keyboardHeight);
     setScrollPosition(scrollPosition + keyboardHeight);
   }, [keyboardHeight])
 
   useEffect(() => {
     // scrollToPosition(scrollPosition);
   }, [scrollPosition])
-
-  // useEffect(() => {
-  //   scrollToEnd();
-  // }, [chatCtx.chats]);
-
-  // const options = (
-  //   <View style={{position: "absolute", top: 0}}>
-  //     <View style={{ flexDirection: "row" }}>
-  //       <Pressable style={styles.option} onPress={handleClearChat}><Text style
-  //       ={styles.optionText}>채팅 초기화</Text></Pressable>
-  //       <Pressable style={styles.option} onPress={handleClearChatHistory}><Text style
-  //       ={styles.optionText}>캐시 초기화</Text></Pressable>
-  //       <Pressable style={styles.option} onPress={scrollToEnd}><Text style
-  //       ={styles.optionText}>아래로</Text></Pressable>
-  //     </View>
-  //     <View style={{ flexDirection: "row" }}>
-  //       <Pressable style={styles.option} onPress={chatCtx.handleSaveChatHistory}><Text style
-  //       ={styles.optionText}>저장</Text></Pressable>
-  //       <Pressable style={styles.option} onPress={chatCtx.handleLoadChatHistory}><Text style
-  //       ={styles.optionText}>불러오기</Text></Pressable>
-  //       <Pressable style={styles.option} onPress={handleLoadDummyHistory}><Text style
-  //       ={styles.optionText}>더미 불러오기</Text></Pressable>
-  //     </View>
-  //   </View>
-  // )
 
   return (
     <View style={styles.container}>
@@ -181,8 +151,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
         onScroll={handleOnScroll}
         setChatHeight={handleSetChatHeight}
       />
-      <ChatInput sendChat={sendChat}/>
-      {/* {options} */}
+      <ChatInput sendChat={handleSendChat}/>
     </View>
   ) 
 }
