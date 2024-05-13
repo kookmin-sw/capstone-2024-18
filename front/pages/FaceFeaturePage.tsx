@@ -69,19 +69,6 @@ const FaceFeaturePage = ({navigation}: any) => {
 
   const tryPostFaceFeature = async () => {
     if (authCtx.accessToken) {
-      const response = await getFaceInfo(
-        authCtx.accessToken
-      );
-      
-      if (!isFaceInfoResponse(response)) {
-        createAlertMessage(response.message);
-      } else if (isFaceInfoDefaultResponse(response)) {
-        setGeneratedS3url(response.generatedS3url);
-        setHaveGeneratedS3url(true);
-      } else {
-        setHaveGeneratedS3url(false);
-      }
-
       const analysisResponse = await putAnalysisInfo(
         authCtx.accessToken, uri
       );
