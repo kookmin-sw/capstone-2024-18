@@ -1,5 +1,4 @@
 export const areMinutesEqual = (date1: Date | string | undefined, date2: Date | string | undefined) => {
-  console.log("date1:", date1, "date2:", date2);
 
   // date1과 date2가 문자열이라면 Date 객체로 변환
   const d1 = (typeof date1 === 'string' || date1 instanceof Date) ? new Date(date1) : date1;
@@ -21,7 +20,6 @@ export const areMinutesEqual = (date1: Date | string | undefined, date2: Date | 
 }
 
 export const areDatesEqual = (date1: Date | string | undefined, date2: Date | string | undefined) => {
-  console.log("date1:", date1, "date2:", date2);
 
   // date1과 date2가 문자열이라면 Date 객체로 변환
   const d1 = (typeof date1 === 'string' || date1 instanceof Date) ? new Date(date1) : date1;
