@@ -10,6 +10,7 @@ import HeaderBar from "../HeaderBar";
 import { v4 as uuidv4 } from 'uuid';
 import { UserContext } from "../../store/user-context";
 import { AuthContext } from "../../store/auth-context";
+import { ChatRoomContext } from "../../store/chat-room-context";
 
 interface Prop {
   onBack: () => void,
@@ -17,6 +18,7 @@ interface Prop {
 }
 
 const ChatPage = ({ onBack, roomId }: Prop) => {
+
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -26,6 +28,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   const localDate = new Date();
 
   const chatCtx = useContext(ChatContext);
+  const chatRoomCtx = useContext(ChatRoomContext);
   const userCtx = useContext(UserContext);
   const authCtx = useContext(AuthContext);
 
@@ -77,9 +80,9 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     ChatListRef.current?.scrollToOffset({ offset, animated });
   }
 
-  const scrollToEnd = () => {
-    scrollToIndex(chatCtx.chats[roomId].length - 1);
-  };
+  // const scrollToEnd = () => {
+  //   scrollToIndex(chatCtx.chats[roomId].length - 1);
+  // };
   
   // const handleFetchChatHistory = async () => {
   //   const fetchedChats = await chatCtx.fetchChatHistory(page);
@@ -94,7 +97,9 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     try{
       if (refreshing) return;
       setRefreshing(true);
-      // await handleFetchChatHistory();
+      const sendTime = chatCtx.chats[roomId][0].sendTime;
+      await chatRoomCtx.fetchChat(roomId, sendTime, page);
+      setPage(prevPage => prevPage + 1);
       setRefreshing(false);
     } catch (error) {
       console.log("handleOnRefresh:", error);
@@ -139,9 +144,9 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     // scrollToPosition(scrollPosition);
   }, [scrollPosition])
 
-  useEffect(() => {
-    scrollToEnd();
-  }, [chatCtx.chats]);
+  // useEffect(() => {
+  //   scrollToEnd();
+  // }, [chatCtx.chats]);
 
   // const options = (
   //   <View style={{position: "absolute", top: 0}}>
