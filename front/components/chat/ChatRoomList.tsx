@@ -48,9 +48,7 @@ const ChatRoomList = () => {
         )}
       </ScrollView>
     </>}
-    {modal && <>
-      <ChatPage onBack={handleOnBack} opponentId={modal}/>
-    </>}
+    {!!modal && <ChatPage onBack={handleOnBack} roomId={modal}/>}
     </View>
   )
 }
