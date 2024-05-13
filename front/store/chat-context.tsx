@@ -31,7 +31,7 @@ interface ChatProviderProps {
 }
 
 const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
-  const [chats, setChats] = useState<{[roomId: number]: ChatProps[]}>({ 1: [] });
+  const [chats, setChats] = useState<{[roomId: number]: ChatProps[]}>({});
 
   const authCtx = useContext(AuthContext);
 
@@ -51,11 +51,12 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   }
 
   const addChat = (roomId: number, chat: ChatProps) => {
-    const currChats = roomId in chats ? chats[roomId] : [];
-    const prevChat = currChats.length ? currChats[currChats.length - 1] : undefined;
-    const newPrevChat = prevChat ? {...prevChat, isFinal: getIsFinal(prevChat, chat) } : undefined;
-    const newChat = {...chat, isDailyInitial: getIsDailyInitial(prevChat, chat), isInitial: getIsInitial(prevChat, chat), isFinal: true};
     setChats((prevChats) => { 
+      const currChats = roomId in prevChats ? prevChats[roomId] : [];
+      const prevChat = currChats.length ? currChats[currChats.length - 1] : undefined;
+      const newPrevChat = prevChat ? {...prevChat, isFinal: getIsFinal(prevChat, chat) } : undefined;
+      const newChat = {...chat, isDailyInitial: getIsDailyInitial(prevChat, chat), isInitial: getIsInitial(prevChat, chat), isFinal: true};
+        
       return { 
         ...prevChats,
         [roomId]: [
@@ -98,7 +99,7 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const handleSaveChatHistory = async (userId: number) => {
     try {
       console.log("채팅 저장 시도");
-      await saveData(userId, chats);
+      await saveData(userId, { chats });
       console.log("채팅 저장 성공");
     } catch (error) {
       console.error('채팅 저장 실패:', error); 
@@ -110,8 +111,7 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
       console.log("채팅 로딩 시도");
       const { chats } = await loadData(userId);
       console.log("채팅 로딩 성공");
-      console.log(chats);
-      setChats(chats);
+      setChats(chats ?? {});
     } catch (error) {
       console.error('채팅 로딩 실패:', error); 
     }
@@ -124,6 +124,16 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
       handleSaveChatHistory(authCtx.userId);
     };
   }, [authCtx.status])
+
+  useEffect(() => {
+    for (const roomId in chats) {
+      const arr: string[] = [];
+      chats[roomId].map((chat) => {
+        arr.push(chat.content);
+      })
+      console.log(roomId, arr);
+    }
+  }, [chats])
 
   const value = useMemo(() => ({
     chats,
