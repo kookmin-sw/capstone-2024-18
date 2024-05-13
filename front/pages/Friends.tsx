@@ -42,17 +42,17 @@ const Friends = ({navigation}: any) => {
     {
       id: 1,
       type: 'image',
-      source: require('../assets/images/imageTest1.png')
+      source: require('../assets/images/banner1.png')
     },
     {
       id: 2,
       type: 'image',
-      source: require('../assets/images/imageTest1.png')
+      source: require('../assets/images/banner2.png')
     },
     {
       id: 3,
       type: 'image',
-      source: require('../assets/images/imageTest1.png')
+      source: require('../assets/images/banner3.png')
     },
   ]);
 
@@ -129,11 +129,20 @@ const Friends = ({navigation}: any) => {
     if (faces[`${type}`].last) return;
 
     if (authCtx.accessToken) {
-      const response = await getGoodCombi(
-        authCtx.accessToken,
-        faces[`${type}`].content.length/10,
-        10
-      );
+      var response: any;
+      if (type === "FIT") {
+        response = await getGoodCombi(
+          authCtx.accessToken,
+          faces[`${type}`].content.length/10,
+          10
+        );
+      } else {
+        response = await getCategoryUser(
+          authCtx.accessToken,
+          faces[`${type}`].content.length/10,
+          10, type
+        );
+      }
 
       if (isResumesResponse(response)){
         setFaces((prev) => ({
@@ -168,6 +177,8 @@ const Friends = ({navigation}: any) => {
       {/* 이미지 슬라이더 */}
       <CarouselSlider
         pageWidth={pageWidth}
+        autoScrollToNextPage
+        autoScrollToNextPageInterval={3000}
         pageHeight={pageWidth}
         offset={offset}
         gap={gap}
@@ -191,7 +202,7 @@ const Friends = ({navigation}: any) => {
         <View style={styles.sectionTitleContainer}>
           <Text style={styles.sectionTitle}>나와 잘 맞는 관상</Text>
           <View style={{flex: 1}}/>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: "FIT"})}}>
             <Text>전체 보러가기{">"}</Text>
           </TouchableOpacity>
         </View>
@@ -215,7 +226,7 @@ const Friends = ({navigation}: any) => {
                       <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{categoryForm[tag as keyof Category]}</SelectableTag>
                       <Text style={{paddingLeft: 8}}>{text}</Text>
                       <View style={{flex: 1}}/>
-                      <TouchableOpacity>
+                      <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: tag})}}>
                         <Text>전체 보러가기{">"}</Text>
                       </TouchableOpacity>
                     </View>
