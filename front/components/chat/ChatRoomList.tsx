@@ -21,7 +21,7 @@ const ChatRoomList = () => {
   return (
     <View style={styles.container}>
     {!modal && <>
-      <HeaderBar onPress={() => { }}>다이렉트 메세지</HeaderBar>
+      <HeaderBar onPress={() => {}}>다이렉트 메세지</HeaderBar>
       <ScrollView style={{ padding: 20 }}>
         {chatRoomCtx.chatRooms.map(chatRoom => 
         <Pressable key={chatRoom.roomId} onPress={handleOnPress.bind(this, chatRoom.roomId)}>
