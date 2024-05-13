@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, ImageURISource } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, ImageURISource, Pressable } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { colors } from '../assets/colors.tsx'
 import CustomButton from '../components/CustomButton';
@@ -185,10 +185,11 @@ const SelfProduce = () => {
       );
     } else{
       return (
-        <ImageWithIconOverlay
-          borderRadius={15} key={id}
-          containerStyle={[containerStyle, {backgroundColor: colors.gray2}]}
-          centerIcon={{size: 80, source: 'plus'}} centerPressable={{onPress: () => takePhoto(), style:{alignSelf: 'center'}}}/>
+        <View style={[containerStyle, {backgroundColor: colors.gray2, borderRadius: 15}]}>
+          <Pressable style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onPress={takePhoto}>
+            <Icon size={80} source={'plus'}/>
+          </Pressable>
+        </View>
       );
     } 
   }
