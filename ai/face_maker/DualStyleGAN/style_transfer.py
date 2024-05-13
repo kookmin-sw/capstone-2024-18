@@ -144,7 +144,7 @@ class StyleTransfer():
             viz += [img_rec]
             b = datetime.now().time()
             print('reconstrct:', b)
-            print('reconstrct:', b-a)
+            print('reconstrct:', datetime.combine(datetime.today(), b) - datetime.combine(datetime.today(),a))
 
             stylename = list(exstyles.keys())[args.style_id]
             latent = torch.tensor(exstyles[stylename]).to(device)
@@ -159,7 +159,7 @@ class StyleTransfer():
                 exstyle[:,7:18] = instyle[:,7:18]
             b =datetime.now().time()
             print('exstyle:', b)
-            print('exstyle', b-a)
+            print('exstyle', datetime.combine(datetime.today(), b) - datetime.combine(datetime.today(),a))
             # load style image if it exists
             # S = None
             # if os.path.exists(os.path.join(args.data_path, args.style, 'images/train', stylename)):
