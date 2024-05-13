@@ -139,9 +139,11 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     // scrollToPosition(scrollPosition);
   }, [scrollPosition])
 
+  const chatRoom = chatRoomCtx.chatRooms.find(item => item.roomId === roomId)
+
   return (
     <View style={styles.container}>
-      <HeaderBar onPress={onBack}>{roomId}</HeaderBar>
+      <HeaderBar onPress={onBack}><Text style={{ color: 'black' }}>{chatRoom?.senderNickname}</Text></HeaderBar>
       <ChatList 
         chats={chatCtx.chats ? chatCtx.chats[roomId] ?? [] : []} 
         chatHeights={chatHeights}
