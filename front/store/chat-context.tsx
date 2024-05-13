@@ -51,7 +51,7 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   }
 
   const addChat = (roomId: number, chat: ChatProps) => {
-    const currChats = chats[roomId] ?? [];
+    const currChats = roomId in chats ? chats[roomId] : [];
     const prevChat = currChats.length ? currChats[currChats.length - 1] : undefined;
     const newPrevChat = prevChat ? {...prevChat, isFinal: getIsFinal(prevChat, chat) } : undefined;
     const newChat = {...chat, isDailyInitial: getIsDailyInitial(prevChat, chat), isInitial: getIsInitial(prevChat, chat), isFinal: true};

@@ -173,7 +173,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     <View style={styles.container}>
       <HeaderBar onPress={onBack}>{roomId}</HeaderBar>
       <ChatList 
-        chats={chatCtx.chats[roomId]} 
+        chats={chatCtx.chats ? chatCtx.chats[roomId] ?? [] : []} 
         chatHeights={chatHeights}
         ref={ChatListRef} 
         onRefresh={handleOnRefresh} 
