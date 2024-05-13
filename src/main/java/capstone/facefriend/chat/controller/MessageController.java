@@ -44,7 +44,7 @@ public class MessageController {
         return msg;
     }
 
-    @GetMapping("/chat/{roomId}/messages")
+    @PostMapping("/chat/{roomId}/messages")
     public ResponseEntity<List<MessageListResponse>> getMessagesPage(
             @PathVariable("roomId") Long roomId,
 //            @AuthMember Long memberId,
