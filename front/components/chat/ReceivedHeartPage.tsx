@@ -12,18 +12,18 @@ const ReceivedHeartPage = () => {
       <HeaderBar onPress={()=>{}}>하트 신청 목록</HeaderBar>
       <Text style={{ color: colors.gray5, alignSelf: 'center', marginBottom: 10 }}>하트를 수락하면 채팅을 시작할 수 있어요</Text>
       <ScrollView style={styles.listContainer}>
-        {chatRoomCtx.receivedHeartList.map(item => (
-          <View style={styles.listItemContainer} key={item.id}>
+        {chatRoomCtx.receivedHeartRooms.map(room => (
+          <View style={styles.listItemContainer} key={room.roomId}>
             <View style={styles.profile} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.nickname}>{item.nickname}</Text>
+              <Text style={styles.nickname}>{room.senderNickname}</Text>
             </View>
-            <Pressable onPress={() => { chatRoomCtx.acceptHeart(item.id) }}>
+            <Pressable onPress={() => { chatRoomCtx.acceptHeart(room.roomId) }}>
               <View style={styles.acceptButton}>
                 <Text style={styles.buttonText}>수락</Text>
               </View>
             </Pressable>
-            <Pressable onPress={() => { chatRoomCtx.rejectHeart(item.id) }}>
+            <Pressable onPress={() => { chatRoomCtx.rejectHeart(room.roomId) }}>
               <View style={styles.rejectButton}>
                 <Text style={styles.buttonText}>거절</Text>
               </View>
