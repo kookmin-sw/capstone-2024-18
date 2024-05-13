@@ -105,18 +105,18 @@ export interface ChatUserListItem extends ChatRoom {
 
 const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) => {
   
-  const DUMMY_LIST: ChatUserListItem[] = [1,2,3,4,5,6,7,8,9,10].map(item => {
-    return {id: item, nickname: `nickname${item}`, generatedFaceS3url: '', originFaceS3url: '', content: 'ㅎㅇㅇ', createdAt: new Date(0), updatedAt: new Date(0), status: 'set', public: true}
-  })
+  // const DUMMY_LIST: ChatUserListItem[] = [1,2,3,4,5,6,7,8,9,10].map(item => {
+  //   return {id: item, nickname: `nickname${item}`, generatedFaceS3url: '', originFaceS3url: '', content: 'ㅎㅇㅇ', createdAt: new Date(0), updatedAt: new Date(0), status: 'set', public: true}
+  // })
 
-  const DUMMY_LIST2: ChatUserListItem[] = [11,12,13,14,15,16,17,18,19,20].map(item => {
-    return {id: item, nickname: `nickname${item}`, generatedFaceS3url: '', originFaceS3url: '', content: '', createdAt: new Date(0), updatedAt: new Date(0), status: 'set', public: true}
-  })
+  // const DUMMY_LIST2: ChatUserListItem[] = [11,12,13,14,15,16,17,18,19,20].map(item => {
+  //   return {id: item, nickname: `nickname${item}`, generatedFaceS3url: '', originFaceS3url: '', content: '', createdAt: new Date(0), updatedAt: new Date(0), status: 'set', public: true}
+  // })
 
   const [websocket, setWebsocket] = useState<StompJs.Client | null>(null);
-  const [chatUserList, setChatUserList] = useState<ChatUserListItem[]>(DUMMY_LIST);
+  const [chatUserList, setChatUserList] = useState<ChatUserListItem[]>([]);
   const [sentHeartList, setSentHeartList] = useState<number[]>([]);
-  const [receivedHeartList, setReceivedHeartList] = useState<ChatUserListItem[]>(DUMMY_LIST2);
+  const [receivedHeartList, setReceivedHeartList] = useState<ChatUserListItem[]>([]);
 
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
@@ -290,7 +290,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       headers: {
         Authorization: "Bearer " + authCtx.accessToken,
       },
-      body: JSON.stringify({ receiveId: receiveId.toString(), intention: "positive" })
+      body: JSON.stringify({ senderId: receiveId.toString(), intention: "positive" })
     });
     const [ newUserListItem ] = receivedHeartList.filter(item => item.id === receiveId);
     setChatUserList(prevUserListItem => [...prevUserListItem, newUserListItem]);
@@ -303,7 +303,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       headers: {
         Authorization: "Bearer " + authCtx.accessToken,
       },
-      body: JSON.stringify({ receiveId: receiveId.toString(), intention: "negative" })
+      body: JSON.stringify({ senderId: receiveId.toString(), intention: "negative" })
     });
     setReceivedHeartList(prevList => prevList.filter(item => item.id !== receiveId));
   }
@@ -313,11 +313,19 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }
 
   useEffect(() => {
+    console.log('receivedHeartList:', receivedHeartList);
+  }, [receivedHeartList])
+
+  useEffect(() => {
+    console.log('chatUserList:', chatUserList);
+  }, [chatUserList])
+
+  useEffect(() => {
     if (authCtx.status !== 'INITIALIZED') return;
     setTimeout(() => {
       getChatRoomList();
     }, 1500)
-  }, [])
+  }, [authCtx.status])
 
   useEffect(() => {
     if (authCtx.status !== 'INITIALIZED') return;
@@ -355,7 +363,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     return () => {
       stompClient.deactivate();
     };
-  }, []);
+  }, [authCtx.status]);
 
   useEffect(() => {
     console.log("chatUserList:", chatUserList);
