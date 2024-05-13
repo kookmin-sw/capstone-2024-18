@@ -18,15 +18,6 @@ const ChatRoomList = () => {
     setModal(0);
   }
 
-  useEffect(() => {
-    console.log("chatUserList:", chatRoomCtx.chatUserList);
-  }, [chatRoomCtx.chatUserList])
-
-  useEffect(() => {
-    if (modal) return;
-    chatRoomCtx.getChatRoomList();
-  }, [modal])
-
   return (
     <View style={styles.container}>
     {!modal && <>
@@ -41,7 +32,7 @@ const ChatRoomList = () => {
               <Text style={styles.chatContent}>{chatUserListItem.content ? chatUserListItem.content : "대화 내용이 없습니다."}</Text>
             </View>
             <View style={styles.elapsedTimeContainer}>
-              <Text style={styles.elapsedTimeText}>{formatTimeDifference(chatUserListItem.updatedAt)}</Text>
+              {/* <Text style={styles.elapsedTimeText}>{formatTimeDifference(chatUserListItem.updatedAt)}</Text> */}
             </View>
           </View>
         </Pressable>
