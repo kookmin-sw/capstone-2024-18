@@ -78,6 +78,7 @@ def generate_image_by_level():
     file_path = request.values['user_id'] + '_level' + '.png'
     sys.stdout = open(request.values['user_id']+'.txt','w')
     print('seed: ', seed)
+    print('model address: ', hex(id(face_maker)))
     # 파일 저장
     #request.files['image'].save(file_path)
     
