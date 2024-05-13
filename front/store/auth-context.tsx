@@ -124,9 +124,10 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
     try {
       const response = await axios.post(endpoint, body, config);
-      const { accessToken, refreshToken } = response.data;
+      const { accessToken, refreshToken, memberId } = response.data;
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
+      setUserId(memberId);
       await saveToken("accessToken", accessToken);
       await saveToken("refreshToken", refreshToken);
       const responseInfo = {
