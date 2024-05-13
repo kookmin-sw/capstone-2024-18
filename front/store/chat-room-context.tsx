@@ -5,6 +5,10 @@ import Config from 'react-native-config';
 import StompJs, { IMessage, Client } from '@stomp/stompjs';
 import { AuthContext } from './auth-context';
 import { binaryBodyToString } from '../util/binaryBodyToString';
+import { ChatContext } from './chat-context';
+import { ChatProps } from '../components/chat/Chat';
+import { v4 as uuidv4 } from 'uuid';
+import { UserContext } from './user-context';
 
 const LOCALHOST = Config.LOCALHOST;
 const SOCKET_URL = Config.SOCKET_URL;
@@ -17,6 +21,11 @@ interface ChatRoomContextType {
   sendHeart: (receiveId: number) => void,
   acceptHeart: (receiveId: number) => void,
   rejectHeart: (receiveId: number) => void,
+  enterRoom: (roomId: number) => void,
+  exitRoom: (roomId: number) => void,
+  leftRoom: (roomId: number) => void,
+  fetchChat: (roomId: number, sendTime: Date, pageNo: number) => void,
+  sendChat: (roomId: number, message: string) => void,
 }
 
 export const ChatRoomContext = createContext<ChatRoomContextType>({
@@ -27,6 +36,11 @@ export const ChatRoomContext = createContext<ChatRoomContextType>({
   sendHeart: (receiveId: number) => {},
   acceptHeart: (receiveId: number) => {},
   rejectHeart: (receiveId: number) => {},
+  enterRoom: (roomId: number) => {},
+  exitRoom: (roomId: number) => {},
+  leftRoom: (roomId: number) => {},
+  fetchChat: (roomId: number, sendTime: Date, pageNo: number) => {},
+  sendChat: (roomId: number, message: string) => {},
 });
 
 interface ChatRoomProviderProps {
@@ -105,6 +119,8 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   const [receivedHeartList, setReceivedHeartList] = useState<ChatUserListItem[]>(DUMMY_LIST2);
 
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
+  const chatCtx = useContext(ChatContext);
 
   const getChatRoomList = async () => {
     try {
@@ -211,15 +227,18 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     }
   }
 
-  const loadChat = async (roomId: number, pageNo: number) => {
-    const method = "loadChat";
+  const fetchChat = async (roomId: number, sendTime: Date, pageNo: number) => {
+    const method = "fetchChat";
     const endpoint = `${LOCALHOST}/chat/${roomId}/messages?page=${pageNo}`;
+    const body = { sendTime: sendTime.toISOString() };
     const config = { 
       headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
     };
     try {
-      const response = await axios.get(endpoint, config);
+      const response = await axios.post(endpoint, body, config);
       if (response.status === 200) {
+        console.log(response);
+        // TODO: response의 채팅들을 prependChat에 전달
         return response;
       } 
       else {
@@ -242,6 +261,16 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
         content: message 
       })
     });
+    const newChat: ChatProps = {
+      id: uuidv4(),
+      senderId: authCtx.userId,
+      senderNickname: userCtx.basicinfo.nickname,
+      senderGeneratedFaceS3url: userCtx.faceinfo.generatedS3url,
+      senderOriginFaceS3url: userCtx.faceinfo.originS3url,
+      content: message,
+      sendTime: new Date(),
+    }
+    chatCtx.addChat(receiveId, newChat);
   }
 
   const sendHeart = (receiveId: number) => {
@@ -277,6 +306,10 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       body: JSON.stringify({ receiveId: receiveId.toString(), intention: "negative" })
     });
     setReceivedHeartList(prevList => prevList.filter(item => item.id !== receiveId));
+  }
+
+  const receiveChat = () => {
+
   }
 
   useEffect(() => {
@@ -336,6 +369,11 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     sendHeart,
     acceptHeart,
     rejectHeart,
+    enterRoom,
+    exitRoom,
+    leftRoom,
+    fetchChat,
+    sendChat,
   }), [websocket, receivedHeartList, chatUserList]);
 
   return <ChatRoomContext.Provider value={value}>{children}</ChatRoomContext.Provider>;
