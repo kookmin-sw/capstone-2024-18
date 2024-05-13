@@ -121,6 +121,10 @@ public class ResumeService {
         Member me = findMemberById(memberId);
         Resume mine = findResumeByMember(me); // 영속 상태
 
+        if (request.images().size() == 0 || request.images() == null) {
+            throw new ResumeException(MUST_UPLOAD_ONE_IMAGE);
+        }
+
         List<String> resumeImageS3urls = bucketService.updateResumeImages(request.images(), mine);
 
         mine.setResumeImageS3urls(resumeImageS3urls); // dirty check
