@@ -136,7 +136,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
   }, [])
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{backgroundColor: colors.white}}>
       {/* 이미지 슬라이더 */}
       <CustomBackHandler onBack={() => navigation.goBack()}/>
       <HeaderBar onPress={navigation.goBack}>자기소개서</HeaderBar>
@@ -150,7 +150,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
         initialScrollIndex={0}
         renderItem={renderItem}/>
 
-      <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+      <View style={{flexDirection: 'row', alignSelf: 'center', paddingTop: 10}}>
       {
         images.map((item, idx) => {
           return (
