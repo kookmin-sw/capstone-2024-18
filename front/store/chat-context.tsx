@@ -31,32 +31,39 @@ interface ChatProviderProps {
 }
 
 const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
-  const [chats, setChats] = useState<{[roomId: number]: ChatProps[]}>({});
+  const [chats, setChats] = useState<{[roomId: number]: ChatProps[]}>({ 1: [] });
 
   const authCtx = useContext(AuthContext);
 
-  const getIsDailyInitial = (prevChat: ChatProps | undefined, chat: ChatProps) => {
-    const isInitial = prevChat === undefined || !areDatesEqual(prevChat.sendTime, chat.sendTime);
+  const getIsDailyInitial = (prevChat: ChatProps | undefined, chat: ChatProps | undefined) => {
+    const isInitial = prevChat === undefined || !areDatesEqual(prevChat.sendTime, chat?.sendTime);
     return isInitial;
   }
 
-  const getIsInitial = (prevChat: ChatProps | undefined, chat: ChatProps) => {
-    const isInitial = prevChat === undefined || !areMinutesEqual(prevChat.sendTime, chat.sendTime);
+  const getIsInitial = (prevChat: ChatProps | undefined, chat: ChatProps | undefined) => {
+    const isInitial = prevChat === undefined || !areMinutesEqual(prevChat.sendTime, chat?.sendTime);
     return isInitial;
   }
 
-  const getIsFinal = (chat: ChatProps, nextChat: ChatProps | undefined) => {
-    const isFinal = nextChat === undefined || !areMinutesEqual(nextChat.sendTime, chat.sendTime);
+  const getIsFinal = (chat: ChatProps | undefined, nextChat: ChatProps | undefined) => {
+    const isFinal = nextChat === undefined || !areMinutesEqual(nextChat.sendTime, chat?.sendTime);
     return isFinal;
   }
 
   const addChat = (roomId: number, chat: ChatProps) => {
     const currChats = chats[roomId];
-    const prevChat = currChats[currChats.length - 1];
-    const newPrevChat = {...prevChat, isFinal: getIsFinal(prevChat, chat) };
+    const prevChat = currChats?.length ? currChats[currChats.length - 1] : undefined;
+    const newPrevChat = prevChat ? {...prevChat, isFinal: getIsFinal(prevChat, chat) } : undefined;
     const newChat = {...chat, isDailyInitial: getIsDailyInitial(prevChat, chat), isInitial: getIsInitial(prevChat, chat), isFinal: true};
     setChats((prevChats) => { 
-      return { ...prevChats, [roomId]: [...currChats.slice(0, -1), newPrevChat, newChat]} 
+      return { 
+        ...prevChats,
+        [roomId]: [
+          ...currChats.slice(0, -1),
+          ...(newPrevChat ? [newPrevChat] : []),
+          newChat
+        ]
+      };
     });
   }
 
