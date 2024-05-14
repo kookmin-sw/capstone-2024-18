@@ -37,19 +37,19 @@ export const removeToken = async (tokenType: "accessToken" | "refreshToken") => 
     }
 };
 
-export const saveChatHistory = async (chats: ChatProps[]) => {
+export const saveChatHistory = async (chats: {[roomid: number]: ChatProps[]}, userId: number) => {
     try {
         const JSONChatHistory = JSON.stringify(chats);
-        await EncryptedStorage.setItem("chats", JSONChatHistory);
+        await EncryptedStorage.setItem(`chats-${userId}`, JSONChatHistory);
         console.log("채팅 내역 저장 성공: ", chats);
     } catch (error) {
         console.log("채팅 내역 저장 실패", error);
     }
 };
 
-export const loadChatHistory = async () => {
+export const loadChatHistory = async (userId: number) => {
     try {
-        const JSONChatHistory = await EncryptedStorage.getItem("chats");
+        const JSONChatHistory = await EncryptedStorage.getItem(`chats-${userId}`);
         const chatHistory = JSONChatHistory ? JSON.parse(JSONChatHistory) : [];
         if (chatHistory) {
             console.log("채팅 내역 로딩 성공:", chatHistory);
