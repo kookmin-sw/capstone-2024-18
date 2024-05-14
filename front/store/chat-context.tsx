@@ -2,7 +2,8 @@ import React, { createContext, useState, useEffect, useMemo, useContext} from 'r
 import { saveData, loadData } from '../util/encryptedStorage';
 import { ChatProps } from '../components/chat/Chat';
 import { AuthContext } from './auth-context';
-import { areMinutesEqual, areDatesEqual } from '../util/dateTimeUtils';
+import { AppState, AppStateStatus } from 'react-native';
+import { getIsDailyInitial, getIsFinal, getIsInitial } from '../util/getChatSequentialStatus';
 
 export type Chats = { [roomId: number]: ChatProps[] };
 
@@ -35,21 +36,6 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   const authCtx = useContext(AuthContext);
 
-  const getIsDailyInitial = (prevChat: ChatProps | undefined, chat: ChatProps | undefined) => {
-    const isInitial = prevChat === undefined || !areDatesEqual(prevChat.sendTime, chat?.sendTime);
-    return isInitial;
-  }
-
-  const getIsInitial = (prevChat: ChatProps | undefined, chat: ChatProps | undefined) => {
-    const isInitial = prevChat === undefined || !areMinutesEqual(prevChat.sendTime, chat?.sendTime);
-    return isInitial;
-  }
-
-  const getIsFinal = (chat: ChatProps | undefined, nextChat: ChatProps | undefined) => {
-    const isFinal = nextChat === undefined || !areMinutesEqual(nextChat.sendTime, chat?.sendTime);
-    return isFinal;
-  }
-
   const addChat = (roomId: number, chat: ChatProps) => {
     setChats((prevChats) => { 
       const currChats = roomId in prevChats ? prevChats[roomId] : [];
@@ -69,30 +55,39 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   }
 
   const prependChats = (roomId: number, newChats: ChatProps[]) => {
-    const annotatedChats = newChats.map((chat: ChatProps, index) => {
-      const prevChat = newChats[index - 1];
-      const nextChat = newChats[index + 1] ?? chats[roomId][0];
-      const isDailyInitial = getIsDailyInitial(prevChat, chat);
-      const isInitial = getIsInitial(prevChat, chat);
-      const isFinal = getIsFinal(chat, nextChat);
-      return { ...chat, isDailyInitial, isInitial, isFinal };
-    });
-    setChats((prevChats) => { 
-      return { ...prevChats, [roomId]: [ ...annotatedChats, ...prevChats[roomId] ]};
+    setChats((prevChats) => {
+      const annotatedChats = newChats.map((chat: ChatProps, index) => {
+        const prevChat = index ? newChats[index - 1] : undefined;
+        const nextChat = index === newChats.length ? prevChats[roomId][0] : newChats[index + 1];
+        const isDailyInitial = getIsDailyInitial(prevChat, chat);
+        const isInitial = getIsInitial(prevChat, chat);
+        const isFinal = getIsFinal(chat, nextChat);
+        return { ...chat, isDailyInitial, isInitial, isFinal };
+      });
+
+      const safePrevChats = prevChats ?? [];
+      const currChats = roomId in safePrevChats ? safePrevChats[roomId] : [];
+      return { ...safePrevChats, [roomId]: [ ...annotatedChats, ...currChats ]};
     });
   }
 
   const appendChats = (roomId: number, newChats: ChatProps[]) => {
-    const annotatedChats = newChats.map((chat: ChatProps, index) => {
-      const prevChat = newChats[index - 1] ?? chats[roomId][chats[roomId].length - 1];
-      const nextChat = newChats[index + 1];
-      const isDailyInitial = getIsDailyInitial(prevChat, chat);
-      const isInitial = getIsInitial(prevChat, chat);
-      const isFinal = getIsFinal(chat, nextChat);
-      return { ...chat, isDailyInitial, isInitial, isFinal };
-    });
-    setChats((prevChats) => { 
-      return { ...prevChats, [roomId]: [ ...prevChats[roomId], ...annotatedChats ]};
+    console.log("prependChats");
+    setChats((prevChats) => {
+      const annotatedChats = newChats.map((chat: ChatProps, index) => {
+        const safePrevChats: ChatProps[] = (prevChats ?? {})[roomId] ?? [];
+        const prevChat = index ? newChats[index - 1]: safePrevChats[0];
+        console.log(prevChat);
+        const nextChat = index === newChats.length ? undefined : newChats[index + 1];
+        const isDailyInitial = getIsDailyInitial(prevChat, chat);
+        const isInitial = getIsInitial(prevChat, chat);
+        const isFinal = getIsFinal(chat, nextChat);
+        return { ...chat, isDailyInitial, isInitial, isFinal };
+      });
+
+      const safePrevChats = prevChats ?? [];
+      const currChats = roomId in safePrevChats ? safePrevChats[roomId] : [];
+      return { ...safePrevChats, [roomId]: [ ...currChats, ...annotatedChats ]};
     });
   }
   
@@ -117,23 +112,31 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     }
   }
 
-  useEffect(() => {
-    if (authCtx.status !== 'INITIALIZED') return;
-    handleLoadChatHistory(authCtx.userId);
-    return () => {
-      handleSaveChatHistory(authCtx.userId);
-    };
-  }, [authCtx.status])
+  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
 
   useEffect(() => {
-    for (const roomId in chats) {
-      const arr: string[] = [];
-      chats[roomId].map((chat) => {
-        arr.push(chat.content);
-      })
-      console.log(roomId, arr);
-    }
-  }, [chats])
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (
+        appState.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('포그라운드 전환');
+      } else if (nextAppState === 'background') {
+        handleSaveChatHistory(authCtx.userId);
+        console.log('백그라운드 전환');
+      } else if (nextAppState === 'inactive') {
+        handleSaveChatHistory(authCtx.userId);
+        console.log('앱 종료');
+      }
+      setAppState(nextAppState);
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [appState]);
 
   const value = useMemo(() => ({
     chats,
