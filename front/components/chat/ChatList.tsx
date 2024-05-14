@@ -50,7 +50,6 @@ const ChatList = forwardRef<FlatList<ChatProps>, Props>(({
       />
     );
   }
-  
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', (event) => {
@@ -89,7 +88,7 @@ const ChatList = forwardRef<FlatList<ChatProps>, Props>(({
   }, [flatListHeight])
 
   return (
-    <View style={{ height : flatListHeight, borderWidth: 2, borderColor: "red" }}>
+    <View style={{ height : flatListHeight }}>
       <FlatList
         ref={ref}
         data={chats}
