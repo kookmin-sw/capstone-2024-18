@@ -7,11 +7,11 @@ export const getIsDailyInitial = (prevChat: ChatProps | undefined, chat: ChatPro
 }
 
 export const getIsInitial = (prevChat: ChatProps | undefined, chat: ChatProps | undefined) => {
-  const isInitial = prevChat === undefined || !areMinutesEqual(prevChat.sendTime, chat?.sendTime) || prevChat?.id !== chat?.id;
+  const isInitial = prevChat === undefined || !areMinutesEqual(prevChat.sendTime, chat?.sendTime) || prevChat?.id === chat?.id;
   return isInitial;
 }
 
 export const getIsFinal = (chat: ChatProps | undefined, nextChat: ChatProps | undefined) => {
-  const isFinal = nextChat === undefined || !areMinutesEqual(nextChat.sendTime, chat?.sendTime) || nextChat?.id !== chat?.id;
+  const isFinal = nextChat === undefined || !areMinutesEqual(nextChat.sendTime, chat?.sendTime) || nextChat?.id === chat?.id;
   return isFinal;
 }
