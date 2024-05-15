@@ -79,8 +79,10 @@ public class RedisSubscriber implements MessageListener {
         Boolean isUnRead = redisTemplate.hasKey(destination);
         log.info(isUnRead.toString());
         if (isUnRead) {
+            messageResponse.setMethod("connectChat");
             redisTemplate.opsForList().rightPush(destination, messageResponse);
         } else {
+            messageResponse.setMethod("connectChat");
             redisTemplate.opsForList().rightPush(destination, messageResponse);
         }
     }
@@ -88,8 +90,10 @@ public class RedisSubscriber implements MessageListener {
     private void saveUnReadHeart(String destination, SendHeartResponse sendHeartResponse) {
         Boolean isUnRead = redisTemplate.hasKey(destination);
         if (isUnRead) {
+            sendHeartResponse.setMethod("connectHeart");
             redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
         } else {
+            sendHeartResponse.setMethod("connectHeart");
             redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
         }
     }
