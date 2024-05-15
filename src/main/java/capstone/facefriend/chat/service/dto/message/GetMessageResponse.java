@@ -23,6 +23,7 @@ public class GetMessageResponse {
     private Boolean isRead;
 
     public GetMessageResponse(MessageResponse messageResponse) {
+        this.method = messageResponse.getMethod();
         this.roomId = messageResponse.getRoomId();
         this.senderId = messageResponse.getSenderId();
         this.receiveId = messageResponse.getReceiveId();
