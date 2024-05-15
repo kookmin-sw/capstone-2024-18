@@ -133,6 +133,7 @@ public class MessageService {
         chatMessageRepository.save(chatMessage);
 
         MessageResponse messageResponse = new MessageResponse();
+        messageResponse.setMethod("receiveChat");
         messageResponse.setRoomId(chatMessage.getChatRoom().getId());
         messageResponse.setSenderId(senderId);
         messageResponse.setReceiveId(receiver.getId());
@@ -180,12 +181,16 @@ public class MessageService {
         chatRoomMemberRepository.save(chatRoomMember);
 
         SendHeartResponse sendHeartResponse = new SendHeartResponse();
-        sendHeartResponse.setRoomId(chatRoom.getId());
-        sendHeartResponse.setSenderId(sender.getId());
-        sendHeartResponse.setReceiveId(receiveId);
+        sendHeartResponse.setMethod("receiveHeart");
+        sendHeartResponse.setMemberId(receiveId);
         sendHeartResponse.setSenderName(sender.getBasicInfo().getNickname());
-        sendHeartResponse.setCreatedAt(LocalDateTime.now());
+        sendHeartResponse.setSenderId(sender.getId());
         sendHeartResponse.setType("Heart");
+        sendHeartResponse.setSenderOriginS3url(sender.getFaceInfo().getOriginS3url());
+        sendHeartResponse.setSenderGeneratedS3url(sender.getFaceInfo().getGeneratedS3url());
+        sendHeartResponse.setChatRoom(chatRoom);
+        sendHeartResponse.setCreatedAt(LocalDateTime.now());
+        sendHeartResponse.setSender(false);
 
         String topic = channelTopic.getTopic();
         simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 요청 성공");
@@ -222,7 +227,9 @@ public class MessageService {
         // 동적으로 목적지 설정
         String destination = "/sub/chat/" + sender.getId();
 
-        HeartReplyResponse heartReplyResponse = HeartReplyResponse.of(receiveId, heartReplyRequest);
+        String method = "receiveHeartResponse";
+
+        HeartReplyResponse heartReplyResponse = HeartReplyResponse.of(receiveId, heartReplyRequest, method);
 
         // 메시지 전송
         simpMessagingTemplate.convertAndSend(destination, heartReplyResponse);
@@ -252,10 +259,14 @@ public class MessageService {
         socketInfoRedisRepository.save(socketInfo);
         if (isExistUnReadMessage(memberId)) {
             sendSentMessage(memberId);
+        } else {
+            simpMessagingTemplate.convertAndSend(exceptionDestination, "큐잉된 메시지가 없습니다.");
         }
 
         if(isExistUnSendHeart(memberId)) {
             sendSentHeart(memberId);
+        } else {
+            simpMessagingTemplate.convertAndSend(exceptionDestination, "큐잉된 대화요청이 없습니다.");
         }
 
         simpMessagingTemplate.convertAndSend(exceptionDestination, "저장 성공");
@@ -293,6 +304,7 @@ public class MessageService {
                 LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
                 MessageResponse messageResponse = (MessageResponse) map.get(destination);
                 log.info("messageResponse: {}", messageResponse.toString());
+                messageResponse.setMethod("connectChat");
                 redisTemplate.convertAndSend(topic, messageResponse);
             }
         }
@@ -308,6 +320,7 @@ public class MessageService {
                 LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
                 SendHeartResponse sendHeartResponse = (SendHeartResponse) map.get(destination);
                 log.info("messageResponse: {}", sendHeartResponse.toString());
+                sendHeartResponse.setMethod("connectHeart");
                 redisTemplate.convertAndSend(topic, sendHeartResponse);
             }
         }
