@@ -51,13 +51,13 @@ public class RedisSubscriber implements MessageListener {
                 SendHeartResponse sendHeartResponse = objectMapper.readValue(publishMessage, SendHeartResponse.class);
 
                 GetSendHeartResponse chatSendHeartResponse = new GetSendHeartResponse(sendHeartResponse);
-                if (isExistSubscriber(chatSendHeartResponse.getReceiveId())) {
-                    messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getReceiveId(), chatSendHeartResponse);
+                if (isExistSubscriber(chatSendHeartResponse.getMemberId())) {
+                    messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getMemberId(), chatSendHeartResponse);
                 } else {
-                    saveUnReadHeart("/sub/chat" + sendHeartResponse.getReceiveId() + "heart", sendHeartResponse);
+                    saveUnReadHeart("/sub/chat" + sendHeartResponse.getMemberId() + "heart", sendHeartResponse);
                 }
 
-                messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getReceiveId(), chatSendHeartResponse);
+                messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getMemberId(), chatSendHeartResponse);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to process message", e);
