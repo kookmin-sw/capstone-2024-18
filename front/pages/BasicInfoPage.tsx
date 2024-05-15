@@ -131,13 +131,21 @@ const BasicInfoPage = ({navigation}: any) => {
         basicInfo.height,
         basicInfo.region,
       );  
-      if (isValidResponse(response)) {
-        createAlertMessage("기본 정보 입력이 완료되었습니다.");
-        userCtx.setStatus('BASIC_INFO_EXIST');
-        navigation.goBack();
-      }
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
+      }
+      else if (isValidResponse(response)) {
+        createAlertMessage("기본 정보 입력이 완료되었습니다.");
+        userCtx.setStatus('BASIC_INFO_EXIST');
+        userCtx.setBasicinfo({
+          ageDegree: response.ageDegree, 
+          ageGroup: response.ageGroup, 
+          gender: response.gender, 
+          heightGroup: response.heightGroup, 
+          nickname: response.nickname, 
+          region: response.region
+        });
+        navigation.goBack();
       }
     }
     else {
@@ -340,7 +348,7 @@ const BasicInfoPage = ({navigation}: any) => {
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Card style={styles.card}>
-            <IconText icon={{source: "chat-question", size: 18}} textStyle={styles.cardText}>기본 정보는 왜 필요한가요? 🤔</IconText>
+            <IconText icon={{source: require('../assets/images/question.png'), size: 18, color: colors.gray7}} textStyle={styles.cardText}>기본 정보는 왜 필요한가요? 🤔</IconText>
           </Card>
           <View style={styles.textContainer}>
             <Text style={styles.text}>다른 사용자와 관계를 시작하기 전,{"\n"} 서로 최소한의 인적 사항을 참고하기 위함이에요.</Text>
@@ -350,7 +358,7 @@ const BasicInfoPage = ({navigation}: any) => {
         <CustomProgressBar progress={(pageIndex + 1) / 6}/>
         <View style={{ height: 27 }}/>
         <View style={styles.bottomContainer}>
-          <CustomButton 
+          <CustomButton disabled={!isFormValid()}
           containerStyle={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} 
           onPress={pageIndex === contents.length - 1 ? submitForm : handleNextPage}
           textStyle={isFormValid() ? styles.activatedTextStyle : styles.disabledTextStyle}
@@ -387,6 +395,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cardText: {
+    paddingLeft: 5, 
     fontFamily: "Pretendard-Medium",
     fontSize: 14,
     letterSpacing: -14 * 0.02,
@@ -399,7 +408,7 @@ const styles = StyleSheet.create({
     letterSpacing: -14* 0.04,
     textAlign: "center",
     color: colors.gray7,
-    fontFamily: "Pretendard-Regualar",
+    fontFamily: "Pretendard-Regular",
   },
   iconTextContainer: {
     width: "100%",
@@ -408,15 +417,21 @@ const styles = StyleSheet.create({
   },
   activatedButtonStyle: {
     backgroundColor: colors.point,
+    elevation: 4
   },
   activatedTextStyle: {
+    fontFamily: "Pretendard-SemiBold",
+    fontWeight: "400", 
     fontSize: 18,
     color: colors.white,
   },
   disabledButtonStyle: {
     backgroundColor: colors.pastel_point,
+    elevation: 4
   },
   disabledTextStyle: {
+    fontFamily: "Pretendard-SemiBold",
+    fontWeight: "400", 
     fontSize: 18,
     color: colors.white,
   },

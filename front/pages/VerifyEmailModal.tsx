@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { IconButton } from "react-native-paper";
 import { sendCode, verifyCode } from "../util/auth";
 import HeaderBar from "../components/HeaderBar";
+import CustomBackHandler from "../components/CustomBackHandler";
 
 interface Email {
   value: string;
@@ -63,15 +64,11 @@ const VerifyEmailModal = ({email, setModalVisible, setEmail}: Props) => {
         <View style={styles.container}>
           <View style={styles.sectionContainer}>
             <View style={{alignItems: 'center', paddingBottom: 30}}>
-              <Text>인증코드를 입력해주세요</Text>
-              <Text style={{textAlign: 'center'}}>{`${email.value}으로 전송된 인증코드를 확인해주세요`}</Text>
-            </View>
-            <View style={styles.textContainer}>
-              <Text style={styles.inputLabel}>인증번호 입력</Text>
-              <Text style={styles.inputLabelStar}> *</Text>
+              <Text style={styles.subTitleText}>인증코드를 입력해주세요</Text>
+              <Text style={styles.subTitleExplainText}>{`${email.value}으로 전송된 인증코드를 확인해주세요`}</Text>
             </View>
             <CustomTextInput placeholder="인증코드를 입력해주세요" onChangeText={handleVerifyCodeChange}
-              rightIcon={{source: <Text>Vv</Text>}}
+              rightIcon={{source: <View style={{width: 50, height: 50, backgroundColor: 'red'}}></View>}}
             />
             <View style={styles.grayButtonContainer}>
               <CustomButton onPress={handleSendCode} 
@@ -82,7 +79,7 @@ const VerifyEmailModal = ({email, setModalVisible, setEmail}: Props) => {
             <View style={{flex: 1}}/>
           </View>
           <View style={styles.bottomContainer}>
-            <CustomButton onPress={handleSubmit} 
+            <CustomButton onPress={handleSubmit} disabled={!isFormValid}
               containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
               textStyle={styles.pointButtonText}>인증하기
             </CustomButton>
@@ -136,17 +133,19 @@ const styles = StyleSheet.create({
     borderRadius: 10, 
     justifyContent: "center", 
     marginTop: 21,
-    shadowColor: colors.gray4
+    shadowColor: colors.gray4,
+    elevation: 4
   },
   pointButtonText: {
     color: colors.white, 
+    fontFamily: "Pretendard-SemiBold",
     fontWeight: "400", 
     fontSize: 18, 
     textAlign: "center",
     letterSpacing: -18 * 0.02, 
   },
   grayButtonContainer: {
-    marginTop: 8,
+    marginTop: 12,
     flexDirection: "row",
     alignItems:"center",
   },
@@ -157,7 +156,7 @@ const styles = StyleSheet.create({
     borderRadius: 6, 
     justifyContent: "center",
     padding: 0,
-    flex: 0,
+    elevation: 4
   },
   grayButtonText: {
     color: colors.white, 
@@ -166,6 +165,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
     letterSpacing: -12 * 0.02,
   },
+  subTitleText: {
+    color: colors.gray7,
+    fontFamily: "Pretendard-Medium",
+    fontSize: 16,
+    marginBottom: 12
+  },
+  subTitleExplainText: {
+    color: colors.gray7,
+    fontFamily: "Pretendard-Regular",
+    fontSize: 14,
+    letterSpacing: -14 * 0.02, 
+    textAlign: 'center'
+  }, 
+
   bottomContainer: {
     alignItems: "center",
     marginBottom: 46,

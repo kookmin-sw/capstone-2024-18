@@ -254,8 +254,8 @@ const OtherUserSelfProduce = ({navigation}: any) => {
 
         <View style={[styles.section, styles.bottomContainer]}>
           <CustomButton 
-            containerStyle={{backgroundColor: colors.point, marginHorizontal: 5}}
-            textStyle={{color: colors.white}} onPress={handleHeart}>
+            containerStyle={{backgroundColor: colors.point, marginHorizontal: 5, elevation: 4}}
+            textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}} onPress={handleHeart}>
             {"하트 보내기"}
           </CustomButton>
         </View>
@@ -272,7 +272,8 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: 20, 
-    color: '#000000', 
+    fontFamily: 'Pretendard-SemiBold',
+    color: colors.gray7, 
     alignSelf: 'center'
   },
 
@@ -290,6 +291,8 @@ const styles = StyleSheet.create({
   },
   uneditableText: {
     color: colors.gray7, 
+    fontFamily: 'Pretendard-Medium',
+    letterSpacing: -14* 0.02,
     fontSize: 14,
     marginLeft: 9,
     marginRight: 9
@@ -306,6 +309,7 @@ const styles = StyleSheet.create({
   }, 
   sectionText: {
     fontSize: 14,
+    fontFamily: 'Pretendard-SemiBold',
     color: colors.gray9,
     paddingRight: 7
   }, 

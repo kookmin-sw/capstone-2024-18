@@ -16,23 +16,27 @@ interface BasicInfo {
 
 interface FaceInfo {
   generatedS3url: string,
-  originS3Url: string,
+  originS3url: string,
 }
 
 interface UserContextType {
   basicinfo: BasicInfo,
   faceinfo: FaceInfo,
   status: string,
+  setBasicinfo: (basicInfo: BasicInfo) => void,
+  setFaceinfo: (faceInfo: FaceInfo) => void,
   setStatus: (status: string) => void,
 }
 
 const defaultBasicInfo = {ageDegree: '', ageGroup: '', gender: '', heightGroup:'', nickname: '', region: ''};
-const defaultFaceInfo = {generatedS3url: '', originS3Url: ''};
+const defaultFaceInfo = {generatedS3url: '', originS3url: ''};
 
 export const UserContext = createContext<UserContextType>({
   basicinfo: defaultBasicInfo,
   faceinfo: defaultFaceInfo,
   status: '',
+  setBasicinfo: (basicInfo: BasicInfo) => {},
+  setFaceinfo: (faceInfo: FaceInfo) => {},
   setStatus: (status: string) => {},
 });
 
@@ -155,6 +159,8 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     basicinfo,
     faceinfo,
     status,
+    setBasicinfo,
+    setFaceinfo,
     setStatus,
   }), [basicinfo, faceinfo, status]);
 

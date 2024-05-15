@@ -1,8 +1,8 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, ImageURISource, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, ImageURISource, Pressable, AppState } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { colors } from '../assets/colors.tsx'
 import CustomButton from '../components/CustomButton';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import CustomTextInput from '../components/CustomTextInput.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import CarouselSlider from '../components/CarouselSlider.tsx';
@@ -18,9 +18,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { createAlertMessage } from '../util/alert.tsx';
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
 import { Category, category } from '../util/categoryFormat.tsx';
+import { useFocusEffect, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 
 
-const SelfProduce = () => {
+const SelfProduce = ({navigation, route}: any) => {
   interface imageType {
     id: string,
     type: 'basic' | 'image' | 'add',
@@ -53,7 +54,6 @@ const SelfProduce = () => {
 
   // 자기소개서 edit 기능 조절 변수
   const [ edit, setEdit ] = useState(false);
-  const [ resumeId, setResumeId ] = useState(-1);
 
   // (임시) 이미지 슬라이더의 내부 contents 설정 (api 연동하면, 그냥 빈 array 설정)
   const [ images, setImages ] = useState<imageType[]>([]);
@@ -128,12 +128,12 @@ const SelfProduce = () => {
         )
         if (isResumeResponse(response)) {
           console.log("완료", response);
+          setEdit(false);
         }
         if (isErrorResponse(response)) {
           createAlertMessage(response.message)
         }
       }
-      setEdit(false);
     }
     else {
       setEdit(true);
@@ -180,7 +180,7 @@ const SelfProduce = () => {
         <ImageWithIconOverlay
           source={source} borderRadius={edit?15:0} key={id}
           containerStyle={containerStyle}
-          rightIcon={edit?{source: require('../assets/images/Icon.png')}:undefined} 
+          rightIcon={edit?{source: require('../assets/images/close.png')}:undefined} 
           rightPressable={{onPress: () => {handleDeleteImageWidthId(id)}}}/>
       );
     } else{
@@ -311,7 +311,10 @@ const SelfProduce = () => {
     tryGetMyResume();
   }, [])
 
-  // 아직 api 연동 못한 것 -> 나중에 default 등 처리 예정
+  useEffect(() => {
+    console.log("\n\n\n\n\n\n\n in selfproduce", route)
+  }, [route])
+
   // 특정 인덱스의 카테고리를 선택, 선택 취소
   function handleCategorySelect(changeIdx: number) {
     const nextCategory = categories.map((category) => {
@@ -337,15 +340,14 @@ const SelfProduce = () => {
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <Icon size={150} source={require('../assets/images/surprise.png')}/>
           <View style={{marginTop: 20, alignItems: 'center'}}>
-            <Text>자기소개서가 존재하지 않습니다.</Text>
-            <Text>나를 소개해보세요</Text>
+            <Text style={styles.hintText}>자기소개서가 존재하지 않습니다. {'\n'}나를 소개해보세요</Text>
           </View>
         </View>
         <View style={styles.bottomContainer}>
           <CustomButton 
-            containerStyle={{backgroundColor: colors.point}}
+            containerStyle={{backgroundColor: colors.point, elevation: 4}}
             onPress={createMyResume}
-            textStyle={{color: colors.white}}>자기소개서 작성하기
+            textStyle={{color: colors.white, fontSize: 18, fontFamily: 'Pretendard-SemiBold', letterSpacing: -18* 0.02}}>자기소개서 작성하기
           </CustomButton>
         </View>
       </View>
@@ -378,7 +380,6 @@ const SelfProduce = () => {
 
         <View style={styles.container} >
           {/* 프로필 사진, 이름 섹션 */}
-          {/* 아직 정확한 디자인 안나와서 일단 보류 */}
           <View style={styles.sectionTop}>
             <Text style={styles.profileName}>{nickname}</Text>
           </View>
@@ -388,7 +389,7 @@ const SelfProduce = () => {
             <View style={styles.sectionTop}>
               <Text style={styles.sectionText}>기본 정보</Text>
               <Icon source={'progress-question'} size={20} color={colors.pastel_point}/>
-              <Text style={{...styles.sectionHintText, display: edit ? 'flex' : 'none'}}>프로필에서 수정 가능해요</Text>
+              <Text style={[styles.sectionHintText, {display: edit ? 'flex' : 'none'}]}>프로필에서 수정 가능해요</Text>
             </View>
             <View style={styles.tagContainer}>
             {
@@ -445,8 +446,8 @@ const SelfProduce = () => {
                       select: item.selected, showSelectedOnly: !edit,
                       selectedStyle: {backgroundColor: colors.point, borderColor: colors.point},
                       unselectedStyle: {backgroundColor: colors.gray5, borderColor: colors.gray5},
-                      selectedTextStyle: {color: colors.white},
-                      unselectedTextStyle: {color: colors.white}
+                      selectedTextStyle: [styles.uneditableText, {color: colors.white}],
+                      unselectedTextStyle: [styles.uneditableText, {color: colors.white}]
                     }}
                     containerStyle={styles.uneditableTag} 
                     onPress={() => {handleCategorySelect(item.id)}}
@@ -473,14 +474,14 @@ const SelfProduce = () => {
           <View style={[styles.section, {flexDirection: 'row'}, styles.bottomContainer]}>
             <View style={{width: "50%", display: edit ? 'none' : 'flex'}}>
               <CustomButton 
-                containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 5}} onPress={deleteAlert}
-                textStyle={{color: colors.white}}>삭제하기
+                containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 5, elevation: 4}} onPress={deleteAlert}
+                textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}>삭제하기
               </CustomButton>
             </View>
             <View style={{width: edit ? "100%" : "50%"}}>
               <CustomButton 
-                containerStyle={{backgroundColor: colors.point, marginHorizontal: 5}} onPress={handleEditButton}
-                textStyle={{color: colors.white}}>
+                containerStyle={{backgroundColor: colors.point, marginHorizontal: 5, elevation: 4}} onPress={handleEditButton}
+                textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}>
                 {edit ? "완료" : "수정하기"}
               </CustomButton>
             </View>
@@ -499,8 +500,17 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: 20, 
-    color: '#000000', 
+    fontFamily: 'Pretendard-SemiBold',
+    color: colors.gray7, 
     alignSelf: 'center'
+  },
+
+  hintText: {
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 16,
+    letterSpacing: -16* 0.02,
+    textAlign: 'center',
+    color: colors.gray7
   },
 
   // tag 관련
@@ -517,6 +527,8 @@ const styles = StyleSheet.create({
   },
   uneditableText: {
     color: colors.gray7, 
+    fontFamily: 'Pretendard-Medium',
+    letterSpacing: -14* 0.02,
     fontSize: 14,
     marginLeft: 9,
     marginRight: 9
@@ -533,11 +545,14 @@ const styles = StyleSheet.create({
   }, 
   sectionText: {
     fontSize: 14,
+    fontFamily: 'Pretendard-SemiBold',
     color: colors.gray9,
     paddingRight: 7
   }, 
   sectionHintText: {
-    fontSize: 14,
+    fontSize: 12,
+    fontFamily: "Pretendard-Regular",
+    letterSpacing: -12* 0.02,
     color: colors.gray6,
     paddingLeft: 5
   },

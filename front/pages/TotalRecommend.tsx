@@ -39,11 +39,11 @@ const TotalRecommend = ({navigation}: any) => {
       var response:any;
       if (type === "FIT") {
         response = await getGoodCombi(
-          authCtx.accessToken, data.content.length/20, getResumesNum
+          authCtx.accessToken, Math.floor(data.content.length/getResumesNum), getResumesNum
         )
       } else {
         response = await getCategoryUser(
-          authCtx.accessToken, data.content.length/20, getResumesNum, type
+          authCtx.accessToken, Math.floor(data.content.length/getResumesNum), getResumesNum, type
         )
       }
       
@@ -56,11 +56,6 @@ const TotalRecommend = ({navigation}: any) => {
       }
     }
   };
-
-  useEffect(() => {
-    tryGetResumes();
-    console.log("?", route.params);
-  }, [])
 
   const renderCardItem = ({item}: {item: Content}) => {{
     return (
@@ -84,7 +79,7 @@ const TotalRecommend = ({navigation}: any) => {
         renderItem={renderCardItem}
         style={{flex: 1, marginBottom: 30, backgroundColor: colors.white}}
         contentContainerStyle={{alignItems: 'center', paddingBottom: 26, paddingHorizontal: 16}}
-        onEndReached={fetchNewData}/>
+        onEndReached={() => {fetchNewData();}}/>
     </View>
   )
 }

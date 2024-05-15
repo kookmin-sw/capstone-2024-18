@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     borderRadius: 6, 
     justifyContent: "center",
     padding: 0,
-    flex: 0,
+    elevation: 4
   },
   grayButtonText: {
     color: colors.white, 
@@ -365,6 +365,7 @@ const styles = StyleSheet.create({
   },
   pointButtonText: {
     color: colors.white, 
+    fontFamily: "Pretendard-SemiBold",
     fontWeight: "400", 
     fontSize: 18, 
     textAlign: "center",

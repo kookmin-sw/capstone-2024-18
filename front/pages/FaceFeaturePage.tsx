@@ -9,7 +9,7 @@ import IconText from '../components/IconText.tsx';
 import { getFaceInfo, isAnalysisFullResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
-import { IconButton } from 'react-native-paper';
+import { Card, IconButton } from 'react-native-paper';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import { UserContext } from '../store/user-context.tsx';
 import HeaderBar from '../components/HeaderBar.tsx';
@@ -129,7 +129,7 @@ const FaceFeaturePage = ({navigation}: any) => {
             <IconButton icon={'close'} size={23} iconColor={colors.white} style={styles.bottomIcon}/>
           </ImageWithIconOverlay>
         </View>
-        <Text style={{margin: 4}}>단체사진이 아닌 눈,코,입 눈썹 등 얼굴 요소가 잘 드러난 독사진이어야 해요.</Text>
+        <Text style={styles.tipText}>단체사진이 아닌 눈,코,입 눈썹 등 얼굴 요소가 잘 드러난 독사진이어야 해요.</Text>
       </View>
     </View>
   );
@@ -152,12 +152,7 @@ const FaceFeaturePage = ({navigation}: any) => {
             </>
           ))
         }
-        {/* <Text style={styles.resultTitle}>위쪽으로 올라간 입꼬리</Text>
-        <Text style={styles.resultContent}>이런저런 이런저런 이런저런 성격을 가지는데...</Text> */}
       </View>
-      <CustomButton containerStyle={{width: 73, height: 26}} textStyle={{fontSize: 12, color: colors.white}}>
-        자세히 보기
-      </CustomButton>
     </View>
   );
 
@@ -192,14 +187,18 @@ const FaceFeaturePage = ({navigation}: any) => {
         <CustomBackHandler onBack={navigation.goBack}/>
         <HeaderBar onPress={handleBack}>AI 관상 분석</HeaderBar>
         <View style={styles.container}>
-          <IconText 
-            icon={{source: 'chat-question', color: colors.gray7}} 
-            containerStyle={styles.hintContainer}
-            textStyle={{fontSize: 14, color: colors.gray7}}>AI 관상 분석은 무엇인가요? 🤔</IconText>
+          <Card style={styles.card}>
+            <IconText 
+              icon={{source: require('../assets/images/question.png'), size: 18, color: colors.gray7}} 
+              textStyle={styles.cardText}>AI 관상 분석은 무엇인가요? 🤔</IconText>
+          </Card>
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>FACE FRIEND 에서는 실제 얼굴을 드러내지 않는 반익명 활동을 장려해요. 때문에 학습시킨 AI로 관상 분석 후, 관상학적으로 잘 맞는 유저를 추천해드려요</Text>
+          </View>
           {contents[pageIndex]}
           <View style={styles.bottomContainer}>
             <CustomButton 
-              containerStyle={isButtonClickable ? {backgroundColor: colors.point} : {backgroundColor: colors.pastel_point}} 
+              containerStyle={[{elevation: 4}, isButtonClickable ? {backgroundColor: colors.point} : {backgroundColor: colors.pastel_point}]} 
               onPress={clickButton}
               textStyle={{color: colors.white}} disabled={!isButtonClickable}
               >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
@@ -219,6 +218,33 @@ const styles = StyleSheet.create({
   contentContainer: {
     justifyContent: 'center',
     paddingBottom: 15
+  },
+
+  card: {
+    backgroundColor: colors.light_pink,
+    width: 225,
+    height: 32,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: 'center'
+  },
+  cardText: {
+    paddingLeft: 5, 
+    fontFamily: "Pretendard-Medium",
+    fontSize: 14,
+    letterSpacing: -14 * 0.02,
+  },
+
+  textContainer: {
+    marginVertical: 12,
+    marginBottom: 17,
+  },
+  text: {
+    fontSize: 14,
+    letterSpacing: -14* 0.04,
+    textAlign: "center",
+    color: colors.gray7,
+    fontFamily: "Pretendard-Regular",
   },
 
   // 이번 창의 단어 hint (ex. ai 관상은 무엇인가요?)
@@ -243,29 +269,45 @@ const styles = StyleSheet.create({
     padding: 22,
     flex: 1, 
     marginBottom: 18,
+    borderRadius: 10
   },
 
   // 결과 회색 상자의 text style
   resultTitle: {
+    fontFamily: "Pretendard-Semibold",
     paddingTop: 12,
     fontSize: 16,
+    letterSpacing: -16* 0.02,
     color: colors.point
   },
   resultContent: {
+    fontFamily: "Pretendard-Regular",
     paddingTop: 5,
     fontSize: 14,
+    letterSpacing: -14* 0.04,
     color: colors.gray7
   },
 
   // tip 회색 상자의 text style
   tipTitle: {
     width: '100%', 
+    fontFamily: "Pretendard-Medium",
     fontSize: 16, 
+    letterSpacing: -16 * 0.02,
     color: colors.gray7, 
     padding: 11, 
     borderBottomWidth: 1, 
     borderBottomColor: colors.gray4,
     textAlign: 'center'
+  },
+  tipText: {
+    fontSize: 14,
+    fontFamily: "Pretendard-Regular",
+    letterSpacing: -14* 0.02,
+    color: colors.gray6,
+    paddingHorizontal: 3,
+    textAlign: 'center',
+    margin: 4
   },
 
   // tip 안에 있는 image style
@@ -321,10 +363,12 @@ const styles = StyleSheet.create({
   },
   // 이미지의 '필수' 텍스트 style
   imageText: { 
+    fontFamily: "Pretendard-Medium",
     alignSelf: 'center', 
     height: 18, 
     marginBottom: 15, 
-    fontSize: 14,
+    fontSize: 12,
+    letterSpacing: -12 * 0.02,
     color: colors.point
   },
   // result창의 이미지 style

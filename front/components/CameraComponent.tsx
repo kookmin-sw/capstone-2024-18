@@ -39,11 +39,11 @@ export const showModal = (visible: boolean, onClose: () => void, setImageUrl?: (
         <View style={styles.whiteBox}>
 
           <Pressable style={styles.actionButton} onPress={pressCamera}>
-            <Text style={{color: colors.gray8, fontSize: 18}}>카메라로 촬영하기</Text>
+            <Text style={{color: colors.gray8, fontSize: 18, fontFamily: 'Pretendard-Medium'}}>카메라로 촬영하기</Text>
           </Pressable>
 
           <Pressable style={styles.actionButton} onPress={pressPhoto}>
-            <Text style={{color: colors.gray8, fontSize: 18}}>사진 선택하기</Text>
+            <Text style={{color: colors.gray8, fontSize: 18, fontFamily: 'Pretendard-Medium'}}>사진 선택하기</Text>
           </Pressable>
 
         </View>
@@ -223,5 +223,7 @@ const styles = StyleSheet.create({
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderColor: colors.gray7
   },
 })

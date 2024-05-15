@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     letterSpacing: -14* 0.04,
     textAlign: "center",
     color: colors.gray7,
-    fontFamily: "Pretendard-Regualar",
+    fontFamily: "Pretendard-Regular",
   },
   iconTextContainer: {
     width: "100%",

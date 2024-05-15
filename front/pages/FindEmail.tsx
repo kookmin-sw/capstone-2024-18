@@ -8,6 +8,7 @@ import { createAlertMessage } from '../util/alert.tsx';
 import { findEmail, isErrorResponse, isFindEmailResponse } from "../util/auth.tsx";
 import IconText from '../components/IconText.tsx';
 import HeaderBar from '../components/HeaderBar.tsx';
+import CustomBackHandler from '../components/CustomBackHandler.tsx';
 
 
 const FindEmail = ({navigation}: any) => {
@@ -70,7 +71,8 @@ const FindEmail = ({navigation}: any) => {
 
   return (
     <ScrollView contentContainerStyle={{height: height}}>
-      <HeaderBar onPress={() => navigation.goBack()}>이메일 찾기</HeaderBar>
+      <HeaderBar onPress={navigation.goBack}>이메일 찾기</HeaderBar>
+      <CustomBackHandler onBack={navigation.goBack}/>
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Text style={styles.helperText}>이메일을 입력해주세요</Text>
@@ -103,7 +105,8 @@ const FindEmail = ({navigation}: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
-    paddingHorizontal: 32, 
+    paddingHorizontal: 32,
+    paddingTop: 33,  
     backgroundColor: colors.white
   },
   innerContainer: {
@@ -114,6 +117,7 @@ const styles = StyleSheet.create({
   helperText: {
     alignSelf: 'center', 
     textAlign: 'center',
+    fontFamily: "Pretendard-Medium",
     fontSize: 16,
     letterSpacing: -16 * 0.02, 
     paddingBottom: 12
@@ -129,6 +133,7 @@ const styles = StyleSheet.create({
   smallHelperText: {
     alignSelf: 'center', 
     textAlign: 'center',
+    fontFamily: "Pretendard-Regular",
     fontSize: 14,
     letterSpacing: -14 * 0.02, 
     paddingBottom: 30
@@ -147,6 +152,7 @@ const styles = StyleSheet.create({
   },
   pointButtonText: {
     color: colors.white, 
+    fontFamily: "Pretendard-SemiBold",
     fontWeight: "400", 
     fontSize: 18, 
     textAlign: "center",

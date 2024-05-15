@@ -607,7 +607,7 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
   try {
     const response = await axios.post(endpoint, formData, config);
     console.log(response);
-    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
+    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, categories, content, isMine } = response.data;
     const responseInfo = {
       method,
       status: response.status,
@@ -617,7 +617,7 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
       faceInfo, 
       basicInfo, 
       analysisInfo, 
-      category, 
+      categories, 
       content,
       isMine
     }

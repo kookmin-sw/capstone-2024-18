@@ -193,13 +193,8 @@ const FindPw = ({navigation}: any) => {
   
   const resetPw = 
     <View style={{flex: 1}}>
-      <View style={[styles.sectionContainer, { borderTopWidth: 0 }]}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>SIGN UP</Text>
-        </View>
-      </View>
       <View style={styles.sectionContainer}>
-
+        <Text style={styles.smallHelperText}>전송받은 인증코드와 새로 설정할 비밀번호를 {'\n'} 입력해주시기 바랍니다.</Text>
         <View style={styles.textContainer}>
           <Text style={styles.inputLabel}>인증코드</Text>
           <Text style={styles.inputLabelStar}> *</Text>
@@ -221,7 +216,7 @@ const FindPw = ({navigation}: any) => {
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={styles.inputLabel}>비밀번호 설정</Text>
+          <Text style={styles.inputLabel}>새 비밀번호</Text>
           <Text style={styles.inputLabelStar}> *</Text>
         </View>
         <View style={styles.textInputContainer}>
@@ -242,7 +237,7 @@ const FindPw = ({navigation}: any) => {
         </View>
         <IconText icon={{source: "information"}} containerStyle={styles.hintContainer}>영문 숫자 특수문자 혼합 8-16자</IconText>
         <View style={styles.textContainer}>
-          <Text style={styles.inputLabel}>비밀번호 확인</Text>
+          <Text style={styles.inputLabel}>새 비밀번호 확인</Text>
           <Text style={styles.inputLabelStar}> *</Text>
         </View>
         <View style={styles.textInputContainer}>
@@ -291,11 +286,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 32, 
+    paddingTop: 33,
     backgroundColor: colors.white
   },
   helperText: {
     alignSelf: 'center', 
     textAlign: 'center',
+    fontFamily: "Pretendard-Medium",
     fontSize: 16, 
     letterSpacing: -16 * 0.02, 
     paddingBottom: 12
@@ -303,12 +300,14 @@ const styles = StyleSheet.create({
   smallHelperText: {
     alignSelf: 'center', 
     textAlign: 'center',
+    fontFamily: "Pretendard-Regular",
     fontSize: 14,
     letterSpacing: -14 * 0.02, 
     paddingBottom: 30
   },
   textInputContainer: {
     marginTop: 6,
+    paddingHorizontal: 8
   },
   hintContainer: {
     flexDirection: "row",
@@ -316,13 +315,12 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 8,
     marginBottom: 4,
-    height: 18,
+    height: 18
   },
 
   // 비밀번호 재설정 컨텐츠
   sectionContainer: {
     borderTopColor: colors.gray3,
-    borderTopWidth: 1,
     paddingHorizontal: 12,
     paddingTop: 9,
     paddingBottom: 12,
@@ -360,10 +358,12 @@ const styles = StyleSheet.create({
     borderRadius: 10, 
     justifyContent: "center", 
     marginTop: 21,
-    shadowColor: colors.gray4
+    shadowColor: colors.gray4,
+    elevation: 4
   },
   pointButtonText: {
     color: colors.white, 
+    fontFamily: "Pretendard-SemiBold",
     fontWeight: "400", 
     fontSize: 18, 
     textAlign: "center",

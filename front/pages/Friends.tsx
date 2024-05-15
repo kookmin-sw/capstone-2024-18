@@ -12,7 +12,7 @@ import { AuthContext } from "../store/auth-context.tsx";
 import 'react-native-get-random-values';
 import { FlatList } from 'react-native-gesture-handler';
 import { Category, category as categoryForm } from '../util/categoryFormat.tsx';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 
 
 const Friends = ({navigation}: any) => {
@@ -169,7 +169,7 @@ const Friends = ({navigation}: any) => {
     useCallback(() => {
       tryGetMyResume();
       tryGetGoodCombi();
-    }, [navigation])
+    }, [])
   )
 
   return (
@@ -203,10 +203,10 @@ const Friends = ({navigation}: any) => {
           <Text style={styles.sectionTitle}>나와 잘 맞는 관상</Text>
           <View style={{flex: 1}}/>
           <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: "FIT"})}}>
-            <Text>전체 보러가기{">"}</Text>
+            <Text style={styles.sectionText}>전체 보러가기{">"}</Text>
           </TouchableOpacity>
         </View>
-        <Text style={{paddingLeft: 27}}>AI가 분석한 {nickname}님의 베스트 매치 관상 추천</Text>
+        <Text style={[{paddingLeft: 27}, styles.sectionText]}>AI가 분석한 {nickname}님의 베스트 매치 관상 추천</Text>
       </View>
       <FlatList 
         horizontal 
@@ -223,11 +223,11 @@ const Friends = ({navigation}: any) => {
                 return (
                   <View key={idx}>
                     <View style={{marginHorizontal: 26, flexDirection: 'row', alignItems: 'center'}}>
-                      <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{categoryForm[tag as keyof Category]}</SelectableTag>
-                      <Text style={{paddingLeft: 8}}>{text}</Text>
+                      <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white, fontFamily: 'Pretendard-Medium', letterSpacing: -16*0.02}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{categoryForm[tag as keyof Category]}</SelectableTag>
+                      {/* <Text style={[{paddingLeft: 8}, styles.sectionText]}>{text}</Text> */}
                       <View style={{flex: 1}}/>
                       <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: tag})}}>
-                        <Text>전체 보러가기{">"}</Text>
+                        <Text style={styles.sectionText}>전체 보러가기{">"}</Text>
                       </TouchableOpacity>
                     </View>
                     <FlatList 
@@ -250,7 +250,14 @@ const Friends = ({navigation}: any) => {
 const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
-    color: colors.point
+    color: colors.gray7,
+    fontFamily: "Pretendard-SemiBold",
+    letterSpacing: -20* 0.02,
+  },
+  sectionText: {
+    fontFamily: "Pretendard-Regular", 
+    fontSize: 14, 
+    letterSpacing: -14* 0.02
   },
   sectionTitleContainer: {
     marginHorizontal: 26, 
@@ -261,7 +268,9 @@ const styles = StyleSheet.create({
     paddingLeft: 27,
     paddingBottom: 18, 
     fontSize: 20, 
-    color: colors.point
+    color: colors.gray7,
+    fontFamily: "Pretendard-SemiBold",
+    letterSpacing: -20* 0.02,
   },
   personalRecommendTop: {
     borderBottomWidth: 1, 
