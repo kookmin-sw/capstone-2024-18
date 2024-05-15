@@ -60,8 +60,8 @@ public class MessageService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElse(null);
         if (chatRoom == null) {
-            simpMessagingTemplate.convertAndSend(destination, MemberExceptionType.NOT_FOUND.message());
-            throw new MemberException(MemberExceptionType.NOT_FOUND);
+            simpMessagingTemplate.convertAndSend(destination, ChatExceptionType.NOT_FOUND.message());
+            throw new ChatException(ChatExceptionType.NOT_FOUND);
         }
         return chatRoom;
     }
@@ -70,8 +70,8 @@ public class MessageService {
         ChatRoomMember chatRoomMember = chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId)
                 .orElse(null);
         if (chatRoomMember == null) {
-            simpMessagingTemplate.convertAndSend(destination, MemberExceptionType.NOT_FOUND.message());
-            throw new MemberException(MemberExceptionType.NOT_FOUND);
+            simpMessagingTemplate.convertAndSend(destination, ChatExceptionType.NOT_FOUND.message());
+            throw new ChatException(ChatExceptionType.NOT_FOUND);
         }
         return chatRoomMember;
     }
@@ -80,8 +80,8 @@ public class MessageService {
         ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomId(roomId)
                 .orElse(null);
         if (chatRoomMember == null) {
-            simpMessagingTemplate.convertAndSend(destination, MemberExceptionType.NOT_FOUND.message());
-            throw new MemberException(MemberExceptionType.NOT_FOUND);
+            simpMessagingTemplate.convertAndSend(destination, ChatExceptionType.NOT_FOUND.message());
+            throw new ChatException(ChatExceptionType.NOT_FOUND);
         }
         return chatRoomMember;
     }
@@ -264,7 +264,7 @@ public class MessageService {
         }
 
         if(isExistUnSendHeart(memberId)) {
-            sendSentHeart(memberId);
+            sendSentHeart(exceptionDestination, memberId);
         } else {
             simpMessagingTemplate.convertAndSend(exceptionDestination, "큐잉된 대화요청이 없습니다.");
         }
@@ -294,35 +294,52 @@ public class MessageService {
     private void sendSentMessage(Long receiveId) {
         String topic = channelTopic.getTopic();
         String destination = "/sub/chat" + receiveId + "message";
-        Long messagesListSize = redisTemplate.opsForList().size(destination);
-        log.info(messagesListSize.toString());
-        log.info("messageList: {}", redisTemplate.opsForList().range(destination, 0, -1));
+        List<Object> messages = redisTemplate.opsForList().range(destination, 0, -1);
+        Long messagesListSize = (messages != null) ? (long) messages.size() : 0;
+        log.info("Message list size: {}", messagesListSize);
 
         if (messagesListSize > 0) {
-            for (Long i = messagesListSize; i > 0; i--) {
-                // 맵으로 받음
-                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
-                MessageResponse messageResponse = (MessageResponse) map.get(destination);
-                log.info("messageResponse: {}", messageResponse.toString());
-                messageResponse.setMethod("connectChat");
+            for (Object messageObj : messages) {
+                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) messageObj;
+                MessageResponse messageResponse = new MessageResponse(map);
+                log.info("UnReadMessageResponse: {}", messageResponse.toString());
                 redisTemplate.convertAndSend(topic, messageResponse);
             }
+            // 리스트 비우기
+            redisTemplate.delete(destination);
+            log.info("Message list cleared.");
+        } else {
+            log.warn("Message list is empty.");
         }
     }
 
-    private void sendSentHeart(Long receiveId) {
+
+
+
+
+
+    private void sendSentHeart(String exceptionDestination, Long receiveId) {
         String topic = channelTopic.getTopic();
         String destination = "/sub/chat" + receiveId + "heart";
-        Long messagesListSize = redisTemplate.opsForList().size(destination);
-        log.info("SendHeartListSize: {}", messagesListSize.toString());
+        List<Object> sendHearts = redisTemplate.opsForList().range(destination, 0, -1);
+        Long messagesListSize = (sendHearts != null) ? (long) sendHearts.size() : 0;
+        log.info("Message list size: {}", messagesListSize);
+
         if (messagesListSize > 0) {
-            for (Long i = messagesListSize; i > 0; i--) {
-                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) redisTemplate.opsForList().rightPop(destination);
-                SendHeartResponse sendHeartResponse = (SendHeartResponse) map.get(destination);
-                log.info("messageResponse: {}", sendHeartResponse.toString());
-                sendHeartResponse.setMethod("connectHeart");
+            for (Object sendHeartObj : sendHearts) {
+                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) sendHeartObj;
+                LinkedHashMap<String, Object> chatRoomMap = (LinkedHashMap<String, Object>) map.get("chatRoom");
+                Long roomId = ((Number) chatRoomMap.get("id")).longValue();
+                ChatRoom chatRoom = findRoomById(exceptionDestination, roomId);
+                SendHeartResponse sendHeartResponse = new SendHeartResponse(map, chatRoom);
+                log.info("UnReadSendHeartResponse: {}", sendHeartResponse.toString());
                 redisTemplate.convertAndSend(topic, sendHeartResponse);
             }
+            // 리스트 비우기
+            redisTemplate.delete(destination);
+            log.info("Sendheart list cleared.");
+        } else {
+            log.warn("Sendheart list is empty.");
         }
     }
 }
