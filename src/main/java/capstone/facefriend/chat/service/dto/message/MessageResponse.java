@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageResponse implements Serializable {
+    private String method;
     private Long roomId;
     private Long receiveId;
     private Long senderId;
