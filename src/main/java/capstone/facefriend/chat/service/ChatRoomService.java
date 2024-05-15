@@ -182,7 +182,11 @@ public class ChatRoomService {
             return "속해있지 않은 채팅방입니다.";
         }
         chatRoom.setStatus(ChatRoom.Status.close);
-        simpMessagingTemplate.convertAndSend("/sub/chat/" + sender.getId(), ChatRoomLeftResponse.of(sender, "상대방이 떠났습니다."));
+        String content = "상대방이 떠났습니다.";
+        String method = "receiveLeftRoom";
+        LocalDateTime sendTime = LocalDateTime.now();
+        ChatRoomLeftResponse chatRoomLeftResponse =ChatRoomLeftResponse.of(method, roomId, leftMember, sendTime, content);
+        simpMessagingTemplate.convertAndSend("/sub/chat/" + sender.getId(),chatRoomLeftResponse);
         chatRoomRepository.save(chatRoom);
         chatRoomMemberRepository.save(chatRoomMember);
 

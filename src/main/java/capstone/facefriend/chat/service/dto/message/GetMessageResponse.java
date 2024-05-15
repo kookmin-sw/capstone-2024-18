@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class GetMessageResponse {
+    private String method;
     private Long roomId;
     private Long senderId;
     private Long receiveId;
@@ -22,6 +23,7 @@ public class GetMessageResponse {
     private Boolean isRead;
 
     public GetMessageResponse(MessageResponse messageResponse) {
+        this.method = messageResponse.getMethod();
         this.roomId = messageResponse.getRoomId();
         this.senderId = messageResponse.getSenderId();
         this.receiveId = messageResponse.getReceiveId();

@@ -51,13 +51,13 @@ public class RedisSubscriber implements MessageListener {
                 SendHeartResponse sendHeartResponse = objectMapper.readValue(publishMessage, SendHeartResponse.class);
 
                 GetSendHeartResponse chatSendHeartResponse = new GetSendHeartResponse(sendHeartResponse);
-                if (isExistSubscriber(chatSendHeartResponse.getReceiveId())) {
-                    messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getReceiveId(), chatSendHeartResponse);
+                if (isExistSubscriber(chatSendHeartResponse.getMemberId())) {
+                    messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getMemberId(), chatSendHeartResponse);
                 } else {
-                    saveUnReadHeart("/sub/chat" + sendHeartResponse.getReceiveId() + "heart", sendHeartResponse);
+                    saveUnReadHeart("/sub/chat" + sendHeartResponse.getMemberId() + "heart", sendHeartResponse);
                 }
 
-                messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getReceiveId(), chatSendHeartResponse);
+                messagingTemplate.convertAndSend("/sub/chat/" + sendHeartResponse.getMemberId(), chatSendHeartResponse);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to process message", e);
@@ -79,8 +79,10 @@ public class RedisSubscriber implements MessageListener {
         Boolean isUnRead = redisTemplate.hasKey(destination);
         log.info(isUnRead.toString());
         if (isUnRead) {
+            messageResponse.setMethod("connectChat");
             redisTemplate.opsForList().rightPush(destination, messageResponse);
         } else {
+            messageResponse.setMethod("connectChat");
             redisTemplate.opsForList().rightPush(destination, messageResponse);
         }
     }
@@ -88,8 +90,10 @@ public class RedisSubscriber implements MessageListener {
     private void saveUnReadHeart(String destination, SendHeartResponse sendHeartResponse) {
         Boolean isUnRead = redisTemplate.hasKey(destination);
         if (isUnRead) {
+            sendHeartResponse.setMethod("connectHeart");
             redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
         } else {
+            sendHeartResponse.setMethod("connectHeart");
             redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
         }
     }
