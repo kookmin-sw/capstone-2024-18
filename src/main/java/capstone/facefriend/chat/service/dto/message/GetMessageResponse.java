@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class GetMessageResponse {
+    private String method;
     private Long roomId;
     private Long senderId;
     private Long receiveId;
