@@ -1,5 +1,5 @@
 import { useRef, useState, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity, BackHandler, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput as RNTextInput, TouchableOpacity, BackHandler, Alert, ScrollView, useWindowDimensions } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import CustomButton from '../components/CustomButton.tsx';
 import ImageButton from '../components/ImageButton.tsx';
@@ -45,12 +45,11 @@ const Login = ({navigation}: any) => {
       <CustomBackHandler haveExit={true}/>
       <View style={styles.container}>
         <AutoHeightImage
-          width={parentWidth}
-          style={{alignSelf:"center", marginHorizontal: 80}}
-          source={require('../assets/images/logo_origin.png')}
-        />
+          width={240}
+          style={{alignSelf:"center"}}
+          source={require('../assets/images/logo.png')}/>
 
-        <Text style={{alignSelf: "center", fontSize: 24, color: colors.point, paddingTop: 30, paddingBottom: 10}}>
+        <Text style={{alignSelf: "center", fontSize: 24, color: colors.point, paddingTop: 60, paddingBottom: 10, fontFamily: "Pretendard-SemiBold", fontWeight: "600"}}>
           LOGIN
         </Text>
 
@@ -83,7 +82,7 @@ const Login = ({navigation}: any) => {
           <TouchableOpacity onPress={() => {navigation.navigate('FindEmail')}} style={{backgroundColor: colors.transparent}}>
             <Text style={styles.small_button_text}>이메일 찾기</Text>
           </TouchableOpacity>
-          <View style={{width: 1, height: '80%', alignSelf: 'center', marginHorizontal: 15, backgroundColor: colors.gray9 }}/>
+          <View style={{width: 1.5, height: '80%', alignSelf: 'center', marginHorizontal: 15, backgroundColor: colors.gray9 }}/>
           <TouchableOpacity onPress={() => {navigation.navigate('FindPw')}} style={{backgroundColor: colors.transparent}}>
             <Text style={styles.small_button_text}>비밀번호 찾기</Text>
           </TouchableOpacity>
@@ -92,9 +91,9 @@ const Login = ({navigation}: any) => {
         {/* 로그인, 구글 로그인 버튼 */}
         <View style={{marginHorizontal: 30}} onLayout={onLayout}>
           <CustomButton onPress={tryLogin} 
-            containerStyle={{backgroundColor: colors.point, marginVertical: 5}}
+            containerStyle={{backgroundColor: colors.point, marginVertical: 5, elevation: 4}}
             textStyle={styles.button_text}>
-            로그인
+            로그인하기
           </CustomButton>
           {/* <ImageButton onPress={() => {}} borderRadius={10}
             imageProps={{width: parentWidth, source: require('../assets/images/signin-assets/Android/png@4x/neutral/sq_ctn.png')}}
@@ -103,7 +102,7 @@ const Login = ({navigation}: any) => {
 
         {/* 회원가입 */}
         <View style={[styles.fit_content, {marginTop: 10}]}>
-          <Text style={{alignSelf: "center", color: colors.gray7}}>아직 회원이 아니신가요? </Text>
+          <Text style={styles.small_button_text}>아직 회원이 아니신가요? </Text>
           <TouchableOpacity onPress={() => {navigation.navigate('Signup')}} style={{backgroundColor: colors.transparent, height: 17.25, marginLeft: 5}}>
             <Text style={[styles.small_button_text, styles.underline]}>회원가입</Text>
           </TouchableOpacity>
@@ -115,9 +114,10 @@ const Login = ({navigation}: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: "14%",
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    paddingHorizontal: 46,
+    backgroundColor: colors.white
   },
   // 클릭 가능한 text를 위한 설정(custom button 파일 사용)
   fit_content: {
@@ -127,17 +127,21 @@ const styles = StyleSheet.create({
   },
   // font style - 밑줄
   underline: {
-    borderBottomWidth: 0.6,
-    color: colors.gray7
+    textDecorationLine: "underline",
   }, 
   // button font style
   small_button_text: {
     fontSize: 14,
+    fontFamily: "Pretendard-Regular",
+    letterSpacing: -14 * 0.02,
     color: colors.gray7
   },
   button_text: {
     fontSize: 18,
-    color: colors.white
+    fontWeight: '600',
+    fontFamily: "Pretendard-SemiBold",
+    letterSpacing: -18 * 0.02,
+    color: colors.white,
   }, 
   textInputContainer: {
     marginTop: 10,

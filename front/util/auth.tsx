@@ -604,24 +604,10 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
   formData.append('categories', Object.keys(categoryFormat));
   formData.append('content', '');
 
-  const exImgs = ['https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png', 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png'];
-  for (const [index, fileUri] of exImgs.entries()) {
-    // 파일의 확장자를 추출
-    const extension = fileUri.split('.').pop()?.toLowerCase();
-    // 파일(이미지)의 타입을 결정
-    const mimeType = getMimeTypeFromExtension(extension);
-
-    formData.append(`images`, {
-      uri: fileUri,
-      name: `file.${extension}`,
-      type: mimeType,
-    });
-  };
-
   try {
     const response = await axios.post(endpoint, formData, config);
     console.log(response);
-    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
+    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, categories, content, isMine } = response.data;
     const responseInfo = {
       method,
       status: response.status,
@@ -631,7 +617,7 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
       faceInfo, 
       basicInfo, 
       analysisInfo, 
-      category, 
+      categories, 
       content,
       isMine
     }
@@ -725,8 +711,7 @@ export const putResume = async (accessToken: string, fileUris: string[], _catego
   formData.append('categories', _category);
   formData.append('content', _content);
 
-  const exImgs = fileUris;
-  for (const [index, fileUri] of exImgs.entries()) {
+  for (const [index, fileUri] of fileUris.entries()) {
     // 파일의 확장자를 추출
     const extension = fileUri.split('.').pop()?.toLowerCase();
     // 파일(이미지)의 타입을 결정
@@ -788,7 +773,7 @@ export const deleteMyResume = async (accessToken: string): Promise<validResponse
 }
 
 // 노션에 있는 형태와 좀 다릅니다. 노션에 있는 건 안 쓰는 key도 많고, 중복도 있는 것 같아, 쓸 것 같은 key만 일단 넣었습니다. 
-interface resumesResponse extends validResponse {
+export interface resumesResponse extends validResponse {
   number: number, // 현재 페이지
   totalPages: number, // 전체 페이지
   totalElements: number, // 총 객체 갯수

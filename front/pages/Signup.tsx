@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { View, StyleSheet, Text, Pressable, ScrollView, TextInput } from "react-native";
+import { View, StyleSheet, Text, Pressable, ScrollView, TextInput, useWindowDimensions } from "react-native";
 import { Icon } from 'react-native-paper';
 
 import IconText from "../components/IconText.tsx";
@@ -12,8 +12,10 @@ import { createAlertMessage } from "../util/alert.tsx";
 
 import VerifyEmailModal from "./VerifyEmailModal.tsx";
 import CustomBackHandler from "../components/CustomBackHandler.tsx";
+import HeaderBar from "../components/HeaderBar.tsx";
 
 const Signup = ({navigation}: any) => {
+  const {height} = useWindowDimensions();
   const [modalVisible, setModalVisible] = useState(false);
 
   const [email, setEmail] = useState({
@@ -169,14 +171,12 @@ const Signup = ({navigation}: any) => {
     }</View>
   
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45 }}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ height: height}}>
       <CustomBackHandler onBack={() => navigation.goBack()}/>
+      <HeaderBar onPress={navigation.goBack}>SIGN UP</HeaderBar>
       {modalVisible && <VerifyEmailModal setModalVisible={setModalVisible} email={email} setEmail={setEmail}/>}
       <View style={styles.container}>
         <View style={[styles.sectionContainer, { borderTopWidth: 0 }]}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>SIGN UP</Text>
-          </View>
           <View style={styles.textContainer}>
             <Text style={styles.inputLabel}>이메일 주소</Text>
             <Text style={styles.inputLabelStar}> *</Text>
@@ -271,10 +271,12 @@ const Signup = ({navigation}: any) => {
               <Text style={styles.subagreementToggleText}>전체</Text>
             </View>
           </>}
-          <CustomButton onPress={handleSubmit} 
-            containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
-            textStyle={styles.pointButtonText}>회원가입하기
-          </CustomButton>
+          <View style={styles.bottomContainer}>
+            <CustomButton onPress={handleSubmit} 
+              containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
+              textStyle={styles.pointButtonText}>회원가입하기
+            </CustomButton>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -286,7 +288,8 @@ export default Signup;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
+    paddingHorizontal: 32, 
+    backgroundColor: colors.white
   },
   title: {
     fontSize: 24, 
@@ -336,7 +339,7 @@ const styles = StyleSheet.create({
     borderRadius: 6, 
     justifyContent: "center",
     padding: 0,
-    flex: 0,
+    elevation: 4
   },
   grayButtonText: {
     color: colors.white, 
@@ -362,6 +365,7 @@ const styles = StyleSheet.create({
   },
   pointButtonText: {
     color: colors.white, 
+    fontFamily: "Pretendard-SemiBold",
     fontWeight: "400", 
     fontSize: 18, 
     textAlign: "center",
@@ -410,5 +414,10 @@ const styles = StyleSheet.create({
     overflow: "hidden", 
     alignItems: "center", 
     height: 18,
-  }
+  },
+  bottomContainer: {
+    alignItems: "center",
+    marginBottom: 46,
+    paddingHorizontal: 8,
+  },
 })

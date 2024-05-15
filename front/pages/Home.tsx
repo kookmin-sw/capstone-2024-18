@@ -51,7 +51,7 @@ const Home = ({ navigation }: any) => {
       <AutoHeightImage
         width={200}
         style={{alignSelf:"center", marginHorizontal: 80}}
-        source={require('../assets/images/logo_origin.png')}
+        source={require('../assets/images/logo.png')}
       />
     </View>
   )
