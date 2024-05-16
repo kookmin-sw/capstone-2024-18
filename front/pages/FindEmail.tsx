@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 
 import { colors } from '../assets/colors.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
@@ -7,9 +7,13 @@ import CustomButton from '../components/CustomButton.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { findEmail, isErrorResponse, isFindEmailResponse } from "../util/auth.tsx";
 import IconText from '../components/IconText.tsx';
+import HeaderBar from '../components/HeaderBar.tsx';
+import CustomBackHandler from '../components/CustomBackHandler.tsx';
 
 
 const FindEmail = ({navigation}: any) => {
+  const {height} = useWindowDimensions();
+  
   // email state 관리와 
   const [email, setEmail] = useState({
     value: "",
@@ -66,40 +70,54 @@ const FindEmail = ({navigation}: any) => {
   }, [email.status])
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45, minHeight: '100%'}}>
+    <ScrollView contentContainerStyle={{height: height}}>
+      <HeaderBar onPress={navigation.goBack}>이메일 찾기</HeaderBar>
+      <CustomBackHandler onBack={navigation.goBack}/>
       <View style={styles.container}>
-        <Text style={styles.helperText}>이메일을 입력해주세요</Text>
-        <Text style={styles.smallHelperText}>가입 시 등록했던 이메일을 입력하면 가입 여부를 알려드려요.</Text>
+        <View style={styles.innerContainer}>
+          <Text style={styles.helperText}>이메일을 입력해주세요</Text>
+          <Text style={styles.smallHelperText}>가입 시 등록했던 이메일을 입력하면 가입 여부를 알려드려요.</Text>
 
-        <View style={styles.textInputContainer}>
-          <CustomTextInput 
-            placeholder="예) facefriend@gmail.com" 
-            onChangeText= {handleEmailInputChange} 
-            blurOnSubmit={false}
-            returnKeyType="next"
-            onBlur={handleEmailInputOnBlur}
-            isValid={email.status === "VALID" || email.status === "LOADING" || email.status === ""}
-          />
+          <View style={styles.textInputContainer}>
+            <CustomTextInput 
+              placeholder="예) facefriend@gmail.com" 
+              onChangeText= {handleEmailInputChange} 
+              blurOnSubmit={false}
+              returnKeyType="next"
+              onBlur={handleEmailInputOnBlur}
+              isValid={email.status === "VALID" || email.status === "LOADING" || email.status === ""}
+            />
+            {emailHintText}
+          </View>
         </View>
-        {emailHintText}
+        <View style={styles.bottomContainer}>
+          <CustomButton 
+            onPress={handleSubmit} disabled={!isFormValid}
+            containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
+            textStyle={styles.pointButtonText}>이메일 찾기
+          </CustomButton>
+        </View>
       </View>
-
-      <CustomButton 
-        onPress={handleSubmit} disabled={!isFormValid}
-        containerStyle={StyleSheet.flatten([styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }])}
-        textStyle={styles.pointButtonText}>이메일 찾기
-      </CustomButton>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1, 
+    paddingHorizontal: 32,
+    paddingTop: 33,  
+    backgroundColor: colors.white
+  },
+  innerContainer: {
+    paddingHorizontal: 8,
+    alignItems: "center",
     flex: 1,
   },
   helperText: {
     alignSelf: 'center', 
     textAlign: 'center',
+    fontFamily: "Pretendard-Medium",
     fontSize: 16,
     letterSpacing: -16 * 0.02, 
     paddingBottom: 12
@@ -115,12 +133,14 @@ const styles = StyleSheet.create({
   smallHelperText: {
     alignSelf: 'center', 
     textAlign: 'center',
+    fontFamily: "Pretendard-Regular",
     fontSize: 14,
     letterSpacing: -14 * 0.02, 
     paddingBottom: 30
   },
   textInputContainer: {
     marginTop: 6,
+    flex: 1
   },
   pointButton: {
     backgroundColor: colors.point, 
@@ -132,10 +152,16 @@ const styles = StyleSheet.create({
   },
   pointButtonText: {
     color: colors.white, 
+    fontFamily: "Pretendard-SemiBold",
     fontWeight: "400", 
     fontSize: 18, 
     textAlign: "center",
     letterSpacing: -18 * 0.02, 
+  },
+  bottomContainer: {
+    alignItems: "center",
+    marginBottom: 46,
+    paddingHorizontal: 8,
   },
 });
 

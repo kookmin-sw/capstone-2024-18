@@ -131,7 +131,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
               <Text style={styles.buttonText}>수락</Text>
             </View>
           </Pressable>
-          <View style={{ width: 10 }}/>
+          <View style={{ width: 14 }}/>
           <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.rejectHeart(roomId) }}>
             <View style={styles.rejectButton}>
               <Text style={styles.buttonText}>거절</Text>
@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.point,
     borderRadius: 16,
+    elevation: 2,
   },
   rejectButton: {
     flex: 1,
@@ -236,6 +237,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 16,
     backgroundColor: colors.gray6,
+    elevation: 2,
   },
   buttonText: {
     color: colors.white,

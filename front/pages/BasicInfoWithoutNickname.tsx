@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, BackHandler } from "react-native";
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from "react-native";
 import { Card } from "react-native-paper";
 
 import IconText from "../components/IconText";
@@ -18,6 +18,8 @@ import CustomBackHandler from "../components/CustomBackHandler";
 
 const BasicInfoWithoutNickname = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
+
+  const {height} = useWindowDimensions();
   
   interface BasicInfo {
     gender: string;         // "DEFAULT", "MALE", "FEMALE"
@@ -299,7 +301,7 @@ const BasicInfoWithoutNickname = ({navigation}: any) => {
   }, [basicInfo])
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ height: height }}>
       <CustomBackHandler onBack={handlePrevPage}/>
       <HeaderBar onPress={handlePrevPage}>기본 정보</HeaderBar>
       <View style={styles.container}>
@@ -322,7 +324,7 @@ const BasicInfoWithoutNickname = ({navigation}: any) => {
           >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
         </View>
       </View>
-      </SafeAreaView>
+    </ScrollView>
   )
 }
 
@@ -365,7 +367,7 @@ const styles = StyleSheet.create({
     letterSpacing: -14* 0.04,
     textAlign: "center",
     color: colors.gray7,
-    fontFamily: "Pretendard-Regualar",
+    fontFamily: "Pretendard-Regular",
   },
   iconTextContainer: {
     width: "100%",

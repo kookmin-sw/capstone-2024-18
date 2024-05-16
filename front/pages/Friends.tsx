@@ -45,17 +45,17 @@ const Friends = ({navigation}: any) => {
     {
       id: 1,
       type: 'image',
-      source: require('../assets/images/imageTest1.png')
+      source: require('../assets/images/banner1.png')
     },
     {
       id: 2,
       type: 'image',
-      source: require('../assets/images/imageTest1.png')
+      source: require('../assets/images/banner2.png')
     },
     {
       id: 3,
       type: 'image',
-      source: require('../assets/images/imageTest1.png')
+      source: require('../assets/images/banner3.png')
     },
   ]);
 
@@ -132,11 +132,20 @@ const Friends = ({navigation}: any) => {
     if (faces[`${type}`].last) return;
 
     if (authCtx.accessToken) {
-      const response = await getGoodCombi(
-        authCtx.accessToken,
-        faces[`${type}`].content.length/10,
-        10
-      );
+      var response: any;
+      if (type === "FIT") {
+        response = await getGoodCombi(
+          authCtx.accessToken,
+          faces[`${type}`].content.length/10,
+          10
+        );
+      } else {
+        response = await getCategoryUser(
+          authCtx.accessToken,
+          faces[`${type}`].content.length/10,
+          10, type
+        );
+      }
 
       if (isResumesResponse(response)){
         setFaces((prev) => ({
@@ -152,7 +161,10 @@ const Friends = ({navigation}: any) => {
 
   const renderCardItem = ({item}: {item: Content}) => {{
     return (
-      <TouchableOpacity key={item.resumeId} style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 6}} onPress={() => navigation.navigate("OtherSelfProduce", {resumeId: item.resumeId})}>
+      <TouchableOpacity 
+        key={item.resumeId} 
+        style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 16, borderColor: colors.pastel_point}} 
+        onPress={() => navigation.navigate("OtherSelfProduce", {resumeId: item.resumeId})}>
         <Image source={{uri: item.thumbnailS3url}} width={150} height={150}/>
       </TouchableOpacity>);
   }}
@@ -185,15 +197,12 @@ const Friends = ({navigation}: any) => {
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
-      <Pressable onPress={handleLogout}>
-        <View style={{ padding: 12, backgroundColor: colors.point, borderRadius: 8, width: 100, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: colors.white }}>로그아웃</Text>
-        </View>
-      </Pressable>
+    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: colors.white}}>
       {/* 이미지 슬라이더 */}
       <CarouselSlider
         pageWidth={pageWidth}
+        autoScrollToNextPage
+        autoScrollToNextPageInterval={3000}
         pageHeight={pageWidth}
         offset={offset}
         gap={gap}
@@ -213,48 +222,52 @@ const Friends = ({navigation}: any) => {
         })
       }
       </View>
-      <View style={styles.personalRecommendTop}>
-        <View style={styles.sectionTitleContainer}>
-          <Text style={styles.sectionTitle}>나와 잘 맞는 관상</Text>
-          <View style={{flex: 1}}/>
-          <TouchableOpacity>
-            <Text>전체 보러가기{">"}</Text>
-          </TouchableOpacity>
+      <View style={{ backgroundColor: colors.white }}>
+        <View style={styles.personalRecommendTop}>
+          <View style={styles.sectionTitleContainer}>
+            <Text style={styles.sectionTitle}>나와 잘 맞는 관상</Text>
+            <View style={{flex: 1}}/>
+            <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: "FIT"})}}>
+              <Text style={[styles.sectionText, { color: colors.gray6 }]}>전체 보러가기{">"}</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={[{paddingLeft: 27}, styles.sectionText]}>AI가 분석한 {nickname}님의 베스트 매치 관상 추천</Text>
         </View>
-        <Text style={{paddingLeft: 27}}>AI가 분석한 {nickname}님의 베스트 매치 관상 추천</Text>
-      </View>
       <FlatList 
         horizontal 
         data={faces.FIT.content} 
         renderItem={renderCardItem}
         style={{paddingVertical: 26, paddingHorizontal: 16}}
         onEndReached={() => fetchNewData("FIT")}/>
-      <View style={{backgroundColor: '#F9F9FF', paddingTop: 20}}>
-        <Text style={styles.categorySectionTitle}>카테고리별 맞춤 추전</Text>
-        {
-          categoriesText.map(([text, tag], idx) => {
-            if (faces[`${tag}`]) {
-              return (
-                <View key={idx}>
-                  <View style={{marginHorizontal: 26, flexDirection: 'row', alignItems: 'center'}}>
-                    <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{categoryForm[tag as keyof Category]}</SelectableTag>
-                    <Text style={{paddingLeft: 8}}>{text}</Text>
-                    <View style={{flex: 1}}/>
-                    <TouchableOpacity>
-                      <Text>전체 보러가기{">"}</Text>
-                    </TouchableOpacity>
+      {Object.keys(faces).length > 1 ?
+        <View style={{backgroundColor: colors.white, paddingTop: 20}}>
+          <Text style={styles.categorySectionTitle}>카테고리별 맞춤 추천</Text>
+          {
+            categoriesText.map(([text, tag], idx) => {
+              if (faces[`${tag}`]) {
+                return (
+                  <View key={idx}>
+                    <View style={{marginHorizontal: 26, flexDirection: 'row', alignItems: 'center'}}>
+                      <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white, fontFamily: 'Pretendard-Medium', letterSpacing: -16*0.02}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{categoryForm[tag as keyof Category]}</SelectableTag>
+                      {/* <Text style={[{paddingLeft: 8}, styles.sectionText]}>{text}</Text> */}
+                      <View style={{flex: 1}}/>
+                      <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: tag})}}>
+                        <Text style={[styles.sectionText, { color: colors.gray6 }]}>전체 보러가기{">"}</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <FlatList 
+                      horizontal 
+                      data={faces[tag as keyof Category]?.content} 
+                      renderItem={renderCardItem}
+                      style={{paddingVertical: 26, paddingHorizontal: 16}}
+                      onEndReached={() => fetchNewData(tag)}/>
                   </View>
-                  <FlatList 
-                    horizontal 
-                    data={faces[tag as keyof Category]?.content} 
-                    renderItem={renderCardItem}
-                    style={{paddingVertical: 26, paddingHorizontal: 16}}
-                    onEndReached={() => fetchNewData(tag)}/>
-                </View>
-              );
-            }
-          })
-        }
+                );
+              }
+            })
+          }
+        </View> : <></>
+      }
       </View>
     </ScrollView>
   );
@@ -263,24 +276,35 @@ const Friends = ({navigation}: any) => {
 const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
-    color: colors.point
+    color: colors.point,
+    fontFamily: "Pretendard-SemiBold",
+    letterSpacing: -20* 0.02,
+  },
+  sectionText: {
+    fontFamily: "Pretendard-Regular", 
+    fontSize: 14, 
+    letterSpacing: -14* 0.02,
+    color: colors.gray7,
   },
   sectionTitleContainer: {
     marginHorizontal: 26, 
     marginBottom: 8, 
-    flexDirection: 'row'
+    flexDirection: 'row',
+    borderColor: colors.white,
   },
   categorySectionTitle: {
     paddingLeft: 27,
     paddingBottom: 18, 
     fontSize: 20, 
-    color: colors.point
+    color: colors.point,
+    fontFamily: "Pretendard-SemiBold",
+    letterSpacing: -20* 0.02,
   },
   personalRecommendTop: {
     borderBottomWidth: 1, 
     marginTop: 38, 
     paddingBottom: 11, 
-    borderColor: colors.gray3
+    borderColor: colors.white,
   },
 });
 

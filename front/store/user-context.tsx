@@ -23,6 +23,8 @@ interface UserContextType {
   basicinfo: BasicInfo,
   faceinfo: FaceInfo,
   status: string,
+  setBasicinfo: (basicInfo: BasicInfo) => void,
+  setFaceinfo: (faceInfo: FaceInfo) => void,
   setStatus: (status: string) => void,
 }
 
@@ -33,6 +35,8 @@ export const UserContext = createContext<UserContextType>({
   basicinfo: defaultBasicInfo,
   faceinfo: defaultFaceInfo,
   status: '',
+  setBasicinfo: (basicInfo: BasicInfo) => {},
+  setFaceinfo: (faceInfo: FaceInfo) => {},
   setStatus: (status: string) => {},
 });
 
@@ -148,6 +152,8 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     basicinfo,
     faceinfo,
     status,
+    setBasicinfo,
+    setFaceinfo,
     setStatus,
   }), [basicinfo, faceinfo, status]);
 

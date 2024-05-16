@@ -15,6 +15,7 @@ import { Category, category } from '../util/categoryFormat.tsx';
 import { useRoute } from '@react-navigation/native';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import { ChatRoomContext } from '../store/chat-room-context.tsx';
+import HeaderBar from '../components/HeaderBar.tsx';
 
 
 const OtherUserSelfProduce = ({navigation}: any) => {
@@ -140,9 +141,10 @@ const OtherUserSelfProduce = ({navigation}: any) => {
   }, [])
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{backgroundColor: colors.white}}>
       {/* 이미지 슬라이더 */}
       <CustomBackHandler onBack={() => navigation.goBack()}/>
+      <HeaderBar onPress={navigation.goBack}>자기소개서</HeaderBar>
       <CarouselSlider
         pageWidth={pageWidth}
         pageHeight={pageWidth}
@@ -255,14 +257,12 @@ const OtherUserSelfProduce = ({navigation}: any) => {
             children={essay}/>
         </View>
 
-        <View style={{...styles.section, flexDirection: 'row'}}>
-          <View style={{width: "100%"}}>
-            <CustomButton 
-              containerStyle={{backgroundColor: colors.point, marginHorizontal: 5}}
-              textStyle={{color: colors.white}} onPress={handleHeart}>
-              {"하트 보내기"}
-            </CustomButton>
-          </View>
+        <View style={[styles.section, styles.bottomContainer]}>
+          <CustomButton 
+            containerStyle={{backgroundColor: colors.point, marginHorizontal: 5, elevation: 4}}
+            textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}} onPress={handleHeart}>
+            {"하트 보내기"}
+          </CustomButton>
         </View>
       </View>
     </ScrollView>
@@ -271,12 +271,14 @@ const OtherUserSelfProduce = ({navigation}: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: "6%",
+    paddingHorizontal: 32,
     flex: 1,
+    backgroundColor: colors.white
   },
   profileName: {
     fontSize: 20, 
-    color: '#000000', 
+    fontFamily: 'Pretendard-SemiBold',
+    color: colors.gray7, 
     alignSelf: 'center'
   },
 
@@ -294,6 +296,8 @@ const styles = StyleSheet.create({
   },
   uneditableText: {
     color: colors.gray7, 
+    fontFamily: 'Pretendard-Medium',
+    letterSpacing: -14* 0.02,
     fontSize: 14,
     marginLeft: 9,
     marginRight: 9
@@ -310,6 +314,7 @@ const styles = StyleSheet.create({
   }, 
   sectionText: {
     fontSize: 14,
+    fontFamily: 'Pretendard-SemiBold',
     color: colors.gray9,
     paddingRight: 7
   }, 
@@ -327,6 +332,12 @@ const styles = StyleSheet.create({
     padding: 15, 
     borderRadius: 15,
     height: undefined
+  },
+
+  bottomContainer: {
+    alignItems: "center",
+    marginBottom: 23,
+    paddingHorizontal: 8,
   },
 });
 

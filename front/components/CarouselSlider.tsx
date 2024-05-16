@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FlatList, FlatListProps, StyleProp, ViewStyle } from "react-native";
 
 import useInterval from "./useInterval.tsx";
+import { colors } from "../assets/colors.tsx";
 
 
 export interface GapProps {
@@ -107,6 +108,7 @@ export const CarouselSlider = (({
       contentContainerStyle={{
         paddingLeft: offset,
         paddingRight: offset,
+        backgroundColor: colors.white
       }}
       style={{width: pageWidth + gap.leftGap + gap.rightGap + offset * 2, alignSelf: 'center'}}
     />

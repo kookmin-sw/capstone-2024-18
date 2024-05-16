@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, BackHandler } from "react-native";
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from "react-native";
 import { Card } from "react-native-paper";
 
 import IconText from "../components/IconText";
@@ -21,6 +21,8 @@ import { UserContext } from "../store/user-context";
 const BasicInfoPage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+
+  const {height} = useWindowDimensions();
   
   interface BasicInfo {
     nickname: string;         
@@ -129,13 +131,21 @@ const BasicInfoPage = ({navigation}: any) => {
         basicInfo.height,
         basicInfo.region,
       );  
-      if (isValidResponse(response)) {
-        createAlertMessage("기본 정보 입력이 완료되었습니다.");
-        userCtx.setStatus('BASIC_INFO_EXIST');
-        navigation.goBack();
-      }
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
+      }
+      else if (isValidResponse(response)) {
+        createAlertMessage("기본 정보 입력이 완료되었습니다.");
+        userCtx.setStatus('BASIC_INFO_EXIST');
+        userCtx.setBasicinfo({
+          ageDegree: response.ageDegree, 
+          ageGroup: response.ageGroup, 
+          gender: response.gender, 
+          heightGroup: response.heightGroup, 
+          nickname: response.nickname, 
+          region: response.region
+        });
+        navigation.goBack();
       }
     }
     else {
@@ -332,13 +342,13 @@ const BasicInfoPage = ({navigation}: any) => {
   }, [basicInfo])
 
   return (
-    <ScrollView contentContainerStyle={{ minHeight: '100%' }}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ height: height }}>
       <CustomBackHandler onBack={handlePrevPage}/>
       <HeaderBar onPress={handlePrevPage}>기본 정보</HeaderBar>
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Card style={styles.card}>
-            <IconText icon={{source: "chat-question", size: 18}} textStyle={styles.cardText}>기본 정보는 왜 필요한가요? 🤔</IconText>
+            <IconText icon={{source: require('../assets/images/question.png'), size: 18, color: colors.gray7}} textStyle={styles.cardText}>기본 정보는 왜 필요한가요? 🤔</IconText>
           </Card>
           <View style={styles.textContainer}>
             <Text style={styles.text}>다른 사용자와 관계를 시작하기 전,{"\n"} 서로 최소한의 인적 사항을 참고하기 위함이에요.</Text>
@@ -348,14 +358,14 @@ const BasicInfoPage = ({navigation}: any) => {
         <CustomProgressBar progress={(pageIndex + 1) / 6}/>
         <View style={{ height: 27 }}/>
         <View style={styles.bottomContainer}>
-          <CustomButton 
+          <CustomButton disabled={!isFormValid()}
           containerStyle={isFormValid() ? styles.activatedButtonStyle : styles.disabledButtonStyle} 
           onPress={pageIndex === contents.length - 1 ? submitForm : handleNextPage}
           textStyle={isFormValid() ? styles.activatedTextStyle : styles.disabledTextStyle}
           >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
         </View>
       </View>
-      </ScrollView>
+    </ScrollView>
   )
 }
 
@@ -363,14 +373,13 @@ export default BasicInfoPage;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white", 
+    backgroundColor: colors.white, 
     flex: 1, 
     paddingHorizontal: 32, 
   },
   innerContainer: {
     paddingHorizontal: 8,
     alignItems: "center",
-    width: "100%",
     flex: 1,
   },
   bottomContainer: {
@@ -386,6 +395,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cardText: {
+    paddingLeft: 5, 
     fontFamily: "Pretendard-Medium",
     fontSize: 14,
     letterSpacing: -14 * 0.02,
@@ -398,7 +408,7 @@ const styles = StyleSheet.create({
     letterSpacing: -14* 0.04,
     textAlign: "center",
     color: colors.gray7,
-    fontFamily: "Pretendard-Regualar",
+    fontFamily: "Pretendard-Regular",
   },
   iconTextContainer: {
     width: "100%",
@@ -407,15 +417,21 @@ const styles = StyleSheet.create({
   },
   activatedButtonStyle: {
     backgroundColor: colors.point,
+    elevation: 4
   },
   activatedTextStyle: {
+    fontFamily: "Pretendard-SemiBold",
+    fontWeight: "400", 
     fontSize: 18,
     color: colors.white,
   },
   disabledButtonStyle: {
     backgroundColor: colors.pastel_point,
+    elevation: 4
   },
   disabledTextStyle: {
+    fontFamily: "Pretendard-SemiBold",
+    fontWeight: "400", 
     fontSize: 18,
     color: colors.white,
   },

@@ -12,6 +12,7 @@ import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFace
 import { createAlertMessage } from "../util/alert";
 import ImageWithIconOverlay from "../components/ImageWithIconOverlay";
 import CustomBackHandler from "../components/CustomBackHandler";
+import HeaderBar from "../components/HeaderBar";
 
 const NicknamePage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
@@ -84,25 +85,22 @@ const NicknamePage = ({navigation}: any) => {
   }, []);
 
   return (
-    <KeyboardAvoidingView style={{flex: 1, minHeight: height}}>
-    <ScrollView style={{ height: height}}>
+    <ScrollView contentContainerStyle={{ minHeight: height}}>
       <CustomBackHandler onBack={navigation.goBack}/>
+      <HeaderBar onPress={navigation.goBack}>닉네임 변경</HeaderBar>
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Card style={styles.card}>
             <IconText icon={{source: "chat-question", size: 18}} textStyle={styles.cardText}>기본 정보는 왜 필요한가요? 🤔</IconText>
           </Card>
           <View style={styles.textContainer}>
-            <Text style={styles.text}>다른 사용자와 관계를 시작하기 전,{"\n"} 서로 최소한의 인적 사항을 참고하기 위함이에요.</Text>
+            <Text style={styles.text}>자신을 잘 드러낼 수 있는 닉네임이면 좋아요. {"\n"}닉네임은 중복가능하니 자유롭게 닉네임을 지어보세요!</Text>
           </View>
           <ImageWithIconOverlay
             borderRadius={300} source={{uri: generatedS3url}}
             containerStyle={styles.resultImageContainer} imageStyle={styles.image}>
             <IconButton icon={'check'} size={30} iconColor={colors.white} style={styles.resultBottomIcon}/>
           </ImageWithIconOverlay>
-          <View style={styles.subtitleContainer}>
-            <Text style={styles.subtitleText}>닉네임 설정</Text>
-          </View>
           <CustomTextInput 
             placeholder="닉네임을 입력해주세요" 
             value={nickname} 
@@ -121,7 +119,6 @@ const NicknamePage = ({navigation}: any) => {
         </View>
       </View>
     </ScrollView>
-    </KeyboardAvoidingView>
   )
 }
 
@@ -129,7 +126,7 @@ export default NicknamePage;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white", 
+    backgroundColor: colors.white,
     flex: 1, 
     paddingHorizontal: 32, 
     height: '100%'
@@ -137,9 +134,7 @@ const styles = StyleSheet.create({
   innerContainer: {
     paddingHorizontal: 8,
     alignItems: "center",
-    width: "100%",
     flex: 1,
-    backgroundColor: 'red'
   },
   bottomContainer: {
     alignItems: "center",
@@ -152,7 +147,6 @@ const styles = StyleSheet.create({
     height: 32,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 17,
   },
   cardText: {
     fontFamily: "Pretendard-Medium",
@@ -167,7 +161,7 @@ const styles = StyleSheet.create({
     letterSpacing: -14* 0.04,
     textAlign: "center",
     color: colors.gray7,
-    fontFamily: "Pretendard-Regualar",
+    fontFamily: "Pretendard-Regular",
   },
   iconTextContainer: {
     width: "100%",
@@ -356,7 +350,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.point,
     backgroundColor: colors.point,
-    marginBottom: 27
+    marginBottom: 45
   },
   // 이미지 설정 style
   image: {

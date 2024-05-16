@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Alert, BackHandler, BackHandlerStatic } from 'react-native';
+import { createAlertMessage } from '../util/alert';
 
 interface BackHandlerProps {
   onBack?: () => void;
@@ -17,14 +18,14 @@ const CustomBackHandler: React.FC<BackHandlerProps> = ({ onBack, haveExit=false 
         const now = Date.now();
         if (lastBackPressTime && now - lastBackPressTime < 500) {
           // 마지막 뒤로가기 버튼 클릭이 0.5초 이내에 발생하면 앱 종료
-          Alert.alert("", "앱을 종료하시겠습니까?", [
+          Alert.alert("알림", "앱을 종료하시겠습니까?", [
+            { text: "확인", onPress: () => BackHandler.exitApp() },
             {
-                text: "취소",
-                onPress: () => null,
-                style: "cancel"
-            },
-            { text: "확인", onPress: () => BackHandler.exitApp() }
-            ]);
+              text: "취소",
+              onPress: () => null,
+              style: "cancel"
+          },  
+          ]);
           return true;
         }
         lastBackPressTime = now;

@@ -58,6 +58,7 @@ const SelectableTag = ({
   touchAreaStyle,
   containerStyle,
   textStyle,
+  children,
   ...chipProps
 }: Props) => {
   return (
@@ -65,6 +66,7 @@ const SelectableTag = ({
       {display: (!selectable?.showSelectedOnly || selectable?.select) ? 'flex' : 'none'}]}>
       <Chip
         {...chipProps}
+        children={children}
         style={[styles.defaultTag, 
           {borderRadius: borderRadius, borderColor: color, height: height}, 
           width ? {width: width} : {}, containerStyle, 
