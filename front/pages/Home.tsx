@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext } from "react";
 import { View } from "react-native"
 import AutoHeightImage from 'react-native-auto-height-image';
 
@@ -9,11 +9,6 @@ import { UserContext } from "../store/user-context.tsx";
 const Home = ({ navigation }: any) => {
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
-  const [reloadCounter, setReloadCounter] = useState(0);
-
-  const reload = () => {
-    setReloadCounter(reloadCounter + 1);
-  }
   
   useFocusEffect(
     useCallback(() => {
@@ -27,6 +22,7 @@ const Home = ({ navigation }: any) => {
 
   useFocusEffect(
     useCallback(() => {
+    console.log("userCtx.status:", userCtx.status)
       if (userCtx.status === 'BASIC_INFO_NOT_EXIST') {
         navigation.navigate('BasicInfo');
       }
@@ -34,17 +30,13 @@ const Home = ({ navigation }: any) => {
         navigation.navigate('FaceInfo');
       }
       if (userCtx.status === 'FACE_FEATURE_NOT_EXIST') {
-        navigation.navigate('AnalysisInfo');
+        navigation.navigate('FaceFeature');
       }
       if (userCtx.status === 'FACE_FEATURE_EXIST') {
         navigation.navigate('Main');
       }
     }, [userCtx.status])
   );
-  
-  useEffect(() => {
-    console.log(userCtx.status)
-  }, [userCtx.status])
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
