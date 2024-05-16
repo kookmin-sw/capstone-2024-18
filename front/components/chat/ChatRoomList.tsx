@@ -20,6 +20,11 @@ const ChatRoomList = () => {
     setRoomId(0);
   }
 
+  useEffect(() => {
+    if (roomId) return;
+    chatRoomCtx.getChatRoomList();
+  }, [roomId])
+
   return (
     <View style={styles.container}>
     {!roomId && <>
