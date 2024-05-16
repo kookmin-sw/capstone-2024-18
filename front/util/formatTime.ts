@@ -48,3 +48,19 @@ export const toISOStringNoMillis = (date: Date) => {
     const seconds = date.getSeconds().toString().padStart(2, '0');
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
+
+export const formatTime = (sendTime: Date) => {
+    const date = new Date(sendTime);
+    const hours = date.getHours(); 
+    const minutes = date.getMinutes(); 
+    const AMorPM = hours < 12 ? "오전" : "오후";
+    const formattedTime = `${AMorPM} ${hours % 12 ? hours % 12 : 12}:${minutes.toString().padStart(2, '0')}`;
+    return formattedTime;
+}
+
+export const formatDailyBorder = (sendTime: Date | string) => {
+    const timestampDate = (typeof sendTime === 'string' || sendTime instanceof Date) ? new Date(sendTime) : sendTime;
+    const formattedDailyBorder = `${timestampDate?.getFullYear()}년 ${timestampDate?.getMonth() + 1}월 ${timestampDate?.getDate()}일`;
+    return formattedDailyBorder;
+}
+

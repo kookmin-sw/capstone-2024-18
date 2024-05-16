@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, LayoutChangeEvent, Image } from "react-native";
 import { colors } from "../../assets/colors";
 import { AuthContext } from "../../store/auth-context";
 import { UserContext } from "../../store/user-context";
+import { formatDailyBorder, formatTime } from "../../util/formatTime";
 
 export interface ChatProps {
   id: string,
@@ -33,16 +34,10 @@ const Chat = React.memo(({
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
 
-  const date = new Date(sendTime);
-  const hours = date.getHours(); 
-  const minutes = date.getMinutes(); 
-  const AMorPM = hours < 12 ? "오전" : "오후";
-  const formattedTime = `${AMorPM} ${hours % 12}:${minutes.toString().padStart(2, '0')}`;
+  const formattedTime = formatTime(sendTime);
+  const formattedDailyBorder = formatDailyBorder(sendTime);
 
-  const timestampDate = (typeof sendTime === 'string' || sendTime instanceof Date) ? new Date(sendTime) : sendTime;
-  const formattedDailyBorder = `${timestampDate?.getFullYear()}년 ${timestampDate?.getMonth() + 1}월 ${timestampDate?.getDate()}일`;
-  
-  const isSender = senderId === +authCtx.userId;
+  const isSender = senderId === authCtx.userId;
   const defaultProfileUrl = 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png';
 
   const onLayout = useCallback((event: LayoutChangeEvent) => {
