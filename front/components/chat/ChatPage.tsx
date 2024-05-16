@@ -72,9 +72,10 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     ChatListRef.current?.scrollToOffset({ offset, animated });
   }
 
-  // const scrollToEnd = () => {
-  //   scrollToIndex(chatCtx.chats[roomId].length - 1);
-  // };
+  const scrollToEnd = () => {
+    if (chatCtx.chats[roomId].length === 0) return;
+    scrollToIndex(chatCtx.chats[roomId].length - 1);
+  };
   
   // const handleFetchChatHistory = async () => {
   //   const fetchedChats = await chatCtx.fetchChatHistory(page);
@@ -176,6 +177,10 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   useEffect(() => {
     console.log(chatRoom);
   }, [chatRoom])
+
+  useEffect(() => {
+    scrollToEnd();
+  }, [chats])
 
   return (
     <View style={styles.container}>
