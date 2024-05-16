@@ -165,7 +165,7 @@ const Friends = ({navigation}: any) => {
         key={item.resumeId} 
         style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 16, borderColor: colors.pastel_point}} 
         onPress={() => navigation.navigate("OtherSelfProduce", {resumeId: item.resumeId})}>
-        <Image source={{uri: item.thumbnailS3url}} width={150} height={150}/>
+        <Image source={{uri: item.thumbnailS3url}} style={{borderRadius:16}} width={150} height={150}/>
       </TouchableOpacity>);
   }}
 
