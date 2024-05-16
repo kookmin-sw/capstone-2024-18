@@ -98,7 +98,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUserId(0);
       removeToken("accessToken");
       removeToken("refreshToken");
-      setStatus('NOT_EXIST');
+      setStatus('LOGGED_OUT');
       const response = await axios.delete(endpoint, config);
       const responseInfo = {
         method,

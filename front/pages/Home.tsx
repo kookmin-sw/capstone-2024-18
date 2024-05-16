@@ -14,7 +14,7 @@ const Home = ({ navigation }: any) => {
     useCallback(() => {
       if (!authCtx.status) return;
       if (authCtx.status === 'LOADED') return
-      if (authCtx.status === 'NOT_EXIST') {
+      if (authCtx.status === 'NOT_EXIST' || authCtx.status === 'LOGGED_OUT') {
         navigation.navigate('Login');
       }
     }, [authCtx.status])

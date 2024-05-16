@@ -15,7 +15,7 @@ const Test1 = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
-    if (authCtx.status === 'NOT_EXIST') {
+    if (authCtx.status === 'LOGGED_OUT') {
       navigation.navigate('Login');
     }
   }, [authCtx.status])
