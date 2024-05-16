@@ -11,6 +11,7 @@ import { Card, Icon } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
 import { UserContext } from '../store/user-context.tsx';
+import CustomButton from '../components/CustomButton.tsx';
 
 
 const Profile = ({navigation}: any) => {
@@ -106,12 +107,12 @@ const Profile = ({navigation}: any) => {
       <View style={styles.contentContainer}>
         <View style={styles.imageRowFlexBox}>
           <ImageWithIconOverlay
-            borderRadius={300} source={{uri: generatedS3url}}
+            borderRadius={300} source={{uri: originS3url}}
             containerStyle={styles.grayImageContainer} imageStyle={styles.image}
             centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
             centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
           <ImageWithIconOverlay
-            borderRadius={300} source={{uri: originS3url}}
+            borderRadius={300} source={{uri: generatedS3url}}
             containerStyle={styles.grayImageContainer} imageStyle={styles.image}
             centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
             centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
@@ -136,6 +137,10 @@ const Profile = ({navigation}: any) => {
             <Text style={styles.grayContent}>{analysis.join(' ')}</Text>
           </Pressable>
         </View>
+        <CustomButton 
+          containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 5, elevation: 4}}
+          textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}
+          onPress={() => {authCtx.signout(); navigation.navigate('Home')}}>로그아웃</CustomButton>
       </View>
       <View style={{flex: 1}}/>
     </ScrollView>

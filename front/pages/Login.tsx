@@ -6,6 +6,9 @@ import ImageButton from '../components/ImageButton.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 
+import { SvgUri } from 'react-native-svg';
+import EmailIcon from '../assets/images/email.svg';
+
 import { colors } from '../assets/colors.tsx';
 import { isErrorResponse, isValidResponse } from '../util/auth.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
@@ -54,8 +57,9 @@ const Login = ({navigation}: any) => {
         </Text>
 
         <View style={styles.textInputContainer}>
+          {/* <EmailIcon width="50px" height="50px" /> */}
           <CustomTextInput
-            leftIcon={{source: "email"}} 
+            leftIcon={{source: require('../assets/images/email.png'), size: 18, color: colors.point}} 
             placeholder="이메일을 입력해주세요" 
             onChangeText={(text) => setEmail(text)}
             keyboardType='email-address'
@@ -66,7 +70,7 @@ const Login = ({navigation}: any) => {
         </View>
         <View style={styles.textInputContainer}>
           <CustomTextInput
-            leftIcon={{source: "lock"}} 
+            leftIcon={{source: require("../assets/images/pw.png"), size: 18, color: colors.point}} 
             rightIcon={{source: secure ?  "eye-off-outline" : "eye-outline"}}
             rightPressable={{ onPress: () => setSecure(!secure) }}
             placeholder="비밀번호를 입력해주세요" 
