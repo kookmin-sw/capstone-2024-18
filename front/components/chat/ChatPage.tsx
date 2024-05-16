@@ -1,4 +1,4 @@
-import { StyleSheet, View, FlatList, Pressable, Text, Keyboard, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { StyleSheet, View, FlatList, Pressable, Text, Keyboard, NativeSyntheticEvent, NativeScrollEvent, ScrollView } from "react-native";
 import { useState, useRef, useEffect, useContext } from "react";
 import ChatList from "./ChatList";
 import ChatInput from "./ChatInput";
@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserContext } from "../../store/user-context";
 import { AuthContext } from "../../store/auth-context";
 import { ChatRoomContext } from "../../store/chat-room-context";
+import OtherUserSelfProduceChat from "../../pages/OtherUserSelfProduceChat";
 
 interface Prop {
   onBack: () => void,
@@ -120,19 +121,23 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     <View>
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대가 하트를 보냈습니다.</Text>
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'center', margin: 20, height: 60, }}>
-        <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.acceptHeart(roomId) }}>
-          <View style={styles.acceptButton}>
-            <Text style={styles.buttonText}>수락</Text>
-          </View>
-        </Pressable>
-        <View style={{ width: 10 }}/>
-        <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.rejectHeart(roomId) }}>
-          <View style={styles.rejectButton}>
-            <Text style={styles.buttonText}>거절</Text>
-          </View>
-        </Pressable>
-      </View>
+      <ScrollView style={{ marginBottom: 150 }}>
+        <OtherUserSelfProduceChat resumeId={chatRoomCtx.chatRooms[roomId].senderId}/>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', margin: 20, height: 60, }}>
+          <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.acceptHeart(roomId) }}>
+            <View style={styles.acceptButton}>
+              <Text style={styles.buttonText}>수락</Text>
+            </View>
+          </Pressable>
+          <View style={{ width: 10 }}/>
+          <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.rejectHeart(roomId) }}>
+            <View style={styles.rejectButton}>
+              <Text style={styles.buttonText}>거절</Text>
+            </View>
+          </Pressable>
+        </View>
+      </ScrollView>
+      <View style={{ height: 50 }}/>
     </View>
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
