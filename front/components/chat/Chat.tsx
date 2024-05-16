@@ -52,8 +52,6 @@ const Chat = React.memo(({
     if (height !== undefined && height !== null && !isNaN(height)) setHeight(height); 
   }, [isInitial, isFinal, isDailyInitial, setHeight]);
 
-  console.log("chat:", senderGeneratedFaceS3url);
-
   return (
     <View onLayout={onLayout}>
       {isDailyInitial && 
