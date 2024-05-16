@@ -38,7 +38,7 @@ function App() {
                   <Stack.Screen name='Home' component={Home}/>
                   <Stack.Screen name='BasicInfo' component={BasicInfoPage}/>
                   <Stack.Screen name='FaceInfo' component={FaceInfoPage}/>
-                  <Stack.Screen name='AnalysisInfo' component={FaceFeaturePage}/>
+                  <Stack.Screen name='FaceFeature' component={FaceFeaturePage}/>
                   <Stack.Screen name='Nickname' component={NicknamePage}/>
                   <Stack.Screen name='BasicInfoWithoutNickname' component={BasicInfoWithoutNickname}/>
                   <Stack.Screen name='OtherSelfProduce' component={OtherUserSelfProduce}/>
