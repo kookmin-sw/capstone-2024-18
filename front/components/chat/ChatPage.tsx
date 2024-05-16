@@ -11,6 +11,7 @@ import { UserContext } from "../../store/user-context";
 import { AuthContext } from "../../store/auth-context";
 import { ChatRoomContext } from "../../store/chat-room-context";
 import OtherUserSelfProduceChat from "../../pages/OtherUserSelfProduceChat";
+import CustomButton from "../CustomButton";
 
 interface Prop {
   onBack: () => void,
@@ -125,19 +126,22 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
       <ScrollView style={{ marginBottom: 150 }}>
         <OtherUserSelfProduceChat resumeId={chatRoomCtx.chatRooms[roomId]?.senderId}/>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', margin: 20, height: 60, }}>
-          <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.acceptHeart(roomId) }}>
-            <View style={styles.acceptButton}>
-              <Text style={styles.buttonText}>수락</Text>
+
+        <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 50}}>
+            <View style={{width: "50%" }}>
+              <CustomButton 
+                containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 10, elevation: 4}} onPress={() => { chatRoomCtx.rejectHeart(roomId) }}
+                textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}>거절하기
+              </CustomButton>
             </View>
-          </Pressable>
-          <View style={{ width: 14 }}/>
-          <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.rejectHeart(roomId) }}>
-            <View style={styles.rejectButton}>
-              <Text style={styles.buttonText}>거절</Text>
+            <View style={{width: "50%"}}>
+              <CustomButton 
+                containerStyle={{backgroundColor: colors.point, marginHorizontal: 10, elevation: 4}} onPress={() => { chatRoomCtx.acceptHeart(roomId) }}
+                textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}>
+                수락하기
+              </CustomButton>
             </View>
-          </Pressable>
-        </View>
+          </View>
       </ScrollView>
       <View style={{ height: 50 }}/>
     </View>
