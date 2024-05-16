@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useMemo, useContext} from 'react';
-import { saveData, loadData } from '../util/encryptedStorage';
+import { saveData, loadData, saveChatHistory, loadChatHistory } from '../util/encryptedStorage';
 import { ChatProps } from '../components/chat/Chat';
 import { AuthContext } from './auth-context';
 import { AppState, AppStateStatus } from 'react-native';
@@ -9,22 +9,20 @@ export type Chats = { [roomId: number]: ChatProps[] };
 
 interface ChatContextType {
   chats: Chats;
+  status: string,
   setChats: (chats: { [roomId: number]: ChatProps[] }) => void;
   addChat: (roomId: number, chat: ChatProps) => void;
   prependChats: (roomId: number, newChats: ChatProps[]) => void;
   appendChats: (roomId: number, newChats: ChatProps[]) => void;
-  handleSaveChatHistory: (userId: number) => void;
-  handleLoadChatHistory: (userId: number) => void;
 }
 
 export const ChatContext = createContext<ChatContextType>({
   chats: [],
+  status: '',
   setChats: ({}) => {},
   addChat: (roomId: number, chat: ChatProps) => {},
   prependChats: (roomId: number, newChats: ChatProps[]) => {},
   appendChats: (roomId: number, newChats: ChatProps[]) => {},
-  handleSaveChatHistory: async (userId: number) => {},
-  handleLoadChatHistory: async (userId: number) => {},
 });
 
 interface ChatProviderProps {
@@ -33,6 +31,8 @@ interface ChatProviderProps {
 
 const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [chats, setChats] = useState<{[roomId: number]: ChatProps[]}>({});
+  const [status, setStatus] = useState('');
+  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
 
   const authCtx = useContext(AuthContext);
 
@@ -42,7 +42,6 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
       const prevChat = currChats.length ? currChats[currChats.length - 1] : undefined;
       const newPrevChat = prevChat ? {...prevChat, isFinal: getIsFinal(prevChat, chat) } : undefined;
       const newChat = {...chat, isDailyInitial: getIsDailyInitial(prevChat, chat), isInitial: getIsInitial(prevChat, chat), isFinal: true};
-        
       return { 
         ...prevChats,
         [roomId]: [
@@ -72,12 +71,10 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   }
 
   const appendChats = (roomId: number, newChats: ChatProps[]) => {
-    console.log("prependChats");
     setChats((prevChats) => {
       const annotatedChats = newChats.map((chat: ChatProps, index) => {
         const safePrevChats: ChatProps[] = (prevChats ?? {})[roomId] ?? [];
         const prevChat = index ? newChats[index - 1]: safePrevChats[0];
-        console.log(prevChat);
         const nextChat = index === newChats.length ? undefined : newChats[index + 1];
         const isDailyInitial = getIsDailyInitial(prevChat, chat);
         const isInitial = getIsInitial(prevChat, chat);
@@ -91,42 +88,29 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     });
   }
   
-  const handleSaveChatHistory = async (userId: number) => {
-    try {
-      console.log("채팅 저장 시도");
-      await saveData(userId, { chats });
-      console.log("채팅 저장 성공");
-    } catch (error) {
-      console.error('채팅 저장 실패:', error); 
-    }
-  }
-
-  const handleLoadChatHistory = async (userId: number) => {
-    try {
-      console.log("채팅 로딩 시도");
-      const { chats } = await loadData(userId);
-      console.log("채팅 로딩 성공");
+  useEffect(() => {
+    const loadInitialChat = async () => {
+      if (authCtx.status !== 'INITIALIZED') return;
+      console.log("loadInitialChat 시작");
+      const chats = await loadChatHistory(authCtx.userId);
       setChats(chats ?? {});
-    } catch (error) {
-      console.error('채팅 로딩 실패:', error); 
-    }
-  }
+      setStatus('LOADED'); 
+      console.log("loadInitialChat 종료");
+    };
+    loadInitialChat();
+  }, [authCtx.status]);
 
-  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
+  useEffect(() => {
+    console.log('chat-context:', status);
+  }, [status])
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (
-        appState.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
         console.log('포그라운드 전환');
-      } else if (nextAppState === 'background') {
-        handleSaveChatHistory(authCtx.userId);
-        console.log('백그라운드 전환');
-      } else if (nextAppState === 'inactive') {
-        handleSaveChatHistory(authCtx.userId);
-        console.log('앱 종료');
+      } else if (nextAppState === 'background' || nextAppState === 'inactive') {
+        saveChatHistory(chats, authCtx.userId);
+        console.log(nextAppState === 'background' ? '백그라운드 전환' : '앱 종료');
       }
       setAppState(nextAppState);
     };
@@ -134,19 +118,20 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     const subscription = AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
-      subscription.remove();
+      if (subscription) {
+        subscription.remove();
+      }
     };
-  }, [appState]);
+  }, [chats, authCtx.userId]);
 
   const value = useMemo(() => ({
     chats,
+    status,
     setChats,
     addChat,
     prependChats,
     appendChats,
-    handleSaveChatHistory,
-    handleLoadChatHistory,
-  }), [chats]);
+  }), [chats, status]);
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };
