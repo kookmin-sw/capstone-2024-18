@@ -31,7 +31,7 @@ const ChatRoomList = () => {
             {!chatRoom.senderGeneratedS3url && <View style={styles.profile}/>}
             {chatRoom.senderGeneratedS3url && <Image
                 source={{ uri: chatRoom.senderGeneratedS3url }}
-                style={styles.profile}
+                style={[styles.profile, { backgroundColor: colors.white }]}
               />}
             <View style={{ flex: 1 }}>
               <Text style={styles.nickname}>{chatRoom.senderNickname}</Text>
