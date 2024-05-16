@@ -43,6 +43,7 @@ const Chat = React.memo(({
   const formattedDailyBorder = `${timestampDate?.getFullYear()}년 ${timestampDate?.getMonth() + 1}월 ${timestampDate?.getDate()}일`;
   
   const isSender = senderId === +authCtx.userId;
+  const defaultProfileUrl = 'https://facefriend-s3-bucket.s3.ap-northeast-2.amazonaws.com/default-faceInfo.png';
 
   const onLayout = useCallback((event: LayoutChangeEvent) => {
     if (setHeight === undefined) return;
@@ -50,6 +51,8 @@ const Chat = React.memo(({
     // console.log("height:", height);
     if (height !== undefined && height !== null && !isNaN(height)) setHeight(height); 
   }, [isInitial, isFinal, isDailyInitial, setHeight]);
+
+  console.log("chat:", senderGeneratedFaceS3url);
 
   return (
     <View onLayout={onLayout}>
@@ -62,11 +65,10 @@ const Chat = React.memo(({
         </View>}
       {isInitial && <View style={{ height: 10 }}/>}
       <View style={{ flexDirection : isSender ? "row-reverse" : "row" }}>
-      {(isInitial && senderGeneratedFaceS3url) && <Image
-        source={{ uri: senderGeneratedFaceS3url }}
-        style={styles.profile}
+      {isInitial && <Image
+        source={{ uri: senderGeneratedFaceS3url ? senderGeneratedFaceS3url : defaultProfileUrl }}
+        style={[styles.profile, { backgroundColor: colors.white }]}
       />}
-      {(isInitial && !senderGeneratedFaceS3url) && <View style={styles.profile}/>}
       {!isInitial && <View style={styles.profileSpacer}/>}
       <View style={styles.innerContainer}>
         {isInitial && <View style={styles.nicknameContainer}>
