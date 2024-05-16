@@ -73,6 +73,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   }
 
   const scrollToEnd = () => {
+    if (!chatCtx.chats[roomId]) return;
     if (chatCtx.chats[roomId].length === 0) return;
     scrollToIndex(chatCtx.chats[roomId].length - 1);
   };
@@ -90,9 +91,9 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     try{
       if (refreshing) return;
       setRefreshing(true);
-      const sendTime = chats.length ? chats[0].sendTime : new Date();
-      await chatRoomCtx.fetchChat(roomId, sendTime, page);
-      setPage(prevPage => prevPage + 1);
+      // const sendTime = chats.length ? chats[0].sendTime : new Date();
+      // await chatRoomCtx.fetchChat(roomId, sendTime, page);
+      // setPage(prevPage => prevPage + 1);
       setRefreshing(false);
     } catch (error) {
       console.log("handleOnRefresh:", error);
@@ -123,7 +124,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대가 하트를 보냈습니다.</Text>
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
       <ScrollView style={{ marginBottom: 150 }}>
-        <OtherUserSelfProduceChat resumeId={chatRoomCtx.chatRooms[roomId].senderId}/>
+        <OtherUserSelfProduceChat resumeId={chatRoomCtx.chatRooms[roomId]?.senderId}/>
         <View style={{ flexDirection: 'row', justifyContent: 'center', margin: 20, height: 60, }}>
           <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.acceptHeart(roomId) }}>
             <View style={styles.acceptButton}>
