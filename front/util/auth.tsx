@@ -352,7 +352,7 @@ export const getFaceInfo = async (accessToken: string): Promise<faceInfoResponse
       originS3url, 
       generatedS3url
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
@@ -462,7 +462,7 @@ export const getAnalysisInfo = async (accessToken: string): Promise<analysisResp
       analysisFull,
       analysisShort
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
@@ -620,7 +620,7 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
 
   try {
     const response = await axios.post(endpoint, formData, config);
-    console.log(response);
+    // console.log(response);
     const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, category, content, isMine } = response.data;
     const responseInfo = {
       method,
@@ -635,7 +635,7 @@ export const postMyResume = async (accessToken: string): Promise<resumeResponse 
       content,
       isMine
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
@@ -667,7 +667,7 @@ export const getOtherResume = async (accessToken: string, resumeId: number): Pro
       content,
       isMine
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
@@ -702,7 +702,7 @@ export const getMyResume = async (accessToken: string): Promise<resumeResponse |
       content,
       isMine
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
@@ -741,7 +741,7 @@ export const putResume = async (accessToken: string, fileUris: string[], _catego
 
   try {
     const response = await axios.put(endpoint, formData, config);
-    console.log("response", response);
+    // console.log("response", response);
     const { resumeId, memberId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, categories, content } = response.data;
     const responseInfo = {
       method,
@@ -779,7 +779,7 @@ export const deleteMyResume = async (accessToken: string): Promise<validResponse
       status: response.status,
       message: message,
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
@@ -832,7 +832,7 @@ export const getGoodCombi = async (accessToken: string, page: number, size: numb
       offset: pageable.offset,
       last,
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
@@ -864,7 +864,7 @@ export const getCategoryUser = async (accessToken: string, page: number, size: n
       offset: pageable.offset,
       last,
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
