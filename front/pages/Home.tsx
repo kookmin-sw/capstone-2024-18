@@ -9,12 +9,7 @@ import { UserContext } from "../store/user-context.tsx";
 const Home = ({ navigation }: any) => {
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
-  const [reloadCounter, setReloadCounter] = useState(0);
 
-  const reload = () => {
-    setReloadCounter(reloadCounter + 1);
-  }
-  
   useFocusEffect(
     useCallback(() => {
       if (!authCtx.status) return;
@@ -36,7 +31,7 @@ const Home = ({ navigation }: any) => {
       if (userCtx.status === 'FACE_FEATURE_NOT_EXIST') {
         navigation.navigate('AnalysisInfo');
       }
-      if (userCtx.status === 'FACE_FEATURE_EXIST') {
+      if (userCtx.status === 'RESUME_EXIST' || userCtx.status === 'RESUME_NOT_EXIST' || userCtx.status === 'RESUME_ERROR') {
         navigation.navigate('Main');
       }
     }, [userCtx.status])

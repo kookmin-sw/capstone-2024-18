@@ -15,9 +15,11 @@ import { getBasicInfo, isBasicInfoResponse, isErrorResponse, isValidResponse, pu
 import SelectableTag from "../components/SelectableTag";
 import { createAlertMessage } from "../util/alert";
 import CustomBackHandler from "../components/CustomBackHandler";
+import { UserContext } from "../store/user-context";
 
 const BasicInfoWithoutNickname = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   const {height} = useWindowDimensions();
   
@@ -120,6 +122,14 @@ const BasicInfoWithoutNickname = ({navigation}: any) => {
         );  
         if (isValidResponse(response)) {
           createAlertMessage("기본 정보 입력이 완료되었습니다.");
+          userCtx.setBasicinfo({
+            nickname: getBasicInfoRespose.nickname,
+            gender: basicInfo.gender,
+            ageGroup: basicInfo.ageGroup,
+            ageDegree: basicInfo.ageDegree,
+            heightGroup: basicInfo.height,
+            region: basicInfo.region,
+          })
           navigation.goBack();
         }
         if (isErrorResponse(response)) {

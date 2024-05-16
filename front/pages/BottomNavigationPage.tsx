@@ -5,15 +5,18 @@ import SelfProduce from "./SelfProduce.tsx";
 import Friends from "./Friends.tsx";
 import Profile from "./Profile.tsx";
 import CustomBackHandler from "../components/CustomBackHandler.tsx";
-import { useContext, useEffect, useState } from "react";
-import { createAlertMessage } from "../util/alert.tsx";
+import { useContext, useState } from "react";
 import { UserContext } from "../store/user-context.tsx";
+import { deleteMyResume } from "../util/auth.tsx";
+import { AuthContext } from "../store/auth-context.tsx";
 
 
 const Tab = createMaterialBottomTabNavigator();
 
 const Test1 = () => {
   const [previousRoute, setPreviousRoute] = useState('');
+  const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   return (
     <View style={{height: "100%"}}>
@@ -27,26 +30,47 @@ const Test1 = () => {
             tabBarColor: '#D9D9D9',
           }}
           screenListeners={({route, navigation}) => {
-            console.log("\n\n\n\n\nroute", route, navigation)
             return ({
               tabPress: e => {
                 if (previousRoute === "sub2") {
                   if (route.name !== "sub2") {
                     // 이전 페이지가 sub2인 경우에만 전환을 멈추기
-                    e.preventDefault();
-                    Alert.alert("경고", "자기소개서 저장을 하지 않으실 경우, 수정사항이 삭제될 수 있습니다. \n그래도 다른 탭으로 이동하시겠습니가?", [
-                      {
-                        text: "확인", onPress: () => {
-                          navigation.navigate(route.name);
-                          setPreviousRoute(route.name);
-                        }
+
+                    if (userCtx.status === 'RESUME_EDIT') {
+                      e.preventDefault();
+                      Alert.alert("경고", "자기소개서 저장을 하지 않으실 경우, 수정사항이 삭제될 수 있습니다. \n그래도 다른 탭으로 이동하시겠습니가?", [
+                        {
+                          text: "확인", onPress: () => {
+                            navigation.navigate(route.name);
+                            setPreviousRoute(route.name);
+                          }
+                        },
+                        {
+                          text: "취소",
+                          onPress: () => null,
+                          style: "cancel"
                       },
-                      {
-                        text: "취소",
-                        onPress: () => null,
-                        style: "cancel"
-                    },
-                    ]);
+                      ]);
+                    } else if (userCtx.status === 'RESUME_CREATE') {
+                      e.preventDefault();
+                      Alert.alert("경고", "자기소개서 저장을 하지 않으실 경우, 수정사항이 삭제될 수 있습니다. \n그래도 다른 탭으로 이동하시겠습니가?", [
+                        {
+                          text: "확인", onPress: () => {
+                            if (authCtx.accessToken) {
+                              userCtx.setResumeinfo(undefined);
+                              deleteMyResume(authCtx.accessToken);
+                            }
+                            navigation.navigate(route.name);
+                            setPreviousRoute(route.name);
+                          }
+                        },
+                        {
+                          text: "취소",
+                          onPress: () => null,
+                          style: "cancel"
+                      },
+                      ]);
+                    }
                   }
                 } else {
                   console.log("다른 페이지로 전환합니다.");

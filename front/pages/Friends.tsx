@@ -1,11 +1,11 @@
 import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, Image, TouchableOpacity } from 'react-native';
 import { colors } from '../assets/colors.tsx'
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 
-import { getCategoryUser, getGoodCombi, getMyResume, isErrorResponse, isResumeResponse, isResumesResponse } from '../util/auth.tsx';
+import { getCategoryUser, getGoodCombi, isErrorResponse, isResumeResponse, isResumesResponse } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context.tsx";
 
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
@@ -13,6 +13,7 @@ import 'react-native-get-random-values';
 import { FlatList } from 'react-native-gesture-handler';
 import { Category, category as categoryForm } from '../util/categoryFormat.tsx';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { UserContext } from '../store/user-context.tsx';
 
 
 const Friends = ({navigation}: any) => {
@@ -26,8 +27,7 @@ const Friends = ({navigation}: any) => {
 
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
-
-  const [nickname, setNickname] = useState('');
+  const userCtx = useContext(UserContext);
 
   // CarouselSlider의 필수 파라미터, pageWidth, offset, gap 설정
   const pageWidth = Dimensions.get('window').width;
@@ -93,19 +93,16 @@ const Friends = ({navigation}: any) => {
     }
   }
 
-  const tryGetMyResume = async () => {
-    if (authCtx.accessToken) {
-      const response = await getMyResume(
-        authCtx.accessToken
-      )
-      if (isResumeResponse(response)) {
-        for (const category of response.categories) {
-          await tryGetCategoryUser(category);
-        }
-        setNickname(response.basicInfo.nickname)
+  useEffect(() => {
+    if (userCtx.resumeinfo) {
+      setFaces({FIT: faces["FIT"]});
+      for (const category of userCtx.resumeinfo.categories) {
+        tryGetCategoryUser(category);
       }
+    } else {
+      setFaces({FIT: faces["FIT"]})
     }
-  }
+  }, [userCtx.resumeinfo])
 
   const tryGetCategoryUser = async (category: string) => {
     if (authCtx.accessToken) {
@@ -167,7 +164,6 @@ const Friends = ({navigation}: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      tryGetMyResume();
       tryGetGoodCombi();
     }, [])
   )
@@ -206,7 +202,7 @@ const Friends = ({navigation}: any) => {
             <Text style={styles.sectionText}>전체 보러가기{">"}</Text>
           </TouchableOpacity>
         </View>
-        <Text style={[{paddingLeft: 27}, styles.sectionText]}>AI가 분석한 {nickname}님의 베스트 매치 관상 추천</Text>
+        <Text style={[{paddingLeft: 27}, styles.sectionText]}>AI가 분석한 {userCtx.basicinfo.nickname}님의 베스트 매치 관상 추천</Text>
       </View>
       <FlatList 
         horizontal 

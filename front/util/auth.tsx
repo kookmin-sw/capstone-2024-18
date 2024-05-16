@@ -440,7 +440,7 @@ export const deleteFaceInfo = async (accessToken: string): Promise<faceInfoRespo
   }
 }
 
-interface analysisResponse extends validResponse {
+export interface analysisResponse extends validResponse {
   analysisShort: string[];
   analysisFull: {string: string};
 }
