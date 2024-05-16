@@ -77,7 +77,6 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
         message: "로그인 되었습니다.",
         ...response.data,
       }
-      console.log(response.data);
       console.log(`${method}: ${JSON.stringify(responseInfo)}`);
       return responseInfo;
     }
@@ -94,13 +93,13 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       headers: { Authorization: 'Bearer ' + accessToken } 
     };
     try {
-      const response = await axios.delete(endpoint, config);
       setAccessToken('');
       setRefreshToken('');
       setUserId(0);
       removeToken("accessToken");
       removeToken("refreshToken");
       setStatus('NOT_EXIST');
+      const response = await axios.delete(endpoint, config);
       const responseInfo = {
         method,
         status: response.status,
@@ -258,7 +257,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [status])
 
   useEffect(() => {
-    console.log(status);
+    console.log('auth-context.status', status);
   }, [status])
 
   const value = useMemo(() => ({

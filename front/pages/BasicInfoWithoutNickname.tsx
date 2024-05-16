@@ -295,7 +295,7 @@ const BasicInfoWithoutNickname = ({navigation}: any) => {
   ]
 
   useEffect(() => {
-    console.log("basicInfo:", basicInfo);
+    // console.log("basicInfo:", basicInfo);
   }, [basicInfo])
 
   return (

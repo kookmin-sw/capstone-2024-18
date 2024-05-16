@@ -52,9 +52,7 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     console.log('setBasicInfoState');
     if (authCtx.accessToken) {
       // 기본정보 get 시도
-      console.log('기본정보 로딩 중');
       const basicInfoResponse = await getBasicInfo(authCtx.accessToken);
-      console.log('기본정보 로딩 끝');
 
       // 기본정보 응답 확인
       if (isBasicInfoResponse(basicInfoResponse)) {
@@ -91,9 +89,7 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   // 마스크 이미지 로딩 후 userState.faceinfo 업데이트
   const setFaceInfoState = async () => {
     if (authCtx.accessToken) {
-      console.log('마스크 이미지 로딩 중');
       const faceInfoResponse = await getFaceInfo(authCtx.accessToken);
-      console.log('마스크 이미지 로딩 끝');
 
       if (isFaceInfoResponse(faceInfoResponse)) {
         if (!isFaceInfoDefaultResponse(faceInfoResponse)) {
@@ -118,11 +114,8 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   // 마스크 이미지 로딩 후 userState.faceinfo 업데이트
   const setAnalysisInfoState = async () => {
     if (authCtx.accessToken) {
-      console.log("관상 분석 로딩 중");
       const response = await getAnalysisInfoShort(authCtx.accessToken);
-      console.log("관상 분석 로딩 끝");
 
-      console.log(response);
       if (isAnalysisShortResponse(response)) {
         console.log("관상 분석 있음");
         setStatus("FACE_FEATURE_EXIST");

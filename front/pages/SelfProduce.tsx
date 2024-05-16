@@ -204,7 +204,7 @@ const SelfProduce = () => {
     setNickname(response.basicInfo.nickname);
 
     // faceInfo 설정
-    console.log(response.faceInfo);
+    // console.log(response.faceInfo);
     setImages([]);
     await handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.faceInfo.generatedS3url}});
 

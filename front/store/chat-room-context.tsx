@@ -378,7 +378,6 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       // sendTime: new Date(),
       content: receiveChat.content,
     }
-    console.log("newChat:", newChat.senderGeneratedFaceS3url);
     chatCtx.addChat(receiveChat.roomId, newChat);
 
     // const newChatRoom: ChatRoom = { ...chatRooms[receiveChat.roomId], updatedAt: new Date() };
@@ -441,9 +440,6 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
             receiveHeartResponse(responseData);
           }
           // TODO: 
-          // connect
-          // receiveChat
-          // receiveHeartResponse
           // receiveLeft
         });
         subscriptions.set(path, subscription);
