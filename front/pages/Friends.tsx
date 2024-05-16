@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions, Alert, StyleProp, ViewStyle, Image, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Dimensions, StyleProp, ViewStyle, Image, TouchableOpacity, Pressable } from 'react-native';
 import { colors } from '../assets/colors.tsx'
 import React, { useContext, useEffect, useState } from 'react';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
@@ -13,9 +13,9 @@ import 'react-native-get-random-values';
 import { FlatList } from 'react-native-gesture-handler';
 import { Category, category as categoryForm } from '../util/categoryFormat.tsx';
 import Config from 'react-native-config';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { createAlertMessage } from '../util/alert.tsx';
-import { removeToken } from '../util/encryptedStorage.tsx';
+import { StompClientContext } from '../store/socket-context.tsx';
 
 
 const Friends = ({navigation}: any) => {
@@ -178,13 +178,19 @@ const Friends = ({navigation}: any) => {
     }
   }
 
+  const socketCtx = useContext(StompClientContext);
   const handleLogout = () => {
+    socketCtx.disconnect();
     authCtx.signout();
   }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
-      <Pressable onPress={handleLogout}><Text style={{ color: 'black' }}>로그아웃</Text></Pressable>
+      <Pressable onPress={handleLogout}>
+        <View style={{ padding: 12, backgroundColor: colors.point, borderRadius: 8, width: 100, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: colors.white }}>로그아웃</Text>
+        </View>
+      </Pressable>
       {/* 이미지 슬라이더 */}
       <CarouselSlider
         pageWidth={pageWidth}
