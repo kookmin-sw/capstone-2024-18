@@ -118,6 +118,7 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     const subscription = AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
+      saveChatHistory(chats, authCtx.userId);
       if (subscription) {
         subscription.remove();
       }
