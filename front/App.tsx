@@ -24,7 +24,6 @@ const Stack = createStackNavigator();
 function App() {
   return (
     <AuthContextProvider>
-      <StompClientContextProvider>
         <ChatContextProvider>
           <ChatRoomContextProvider>
             <UserContextProvider>
@@ -50,7 +49,6 @@ function App() {
               </UserContextProvider>
           </ChatRoomContextProvider>
         </ChatContextProvider> 
-      </StompClientContextProvider>
     </AuthContextProvider>
   );
 }
