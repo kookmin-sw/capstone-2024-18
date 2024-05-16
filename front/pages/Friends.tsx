@@ -178,8 +178,13 @@ const Friends = ({navigation}: any) => {
     }
   }
 
+  const handleLogout = () => {
+    authCtx.signout();
+  }
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: "#F5F5F5"}}>
+      <Pressable onPress={handleLogout}><Text style={{ color: 'black' }}>로그아웃</Text></Pressable>
       {/* 이미지 슬라이더 */}
       <CarouselSlider
         pageWidth={pageWidth}

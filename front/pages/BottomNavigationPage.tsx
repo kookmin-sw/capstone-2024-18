@@ -1,15 +1,25 @@
 import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { View } from "react-native";
+import { LayoutChangeEvent, View } from "react-native";
 import SelfProduce from "./SelfProduce.tsx";
 import Friends from "./Friends.tsx";
 import Profile from "./Profile.tsx";
 import CustomBackHandler from "../components/CustomBackHandler.tsx";
 import ChatRoomList from "../components/chat/ChatRoomList.tsx";
+import { AuthContext } from "../store/auth-context.tsx";
+import { useContext, useEffect } from "react";
 
 const Tab = createMaterialBottomTabNavigator();
 
-const Test1 = () => {
+const Test1 = ({navigation}: any) => {
+  const authCtx = useContext(AuthContext);
+
+  useEffect(() => {
+    if (authCtx.status === 'NOT_EXIST') {
+      navigation.navigate('Login');
+    }
+  }, [authCtx.status])
+
   return (
     <View style={{height: "100%"}}>
       <CustomBackHandler haveExit={true}/>
