@@ -22,13 +22,16 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   const [refreshing, setRefreshing] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [chatHeights, setChatHeights] = useState<number[]>([]);
-  
+
   const ChatListRef = useRef<FlatList<ChatProps> | null>(null);
 
   const chatCtx = useContext(ChatContext);
   const chatRoomCtx = useContext(ChatRoomContext);
   const userCtx = useContext(UserContext);
   const authCtx = useContext(AuthContext);
+
+  const chats = chatCtx.chats[roomId];
+  const chatRoom = chatRoomCtx.chatRooms[roomId];
 
   const handleSendChat = (message: string) => {
     chatRoomCtx.sendChat(roomId, message);
@@ -85,7 +88,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     try{
       if (refreshing) return;
       setRefreshing(true);
-      const sendTime = chatCtx.chats[roomId].length ? chatCtx.chats[roomId][0].sendTime : new Date();
+      const sendTime = chats.length ? chats[0].sendTime : new Date();
       await chatRoomCtx.fetchChat(roomId, sendTime, page);
       setPage(prevPage => prevPage + 1);
       setRefreshing(false);
@@ -101,11 +104,36 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
 
   const handleSetChatHeight = (index: number, height: number) => {
     setChatHeights((prevChatHeight) => {
-      const newChatHeight = [...prevChatHeight];  // 배열을 복사하여 새 배열을 생성
+      const newChatHeight = [...prevChatHeight];
       newChatHeight[index] = height;
       return newChatHeight;
     })
   };
+
+  const sentHeartContent = 
+    <View>
+      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대에게 하트를 보냈습니다.</Text>
+      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
+    </View>
+
+  const receiveHeartContent =
+    <View>
+      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대가 하트를 보냈습니다.</Text>
+      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', margin: 20, height: 60, }}>
+        <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.acceptHeart(roomId) }}>
+          <View style={styles.acceptButton}>
+            <Text style={styles.buttonText}>수락</Text>
+          </View>
+        </Pressable>
+        <View style={{ width: 10 }}/>
+        <Pressable style={{ flex: 1 }} onPress={() => { chatRoomCtx.rejectHeart(roomId) }}>
+          <View style={styles.rejectButton}>
+            <Text style={styles.buttonText}>거절</Text>
+          </View>
+        </Pressable>
+      </View>
+    </View>
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
@@ -132,21 +160,33 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     // scrollToPosition(scrollPosition);
   }, [scrollPosition])
 
-  const chatRoom = chatRoomCtx.chatRooms.find(item => item.roomId === roomId)
+  // useEffect(() => {
+  //   return (() => {
+  //     chatCtx.setChats((prevChats) => {
+  //       return { 1: [] }
+  //     })
+  //   })
+  // })
+
+  useEffect(() => {
+    console.log(chatRoom);
+  }, [chatRoom])
 
   return (
     <View style={styles.container}>
       <HeaderBar onPress={onBack}><Text style={{ color: 'black' }}>{chatRoom?.senderNickname}</Text></HeaderBar>
-      <ChatList 
-        chats={chatCtx.chats ? chatCtx.chats[roomId] ?? [] : []} 
+      {(chatRoom?.type === 'OPENED' || chatRoom?.type === 'CLOSED') && <ChatList 
+        chats={chats} 
         chatHeights={chatHeights}
         ref={ChatListRef} 
         onRefresh={handleOnRefresh} 
         refreshing={refreshing}
         onScroll={handleOnScroll}
         setChatHeight={handleSetChatHeight}
-      />
-      <ChatInput sendChat={handleSendChat}/>
+      />}
+      {chatRoom?.type === 'SENT_HEART' && sentHeartContent}
+      {chatRoom?.type === 'RECEIVED_HEART' && receiveHeartContent}
+      {chatRoom?.type === 'OPENED' && <ChatInput sendChat={handleSendChat}/>}
     </View>
   ) 
 }
@@ -169,6 +209,26 @@ const styles = StyleSheet.create({
     borderRadius: 8, 
     fontSize: 12, 
     padding: 5 
+  },
+  acceptButton: {
+    flex: 1,
+    height: 60,
+    justifyContent: "center",
+    alignItems: 'center',
+    backgroundColor: colors.point,
+    borderRadius: 16,
+  },
+  rejectButton: {
+    flex: 1,
+    height: 60,
+    justifyContent: "center",
+    alignItems: 'center',
+    borderRadius: 16,
+    backgroundColor: colors.gray6,
+  },
+  buttonText: {
+    color: colors.white,
+    fontSize: 16,
   }
 })
 

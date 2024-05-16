@@ -1,45 +1,51 @@
 import { useState, useContext, useEffect } from 'react';
-import { ScrollView, View, Text, StyleSheet, Pressable } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { colors } from '../../assets/colors';
 import HeaderBar from '../HeaderBar';
 import ChatPage from './ChatPage';
 import { ChatRoomContext } from '../../store/chat-room-context';
-import { formatTimeDifference } from '../../util/formatTimeDifference';
+import { formatTimeDifference } from '../../util/formatTime';
+import { ChatContext } from '../../store/chat-context';
 
 const ChatRoomList = () => {
   const chatRoomCtx = useContext(ChatRoomContext);
-  const [modal, setModal] = useState(0);
+  const chatCtx = useContext(ChatContext);
+  const [roomId, setRoomId] = useState(0);
 
-  const handleOnPress = (opponentId: number) => {
-    setModal(opponentId);
+  const handleOnPress = (roomId: number) => {
+    setRoomId(roomId);
   }
 
   const handleOnBack = () => {
-    setModal(0);
+    setRoomId(0);
   }
 
   return (
     <View style={styles.container}>
-    {!modal && <>
+    {!roomId && <>
       <HeaderBar onPress={() => {}}>다이렉트 메세지</HeaderBar>
       <ScrollView style={{ padding: 20 }}>
-        {chatRoomCtx.chatRooms.map(chatRoom => 
+        {Object.values(chatRoomCtx.chatRooms).map((chatRoom) => (
         <Pressable key={chatRoom.roomId} onPress={handleOnPress.bind(this, chatRoom.roomId)}>
           <View style={styles.listItemContainer}>
-            <View style={styles.profile} />
+            {!chatRoom.senderGeneratedS3url && <View style={styles.profile}/>}
+            {chatRoom.senderGeneratedS3url && <Image
+                source={{ uri: chatRoom.senderGeneratedS3url }}
+                style={styles.profile}
+              />}
             <View style={{ flex: 1 }}>
               <Text style={styles.nickname}>{chatRoom.senderNickname}</Text>
               <Text style={styles.chatContent}>{chatRoom.content ? chatRoom.content : "대화 내용이 없습니다."}</Text>
             </View>
             <View style={styles.elapsedTimeContainer}>
-            {/* <Text style={styles.elapsedTimeText}>{formatTimeDifference(chatUserListItem.updatedAt)}</Text> */}
+            <Text style={styles.elapsedTimeText}>{formatTimeDifference(chatRoom.updatedAt)}</Text>
             </View>
           </View>
-        </Pressable>
+        </Pressable>)
         )}
       </ScrollView>
     </>}
-    {!!modal && <ChatPage onBack={handleOnBack} roomId={modal}/>}
+    {!!roomId && <ChatPage onBack={handleOnBack} roomId={roomId}/>}
     </View>
   )
 }
