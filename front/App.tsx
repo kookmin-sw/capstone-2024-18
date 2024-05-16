@@ -42,12 +42,11 @@ function App() {
                   <Stack.Screen name='Nickname' component={NicknamePage}/>
                   <Stack.Screen name='BasicInfoWithoutNickname' component={BasicInfoWithoutNickname}/>
                   <Stack.Screen name='OtherSelfProduce' component={OtherUserSelfProduce}/>
-                  <Stack.Screen name='Chat' component={ChatRoomList}/>
                   {/* Bottom Navigation이 있는 페이지의 경우 SafeAreaView를 이용하면 ios에서 bottomNavigation이 제대로 안 보임 */}
                 </Stack.Navigator>
               </NavigationContainer>
             </SafeAreaProvider> 
-          </UserContextProvider>
+            </UserContextProvider>
         </ChatRoomContextProvider>
       </ChatContextProvider> 
     </AuthContextProvider>
