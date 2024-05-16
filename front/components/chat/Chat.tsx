@@ -1,7 +1,8 @@
 import React, { useCallback, useContext, useState } from "react";
-import { View, Text, StyleSheet, LayoutChangeEvent } from "react-native";
+import { View, Text, StyleSheet, LayoutChangeEvent, Image } from "react-native";
 import { colors } from "../../assets/colors";
 import { AuthContext } from "../../store/auth-context";
+import { UserContext } from "../../store/user-context";
 
 export interface ChatProps {
   id: string,
@@ -14,10 +15,7 @@ export interface ChatProps {
   isDailyInitial?: boolean;
   isInitial?: boolean;
   isFinal?: boolean;
-}
-
-interface Props extends ChatProps {
-  setHeight: (height: number) => void;
+  setHeight?: (height: number) => void;
 }
 
 const Chat = React.memo(({ 
@@ -30,9 +28,10 @@ const Chat = React.memo(({
   isDailyInitial, 
   isInitial, 
   isFinal, 
-  setHeight 
-}: Props) => {
+  setHeight, 
+}: ChatProps) => {
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   const date = new Date(sendTime);
   const hours = date.getHours(); 
@@ -46,13 +45,13 @@ const Chat = React.memo(({
   const isSender = senderId === +authCtx.userId;
 
   const onLayout = useCallback((event: LayoutChangeEvent) => {
+    if (setHeight === undefined) return;
     const { height } = event.nativeEvent.layout;
-    console.log("height:", height);
+    // console.log("height:", height);
     if (height !== undefined && height !== null && !isNaN(height)) setHeight(height); 
-  }, [isInitial, isFinal, isDailyInitial]);
+  }, [isInitial, isFinal, isDailyInitial, setHeight]);
 
   return (
-    
     <View onLayout={onLayout}>
       {isDailyInitial && 
         <View style={styles.dailyBorderContainer}>
@@ -61,11 +60,17 @@ const Chat = React.memo(({
             {formattedDailyBorder}
           </Text>
         </View>}
+      {isInitial && <View style={{ height: 10 }}/>}
       <View style={{ flexDirection : isSender ? "row-reverse" : "row" }}>
-      <View style={isInitial ? styles.profile : styles.profileSpacer}/>
+      {(isInitial && senderGeneratedFaceS3url) && <Image
+        source={{ uri: senderGeneratedFaceS3url }}
+        style={styles.profile}
+      />}
+      {(isInitial && !senderGeneratedFaceS3url) && <View style={styles.profile}/>}
+      {!isInitial && <View style={styles.profileSpacer}/>}
       <View style={styles.innerContainer}>
         {isInitial && <View style={styles.nicknameContainer}>
-          <Text style={[styles.nickname, { textAlign : isSender ? "right" : "left" }]}>{senderNickname}</Text>
+          <Text style={[styles.nickname, { textAlign : isSender ? "right" : "left" }]}>{isSender ? userCtx.basicinfo.nickname : senderNickname}</Text>
         </View>}
         <View style={[styles.chatOuterContainer, { flexDirection : isSender ? "row-reverse" : "row" }]}>
           <View style={styles.chatContainer}>
