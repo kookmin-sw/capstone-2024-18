@@ -41,14 +41,17 @@ import java.util.Map;
 public class FaceInfoService {
 
     @Value("${flask.generate-url}")
-    private String requestUrl;
+    private String GENERATE_IMAGE_REQUEST_URL;
+    @Value("${flask.generate-by-level-url}")
+    private String GENERATE_IMAGE_BY_LEVEL_REQUEST_URL;
+
     private final RestTemplate restTemplate;
     private final BucketService bucketService;
     private final MemberRepository memberRepository;
     private final FaceInfoRepository faceInfoRepository;
 
     @Transactional // origin 삭제 & generated 삭제 -> origin 업로드 & generated 업로드
-    public FaceInfoResponse updateOrigin(MultipartFile origin, Long styleId, Long memberId) throws IOException {
+    public FaceInfoResponse updateOrigin(MultipartFile origin, Integer styleId, Long memberId) throws IOException {
         // bucket update
         ByteArrayMultipartFile generated = generate(origin, styleId, memberId);
         List<String> s3urls = bucketService.updateOriginAndGenerated(origin, generated, memberId);
@@ -62,6 +65,7 @@ public class FaceInfoService {
 
         faceInfo.setOriginS3url(originS3url); // dirty check
         faceInfo.setGeneratedS3url(generatedS3url); // dirty check
+        faceInfo.setStyleId(styleId);
 
         member.setFaceInfo(faceInfo); // dirty check
 
@@ -84,6 +88,7 @@ public class FaceInfoService {
         FaceInfo faceInfo = FaceInfo.builder()
                 .originS3url(defaultFaceInfoS3url)
                 .generatedS3url(defaultFaceInfoS3url)
+                .styleId(-1)
                 .build();
         faceInfo.setOriginS3url(defaultFaceInfoS3url);
         faceInfo.setGeneratedS3url(defaultFaceInfoS3url);
@@ -94,7 +99,7 @@ public class FaceInfoService {
         return new FaceInfoResponse(defaultFaceInfoS3url, defaultFaceInfoS3url);
     }
 
-    private ByteArrayMultipartFile generate(MultipartFile origin, Long styleId, Long memberId) throws IOException {
+    private ByteArrayMultipartFile generate(MultipartFile origin, Integer styleId, Long memberId) throws IOException {
         // convert MultipartFile into ByteArrayResource
         ByteArrayResource resource = new ByteArrayResource(origin.getBytes()) {
             @Override
@@ -117,12 +122,47 @@ public class FaceInfoService {
         HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         // response entity
-        ResponseEntity<JsonNode> responseEntity = restTemplate.postForEntity(requestUrl, requestEntity, JsonNode.class); // 문제
+        ResponseEntity<JsonNode> responseEntity = restTemplate.postForEntity(GENERATE_IMAGE_REQUEST_URL, requestEntity, JsonNode.class); // 문제
 
         // convert JSON into Map
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> result = objectMapper.convertValue(responseEntity.getBody(), new TypeReference<>() {
         });
+
+        byte[] imageBinary = Base64.getDecoder().decode((String) result.get("image_binary"));
+
+        return new ByteArrayMultipartFile(imageBinary, origin.getOriginalFilename());
+    }
+
+    public ByteArrayMultipartFile generateByLevel(MultipartFile origin, Long memberId, int styleId, int level) throws IOException {
+        // convert MultipartFile into ByteArrayResource
+        ByteArrayResource resource = new ByteArrayResource(origin.getBytes()) {
+            @Override
+            public String getFilename() {
+                return URLEncoder.encode(origin.getOriginalFilename(), StandardCharsets.UTF_8);
+            }
+        };
+
+        // body
+        LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("image", resource);
+        body.add("user_id", memberId);
+        body.add("style_id", styleId);
+        body.add("level", level);
+
+        // header
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        // request entity
+        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        // response entity
+        ResponseEntity<JsonNode> responseEntity = restTemplate.postForEntity(GENERATE_IMAGE_BY_LEVEL_REQUEST_URL, requestEntity, JsonNode.class);
+
+        // convert JSON into Map
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> result = objectMapper.convertValue(responseEntity.getBody(), new TypeReference<>() {});
 
         byte[] imageBinary = Base64.getDecoder().decode((String) result.get("image_binary"));
 

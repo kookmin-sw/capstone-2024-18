@@ -1,6 +1,7 @@
 package capstone.facefriend.chat.domain;
 
 import capstone.facefriend.common.domain.BaseEntity;
+import capstone.facefriend.member.domain.faceInfo.FaceInfoByLevel;
 import capstone.facefriend.member.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,16 +24,24 @@ public class ChatRoomMember extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "Room_ID")
+    @JoinColumn(name = "ROOM_ID")
     private ChatRoom chatRoom;
 
     @ManyToOne
     @JoinColumn(name = "SENDER_ID")
     private Member sender;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "SENDER_FACE_INFO_BY_LEVEL")
+    private FaceInfoByLevel senderFaceInfoByLevel;
+
     @ManyToOne
     @JoinColumn(name = "RECEIVER_ID")
     private Member receiver;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "RECEIVER_FACE_INFO_BY_LEVEL")
+    private FaceInfoByLevel receiverFaceInfoByLevel;
 
     @Column
     private boolean isSenderExist;
@@ -45,16 +54,6 @@ public class ChatRoomMember extends BaseEntity {
 
     @Column
     private boolean isReceiverPublic;
-
-    public void setChatRoom(ChatRoom chatRoom) {
-        this.chatRoom = chatRoom;
-    }
-    public void setSender(Member Sender) {
-        this.sender = sender;
-    }
-    public void setReceiver(Member Sender) {
-        this.receiver = receiver;
-    }
 
     public boolean isSenderExist() {return this.isSenderExist == true;}
     public boolean isReceiverExist() {return this.isReceiverExist == true;}

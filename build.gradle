@@ -75,6 +75,9 @@ dependencies {
 
 	// JAXB deprecated warning
 	implementation 'javax.xml.bind:jaxb-api:2.3.0'
+
+	// aop
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
 tasks.named('test') {

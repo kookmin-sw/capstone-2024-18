@@ -10,18 +10,12 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 @Entity
-public class FaceInfo {
+public class FaceInfoByLevel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private Integer styleId;
-
-    @Column
-    private String originS3url;
-
-    @Column
-    private String generatedS3url;
+    private String generatedByLevelS3url;
 }

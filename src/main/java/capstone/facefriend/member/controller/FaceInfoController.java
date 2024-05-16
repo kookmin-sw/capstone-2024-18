@@ -28,7 +28,7 @@ public class FaceInfoController {
     @PutMapping("/face-info")
     public ResponseEntity<FaceInfoResponse> update(
             @RequestPart("origin")MultipartFile origin,
-            @RequestParam("styleId") Long styleId,
+            @RequestParam("styleId") Integer styleId,
             @AuthMember Long memberId
     ) throws IOException {
         return ResponseEntity.ok(faceInfoService.updateOrigin(origin, styleId, memberId));
