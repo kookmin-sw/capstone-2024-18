@@ -102,6 +102,10 @@ interface ReceiveChat {
   isRead: boolean,
 }
 
+interface ReceiveHeart extends ChatRoomListItem{
+  senderName: string,
+}
+
 interface ReceiveHeartResponse {
   method: "receiveHeartResponse",
   senderId: number,
@@ -297,7 +301,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     
   }
 
-  const receiveHeart = (chatRoomListItem: ChatRoomListItem) => {
+  const receiveHeart = (chatRoomListItem: ReceiveHeart) => {
     createAlertMessage("receiveHeart");
     const newChatRoom: ChatRoom = {
       createdAt: chatRoomListItem.chatRoom.createdAt,
@@ -306,7 +310,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       status: chatRoomListItem.chatRoom.status,
       public: chatRoomListItem.chatRoom.public,
       senderId: chatRoomListItem.senderId,
-      senderNickname: chatRoomListItem.senderNickname,
+      senderNickname: chatRoomListItem.senderName,
       senderGeneratedS3url: chatRoomListItem.senderGeneratedS3url,
       senderOriginS3url: chatRoomListItem.senderOriginS3url,
       type: 'RECEIVED_HEART',
@@ -374,6 +378,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       // sendTime: new Date(),
       content: receiveChat.content,
     }
+    console.log("newChat:", newChat.senderGeneratedFaceS3url);
     chatCtx.addChat(receiveChat.roomId, newChat);
 
     // const newChatRoom: ChatRoom = { ...chatRooms[receiveChat.roomId], updatedAt: new Date() };
