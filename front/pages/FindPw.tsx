@@ -8,6 +8,7 @@ import CustomButton from '../components/CustomButton.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { isErrorResponse, isValidResponse, sendTemporaryPassword, verifyTemporaryPassword } from "../util/auth.tsx";
 import IconText from '../components/IconText.tsx';
+import HeaderBar from '../components/HeaderBar.tsx';
 
 
 const FindPw = ({navigation}: any) => {
@@ -173,7 +174,7 @@ const FindPw = ({navigation}: any) => {
     }</View>
 
   const findPw = 
-    <View style={styles.container}>
+    <View style={{flex: 1}}>
       <Text style={styles.helperText}>이메일을 입력해주세요</Text>
       <Text style={styles.smallHelperText}>가입 시 등록했던 이메일로 임시 비밀번호를 전송해드립니다. 이메일을 받으셨다면 비밀번호를 재설정해주시길 바랍니다</Text>
 
@@ -191,14 +192,9 @@ const FindPw = ({navigation}: any) => {
     </View>;
   
   const resetPw = 
-    <View style={styles.container}>
-      <View style={[styles.sectionContainer, { borderTopWidth: 0 }]}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>SIGN UP</Text>
-        </View>
-      </View>
+    <View style={{flex: 1}}>
       <View style={styles.sectionContainer}>
-
+        <Text style={styles.smallHelperText}>전송받은 인증코드와 새로 설정할 비밀번호를 {'\n'} 입력해주시기 바랍니다.</Text>
         <View style={styles.textContainer}>
           <Text style={styles.inputLabel}>인증코드</Text>
           <Text style={styles.inputLabelStar}> *</Text>
@@ -220,7 +216,7 @@ const FindPw = ({navigation}: any) => {
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={styles.inputLabel}>비밀번호 설정</Text>
+          <Text style={styles.inputLabel}>새 비밀번호</Text>
           <Text style={styles.inputLabelStar}> *</Text>
         </View>
         <View style={styles.textInputContainer}>
@@ -241,7 +237,7 @@ const FindPw = ({navigation}: any) => {
         </View>
         <IconText icon={{source: "information"}} containerStyle={styles.hintContainer}>영문 숫자 특수문자 혼합 8-16자</IconText>
         <View style={styles.textContainer}>
-          <Text style={styles.inputLabel}>비밀번호 확인</Text>
+          <Text style={styles.inputLabel}>새 비밀번호 확인</Text>
           <Text style={styles.inputLabelStar}> *</Text>
         </View>
         <View style={styles.textInputContainer}>
@@ -268,15 +264,20 @@ const FindPw = ({navigation}: any) => {
   ]
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, padding: 45, minHeight: height}}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ height: height}}>
       <CustomBackHandler onBack={onBack}/>
-      {contents[pageIndex]}
+      <HeaderBar onPress={onBack}>비밀번호 찾기</HeaderBar>
+      <View style={styles.container}>
+        {contents[pageIndex]}
 
-      <CustomButton 
-        onPress={handleSubmit} disabled={!isFormValid}
-        containerStyle={StyleSheet.flatten([styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }])}
-        textStyle={styles.pointButtonText}>{(pageIndex===0) ? "비밀번호 찾기" : "비밀번호 재설정 완료"}
-      </CustomButton>
+        <View style={styles.bottomContainer}>
+          <CustomButton 
+            onPress={handleSubmit} disabled={!isFormValid}
+            containerStyle={StyleSheet.flatten([styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }])}
+            textStyle={styles.pointButtonText}>{(pageIndex===0) ? "비밀번호 찾기" : "비밀번호 재설정 완료"}
+          </CustomButton>
+        </View>
+      </View>
     </ScrollView>
   );
 };
@@ -284,10 +285,14 @@ const FindPw = ({navigation}: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 32, 
+    paddingTop: 33,
+    backgroundColor: colors.white
   },
   helperText: {
     alignSelf: 'center', 
     textAlign: 'center',
+    fontFamily: "Pretendard-Medium",
     fontSize: 16, 
     letterSpacing: -16 * 0.02, 
     paddingBottom: 12
@@ -295,12 +300,14 @@ const styles = StyleSheet.create({
   smallHelperText: {
     alignSelf: 'center', 
     textAlign: 'center',
+    fontFamily: "Pretendard-Regular",
     fontSize: 14,
     letterSpacing: -14 * 0.02, 
     paddingBottom: 30
   },
   textInputContainer: {
     marginTop: 6,
+    paddingHorizontal: 8
   },
   hintContainer: {
     flexDirection: "row",
@@ -308,13 +315,12 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 8,
     marginBottom: 4,
-    height: 18,
+    height: 18
   },
 
   // 비밀번호 재설정 컨텐츠
   sectionContainer: {
     borderTopColor: colors.gray3,
-    borderTopWidth: 1,
     paddingHorizontal: 12,
     paddingTop: 9,
     paddingBottom: 12,
@@ -352,14 +358,22 @@ const styles = StyleSheet.create({
     borderRadius: 10, 
     justifyContent: "center", 
     marginTop: 21,
-    shadowColor: colors.gray4
+    shadowColor: colors.gray4,
+    elevation: 4
   },
   pointButtonText: {
     color: colors.white, 
+    fontFamily: "Pretendard-SemiBold",
     fontWeight: "400", 
     fontSize: 18, 
     textAlign: "center",
     letterSpacing: -18 * 0.02, 
+  },
+
+  bottomContainer: {
+    alignItems: "center",
+    marginBottom: 46,
+    paddingHorizontal: 8,
   },
 });
 

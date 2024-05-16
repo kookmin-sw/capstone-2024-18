@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 10, 
     paddingHorizontal: 10,
-    backgroundColor: colors.gray1, 
+    backgroundColor: colors.white_smoke, 
     flexDirection: "row",
     alignItems: "center",
     height: 40,

@@ -1,24 +1,26 @@
 import { useState, useContext, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Touchable } from 'react-native';
 
 import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import IconText from '../components/IconText.tsx';
-import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortInfoResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
+import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
-import { Icon } from 'react-native-paper';
+import { Card, Icon } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
+import { UserContext } from '../store/user-context.tsx';
+import CustomButton from '../components/CustomButton.tsx';
 
 
 const Profile = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   // 이미지 uri path
   const [ generatedS3url, setGeneratedS3url ] = useState('');
-  const [ havegeneratedS3url, setHaveGeneratedS3url ] = useState(false);
   const [ originS3url, setOriginS3url ] = useState('');
 
   const tryGetFaceInfo = async () => {
@@ -31,7 +33,6 @@ const Profile = ({navigation}: any) => {
         createAlertMessage(response.message);
       } else {
         setGeneratedS3url(response.generatedS3url);
-        setHaveGeneratedS3url(true);
         setOriginS3url(response.originS3url);
       }
     } else { // 실제에서는 절대 없는 예외 상황
@@ -44,30 +45,15 @@ const Profile = ({navigation}: any) => {
   const [ nickname, setNickName ] = useState('');
 
   const createBasicInfo = async () => {
-    if (authCtx.accessToken) {
-      const response = await getBasicInfo(
-        authCtx.accessToken
-      );  
-      if (isBasicInfoResponse(response)) {
-        setNickName(response.nickname);
-        const newBasic = [ 
-          gender[response.gender as keyof Gender], 
-          ageGroup[response.ageGroup as keyof AgeGroup] + ageDegree[response.ageDegree as keyof AgeDegree], 
-          heightGroup[response.heightGroup as keyof HeightGroup], 
-          '서울 ' + region['SEOUL'][response.region as keyof Region['SEOUL']]];
-        setBasic(newBasic.map((_basic) => {
-          return ('#' + _basic);
-        }))
-      } else {
-        // 기본 정보 없는 경우
-      }
-      if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
-      }
-    }
-    else {
-      console.log("로그인 정보가 없습니다.");
-    }
+    setNickName(userCtx.basicinfo.nickname);
+    const newBasic = [ 
+      gender[userCtx.basicinfo.gender as keyof Gender], 
+      ageGroup[userCtx.basicinfo.ageGroup as keyof AgeGroup] + ageDegree[userCtx.basicinfo.ageDegree as keyof AgeDegree], 
+      heightGroup[userCtx.basicinfo.heightGroup as keyof HeightGroup], 
+      '서울 ' + region['SEOUL'][userCtx.basicinfo.region as keyof Region['SEOUL']]];
+    setBasic(newBasic.map((_basic) => {
+      return ('#' + _basic);
+    }))
   }
 
   const _analysis = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
@@ -82,7 +68,7 @@ const Profile = ({navigation}: any) => {
       const response = await getAnalysisInfoShort(
         authCtx.accessToken
       );  
-      if (isAnalysisShortInfoResponse(response)) {
+      if (isAnalysisShortResponse(response)) {
         setAnalysis(response.analysisShort.map((_analysis, index) => {
           return '#' + _analysis;
         }))
@@ -110,33 +96,31 @@ const Profile = ({navigation}: any) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <IconText 
-        icon={{source: 'chat-question', color: colors.gray7}} 
-        containerStyle={styles.hintContainer}
-        textStyle={{fontSize: 14, color: colors.gray7}}>AI 관상 분석은 무엇인가요? 🤔</IconText>
+      <Card style={styles.card}>
+        <IconText 
+          icon={{source: require('../assets/images/question.png'), size: 18, color: colors.gray7}} 
+          textStyle={styles.cardText}>프로필 이미지가 왜 2개인가요? 🤔</IconText>
+      </Card>
       <View style={styles.textContainer}>
         <Text style={styles.text}>AI 관상은 서로 모르는 사이에서도 쉽게 다가갈 수 있기 위한 목적으로 사용해요. 만약 채팅을 통해 충분히 친해졌다면 실제 프로필 이미지를 공개할 수 있어요.</Text>
       </View>
       <View style={styles.contentContainer}>
-        {havegeneratedS3url ? 
         <View style={styles.imageRowFlexBox}>
-          <ImageWithIconOverlay
-            borderRadius={300} source={{uri: generatedS3url}}
-            containerStyle={styles.grayImageContainer} imageStyle={styles.image}
-            centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
-            centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
           <ImageWithIconOverlay
             borderRadius={300} source={{uri: originS3url}}
             containerStyle={styles.grayImageContainer} imageStyle={styles.image}
             centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
             centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
-        </View>:<></>
-        }
+          <ImageWithIconOverlay
+            borderRadius={300} source={{uri: generatedS3url}}
+            containerStyle={styles.grayImageContainer} imageStyle={styles.image}
+            centerIcon={{size: 80, source: 'plus', color: colors.transparent}} 
+            centerPressable={{onPress: () => navigation.navigate('FaceInfo')}}/>
+        </View>
         <View style={styles.rowFlexBox}>
           <Text style={styles.nickname}>{nickname}</Text>
           {editButton(() => {navigation.navigate('Nickname')})}
         </View>
-        {/* 이 부분 코드는 나중에 관상 분석 결과 내용 나오면 수정 */}
         <View style={styles.grayContainer}>
           <View style={styles.rowFlexBox}>
             <Text style={styles.grayTitle}>기본 정보</Text>
@@ -149,8 +133,14 @@ const Profile = ({navigation}: any) => {
             <Text style={styles.grayTitle}>관상 정보</Text>
             {editButton(() => {navigation.navigate('AnalysisInfo')})}
           </View>
-          <Text style={styles.grayContent}>{analysis.join(' ')}</Text>
+          <Pressable onPress={() => {console.log("관상 정보 자세히 보기")}}>
+            <Text style={styles.grayContent}>{analysis.join(' ')}</Text>
+          </Pressable>
         </View>
+        <CustomButton 
+          containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 5, elevation: 4}}
+          textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}
+          onPress={() => {authCtx.signout(); navigation.navigate('Home')}}>로그아웃</CustomButton>
       </View>
       <View style={{flex: 1}}/>
     </ScrollView>
@@ -169,11 +159,29 @@ const styles = StyleSheet.create({
     paddingBottom: 15
   },
 
+  card: {
+    backgroundColor: colors.light_pink,
+    width: 248,
+    height: 32,
+    margin: 10, 
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: 'center'
+  },
+  cardText: {
+    paddingLeft: 5, 
+    fontFamily: "Pretendard-Medium",
+    fontSize: 14,
+    letterSpacing: -14 * 0.02,
+  },
+
   nickname: {
+    fontFamily: 'Pretendard-Semibold',
     color: '#525463',
     fontSize: 20,
     paddingLeft: 6, 
     paddingVertical: 16,
+    fontWeight: '600'
   },
 
   icon: {
@@ -201,20 +209,15 @@ const styles = StyleSheet.create({
   },
 
   textContainer: {
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    marginBottom: 17, 
-    backgroundColor: colors.gray1,
-    borderWidth: 1,
-    borderColor: colors.gray2,
-    borderRadius: 10
+    marginVertical: 12,
+    marginBottom: 17,
   },
   text: {
     fontSize: 14,
     letterSpacing: -14* 0.04,
     textAlign: "center",
     color: colors.gray7,
-    fontFamily: "Pretendard-Regualar",
+    fontFamily: "Pretendard-Regular",
   },
 
   // 회색 tip, gray 상자
@@ -230,12 +233,15 @@ const styles = StyleSheet.create({
 
   // 회색 상자의 text style
   grayTitle: {
-    fontSize: 16,
+    fontFamily: 'Pretendard-SemiBold', 
+    fontSize: 14,
     color: colors.gray7
   },
   grayContent: {
+    fontFamily: 'Pretendard-Medium',
     paddingTop: 5,
     fontSize: 14,
+    letterSpacing: -14* 0.02,
     color: colors.gray7,
   },
 
