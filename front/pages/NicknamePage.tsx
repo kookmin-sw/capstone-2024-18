@@ -8,14 +8,17 @@ import CustomButton from "../components/CustomButton";
 import { AuthContext } from "../store/auth-context";
 
 import { colors } from "../assets/colors";
-import { getBasicInfo, getFaceInfo, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse, isValidResponse, putBasicInfo } from "../util/auth";
+import { getFaceInfo, isErrorResponse, isFaceInfoResponse, isValidResponse, putBasicInfo } from "../util/auth";
 import { createAlertMessage } from "../util/alert";
 import ImageWithIconOverlay from "../components/ImageWithIconOverlay";
 import CustomBackHandler from "../components/CustomBackHandler";
 import HeaderBar from "../components/HeaderBar";
+import { UserContext } from "../store/user-context";
 
 const NicknamePage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
+
   const height = Dimensions.get('window').height;
 
   const [nickname, setNickName] = useState('');
@@ -49,21 +52,26 @@ const NicknamePage = ({navigation}: any) => {
   const submitForm = async () => {
     console.log("submitForm: " + JSON.stringify(nickname));
     if (authCtx.accessToken) {
-      const basicInfoResponse = await getBasicInfo(
-        authCtx.accessToken,
-      );
-      if (isBasicInfoResponse(basicInfoResponse)) {
+      if (userCtx.basicinfo) {
         const response = await putBasicInfo(
           authCtx.accessToken,
           nickname,
-          basicInfoResponse.gender,
-          basicInfoResponse.ageGroup,
-          basicInfoResponse.ageDegree,
-          basicInfoResponse.heightGroup,
-          basicInfoResponse.region,
+          userCtx.basicinfo.gender,
+          userCtx.basicinfo.ageGroup,
+          userCtx.basicinfo.ageDegree,
+          userCtx.basicinfo.heightGroup,
+          userCtx.basicinfo.region,
         );  
 
         if (isValidResponse(response)) {
+          userCtx.setBasicinfo({
+            ageDegree: userCtx.basicinfo.ageDegree,
+            ageGroup: userCtx.basicinfo.ageGroup,
+            gender: userCtx.basicinfo.gender,
+            heightGroup: userCtx.basicinfo.heightGroup,
+            nickname,
+            region: userCtx.basicinfo.region,
+          })
           createAlertMessage("기본 정보 입력이 완료되었습니다.");
           navigation.goBack();
         }

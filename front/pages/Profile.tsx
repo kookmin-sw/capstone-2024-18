@@ -23,6 +23,17 @@ const Profile = ({navigation}: any) => {
   const [ generatedS3url, setGeneratedS3url ] = useState('');
   const [ originS3url, setOriginS3url ] = useState('');
 
+  // 기본 정보
+  const [ basic, setBasic ] = useState(["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"])
+  const [ nickname, setNickName ] = useState(userCtx.basicinfo.nickname);
+
+  const _analysis = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
+  const [ analysis, setAnalysis ] = useState(
+    _analysis.map((_a) => {
+      return '#' + _a;
+    })
+  )
+
   const tryGetFaceInfo = async () => {
     if (authCtx.accessToken) {
       const response = await getFaceInfo(
@@ -32,19 +43,19 @@ const Profile = ({navigation}: any) => {
       if (!isFaceInfoResponse(response)) {
         createAlertMessage(response.message);
       } else {
-        setGeneratedS3url(response.generatedS3url);
-        setOriginS3url(response.originS3url);
+        if (userCtx.faceinfo.generatedS3url !== response.generatedS3url) {
+          userCtx.setFaceinfo({
+            originS3url: response.originS3url,
+            generatedS3url: response.generatedS3url
+          })
+        }
       }
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
     }
   }
 
-  // 기본 정보
-  const [ basic, setBasic ] = useState(["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"])
-  const [ nickname, setNickName ] = useState('');
-
-  const createBasicInfo = async () => {
+  useEffect(() => {
     setNickName(userCtx.basicinfo.nickname);
     const newBasic = [ 
       gender[userCtx.basicinfo.gender as keyof Gender], 
@@ -54,41 +65,27 @@ const Profile = ({navigation}: any) => {
     setBasic(newBasic.map((_basic) => {
       return ('#' + _basic);
     }))
-  }
+  }, [userCtx.basicinfo])
 
-  const _analysis = ["DEFAULT", "DEFAULT", "DEFAULT", "DEFAULT"]
-  const [ analysis, setAnalysis ] = useState(
-    _analysis.map((_a) => {
-      return '#' + _a;
-    })
-  )
+  useEffect(() => {
+    setGeneratedS3url(userCtx.faceinfo.generatedS3url);
+    setOriginS3url(userCtx.faceinfo.originS3url);
+  }, [userCtx.faceinfo])
 
-  const createAnalysisInfo = async () => {
-    if (authCtx.accessToken) {
-      const response = await getAnalysisInfoShort(
-        authCtx.accessToken
-      );  
-      if (isAnalysisShortResponse(response)) {
-        setAnalysis(response.analysisShort.map((_analysis, index) => {
-          return '#' + _analysis;
-        }))
-      }
-      if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
-      }
+  useEffect(() => {
+    if (userCtx.analysisinfo) {
+      setAnalysis(userCtx.analysisinfo.analysisShort.map((_analysis, index) => {
+        return '#' + _analysis;
+      }))
     }
-    else {
-      console.log("로그인 정보가 없습니다.");
-    }
-  }
+  }, [userCtx.analysisinfo])
 
   useFocusEffect(
     useCallback(() => {
-      createBasicInfo();
+      console.log("get faceinfo")
       tryGetFaceInfo();
-      createAnalysisInfo();
     }, [])
-  );
+  )
 
   const editButton = (onPress: () => void) => {
     return <Pressable onPress={onPress} style={styles.icon}><Icon source={'pencil-outline'} size={19} color={colors.point}/></Pressable>

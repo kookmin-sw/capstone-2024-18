@@ -18,7 +18,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { createAlertMessage } from '../util/alert.tsx';
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
 import { Category, category } from '../util/categoryFormat.tsx';
-import { useFocusEffect, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import { UserContext } from '../store/user-context.tsx';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const SelfProduce = ({navigation, route}: any) => {
@@ -30,9 +31,10 @@ const SelfProduce = ({navigation, route}: any) => {
 
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
+  const userCtx = useContext(UserContext);
 
   // 자기소개서가 있는지 확인 (현재는 auth 연결 아직 안함)
-  const [ haveSelfProduce, setHaveSelfProduce ] = useState(false);
+  const [ haveSelfProduce, setHaveSelfProduce ] = useState(userCtx.resumeinfo ? true : false);
 
   // 기본 정보
   const defaultSample = "DEFAULT";
@@ -58,24 +60,6 @@ const SelfProduce = ({navigation, route}: any) => {
   // (임시) 이미지 슬라이더의 내부 contents 설정 (api 연동하면, 그냥 빈 array 설정)
   const [ images, setImages ] = useState<imageType[]>([]);
 
-  // 자기소개서 삭제 관련 기능
-  function deleteAlert() {
-    Alert.alert(
-      "정말 삭제하시겠습니까?", 
-      "삭제하면, 해당 자기소개서를 복구할 수 없습니다",
-      [
-        {
-          text: "아니요",
-          style: 'cancel'
-        },
-        {
-          text: "네",
-          onPress: deleteSelfProduce
-        }
-      ]
-    )
-  }
-
   // CarouselSlider의 필수 파라미터, pageWidth, offset, gap 설정
   const width = Dimensions.get('window').width;
   const [ pageWidth, setPageWidth ] = useState(width);
@@ -88,12 +72,32 @@ const SelfProduce = ({navigation, route}: any) => {
   // 이미지 추가 설정 (카메라 or 사진첩)
   const [ modalVisible, setModalVisible ] = useState(false);
 
+  // 자기소개서 삭제 관련 기능
+  function deleteAlert() {
+    Alert.alert(
+      "정말 삭제하시겠습니까?", 
+      "삭제하면, 해당 자기소개서를 복구할 수 없습니다",
+      [
+        {
+          text: "네",
+          onPress: deleteSelfProduce
+        },
+        {
+          text: "아니요",
+          style: 'cancel'
+        }
+      ]
+    )
+  }
+
   const deleteSelfProduce = async () => {
     // 자기소개서 삭제하는 요청 전송
     if (authCtx.accessToken) {
       const response = await deleteMyResume(authCtx.accessToken);
       if (isValidResponse(response)) {
-        setHaveSelfProduce(false);
+        setImages([]);
+        userCtx.setResumeinfo(undefined);
+        userCtx.setStatus('RESUME_DELETE');
       }
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
@@ -102,6 +106,67 @@ const SelfProduce = ({navigation, route}: any) => {
     else {
       console.log("로그인 정보가 없습니다.");
     }
+  }
+
+  const createMyResume = async () => {
+    if (authCtx.accessToken) {
+      const response = await postMyResume(
+        authCtx.accessToken,
+      );
+      if (isResumeResponse(response)) {
+        userCtx.setResumeinfo(response);
+        setEdit(false);setEdit(true);
+        userCtx.setStatus('RESUME_CREATE');
+      } 
+      if (isErrorResponse(response)) {
+        createAlertMessage(response.message);
+      }
+    }
+    else {
+      console.log("로그인 정보가 없습니다.");
+    }
+  }
+
+  const resetMyResume = async (response: resumeResponse) => {
+    // 기본 정보 설정
+    const newBasic = [ 
+      gender[response.basicInfo.gender as keyof Gender], 
+      ageGroup[response.basicInfo.ageGroup as keyof AgeGroup] + ageDegree[response.basicInfo.ageDegree as keyof AgeDegree], 
+      heightGroup[response.basicInfo.heightGroup as keyof HeightGroup], 
+      '서울 ' + region['SEOUL'][response.basicInfo.region as keyof Region['SEOUL']]];
+    setBasic(newBasic.map((_basic, index) => {
+      return {id: index, text: _basic}
+    }))
+    setNickname(response.basicInfo.nickname);
+
+    // faceInfo 설정
+    setImages([]);
+    await handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.faceInfo.generatedS3url}});
+
+    for (var index = 0; index < response.resumeImageS3urls.length; index++) {
+      await handleAddImageAtIndex(index+1, {id: uuidv4(), type: 'image', source: {uri: response.resumeImageS3urls[index]}});
+    }
+    // 카테고리 설정
+    const newCategories = categories.map(_category => {
+      // response로 받은 선택된 카테고리면 selected true 설정
+      for (const selectedCategory of response.categories) {
+        if (_category.text === selectedCategory as keyof Category) {
+          return { ..._category, selected: true };
+        }
+      }
+      // selected false 설정
+      return { ..._category, selected: false };
+    });
+    setCategories(newCategories);
+
+    // 소개 설정
+    setEssay(response.content);
+
+    // face analysis 설정
+    // 왜인지 몰라도 코드를 카테고리 설정 위에 놓으면, 중간에 return 됨. 아니..기본 정보는 되면서...
+    setAnalysis(response.analysisInfo.analysisShort.map((_analysis, index) => {
+      return {id: index, text: _analysis}
+    }))
   }
 
   const handleEditButton = async () => {
@@ -128,14 +193,21 @@ const SelfProduce = ({navigation, route}: any) => {
         )
         if (isResumeResponse(response)) {
           console.log("완료", response);
+          userCtx.setStatus('RESUME_COMPLETE');
           setEdit(false);
+          userCtx.setResumeinfo(response);
         }
-        if (isErrorResponse(response)) {
-          createAlertMessage(response.message)
+        if (isErrorResponse(response)) { // 흙흙 
+          if (response.exceptionCode === 0) {
+            createAlertMessage("최소한 1개 이상의 이미지를 추가해야 합니다!");
+          } else {
+            createAlertMessage(response.message);
+          }
         }
       }
     }
     else {
+      userCtx.setStatus('RESUME_EDIT');
       setEdit(true);
     }
   }
@@ -159,6 +231,22 @@ const SelfProduce = ({navigation, route}: any) => {
     const newData = images.filter(image=> image.id !== id);
     setImages(newData);
   };
+
+  // 특정 인덱스의 카테고리를 선택, 선택 취소
+  function handleCategorySelect(changeIdx: number) {
+    const nextCategory = categories.map((category) => {
+      if (category.id === changeIdx) {
+        return {
+          ...category,
+          selected: !category.selected,
+        };
+      } else {
+        return category;
+      }
+    });
+    // Re-render with the new array
+    setCategories(nextCategory);
+  }
 
   /**
    * 이미지 슬라이더에 들어갈 컨텐츠 내용물 데이터를 React.ReactNode로 바꿔주는 함수
@@ -194,88 +282,6 @@ const SelfProduce = ({navigation, route}: any) => {
     } 
   }
 
-  const resetMyResume = async (response: resumeResponse) => {
-    setHaveSelfProduce(true);
-    setEdit(false);
-
-    // 기본 정보 설정
-    const newBasic = [ 
-      gender[response.basicInfo.gender as keyof Gender], 
-      ageGroup[response.basicInfo.ageGroup as keyof AgeGroup] + ageDegree[response.basicInfo.ageDegree as keyof AgeDegree], 
-      heightGroup[response.basicInfo.heightGroup as keyof HeightGroup], 
-      '서울 ' + region['SEOUL'][response.basicInfo.region as keyof Region['SEOUL']]];
-    setBasic(newBasic.map((_basic, index) => {
-      return {id: index, text: _basic}
-    }))
-    setNickname(response.basicInfo.nickname);
-
-    // faceInfo 설정
-    // console.log(response.faceInfo);
-    setImages([]);
-    await handleAddImageAtIndex(0, {id: uuidv4(), type: 'basic', source: {uri: response.faceInfo.generatedS3url}});
-
-    for (var index = 0; index < response.resumeImageS3urls.length; index++) {
-      await handleAddImageAtIndex(index+1, {id: uuidv4(), type: 'image', source: {uri: response.resumeImageS3urls[index]}});
-    }
-    // 카테고리 설정
-    const newCategories = categories.map(_category => {
-      // response로 받은 선택된 카테고리면 selected true 설정
-      for (const selectedCategory of response.categories) {
-        if (_category.text === selectedCategory as keyof Category) {
-          return { ..._category, selected: true };
-        }
-      }
-      // selected false 설정
-      return { ..._category, selected: false };
-    });
-    setCategories(newCategories);
-
-    // 소개 설정
-    setEssay(response.content);
-
-    console.log(response.analysisInfo)
-    // face analysis 설정
-    // 왜인지 몰라도 코드를 카테고리 설정 위에 놓으면, 중간에 return 됨. 아니..기본 정보는 되면서...
-    setAnalysis(response.analysisInfo.analysisShort.map((_analysis, index) => {
-      return {id: index, text: _analysis}
-    }))
-  }
-
-  const tryGetMyResume = async () => {
-    if (authCtx.accessToken) {
-      const response = await getMyResume(
-        authCtx.accessToken
-      );
-      if (isResumeResponse(response)) {
-        await resetMyResume(response);
-      } 
-
-      if (isErrorResponse(response)) {
-        setHaveSelfProduce(false);
-      } 
-    }
-    else {
-      console.log("로그인 정보가 없습니다.");
-    }
-  }
-
-  const createMyResume = async () => {
-    if (authCtx.accessToken) {
-      const response = await postMyResume(
-        authCtx.accessToken,
-      );
-      if (isResumeResponse(response)) {
-        await resetMyResume(response);
-      } 
-      if (isErrorResponse(response)) {
-        createAlertMessage(response.message);
-      }
-    }
-    else {
-      console.log("로그인 정보가 없습니다.");
-    }
-  }
-
   // useEffect들
   // edit 기능 설정하고 저장할 때, 이미지 추가 버튼 생성, 삭제, 이미지 슬라이더의 gap, offset, page width 재설정
   useEffect(() => {
@@ -294,7 +300,6 @@ const SelfProduce = ({navigation, route}: any) => {
     } else {
       // 이미지 추가 페이지 생성
       if (images[images.length-1].type != 'add') {
-        console.log('test')
         handleAddImageAtIndex(images.length, {id: uuidv4(), type: 'add', source: null});
       }
 
@@ -308,28 +313,19 @@ const SelfProduce = ({navigation, route}: any) => {
   }, [edit])
 
   useEffect(() => {
-    tryGetMyResume();
-  }, [])
+    if (userCtx.resumeinfo) {
+      setHaveSelfProduce(true);
+      resetMyResume(userCtx.resumeinfo);
+    } else {
+      setHaveSelfProduce(false);
+    }
+  }, [userCtx.resumeinfo])
 
-  useEffect(() => {
-    console.log("\n\n\n\n\n\n\n in selfproduce", route)
-  }, [route])
-
-  // 특정 인덱스의 카테고리를 선택, 선택 취소
-  function handleCategorySelect(changeIdx: number) {
-    const nextCategory = categories.map((category) => {
-      if (category.id === changeIdx) {
-        return {
-          ...category,
-          selected: !category.selected,
-        };
-      } else {
-        return category;
-      }
-    });
-    // Re-render with the new array
-    setCategories(nextCategory);
-  }
+  useFocusEffect(
+    useCallback(() => {
+      setEdit(false);
+    }, [])
+  )
 
   return (
     <>

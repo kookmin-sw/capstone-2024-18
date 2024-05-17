@@ -12,7 +12,7 @@ import { AuthContext } from "../store/auth-context";
 
 import { colors } from "../assets/colors";
 import { ageDegree, ageGroup, heightGroup, region, gender, HeightGroup, Gender, AgeGroup, AgeDegree, Region } from "../util/basicInfoFormat";
-import { isErrorResponse, isValidResponse, putBasicInfo } from "../util/auth";
+import { isBasicInfoResponse, isErrorResponse, isValidResponse, putBasicInfo } from "../util/auth";
 import SelectableTag from "../components/SelectableTag";
 import { createAlertMessage } from "../util/alert";
 import CustomBackHandler from "../components/CustomBackHandler";
@@ -134,7 +134,7 @@ const BasicInfoPage = ({navigation}: any) => {
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
       }
-      else if (isValidResponse(response)) {
+      else if (isBasicInfoResponse(response)) {
         createAlertMessage("기본 정보 입력이 완료되었습니다.");
         userCtx.setStatus('BASIC_INFO_EXIST');
         userCtx.setBasicinfo({
