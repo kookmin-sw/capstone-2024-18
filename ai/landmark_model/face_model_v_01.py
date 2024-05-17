@@ -120,6 +120,7 @@ def image_run(image_path):
     for detection in detections:
 
         model_1000_landmarks, states = face_landmark_handle.run(image, detection)
+        break
         # face_landmark_handle.show_result(image_path,image, landmarks)
 
     # Mediapipe
@@ -137,7 +138,7 @@ def image_run(image_path):
                 if idx not in LandmarkIdx.all_idx:continue
                 x = int(landmark.x * image.shape[1]) 
                 y = int(landmark.y * image.shape[0])
-
+            break
     mediapipe_landmarks = calibration(mediapipe_landmarks)
     #print(mediapipe_landmarks[10], mediapipe_landmarks[152])
     # for idx, point in enumerate(mediapipe_landmarks):
