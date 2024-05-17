@@ -29,13 +29,14 @@ import math
 SHAPE_PREDICTOR_PATH = 'shape_predictor_68_face_landmarks.dat'#model_paths["shape_predictor"]
 
 
-def get_landmark(filepath, predictor):
+def get_landmark(filepath, predictor, args):
 	"""get landmark with dlib
 	:return: np.array shape=(68, 2)
 	"""
 	detector = dlib.get_frontal_face_detector()
 
-	img = dlib.load_rgb_image(filepath)
+	#img = dlib.load_rgb_image(filepath)
+	img = np_image = np.array(args.image_object)
 	dets = detector(img, 1)
 
 	for k, d in enumerate(dets):
@@ -55,7 +56,7 @@ def align_face(filepath, predictor, args):
 	:return: PIL Image
 	"""
 
-	lm = get_landmark(filepath, predictor)
+	lm = get_landmark(filepath, predictor, args)
 
 	lm_chin = lm[0: 17]  # left-right
 	lm_eyebrow_left = lm[17: 22]  # left-right
