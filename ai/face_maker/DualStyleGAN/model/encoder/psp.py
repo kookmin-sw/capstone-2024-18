@@ -21,6 +21,7 @@ class pSp(nn.Module):
 
 	def __init__(self, opts):
 		super(pSp, self).__init__()
+		print('asdfasdfasdfa 111')
 		self.set_opts(opts)
 		# compute number of style inputs based on the output resolution
 		self.opts.n_styles = int(math.log(self.opts.output_size, 2)) * 2 - 2
@@ -32,6 +33,7 @@ class pSp(nn.Module):
 		self.load_weights()
 
 	def set_encoder(self):
+		print('asdfasdfasdfasdfafkfkfkfk')
 		if self.opts.encoder_type == 'GradualStyleEncoder':
 			encoder = psp_encoders.GradualStyleEncoder(50, 'ir_se', self.opts)
 		elif self.opts.encoder_type == 'BackboneEncoderUsingLastLayerIntoW':
