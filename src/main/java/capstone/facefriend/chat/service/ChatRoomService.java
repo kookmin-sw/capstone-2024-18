@@ -120,6 +120,7 @@ public class ChatRoomService {
                 Member sender = identifySender(chatRoomMember, memberId);
                 ChatRoomOpenResponse chatRoomOpenResponse = ChatRoomOpenResponse.of(member, sender, chatRoomMember.getChatRoom(), OPEN_MESSAGE);
                 chatRoomsOpen.add(chatRoomOpenResponse);
+
             } else if (status == ChatRoom.Status.close) {
                 Member leftMember = identifyLeftMember(memberId, chatRoomMember);
                 if (member != leftMember) {
