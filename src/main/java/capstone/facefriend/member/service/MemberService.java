@@ -9,6 +9,8 @@ import capstone.facefriend.member.domain.analysisInfo.AnalysisInfoRepository;
 import capstone.facefriend.member.domain.basicInfo.BasicInfo;
 import capstone.facefriend.member.domain.basicInfo.BasicInfoRepository;
 import capstone.facefriend.member.domain.faceInfo.FaceInfo;
+import capstone.facefriend.member.domain.faceInfo.FaceInfoByLevel;
+import capstone.facefriend.member.domain.faceInfo.FaceInfoByLevelRepository;
 import capstone.facefriend.member.domain.faceInfo.FaceInfoRepository;
 import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.domain.member.MemberRepository;
@@ -41,6 +43,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BasicInfoRepository basicInfoRepository;
     private final FaceInfoRepository faceInfoRepository;
+    private final FaceInfoByLevelRepository faceInfoByLevelRepository;
     private final AnalysisInfoRepository analysisInfoRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -114,6 +117,11 @@ public class MemberService {
                 .generatedS3url(defaultFaceInfoS3url)
                 .build();
         faceInfoRepository.save(faceInfo);
+//
+//        FaceInfoByLevel faceInfoByLevel = FaceInfoByLevel.builder()
+//                .generatedByLevelS3url(defaultFaceInfoS3url)
+//                .build();
+//        faceInfoByLevelRepository.save(faceInfoByLevel);
 
         // 관상 분석 초기값
         AnalysisInfo analysisInfo = AnalysisInfo.builder()

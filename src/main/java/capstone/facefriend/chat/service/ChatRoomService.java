@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static capstone.facefriend.chat.exception.ChatExceptionType.*;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -57,19 +59,19 @@ public class ChatRoomService {
 
     private ChatRoomInfo findChatRoomInfo(String chatRoomInfoId) {
         ChatRoomInfo chatRoomInfo = chatRoomInfoRedisRepository.findById(chatRoomInfoId)
-                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+                .orElseThrow(()-> new ChatException(NOT_FOUND_CHAT_ROOM));
         return chatRoomInfo;
     }
 
     private ChatRoom findRoomById(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+                .orElseThrow(()-> new ChatException(NOT_FOUND_CHAT_ROOM));
         return chatRoom;
     }
 
     private ChatRoomMember findChatRoomMemberByChatRoomId(Long roomId) {
         ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomId(roomId)
-                .orElseThrow(()-> new ChatException(ChatExceptionType.NOT_FOUND));
+                .orElseThrow(()-> new ChatException(NOT_FOUND_CHAT_ROOM_MEMBER));
         return chatRoomMember;
     }
 
@@ -185,7 +187,7 @@ public class ChatRoomService {
         String content = "상대방이 떠났습니다.";
         String method = "receiveLeftRoom";
         LocalDateTime sendTime = LocalDateTime.now();
-        ChatRoomLeftResponse chatRoomLeftResponse =ChatRoomLeftResponse.of(method, roomId, leftMember, sendTime, content);
+        ChatRoomLeftResponse chatRoomLeftResponse = ChatRoomLeftResponse.of(method, roomId, leftMember, sendTime, content);
         simpMessagingTemplate.convertAndSend("/sub/chat/" + sender.getId(),chatRoomLeftResponse);
         chatRoomRepository.save(chatRoom);
         chatRoomMemberRepository.save(chatRoomMember);
