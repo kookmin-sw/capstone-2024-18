@@ -161,8 +161,8 @@ public class ResumeService {
         return resumeRepository.getResumesByGoodCombi(memberId, pageable);
     }
 
-    public Page<ResumeHomeDetailResponse> getResumesByCategory(String category, Pageable pageable) {
-        return resumeRepository.getResumesByCategory(category, pageable);
+    public Page<ResumeHomeDetailResponse> getResumesByCategory(Long memberId, String category, Pageable pageable) {
+        return resumeRepository.getResumesByCategory(memberId, category, pageable);
     }
 
     // 내부 로직용

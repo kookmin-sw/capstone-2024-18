@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 public interface ResumeRepositoryCustom {
 
     Page<ResumeHomeDetailResponse> getResumesByGoodCombi(Long memberId, Pageable pageable); // 좋은 궁합
-    Page<ResumeHomeDetailResponse> getResumesByCategory(String category, Pageable pageable); // 카테고리별
+    Page<ResumeHomeDetailResponse> getResumesByCategory(Long memberId, String category, Pageable pageable); // 카테고리별
 }

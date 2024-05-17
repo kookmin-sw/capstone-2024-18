@@ -74,6 +74,6 @@ public class ResumeController {
             @RequestParam("category") String category,
             Pageable pageable
     ) {
-        return resumeService.getResumesByCategory(category, pageable);
+        return resumeService.getResumesByCategory(memberId, category, pageable);
     }
 }

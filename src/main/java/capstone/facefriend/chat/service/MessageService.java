@@ -136,22 +136,38 @@ public class MessageService {
 
         ChatRoomMember chatRoomMember = findChatRoomMember(chatRoom); // 영속
 
+        // getSender() 는 하트틀 보내는 사람(방 개설자)을 의미
+        // senderId() 는 메세지를 보내는 사람을 의미
         MessageResponse messageResponse = new MessageResponse();
-        messageResponse.setMethod("receiveChat");
-        messageResponse.setRoomId(chatMessage.getChatRoom().getId());
-        messageResponse.setSenderId(senderId);
-        messageResponse.setReceiveId(receiver.getId());
-        messageResponse.setSenderNickname(sender.getBasicInfo().getNickname());
-        messageResponse.setSenderFaceInfoS3Url(chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url()); // 수정한 부분
-        messageResponse.setContent(chatMessage.getContent());
-        messageResponse.setType("message");
-        messageResponse.setCreatedAt(chatMessage.getSendTime());
-        messageResponse.setIsRead(chatMessage.isRead());
+
+        if (chatRoomMember.getSender().equals(findMemberByid(senderId))) {
+            messageResponse.setMethod("receiveChat");
+            messageResponse.setRoomId(chatMessage.getChatRoom().getId());
+            messageResponse.setSenderId(senderId);
+            messageResponse.setReceiveId(receiver.getId());
+            messageResponse.setSenderNickname(sender.getBasicInfo().getNickname());
+            messageResponse.setSenderFaceInfoS3Url(chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url()); // 수정한 부분
+            messageResponse.setContent(chatMessage.getContent());
+            messageResponse.setType("message");
+            messageResponse.setCreatedAt(chatMessage.getSendTime());
+            messageResponse.setIsRead(chatMessage.isRead());
+        }
+
+        if (chatRoomMember.getReceiver().equals(findMemberByid(senderId))) {
+            messageResponse.setMethod("receiveChat");
+            messageResponse.setRoomId(chatMessage.getChatRoom().getId());
+            messageResponse.setSenderId(senderId);
+            messageResponse.setReceiveId(receiver.getId());
+            messageResponse.setSenderNickname(sender.getBasicInfo().getNickname());
+            messageResponse.setSenderFaceInfoS3Url(chatRoomMember.getReceiverFaceInfoByLevel().getGeneratedByLevelS3url()); // 수정한 부분
+            messageResponse.setContent(chatMessage.getContent());
+            messageResponse.setType("message");
+            messageResponse.setCreatedAt(chatMessage.getSendTime());
+            messageResponse.setIsRead(chatMessage.isRead());
+        }
 
         String topic = channelTopic.getTopic();
-
         redisTemplate.convertAndSend(topic, messageResponse);
-
     }
 
     private ChatRoomMember findChatRoomMember(ChatRoom chatRoom) {
