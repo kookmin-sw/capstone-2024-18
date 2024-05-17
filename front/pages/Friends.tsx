@@ -1,11 +1,11 @@
 import { View, Text, ScrollView, StyleSheet, Dimensions, StyleProp, ViewStyle, Image, TouchableOpacity, Pressable } from 'react-native';
 import { colors } from '../assets/colors.tsx'
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 
-import { getCategoryUser, getGoodCombi, getMyResume, isErrorResponse, isResumeResponse, isResumesResponse } from '../util/auth.tsx';
+import { getCategoryUser, getGoodCombi, isErrorResponse, isResumeResponse, isResumesResponse } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context.tsx";
 
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
@@ -16,6 +16,8 @@ import Config from 'react-native-config';
 import axios from 'axios';
 import { createAlertMessage } from '../util/alert.tsx';
 import { StompClientContext } from '../store/socket-context.tsx';
+import { UserContext } from '../store/user-context.tsx';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const Friends = ({navigation}: any) => {
@@ -29,8 +31,7 @@ const Friends = ({navigation}: any) => {
 
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
-
-  const [nickname, setNickname] = useState('');
+  const userCtx = useContext(UserContext);
 
   // CarouselSlider의 필수 파라미터, pageWidth, offset, gap 설정
   const pageWidth = Dimensions.get('window').width;
@@ -96,19 +97,16 @@ const Friends = ({navigation}: any) => {
     }
   }
 
-  const tryGetMyResume = async () => {
-    if (authCtx.accessToken) {
-      const response = await getMyResume(
-        authCtx.accessToken
-      )
-      if (isResumeResponse(response)) {
-        for (const category of response.categories) {
-          await tryGetCategoryUser(category);
-        }
-        setNickname(response.basicInfo.nickname)
+  useEffect(() => {
+    if (userCtx.resumeinfo) {
+      setFaces({FIT: faces["FIT"]});
+      for (const category of userCtx.resumeinfo.categories) {
+        tryGetCategoryUser(category);
       }
+    } else {
+      setFaces({FIT: faces["FIT"]})
     }
-  }
+  }, [userCtx.resumeinfo])
 
   const tryGetCategoryUser = async (category: string) => {
     if (authCtx.accessToken) {
@@ -171,11 +169,6 @@ const Friends = ({navigation}: any) => {
 
   const categoriesText = [["맛집 탐방 같이 하실 분", 'FOOD'], ["탁구하러 가실 분", "WORKOUT"], ["듄 함께 보실 분~", "MOVIE"], ["패션 참견 해주실 분99", "FASHION"], ["연애 상담 해드립니다~!", "DATING"], ["팝송 러버 여기 모여라", "MUSIC"], ["치타는 웃고 있다", "STUDY"], ["심심한데 이야기하실 분", "ETC"]];
 
-  useEffect(() => {
-    tryGetGoodCombi();
-    tryGetMyResume();
-  }, [])
-
   const testButtonHandler = async () => {
     const method = "getBasicInfo";
     const endpoint =  `${Config.LOCALHOST}/basic-info`;
@@ -195,6 +188,11 @@ const Friends = ({navigation}: any) => {
     socketCtx.disconnect();
     authCtx.signout();
   }
+  useFocusEffect(
+    useCallback(() => {
+      tryGetGoodCombi();
+    }, [])
+  )
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: colors.white}}>
@@ -231,8 +229,9 @@ const Friends = ({navigation}: any) => {
               <Text style={[styles.sectionText, { color: colors.gray6 }]}>전체 보러가기{">"}</Text>
             </TouchableOpacity>
           </View>
-          <Text style={[{paddingLeft: 27}, styles.sectionText]}>AI가 분석한 {nickname}님의 베스트 매치 관상 추천</Text>
+          <Text style={[{paddingLeft: 27}, styles.sectionText]}>AI가 분석한 {userCtx.basicinfo.nickname}님의 베스트 매치 관상 추천</Text>
         </View>
+      </View>
       <FlatList 
         horizontal 
         data={faces.FIT.content} 
@@ -268,7 +267,6 @@ const Friends = ({navigation}: any) => {
           }
         </View> : <></>
       }
-      </View>
     </ScrollView>
   );
 };

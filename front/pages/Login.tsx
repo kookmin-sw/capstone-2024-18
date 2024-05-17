@@ -7,7 +7,6 @@ import CustomTextInput from '../components/CustomTextInput.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 
 import { SvgUri } from 'react-native-svg';
-import EmailIcon from '../assets/images/email.svg';
 
 import { colors } from '../assets/colors.tsx';
 import { isErrorResponse, isValidResponse } from '../util/auth.tsx';
