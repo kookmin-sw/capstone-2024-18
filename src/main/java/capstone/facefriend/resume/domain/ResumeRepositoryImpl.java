@@ -56,8 +56,6 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
                 break;
         }
 
-        Member member = findMemberById(memberId);
-
         List<ResumeHomeDetailResponse> content = queryFactory
                 .select(new QResumeHomeDetailResponse(
                         resume.id.as("resumeId"),
@@ -65,7 +63,6 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
                 .from(resume)
                 .leftJoin(resume.member, QMember.member) // left join
                 .where(builder) // boolean builder
-                .where(resume.member.ne(member))
                 .orderBy(resume.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -87,8 +84,6 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
     // 카테고리별 동적 쿼리
     public Page<ResumeHomeDetailResponse> getResumesByCategory(Long memberId, String category, Pageable pageable) {
 
-        Member member = findMemberById(memberId);
-
         List<ResumeHomeDetailResponse> content = queryFactory
                 .select(new QResumeHomeDetailResponse(
                         resume.id.as("resumeId"),
@@ -96,7 +91,6 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
                 .from(resume)
                 .leftJoin(resume.member, QMember.member) // left join
                 .where(resume.categories.contains(Resume.Category.valueOf(category)))
-                .where(resume.member.ne(member))
                 .orderBy(resume.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
