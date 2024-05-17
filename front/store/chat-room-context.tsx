@@ -495,6 +495,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     const path = `/sub/chat/${authCtx.userId}`;
     stompClient.onConnect = (frame) => {
       setTimeout(() => {
+        createAlertMessage('onConnect');
         console.log("Connected: " + frame);
         if (subscriptions.has(path)) return;
         const subscription = stompClient.subscribe(path, (message) => {
