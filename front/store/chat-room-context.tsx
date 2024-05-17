@@ -528,6 +528,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
         });
         subscriptions.set(path, subscription);
       }, 1000);
+      createAlertMessage('subscribed at ' + path);
 
       setTimeout(() => {
         stompClient.publish({

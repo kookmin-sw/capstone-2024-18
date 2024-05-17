@@ -125,7 +125,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대가 하트를 보냈습니다.</Text>
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
       <ScrollView style={{ marginBottom: 150 }}>
-        <OtherUserSelfProduceChat resumeId={chatRoomCtx.chatRooms[roomId]?.senderId}/>
+        {/* <OtherUserSelfProduceChat resumeId={}/> */}
 
         <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 50}}>
             <View style={{width: "50%" }}>
@@ -190,6 +190,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   return (
     <View style={styles.container}>
       <HeaderBar onPress={onBack}><Text style={{ color: 'black' }}>{chatRoom?.senderNickname}</Text></HeaderBar>
+      <Text style={{ color: 'black' }}>roomId: {roomId} senderId: {chatRoom.senderId}</Text>
       {(chatRoom?.type === 'OPENED' || chatRoom?.type === 'CLOSED') && <ChatList 
         chats={chats} 
         chatHeights={chatHeights}

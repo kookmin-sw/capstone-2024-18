@@ -58,6 +58,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
   }))
   const [ essay, setEssay ] = useState('DEFAULT');
 
+  const [ memberId, setMemberId ] = useState(0);  
   const chatRoomCtx = useContext(ChatRoomContext);
   /**
    * 이미지 슬라이더에 들어갈 컨텐츠 내용물 데이터를 React.ReactNode로 바꿔주는 함수
@@ -75,7 +76,8 @@ const OtherUserSelfProduce = ({navigation}: any) => {
   }
 
   const handleHeart = async () => {
-    chatRoomCtx.sendHeart(resumeId);
+    console.log('handleHeart', memberId);
+    chatRoomCtx.sendHeart(memberId);
     navigation.goBack();
   }
 
@@ -126,6 +128,8 @@ const OtherUserSelfProduce = ({navigation}: any) => {
         setAnalysis(response.analysisInfo.analysisShort.map((_analysis, index) => {
           return {id: index, text: _analysis}
         }))
+        console.log('response:', response);
+        setMemberId(response.basicInfo.id);
       } 
       if (isErrorResponse(response)) {
         navigation.goBack();

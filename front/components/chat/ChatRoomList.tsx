@@ -6,6 +6,7 @@ import ChatPage from './ChatPage';
 import { ChatRoomContext } from '../../store/chat-room-context';
 import { formatTimeDifference } from '../../util/formatTime';
 import { ChatContext } from '../../store/chat-context';
+import { AuthContext } from '../../store/auth-context';
 
 const ChatRoomList = () => {
   const chatRoomCtx = useContext(ChatRoomContext);
@@ -25,13 +26,17 @@ const ChatRoomList = () => {
     chatRoomCtx.getChatRoomList();
   }, [roomId])
 
+  const authCtx = useContext(AuthContext);
+
   return (
     <View style={styles.container}>
     {!roomId && <>
       <HeaderBar onPress={() => {}}>다이렉트 메세지</HeaderBar>
+      <Text style={{color:'black'}}>myUserId: {authCtx.userId}</Text>
       <ScrollView style={{ padding: 20 }}>
         {Object.values(chatRoomCtx.chatRooms).map((chatRoom) => (
         <Pressable key={chatRoom.roomId} onPress={handleOnPress.bind(this, chatRoom.roomId)}>
+          <Text style={{color:'black'}}>roomId: {chatRoom.roomId} senderId:{chatRoom.senderId}</Text>
           <View style={styles.listItemContainer}>
             {!chatRoom.senderGeneratedS3url && <View style={styles.profile}/>}
             {chatRoom.senderGeneratedS3url && <Image
