@@ -49,7 +49,7 @@ def get_landmark(filepath, predictor):
 	return lm
 
 
-def align_face(filepath, predictor):
+def align_face(filepath, predictor, args):
 	"""
 	:param filepath: str
 	:return: PIL Image
@@ -87,7 +87,8 @@ def align_face(filepath, predictor):
 	qsize = np.hypot(*x) * 2
 
 	# read image
-	img = PIL.Image.open(filepath)
+	#img = PIL.Image.open(filepath)
+	img = args.image_object
 	img = img.convert("RGB")
 
 	output_size = 256

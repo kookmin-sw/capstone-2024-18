@@ -57,7 +57,7 @@ def run_alignment(args):
         data = zipfile.read()
         open(modelname, 'wb').write(data) 
     predictor = dlib.shape_predictor(modelname)
-    aligned_image = align_face(filepath=args.content, predictor=predictor)
+    aligned_image = align_face(filepath=args.content, predictor=predictor, args=args)
     return aligned_image
 
 
@@ -105,10 +105,11 @@ class StyleTransfer():
         self.return_z_plus_latent=not args.wplus
         self.input_is_latent=args.wplus    
 
-    def generate(self, content_filepath, style_id, weight = [0.75]*7+[1]*11, name="cartoon_transfer"):
+    def generate(self, content_filepath, style_id, weight = [0.75]*7+[1]*11, name="cartoon_transfer", image=None):
         self.set_arg('style_id', style_id)
         self.set_arg('content', content_filepath)
         self.set_arg('weight', weight)
+        self.set_arg('image_object', image)
         #self.set_arg('name', name)
         args = self.args
         device = self.device

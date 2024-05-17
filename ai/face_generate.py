@@ -88,7 +88,7 @@ def generate_image_by_level():
 
     level = int(request.values['level'])
     # 관상 이미지 생성
-    virtual_face = face_maker.generate(file_path, int(request.values['style_id']), weight=level_dic[level])
+    virtual_face = face_maker.generate(file_path, int(request.values['style_id']), weight=level_dic[level], image)
     
     # Image 인스턴스로 변환
     pil_virutal_face = Image.fromarray(virtual_face.astype('uint8'))
