@@ -84,11 +84,11 @@ def generate_image_by_level():
     
     image = Image.open(request.files['image'])
     image = remove(image)
-    image.save(file_path)
+    #image.save(file_path)
 
     level = int(request.values['level'])
     # 관상 이미지 생성
-    virtual_face = face_maker.generate(file_path, int(request.values['style_id']), weight=level_dic[level], image)
+    virtual_face = face_maker.generate(file_path, int(request.values['style_id']), weight=level_dic[level], image = image)
     
     # Image 인스턴스로 변환
     pil_virutal_face = Image.fromarray(virtual_face.astype('uint8'))
@@ -102,10 +102,10 @@ def generate_image_by_level():
     response_data = {'image_binary':base64.b64encode(image_binary).decode('utf-8')}
 
         # 기존 사진 삭제
-    if os.path.exists(file_path):
-        os.remove(file_path)
-    else:
-        pass
+    # if os.path.exists(file_path):
+    #     os.remove(file_path)
+    # else:
+    #     pass
     sys.stdout.flush()
     return jsonify(response_data)
 
