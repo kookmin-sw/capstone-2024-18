@@ -139,8 +139,7 @@ public class MessageService {
         // getSender() 는 하트틀 보내는 사람(방 개설자)을 의미
         // senderId() 는 메세지를 보내는 사람을 의미
         MessageResponse messageResponse = new MessageResponse();
-
-        if (chatRoomMember.getSender().equals(findMemberByid(senderId))) {
+        if (chatRoomMember.getSender().equals(sender)) {
             messageResponse.setMethod("receiveChat");
             messageResponse.setRoomId(chatMessage.getChatRoom().getId());
             messageResponse.setSenderId(senderId);
@@ -153,7 +152,7 @@ public class MessageService {
             messageResponse.setIsRead(chatMessage.isRead());
         }
 
-        if (chatRoomMember.getReceiver().equals(findMemberByid(senderId))) {
+        if (chatRoomMember.getReceiver().equals(receiver)) {
             messageResponse.setMethod("receiveChat");
             messageResponse.setRoomId(chatMessage.getChatRoom().getId());
             messageResponse.setSenderId(senderId);
@@ -167,7 +166,9 @@ public class MessageService {
         }
 
         String topic = channelTopic.getTopic();
+
         redisTemplate.convertAndSend(topic, messageResponse);
+
     }
 
     private ChatRoomMember findChatRoomMember(ChatRoom chatRoom) {
