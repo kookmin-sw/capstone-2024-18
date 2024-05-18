@@ -121,16 +121,16 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     </View>
 
   const receiveHeartContent =
-    <View>
+    <View style={{ flex: 1 }}>
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대가 하트를 보냈습니다.</Text>
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
       <ScrollView contentContainerStyle={{ flex: 1 }}>
         {/* <OtherUserSelfProduceChat resumeId={}/> */}
 
-        <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 50}}>
+        <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingTop: 30}}>
             <View style={{width: "50%" }}>
               <CustomButton 
-                containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 10, elevation: 4}} onPress={() => { chatRoomCtx.rejectHeart(roomId) }}
+                containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 10, elevation: 4}} onPress={() => { chatRoomCtx.rejectHeart(roomId); onBack(); }}
                 textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}>거절하기
               </CustomButton>
             </View>
