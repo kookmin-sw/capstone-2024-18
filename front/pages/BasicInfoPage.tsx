@@ -134,17 +134,18 @@ const BasicInfoPage = ({navigation}: any) => {
       if (isErrorResponse(response)) {
         createAlertMessage(response.message);
       }
-      else if (isBasicInfoResponse(response)) {
+      else if (isValidResponse(response)) {
         createAlertMessage("기본 정보 입력이 완료되었습니다.");
         userCtx.setStatus('BASIC_INFO_EXIST');
         userCtx.setBasicinfo({
-          ageDegree: response.ageDegree, 
-          ageGroup: response.ageGroup, 
-          gender: response.gender, 
-          heightGroup: response.heightGroup, 
-          nickname: response.nickname, 
-          region: response.region
+          ageDegree: basicInfo.ageDegree, 
+          ageGroup: basicInfo.ageGroup, 
+          gender: basicInfo.gender, 
+          heightGroup: basicInfo.height, 
+          nickname: basicInfo.nickname, 
+          region: basicInfo.region
         });
+        console.log("goback");
         navigation.goBack();
       }
     }
