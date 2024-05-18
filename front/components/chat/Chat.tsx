@@ -103,7 +103,9 @@ const styles = StyleSheet.create({
     flexDirection : "row-reverse",
   },
   nickname: {
-    color: "black",
+    color: colors.gray9,
+    fontFamily: "Pretendard-Regular",
+    fontSize: 16,
   },
   nicknameContainer: {
     height: 20
@@ -126,11 +128,13 @@ const styles = StyleSheet.create({
     color: colors.white,
     padding: 8,
     fontSize: 14,
+    fontFamily: "Pretendard-Regular",
   },
   timestamp: {
     color: colors.gray9,
     fontSize: 12,
     marginHorizontal: 5,
+    fontFamily: "Pretendard-Regular",
   },
   spacer: {
     flex: 1,
@@ -147,5 +151,6 @@ const styles = StyleSheet.create({
     color: colors.gray6,
     textAlign: "center",
     marginVertical: 10,
+    fontFamily: "Pretendard-Regular",
   }
 })
