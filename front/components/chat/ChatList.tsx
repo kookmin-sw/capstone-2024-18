@@ -88,7 +88,7 @@ const ChatList = forwardRef<FlatList<ChatProps>, Props>(({
   }, [flatListHeight])
 
   return (
-    <View style={{ height : flatListHeight }}>
+    <View style={{ flex: 1 }}>
       <FlatList
         ref={ref}
         data={chats}

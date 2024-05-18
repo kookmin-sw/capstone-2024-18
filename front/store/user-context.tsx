@@ -158,7 +158,6 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
       const response = await getMyResume(authCtx.accessToken);
       console.log("관상 분석 로딩 끝");
 
-      console.log(response);
       if (isResumeResponse(response)) {
         console.log("자기소개서 있음");
         setResumeinfo(response);

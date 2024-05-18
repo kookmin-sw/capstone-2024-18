@@ -1,6 +1,6 @@
 import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { Alert, View } from "react-native";
+import { Alert, Keyboard, KeyboardAvoidingView, View } from "react-native";
 import SelfProduce from "./SelfProduce.tsx";
 import Friends from "./Friends.tsx";
 import Profile from "./Profile.tsx";
@@ -16,6 +16,7 @@ const Tab = createMaterialBottomTabNavigator();
 
 const Test1 = ({navigation}: any) => {
   const [previousRoute, setPreviousRoute] = useState('');
+
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
 
@@ -29,6 +30,9 @@ const Test1 = ({navigation}: any) => {
     <View style={{height: "100%"}}>
       <CustomBackHandler haveExit={true}/>
       <PaperProvider theme={{version: 2}}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+      >
         <Tab.Navigator 
           shifting={true}
           initialRouteName='sub1' 
@@ -113,6 +117,7 @@ const Test1 = ({navigation}: any) => {
               tabBarLabel: 'Profile',
             }}/>
         </Tab.Navigator>
+        </KeyboardAvoidingView>
       </PaperProvider>
     </View>
   );

@@ -124,7 +124,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     <View>
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대가 하트를 보냈습니다.</Text>
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
-      <ScrollView style={{ marginBottom: 150 }}>
+      <ScrollView contentContainerStyle={{ flex: 1 }}>
         {/* <OtherUserSelfProduceChat resumeId={}/> */}
 
         <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingBottom: 50}}>
@@ -143,7 +143,6 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
             </View>
           </View>
       </ScrollView>
-      <View style={{ height: 50 }}/>
     </View>
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -189,8 +188,10 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
 
   return (
     <View style={styles.container}>
-      <HeaderBar onPress={onBack}><Text style={{ color: 'black' }}>{chatRoom?.senderNickname}</Text></HeaderBar>
-      <Text style={{ color: 'black' }}>roomId: {roomId} senderId: {chatRoom.senderId}</Text>
+      <HeaderBar onPress={onBack}>
+        <Text style={{ color: 'black', fontSize: 24 }}>{chatRoom?.senderNickname}</Text>
+        <Text style={{ color: 'black', fontSize: 12 }}>roomId: {roomId} senderId: {chatRoom.senderId}</Text>
+      </HeaderBar>
       {(chatRoom?.type === 'OPENED' || chatRoom?.type === 'CLOSED') && <ChatList 
         chats={chats} 
         chatHeights={chatHeights}
