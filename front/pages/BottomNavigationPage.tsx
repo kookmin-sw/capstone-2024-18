@@ -1,6 +1,6 @@
 import { Icon, PaperProvider } from "react-native-paper";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { Alert, Keyboard, KeyboardAvoidingView, View } from "react-native";
+import { Alert, KeyboardAvoidingView, View } from "react-native";
 import SelfProduce from "./SelfProduce.tsx";
 import Friends from "./Friends.tsx";
 import Profile from "./Profile.tsx";

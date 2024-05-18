@@ -5,10 +5,12 @@ import AutoHeightImage from 'react-native-auto-height-image';
 import { AuthContext } from '../store/auth-context.tsx';
 import { useFocusEffect } from "@react-navigation/native";
 import { UserContext } from "../store/user-context.tsx";
+import { ChatRoomContext } from "../store/chat-room-context.tsx";
 
 const Home = ({ navigation }: any) => {
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+  const chatRoomCtx = useContext(ChatRoomContext);
 
   useFocusEffect(
     useCallback(() => {
@@ -32,10 +34,11 @@ const Home = ({ navigation }: any) => {
       if (userCtx.status === 'FACE_FEATURE_NOT_EXIST') {
         navigation.navigate('FaceFeature');
       }
-      if (userCtx.status === 'RESUME_EXIST' || userCtx.status === 'RESUME_NOT_EXIST' || userCtx.status === 'RESUME_ERROR') {
+      if (chatRoomCtx.status === 'CONNECTED' && (userCtx.status === 'RESUME_EXIST' || userCtx.status === 'RESUME_NOT_EXIST' || userCtx.status === 'RESUME_ERROR')) {
         navigation.navigate('Main');
       }
-    }, [userCtx.status])
+      
+    }, [userCtx.status, chatRoomCtx.status])
   );
 
   return (

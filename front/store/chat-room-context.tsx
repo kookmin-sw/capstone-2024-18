@@ -2,17 +2,17 @@ import React, { createContext, useState, useEffect, useMemo, useContext, useRef}
 import axios from 'axios';
 import Config from 'react-native-config';
 
-import StompJs, { IMessage, Client } from '@stomp/stompjs';
+import StompJs, { Client } from '@stomp/stompjs';
 import { AuthContext } from './auth-context';
 import { binaryBodyToString } from '../util/binaryBodyToString';
-import { ChatContext, Chats } from './chat-context';
+import { ChatContext } from './chat-context';
 import { ChatProps } from '../components/chat/Chat';
 import { v4 as uuidv4 } from 'uuid';
 import { UserContext } from './user-context';
 import { createAlertMessage } from '../util/alert';
 import { parseDateString } from '../util/parseTime';
 import { AppState, AppStateStatus } from 'react-native';
-import { saveChatHistory } from '../util/encryptedStorage';
+import { loadCache, saveCache, saveData } from '../util/encryptedStorage';
 
 const LOCALHOST = Config.LOCALHOST;
 const SOCKET_URL = Config.SOCKET_URL;
@@ -21,6 +21,7 @@ interface ChatRoomContextType {
   websocket: StompJs.Client | null,
   sentHeartIds: number[],
   chatRooms: { [roomId: number]: ChatRoom },
+  status: string,
   getChatRoomList: () => void;
   sendHeart: (roomId: number) => void,
   acceptHeart: (roomId: number) => void,
@@ -34,6 +35,7 @@ export const ChatRoomContext = createContext<ChatRoomContextType>({
   websocket: null,
   sentHeartIds: [],
   chatRooms: {},
+  status: '',
   getChatRoomList: () => {},
   sendHeart: (roomId: number) => {},
   acceptHeart: (roomId: number) => {},
@@ -117,6 +119,8 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   const [websocket, setWebsocket] = useState<StompJs.Client | null>(null);
   const [chatRooms, setChatRooms] = useState<{ [roomId: number]: ChatRoom }>({});
   const [sentHeartIds, setSentHeartIds] = useState<number[]>([]);
+  const [subscription, setSubscription] = useState<StompJs.StompSubscription | null>(null);
+  const [status, setStatus] = useState('');
 
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
@@ -130,7 +134,6 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
         headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
       };
       const response = await axios.get(endpoint, config);
-      console.log(response.data);
       const { chatRoomHeartList, chatRoomOpenList, chatRoomMessageList, chatRoomCloseList }: ChatRoomResponse = response.data;
       
       chatRoomHeartList.map(chatRoomListItem => {
@@ -264,9 +267,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     if (!websocket?.connected) return;
     websocket?.publish({
       destination: '/pub/chat/messages',
-      headers: {
-        Authorization: "Bearer " + authCtx.accessToken,
-      },
+      headers: { Authorization: "Bearer " + authCtx.accessToken },
       body: JSON.stringify({ 
         roomId: roomId.toString(), 
         receiveId: chatRooms[roomId].senderId.toString(), 
@@ -293,9 +294,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   const sendHeart = (receiveId: number) => {
     websocket?.publish({
       destination: '/pub/chat/send-heart',
-      headers: {
-        Authorization: "Bearer " + authCtx.accessToken,
-      },
+      headers: { Authorization: "Bearer " + authCtx.accessToken },
       body: JSON.stringify({ receiveId: receiveId.toString() })
     });
     setSentHeartIds(prevIds => [...prevIds, receiveId]);
@@ -342,9 +341,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     console.log("accecptHeart", roomId);
     websocket?.publish({
       destination: '/pub/chat/heart-reply',
-      headers: {
-        Authorization: "Bearer " + authCtx.accessToken,
-      },
+      headers: { Authorization: "Bearer " + authCtx.accessToken },
       body: JSON.stringify({ senderId: chatRooms[roomId].senderId.toString(), intention: "positive" })
     });
     const newChatRoom: ChatRoom = { ...chatRooms[roomId], type: 'OPENED', updatedAt: new Date() };
@@ -357,9 +354,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   const rejectHeart = (roomId: number) => {
     websocket?.publish({
       destination: '/pub/chat/heart-reply',
-      headers: {
-        Authorization: "Bearer " + authCtx.accessToken,
-      },
+      headers: { Authorization: "Bearer " + authCtx.accessToken },
       body: JSON.stringify({ senderId: chatRooms[roomId].senderId.toString(), intention: "negative" })
     });
     setChatRooms((prevChatRooms) => {
@@ -369,6 +364,8 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }
 
   const receiveChat = (receiveChat: ReceiveChat) => {
+    console.log("@@@@@@@@@@@@@@ receiveChat @@@@@@@@@@@@@");
+    console.log(receiveChat);
     const newChat: ChatProps = {
       id: uuidv4(),
       senderId: receiveChat.senderId,
@@ -376,16 +373,9 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       senderGeneratedFaceS3url: receiveChat.senderFaceInfoS3Url,
       senderOriginFaceS3url: receiveChat.senderFaceInfoS3Url,
       sendTime: parseDateString(receiveChat.sendTime),
-      // sendTime: new Date(),
       content: receiveChat.content,
     }
     chatCtx.addChat(receiveChat.roomId, newChat);
-
-    // const newChatRoom: ChatRoom = { ...chatRooms[receiveChat.roomId], updatedAt: new Date() };
-    // setChatRooms(prevChatRooms => ({
-    //   ...prevChatRooms,
-    //   [receiveChat.roomId]: newChatRoom,
-    // }));
   }
 
   const getRoomIdBySenderId = (senderId: number): number => {
@@ -395,28 +385,6 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       }
     }
     return 0;
-  };
-
-  const transformAndSortChatBuffer = (chatBuffer: ChatProps[]): { [roomId: number]: ChatProps[] } => {
-    const result: { [key: number]: ChatProps[] } = {};
-  
-    chatBuffer.forEach(chat => {
-      const senderId = chat.senderId; // sender가 senderId인지 확인 필요
-      const roomId = getRoomIdBySenderId(senderId); // senderId가 숫자로 변환 가능한지 확인 필요
-  
-      if (roomId !== undefined) {
-        if (!result[roomId]) {
-          result[roomId] = [];
-        }
-        result[roomId].push(chat);
-      }
-    });
-  
-    Object.keys(result).forEach(roomId => {
-      result[Number(roomId)].sort((a, b) => a.sendTime.getTime() - b.sendTime.getTime());
-    });
-  
-    return result;
   };
 
   interface ConnectChatResponse {
@@ -435,10 +403,6 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [chatBuffer, setChatBuffer] = useState<ChatProps[]>([]);
   const chatBufferRef = useRef<ChatProps[]>(chatBuffer);
-
-  useEffect(() => {
-    chatBufferRef.current = chatBuffer;
-  }, [chatBuffer]);
 
   const connectChat = (connectChatResponse: ConnectChatResponse) => {
     console.log("@@@@@@@@@@@@@connectChat", connectChatResponse.content);
@@ -467,108 +431,104 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     }, 1000);
   };
 
-  useEffect(() => {
-    if (authCtx.status !== 'INITIALIZED') return;
-    setTimeout(() => {
-      getChatRoomList();
-    }, 1500)
-  }, [authCtx.status])
-
-
-  const subscriptions = new Map();
-
-  useEffect(() => {
-    if (authCtx.status !== 'INITIALIZED') return;
+  const initializeClient = () => {
+    setStatus('INITIALIZE');
     const stompClient = new Client({
       brokerURL: SOCKET_URL, 
       reconnectDelay: 5000,
-      connectHeaders: {
-        Authorization: "Bearer " + authCtx.accessToken,
-      },
-      debug: (msg) => {
-        console.log(msg);
+      connectHeaders: { Authorization: "Bearer " + authCtx.accessToken },
+      debug: (msg) => { 
+        if (msg.includes('CONNECTED')) {
+          setStatus('INITIALIZED');
+        }
+        console.log('debug:', msg) 
       },
       forceBinaryWSFrames: true,
       appendMissingNULLonIncoming: true,
     });
-
-    const path = `/sub/chat/${authCtx.userId}`;
-    stompClient.onConnect = (frame) => {
-      setTimeout(() => {
-        createAlertMessage('onConnect');
-        console.log("Connected: " + frame);
-        if (subscriptions.has(path)) return;
-        const subscription = stompClient.subscribe(path, (message) => {
-          const { binaryBody, ...response } = message;
-          // console.log("\n\n\n\n\n", JSON.stringify(response));
-          console.log("\nbinarybody:", binaryBodyToString(binaryBody));
-          createAlertMessage(binaryBodyToString(binaryBody));
-          if (binaryBodyToString(binaryBody) === "대화 요청 성공") {
-            console.log("sendHeartResponse");
-            sendHeartResponse();
-          }
-          const responseData = JSON.parse(binaryBodyToString(binaryBody));
-          if (responseData.method === "receiveHeart") {
-            console.log("receiveHeart");
-            receiveHeart(responseData);
-          }
-          if (responseData.method === "receiveChat") {
-            console.log("receiveChat");
-            receiveChat(responseData);
-          }
-          if (responseData.method === "receiveHeartResponse") {
-            console.log("receiveHeartResponse")
-            receiveHeartResponse(responseData);
-          }
-          if (responseData.method === 'connectChat') {
-            console.log("connectChat")
-            connectChat(responseData);
-          }
-          // TODO: 
-          // receiveLeft
-        });
-        subscriptions.set(path, subscription);
-      }, 1000);
-      createAlertMessage('subscribed at ' + path);
-
-      setTimeout(() => {
-        stompClient.publish({
-          destination: '/pub/stomp/connect',
-          headers: {
-            Authorization: "Bearer " + authCtx.accessToken,
-          },
-        })
-      }, 2500);
-    };
-
-    stompClient.onStompError = (frame) => {
-      console.error("Broker reported error: " + frame.headers["message"]);
-      console.error("Additional details: " + frame.body);
-    };
-
     stompClient.activate();
     setWebsocket(stompClient);
+  }
 
-    return () => {
-      stompClient.publish({
-        destination: '/pub/stomp/disconnect',
-        headers: {
-          Authorization: "Bearer " + authCtx.accessToken,
-        },
-      })
-      stompClient.deactivate();
-    };
-  }, [authCtx.status]);
-  
-  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
+  const handleSocketResponse = (message: StompJs.IMessage) => {
+    const { binaryBody, ...response } = message;
+    // console.log("\n\n\n\n\n", JSON.stringify(response));
+    console.log("\nbinarybody:", binaryBodyToString(binaryBody));
+    createAlertMessage(binaryBodyToString(binaryBody));
 
-  const disconnect = async () => {
+    if (binaryBodyToString(binaryBody) === "저장 성공") {
+      console.log("connectResponse");
+      setStatus('CONNECTED')
+      createAlertMessage('CONNECTED');
+      return;
+    }
+    if (binaryBodyToString(binaryBody) === "성공") {
+      setStatus('DISCONNECTED');
+      createAlertMessage('DISCONNECTED');
+      return;
+    }
+    if (binaryBodyToString(binaryBody) === "대화 요청 성공") {
+      console.log("sendHeartResponse");
+      sendHeartResponse();
+      return;
+    }
+    const responseData = JSON.parse(binaryBodyToString(binaryBody));
+    if (responseData.method === "receiveHeart") {
+      console.log("receiveHeart");
+      receiveHeart(responseData);
+    }
+    if (responseData.method === "receiveChat") {
+      console.log("receiveChat");
+      receiveChat(responseData);
+    }
+    if (responseData.method === "receiveHeartResponse") {
+      console.log("receiveHeartResponse")
+      receiveHeartResponse(responseData);
+    }
+    if (responseData.method === 'connectChat') {
+      console.log("connectChat")
+      connectChat(responseData);
+    }
+    // TODO: 
+    // receiveLeft
+  }
+
+  const subscribe = () => {
+    if (websocket === null || authCtx.userId === 0 || subscription !== null) {
+      if (websocket === null) console.log('websocket === null');
+      if (authCtx.userId === 0) console.log('authCtx.userId === 0');
+      if (subscription !== null) console.log('subscription !== null');
+      return;
+    }
+    const path = `/sub/chat/${authCtx.userId}`;
+
+    const newSubscription = websocket.subscribe(path, (message) => {
+      handleSocketResponse(message);
+    });
+
+    setStatus('SUBSCRIBED')
+    createAlertMessage('subscribed at ' + path);
+    setSubscription(newSubscription);
+  }
+
+  const sendConnect = () => {
+    if (authCtx.status !== 'INITIALIZED') return;
+    setStatus('CONNECT')
+    websocket?.publish({
+      destination: '/pub/stomp/connect',
+      headers: { Authorization: "Bearer " + authCtx.accessToken },
+    })
+  }
+
+  const postDisconnect = async () => {
+    if (authCtx.status !== 'INITIALIZED') return;
     const method = 'disconnect: ' + authCtx.accessToken + '\n';
     const endpoint = `${LOCALHOST}/stomp/disconnect`;
     const config = { 
       headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
     };
     try {
+      setStatus('DISCONNECT');
       const response = await axios.post(endpoint, null, config);
       console.log(method, response.data);
     }
@@ -577,39 +537,85 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     }
   }
 
+  const unsubscribe = () => {
+    if (subscription === null) return;
+    subscription.unsubscribe();
+    setSubscription(null);
+    setStatus('UNSUBSCRIBED');
+  }
+
+  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
+  const prevAppState = useRef<AppStateStatus>(appState);
+  
   useEffect(() => {
-    const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (appState.match(/inactive|background/) && nextAppState === 'active') {
-        console.log('포그라운드 전환');
-        websocket?.publish({
-          destination: '/pub/stomp/connect',
-          headers: {
-            Authorization: "Bearer " + authCtx.accessToken,
-          },
-        })    
-      } else if (nextAppState === 'background') {
-        console.log('백그라운드 전환');
-        disconnect();
-      } else if (nextAppState === 'inactive') {
-        console.log('앱 종료');
-        disconnect();
+    const handleAppStateChange = (nextAppState: AppStateStatus) => { 
+      console.log('handleAppStateChange:', prevAppState.current, '->', nextAppState, status);
+      if (nextAppState === 'active') {
+        const handleConnect = async () => {
+          const userId = await loadCache('userId');
+          authCtx.setUserId(Number(userId));
+          subscribe();
+          sendConnect();
+        }
+        handleConnect();
       }
-      setAppState(nextAppState);
-    };
-
+      if (nextAppState === 'background') {
+        unsubscribe();
+        postDisconnect();
+      }
+      prevAppState.current = nextAppState;
+      setAppState(nextAppState); 
+    }
     const subscription = AppState.addEventListener('change', handleAppStateChange);
-
     return () => {
-      if (subscription) {
-        subscription.remove();
-      }
+      if (subscription) subscription.remove();
     };
-  }, [authCtx.accessToken]);
+  }, []);
+
+  useEffect(() => {
+    saveCache('userId', authCtx.userId);
+  }, [authCtx.userId]);
+
+  useEffect(() => {
+    if (authCtx.status === 'INITIALIZED') {
+      initializeClient();
+      getChatRoomList();
+    }
+  }, [authCtx.status]);
+
+  useEffect(() => {
+    if (status === 'INITIALIZED') {
+      subscribe();
+    }
+    if (status === 'SUBSCRIBED') {
+      sendConnect();
+    }
+  }, [status])
+
+  useEffect(() => {
+    return (() => {
+      websocket?.deactivate();
+      postDisconnect();
+    })
+  }, [])
+
+  useEffect(() => {
+    chatBufferRef.current = chatBuffer;
+  }, [chatBuffer]);
+
+  useEffect(() => {
+    console.log("subscription:", subscription);
+  }, [subscription])
+
+  useEffect(() => {
+    console.log('@@@@@@@@@@@@@@@ chatRoomCtx.status:', status, '@@@@@@@@@@@@@@@');
+  }, [status]);
 
   const value = useMemo(() => ({
     websocket,
     sentHeartIds,
     chatRooms,
+    status,
     getChatRoomList,
     sendHeart,
     acceptHeart,
@@ -617,7 +623,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     leftRoom,
     fetchChat,
     sendChat,
-  }), [websocket, chatRooms, sentHeartIds]);
+  }), [websocket, chatRooms, sentHeartIds, status]);
 
   return <ChatRoomContext.Provider value={value}>{children}</ChatRoomContext.Provider>;
 };

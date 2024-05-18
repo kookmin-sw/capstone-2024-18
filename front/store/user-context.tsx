@@ -154,9 +154,7 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   // 마스크 이미지 로딩 후 userState.faceinfo 업데이트
   const setResumeState = async () => {
     if (authCtx.accessToken) {
-      console.log("관상 분석 로딩 중");
       const response = await getMyResume(authCtx.accessToken);
-      console.log("관상 분석 로딩 끝");
 
       if (isResumeResponse(response)) {
         console.log("자기소개서 있음");
@@ -191,9 +189,9 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     };
   }, [authCtx.status, status])
 
-  useEffect(() => {
-    setResumeState();
-  }, [basicinfo, faceinfo, analysisinfo])
+  // useEffect(() => {
+  //   setResumeState();
+  // }, [basicinfo, faceinfo, analysisinfo])
 
   const value = useMemo(() => ({
     basicinfo,

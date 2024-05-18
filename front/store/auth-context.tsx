@@ -1,10 +1,11 @@
 import React, { createContext, useState, useEffect, useMemo} from 'react';
-import { removeToken, saveToken, loadToken } from '../util/encryptedStorage';
+import { removeToken, saveToken, loadToken, loadCache, saveCache } from '../util/encryptedStorage';
 import axios from 'axios';
 import Config from 'react-native-config';
 
 import { validResponse, errorResponse, handleError, isValidResponse, isErrorResponse } from '../util/auth';
 import { createAlertMessage } from '../util/alert';
+import { AppState, AppStateStatus } from 'react-native';
 
 const LOCALHOST = Config.LOCALHOST;
 
@@ -17,6 +18,7 @@ interface AuthContextType {
   reissue: () => Promise<validResponse | errorResponse>;
   reload: () => void;
   handleErrorResponse: (errorResponse: errorResponse) => void;
+  setUserId: (userId: number) => void,
   userId: number,
 }
 
@@ -35,6 +37,7 @@ export const AuthContext = createContext<AuthContextType>({
   reissue: async (): Promise<validResponse | errorResponse> => exampleResponse,
   reload: () => {},
   handleErrorResponse: (errorResponse: errorResponse) => {},
+  setUserId: (userId: number) => {},
   userId: 0,
 });
 
@@ -250,8 +253,12 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
     const reisseInitial = async () => {
-      await reissue();
-      setStatus('INITIALIZED');
+      const response = await reissue();
+      if (isValidResponse(response)) {
+        setStatus('INITIALIZED');
+      } else {
+        setStatus('NOT_EXIST');
+      }
     }
     reisseInitial();
   }, [status])
@@ -269,6 +276,7 @@ const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
     reissue,
     reload,
     handleErrorResponse,
+    setUserId,
     userId,
   }), [accessToken, refreshToken, status, userId]);
 
