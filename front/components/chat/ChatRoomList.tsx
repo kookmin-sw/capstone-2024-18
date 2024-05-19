@@ -32,7 +32,7 @@ const ChatRoomList = ({navigation}: any) => {
 
   return (
     <View style={styles.container}>
-    {false ? <>
+    {chatRoomCtx.chatRooms ? <>
       <HeaderBar onPress={() => {}}>다이렉트 메세지</HeaderBar>
       <Text style={{color:'black'}}>myUserId: {authCtx.userId}</Text>
       <ScrollView style={{ padding: 20 }}>
