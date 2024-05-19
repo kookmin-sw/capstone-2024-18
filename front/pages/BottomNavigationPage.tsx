@@ -53,6 +53,7 @@ const Test1 = ({navigation}: any) => {
                         {
                           text: "확인", onPress: () => {
                             navigation.navigate(route.name);
+                            userCtx.setStatus('RESUME_EXIST')
                             setPreviousRoute(route.name);
                           }
                         },
@@ -94,7 +95,7 @@ const Test1 = ({navigation}: any) => {
           <Tab.Screen 
             name="sub1" component={Friends} 
             options={{
-              tabBarIcon: () => <Icon source={"home"} size={25} color={'#626262'} />,
+              tabBarIcon: () => <Icon source={"home"} size={20} color={'#626262'} />,
               tabBarLabel: 'Friends',
             }}/>
           <Tab.Screen 
@@ -106,14 +107,14 @@ const Test1 = ({navigation}: any) => {
           <Tab.Screen 
             name="sub2" component={SelfProduce}
             options={{
-              tabBarIcon: () => <Icon source={"file"} size={25} color={'#626262'} />,
+              tabBarIcon: () => <Icon source={"file"} size={20} color={'#626262'} />,
               tabBarLabel: '자기소개서',
             }}
             />
           <Tab.Screen 
             name="sub3" component={Profile}
             options={{
-              tabBarIcon: () => <Icon source={'account'} size={25} color={'#626262'} />,
+              tabBarIcon: () => <Icon source={'account'} size={20} color={'#626262'} />,
               tabBarLabel: 'Profile',
             }}/>
         </Tab.Navigator>

@@ -18,6 +18,7 @@ import { createAlertMessage } from '../util/alert.tsx';
 import { StompClientContext } from '../store/socket-context.tsx';
 import { UserContext } from '../store/user-context.tsx';
 import { useFocusEffect } from '@react-navigation/native';
+import CustomButton from '../components/CustomButton.tsx';
 
 
 const Friends = ({navigation}: any) => {
@@ -97,17 +98,6 @@ const Friends = ({navigation}: any) => {
     }
   }
 
-  useEffect(() => {
-    if (userCtx.resumeinfo) {
-      setFaces({FIT: faces["FIT"]});
-      for (const category of userCtx.resumeinfo.categories) {
-        tryGetCategoryUser(category);
-      }
-    } else {
-      setFaces({FIT: faces["FIT"]})
-    }
-  }, [userCtx.resumeinfo])
-
   const tryGetCategoryUser = async (category: string) => {
     if (authCtx.accessToken) {
       const response = await getCategoryUser(
@@ -169,45 +159,33 @@ const Friends = ({navigation}: any) => {
 
   const categoriesText = [["맛집 탐방 같이 하실 분", 'FOOD'], ["탁구하러 가실 분", "WORKOUT"], ["듄 함께 보실 분~", "MOVIE"], ["패션 참견 해주실 분99", "FASHION"], ["연애 상담 해드립니다~!", "DATING"], ["팝송 러버 여기 모여라", "MUSIC"], ["치타는 웃고 있다", "STUDY"], ["심심한데 이야기하실 분", "ETC"]];
 
-  const testButtonHandler = async () => {
-    const method = "getBasicInfo";
-    const endpoint =  `${Config.LOCALHOST}/basic-info`;
-    const config = { 
-      headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
-    };
-    try {
-      const response = await axios.get(endpoint, config);
-      createAlertMessage(response.data);
-    } catch (error: any) {
-      createAlertMessage(error);
-    }
-  }
-
-  const socketCtx = useContext(StompClientContext);
-  const handleLogout = () => {
-    socketCtx.disconnect();
-    authCtx.signout();
-  }
-  useFocusEffect(
-    useCallback(() => {
+  useEffect(() => {
+    if (userCtx.resumeinfo) {
+      setFaces({FIT: {content: [], last: false}})
+      for (const category of userCtx.resumeinfo.categories) {
+        tryGetCategoryUser(category);
+      }
       tryGetGoodCombi();
-    }, [])
-  )
+    } else {
+      setFaces({FIT: {content: [], last: false}})
+    }
+  }, [userCtx.resumeinfo])
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: colors.white}}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{backgroundColor: colors.white}}>
       {/* 이미지 슬라이더 */}
-      <CarouselSlider
-        pageWidth={pageWidth}
-        autoScrollToNextPage
-        autoScrollToNextPageInterval={3000}
-        pageHeight={pageWidth}
-        offset={offset}
-        gap={gap}
-        data={images}
-        onPageChange={setPage}
-        renderItem={renderItem}/>
-
+      <View>
+        <CarouselSlider
+          pageWidth={pageWidth}
+          autoScrollToNextPage
+          autoScrollToNextPageInterval={3000}
+          pageHeight={pageWidth}
+          offset={offset}
+          gap={gap}
+          data={images}
+          onPageChange={setPage}
+          renderItem={renderItem}/>
+      </View>
       <View style={{flexDirection: 'row', alignSelf: 'center', paddingTop: 10}}>
       {
         images.map((item, idx) => {
@@ -220,29 +198,29 @@ const Friends = ({navigation}: any) => {
         })
       }
       </View>
-      <View style={{ backgroundColor: colors.white }}>
-        <View style={styles.personalRecommendTop}>
-          <View style={styles.sectionTitleContainer}>
-            <Text style={styles.sectionTitle}>나와 잘 맞는 관상</Text>
-            <View style={{flex: 1}}/>
-            <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: "FIT"})}}>
-              <Text style={[styles.sectionText, { color: colors.gray6 }]}>전체 보러가기{">"}</Text>
-            </TouchableOpacity>
+      {(userCtx.resumeinfo !== undefined) ? <>
+        <View>
+          <View style={styles.personalRecommendTop}>
+            <View style={styles.sectionTitleContainer}>
+              <Text style={styles.sectionTitle}>나와 잘 맞는 관상</Text>
+              <View style={{flex: 1}}/>
+              <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: "FIT"})}}>
+                <Text style={[styles.sectionText, { color: colors.gray6 }]}>전체 보러가기{">"}</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={[{paddingLeft: 27}, styles.sectionText]}>AI가 분석한 {userCtx.basicinfo.nickname}님의 베스트 매치 관상 추천</Text>
           </View>
-          <Text style={[{paddingLeft: 27}, styles.sectionText]}>AI가 분석한 {userCtx.basicinfo.nickname}님의 베스트 매치 관상 추천</Text>
         </View>
-      </View>
-      <FlatList 
-        horizontal 
-        data={faces.FIT.content} 
-        renderItem={renderCardItem}
-        style={{paddingVertical: 26, paddingHorizontal: 16}}
-        onEndReached={() => fetchNewData("FIT")}/>
-      {Object.keys(faces).length > 1 ?
-        <View style={{backgroundColor: colors.white, paddingTop: 20}}>
-          <Text style={styles.categorySectionTitle}>카테고리별 맞춤 추천</Text>
-          {
-            categoriesText.map(([text, tag], idx) => {
+        <FlatList 
+          horizontal 
+          data={faces.FIT.content} 
+          renderItem={renderCardItem}
+          style={{paddingVertical: 26, paddingHorizontal: 16}}
+          onEndReached={() => fetchNewData("FIT")}/>
+        {Object.keys(faces).length > 1 ?
+          <View style={{backgroundColor: colors.white, paddingTop: 20}}>
+            <Text style={styles.categorySectionTitle}>카테고리별 맞춤 추천</Text>
+            {categoriesText.map(([text, tag], idx) => {
               if (faces[`${tag}`]) {
                 return (
                   <View key={idx}>
@@ -264,8 +242,22 @@ const Friends = ({navigation}: any) => {
                 );
               }
             })
-          }
-        </View> : <></>
+            }
+          </View> : <></>
+        }</>
+        : 
+        <View style={{flex: 1, paddingTop: 20, paddingHorizontal: 32, alignItems: 'center', justifyContent: 'center'}}>
+          <Text style={styles.sectionText}>자기소개서를 작성하시면, 유저를 추천해드립니다.</Text>
+          <View style={{flex: 1}}/>
+          <View style={styles.bottomContainer}>
+            <CustomButton 
+              onPress={()=>{navigation.navigate('sub2');}}
+              containerStyle={styles.pointButton} 
+              textStyle={styles.buttonText}>
+                자기소개서 화면으로 이동하기
+            </CustomButton>
+          </View>
+        </View>
       }
     </ScrollView>
   );
@@ -304,6 +296,22 @@ const styles = StyleSheet.create({
     paddingBottom: 11, 
     borderColor: colors.white,
   },
+  bottomContainer: {
+    alignItems: "center",
+    marginBottom: 23,
+    paddingHorizontal: 3,
+  },
+  pointButton: {
+    backgroundColor: colors.point, 
+    marginHorizontal: 5, 
+    elevation: 4
+  }, 
+  buttonText: {
+    color: colors.white, 
+    fontSize:18, 
+    letterSpacing: -18* 0.02, 
+    fontFamily: "Pretendard-SemiBold"
+  }
 });
 
 export default Friends;
