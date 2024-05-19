@@ -10,6 +10,7 @@ import { UserContext } from "../store/user-context.tsx";
 import ChatRoomList from "../components/chat/ChatRoomList.tsx";
 import { deleteMyResume } from "../util/auth.tsx";
 import { AuthContext } from "../store/auth-context.tsx";
+import { colors } from "../assets/colors.tsx";
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -19,6 +20,8 @@ const Test1 = ({navigation}: any) => {
 
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+
+  const selfUrl = userCtx.faceinfo.generatedS3url;
 
   useEffect(() => {
     if (authCtx.status === 'LOGGED_OUT') {
@@ -36,10 +39,11 @@ const Test1 = ({navigation}: any) => {
         <Tab.Navigator 
           shifting={true}
           initialRouteName='sub1' 
-          activeColor='#626262'
+          activeColor={colors.point}
           screenOptions={{
-            tabBarColor: '#D9D9D9',
+            tabBarColor: colors.white,
           }}
+          barStyle={{borderTopWidth: 1.5, borderTopColor: '#FFECEB', height: 60}}
           screenListeners={({route, navigation}) => {
             return ({
               tabPress: e => {
@@ -53,6 +57,7 @@ const Test1 = ({navigation}: any) => {
                         {
                           text: "확인", onPress: () => {
                             navigation.navigate(route.name);
+                            userCtx.setStatus('RESUME_EXIST')
                             setPreviousRoute(route.name);
                           }
                         },
@@ -94,26 +99,26 @@ const Test1 = ({navigation}: any) => {
           <Tab.Screen 
             name="sub1" component={Friends} 
             options={{
-              tabBarIcon: () => <Icon source={"home"} size={25} color={'#626262'} />,
+              tabBarIcon: () => <Icon source={"home"} size={25} color={'#FFB8B3'}/>,
               tabBarLabel: 'Friends',
             }}/>
           <Tab.Screen 
             name="sub4" component={ChatRoomList}
             options={{
-              tabBarIcon: () => <Icon source={"chat"} size={20} color={'#626262'} />,
+              tabBarIcon: () => <Icon source={"chat"} size={25} color={'#FFB8B3'} />,
               tabBarLabel: 'Chat',
             }}/>
           <Tab.Screen 
             name="sub2" component={SelfProduce}
             options={{
-              tabBarIcon: () => <Icon source={"file"} size={25} color={'#626262'} />,
-              tabBarLabel: '자기소개서',
+              tabBarIcon: () => <Icon source={"file"} size={25} color={'#FFB8B3'} />,
+              tabBarLabel: 'Produce',
             }}
             />
           <Tab.Screen 
             name="sub3" component={Profile}
             options={{
-              tabBarIcon: () => <Icon source={'account'} size={25} color={'#626262'} />,
+              tabBarIcon: () => <View style={{borderRadius: 25, overflow: 'hidden'}}><Icon source={{uri: selfUrl}} size={25}/></View>,
               tabBarLabel: 'Profile',
             }}/>
         </Tab.Navigator>
