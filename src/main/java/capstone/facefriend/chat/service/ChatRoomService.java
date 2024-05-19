@@ -5,7 +5,6 @@ import capstone.facefriend.chat.domain.ChatRoom;
 import capstone.facefriend.chat.domain.ChatRoomInfo;
 import capstone.facefriend.chat.domain.ChatRoomMember;
 import capstone.facefriend.chat.exception.ChatException;
-import capstone.facefriend.chat.exception.ChatExceptionType;
 import capstone.facefriend.chat.repository.ChatMessageRepository;
 import capstone.facefriend.chat.repository.ChatRoomInfoRedisRepository;
 import capstone.facefriend.chat.repository.ChatRoomMemberRepository;
@@ -27,7 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static capstone.facefriend.chat.exception.ChatExceptionType.*;
+import static capstone.facefriend.chat.exception.ChatExceptionType.NOT_FOUND_CHAT_ROOM;
+import static capstone.facefriend.chat.exception.ChatExceptionType.NOT_FOUND_CHAT_ROOM_MEMBER;
 
 @Service
 @Slf4j
@@ -105,22 +105,50 @@ public class ChatRoomService {
             ChatRoom.Status status = chatRoomMember.getChatRoom().getStatus();
 
             if (status == ChatRoom.Status.set) {
+                String memberFaceInfo = "";
+                String senderFaceInfo = "";
                 Member sender = identifySender(chatRoomMember, memberId);
                 Boolean isSender = isSender(chatRoomMember, memberId);
-                ChatRoomHeartResponse chatRoomHeartResponse = ChatRoomHeartResponse.of(member, sender, chatRoomMember.getChatRoom(), isSender);
+                if(isSender == true) {
+                    memberFaceInfo = chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url();
+                    senderFaceInfo = chatRoomMember.getReceiverFaceInfoByLevel().getGeneratedByLevelS3url();
+                } else {
+                    memberFaceInfo = chatRoomMember.getReceiverFaceInfoByLevel().getGeneratedByLevelS3url();
+                    senderFaceInfo = chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url();
+                }
+                ChatRoomHeartResponse chatRoomHeartResponse = ChatRoomHeartResponse.of(member, sender, chatRoomMember.getChatRoom(), senderFaceInfo, memberFaceInfo,isSender);
                 chatRoomsHeart.add(chatRoomHeartResponse);
 
             } else if (status == ChatRoom.Status.progress) {
+                String memberFaceInfo = "";
+                String senderFaceInfo = "";
                 Member sender = identifySender(chatRoomMember, memberId);
                 ChatMessage chatMessage = chatMessageRepository.findFirstByChatRoomIdOrderBySendTimeDesc(chatRoomMember.getChatRoom().getId());
-                ChatRoomMessageResponse chatRoomResponse = ChatRoomMessageResponse.of(member, sender, chatRoomMember.getChatRoom(), chatMessage);
+                Boolean isSender = isSender(chatRoomMember, memberId);
+                if(isSender == true) {
+                    memberFaceInfo = chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url();
+                    senderFaceInfo = chatRoomMember.getReceiverFaceInfoByLevel().getGeneratedByLevelS3url();
+                } else {
+                    memberFaceInfo = chatRoomMember.getReceiverFaceInfoByLevel().getGeneratedByLevelS3url();
+                    senderFaceInfo = chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url();
+                }
+                ChatRoomMessageResponse chatRoomResponse = ChatRoomMessageResponse.of(member, sender, chatRoomMember.getChatRoom(), senderFaceInfo, memberFaceInfo, chatMessage);
                 chatRoomsMessage.add(chatRoomResponse);
 
             } else if (status == ChatRoom.Status.open) {
+                String memberFaceInfo = "";
+                String senderFaceInfo = "";
                 Member sender = identifySender(chatRoomMember, memberId);
-                ChatRoomOpenResponse chatRoomOpenResponse = ChatRoomOpenResponse.of(member, sender, chatRoomMember.getChatRoom(), OPEN_MESSAGE);
+                Boolean isSender = isSender(chatRoomMember, memberId);
+                if(isSender == true) {
+                    memberFaceInfo = chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url();
+                    senderFaceInfo = chatRoomMember.getReceiverFaceInfoByLevel().getGeneratedByLevelS3url();
+                } else {
+                    memberFaceInfo = chatRoomMember.getReceiverFaceInfoByLevel().getGeneratedByLevelS3url();
+                    senderFaceInfo = chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url();
+                }
+                ChatRoomOpenResponse chatRoomOpenResponse = ChatRoomOpenResponse.of(member, sender, chatRoomMember.getChatRoom(), senderFaceInfo, memberFaceInfo, OPEN_MESSAGE);
                 chatRoomsOpen.add(chatRoomOpenResponse);
-
             } else if (status == ChatRoom.Status.close) {
                 Member leftMember = identifyLeftMember(memberId, chatRoomMember);
                 if (member != leftMember) {

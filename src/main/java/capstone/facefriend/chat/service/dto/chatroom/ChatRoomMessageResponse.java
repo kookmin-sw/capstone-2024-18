@@ -17,15 +17,15 @@ public record ChatRoomMessageResponse(
         String content
 
 ){
-    public static ChatRoomMessageResponse of(Member member, Member sender, ChatRoom chatRoom, ChatMessage message) {
+    public static ChatRoomMessageResponse of(Member member, Member sender, ChatRoom chatRoom, String senderFaceInfo, String memberFaceInfo, ChatMessage message) {
         return new ChatRoomMessageResponse(
                 member.getId(),
                 member.getBasicInfo().getNickname(),
-                member.getFaceInfo().getGeneratedS3url(),
+                memberFaceInfo,
                 member.getFaceInfo().getOriginS3url(),
                 sender.getId(),
                 sender.getBasicInfo().getNickname(),
-                sender.getFaceInfo().getGeneratedS3url(),
+                senderFaceInfo,
                 sender.getFaceInfo().getOriginS3url(),
                 chatRoom,
                 message.getContent()

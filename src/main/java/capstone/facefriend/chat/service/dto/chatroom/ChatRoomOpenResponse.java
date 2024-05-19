@@ -15,18 +15,18 @@ public record ChatRoomOpenResponse (
         ChatRoom chatRoom,
         String message
 ) {
-    public static ChatRoomOpenResponse of(Member member, Member sender, ChatRoom chatRoom, String message) {
+    public static ChatRoomOpenResponse of(Member member, Member sender, ChatRoom chatRoom, String senderFaceInfo, String memberFaceInfo, String openMessage) {
         return new ChatRoomOpenResponse(
                 member.getId(),
                 member.getBasicInfo().getNickname(),
-                member.getFaceInfo().getGeneratedS3url(),
+                memberFaceInfo,
                 member.getFaceInfo().getOriginS3url(),
                 sender.getId(),
                 sender.getBasicInfo().getNickname(),
-                sender.getFaceInfo().getGeneratedS3url(),
+                senderFaceInfo,
                 sender.getFaceInfo().getOriginS3url(),
                 chatRoom,
-                message
+                openMessage
         );
     }
 }
