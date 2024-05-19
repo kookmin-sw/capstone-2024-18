@@ -89,7 +89,7 @@ const FaceFeaturePage = ({navigation}: any) => {
   const clickButton = async () => {
     if (pageIndex === contents.length - 1) {
       // 메인 페이지로 이동
-      createAlertMessage("관상 분석 내용은 프로필에서 다시 볼 수 있습니다", () => {
+      createAlertMessage("관상 분석 내용은 프로필에서 다시 볼 수 있습니다.", () => {
         userCtx.setStatus('FACE_FEATURE_EXIST');
         navigation.goBack();
       })
