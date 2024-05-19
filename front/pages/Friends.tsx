@@ -172,7 +172,7 @@ const Friends = ({navigation}: any) => {
   }, [userCtx.resumeinfo])
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{backgroundColor: colors.white}}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{backgroundColor: colors.white, minHeight: '100%'}}>
       {/* 이미지 슬라이더 */}
       <View>
         <CarouselSlider

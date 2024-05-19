@@ -7,8 +7,10 @@ import { ChatRoomContext } from '../../store/chat-room-context';
 import { formatTimeDifference } from '../../util/formatTime';
 import { ChatContext } from '../../store/chat-context';
 import { AuthContext } from '../../store/auth-context';
+import { Icon } from 'react-native-paper';
+import CustomButton from '../CustomButton';
 
-const ChatRoomList = () => {
+const ChatRoomList = ({navigation}: any) => {
   const chatRoomCtx = useContext(ChatRoomContext);
   const chatCtx = useContext(ChatContext);
   const [roomId, setRoomId] = useState(0);
@@ -30,7 +32,7 @@ const ChatRoomList = () => {
 
   return (
     <View style={styles.container}>
-    {!roomId && <>
+    {false ? <>
       <HeaderBar onPress={() => {}}>다이렉트 메세지</HeaderBar>
       <Text style={{color:'black'}}>myUserId: {authCtx.userId}</Text>
       <ScrollView style={{ padding: 20 }}>
@@ -54,7 +56,23 @@ const ChatRoomList = () => {
         </Pressable>)
         )}
       </ScrollView>
-    </>}
+    </>:
+    <View style={[styles.container, {paddingHorizontal: 32}]}>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Icon size={150} source={require('../../assets/images/surprise.png')}/>
+        <View style={{marginTop: 20, alignItems: 'center'}}>
+          <Text style={styles.hintText}>채팅방이 존재하지 않습니다. {'\n'}새로운 친구를 찾아보세요!</Text>
+        </View>
+      </View>
+      <View style={styles.bottomContainer}>
+        <CustomButton
+          containerStyle={{backgroundColor: colors.point, elevation: 4}}
+          onPress={()=>{navigation.navigate('sub1')}}
+          textStyle={{color: colors.white, fontSize: 18, fontFamily: 'Pretendard-SemiBold', letterSpacing: -18* 0.02}}>새로운 친구 찾으러 가기
+        </CustomButton>
+      </View>
+    </View>
+    }
     {!!roomId && <ChatPage onBack={handleOnBack} roomId={roomId}/>}
     </View>
   )
@@ -102,5 +120,17 @@ const styles = StyleSheet.create({
     fontSize: 12, 
     marginTop: 10, 
     marginRight: 10,
-  }
+  },
+  hintText: {
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 16,
+    letterSpacing: -16* 0.02,
+    textAlign: 'center',
+    color: colors.gray7
+  },
+  bottomContainer: {
+    alignItems: "center",
+    marginBottom: 23,
+    paddingHorizontal: 8,
+  },
 })
