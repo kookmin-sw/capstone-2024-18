@@ -120,8 +120,8 @@ public class ChatAop {
     // 수준에 따라 가중치를 조절해 generate_face_by_level() 호출하여 인공지능 서버에 이미지 생성을 요청한다.
     // 또한 가중치 이미지를 s3에 업데이트하고 그 url을 db에 저장한다.
     @Transactional
-    @Before("saveChatMessage()")
-    public void beforeSaveChatMessage(JoinPoint joinPoint) throws IOException {
+    @After("saveChatMessage()")
+    public void afterSaveChatMessage(JoinPoint joinPoint) throws IOException {
 
         Object[] params = joinPoint.getArgs();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -199,8 +199,8 @@ public class ChatAop {
 
     // 채팅방을 나가면 sender, receiver 의 generatedByLevel 을 모두 삭제한다.
     @Transactional
-    @Before("leftRoom()")
-    public void beforeLeftRoom(JoinPoint joinPoint) {
+    @After("leftRoom()")
+    public void afterLeftRoom(JoinPoint joinPoint) {
         Object[] params = joinPoint.getArgs();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
