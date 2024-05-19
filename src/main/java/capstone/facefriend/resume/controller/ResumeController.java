@@ -30,11 +30,19 @@ public class ResumeController {
     }
 
     @GetMapping("/resume")
-    public ResponseEntity<ResumeGetResponse> getResume(
+    public ResponseEntity<ResumeGetResponse> getResumeByResumeId(
             @AuthMember Long memberId,
             @RequestParam("resumeId") Long resumeId
     ) {
-        return ResponseEntity.ok(resumeService.getResume(memberId, resumeId));
+        return ResponseEntity.ok(resumeService.getResumeByResumeId(memberId, resumeId));
+    }
+
+    @GetMapping("/sender-resume")
+    public ResponseEntity<ResumeGetResponse> getResumeBySenderId(
+            @AuthMember Long memberId,
+            @RequestParam("senderId") Long senderId
+    ) {
+        return ResponseEntity.ok(resumeService.getResumeBySenderId(memberId, senderId));
     }
 
     @GetMapping("/my-resume")

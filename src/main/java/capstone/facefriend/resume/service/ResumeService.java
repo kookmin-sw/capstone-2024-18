@@ -66,7 +66,7 @@ public class ResumeService {
         );
     }
 
-    public ResumeGetResponse getResume(
+    public ResumeGetResponse getResumeByResumeId(
             Long memberId,
             Long resumeId
     ) {
@@ -88,6 +88,26 @@ public class ResumeService {
                 resume.getCategories(),
                 resume.getContent(),
                 isMine
+        );
+    }
+
+    public ResumeGetResponse getResumeBySenderId(
+            Long memberId,
+            Long senderId
+    ) {
+        Member sender = findMemberById(senderId);
+        Resume senderResume = findResumeByMember(sender);
+
+        return new ResumeGetResponse(
+                senderResume.getId(),
+                senderResume.getMember().getId(),
+                senderResume.getResumeImageS3urls(),
+                senderResume.getMember().getFaceInfo(),
+                senderResume.getMember().getBasicInfo(),
+                senderResume.getMember().getAnalysisInfo(),
+                senderResume.getCategories(),
+                senderResume.getContent(),
+                Boolean.FALSE
         );
     }
 
