@@ -151,9 +151,13 @@ const Friends = ({navigation}: any) => {
     return (
       <TouchableOpacity 
         key={item.resumeId} 
-        style={{marginHorizontal: 10, borderWidth: 1, borderRadius: 16, borderColor: colors.pastel_point}} 
+        style={{marginHorizontal: 10}} 
         onPress={() => navigation.navigate("OtherSelfProduce", {resumeId: item.resumeId})}>
-        <Image source={{uri: item.thumbnailS3url}} style={{borderRadius:16}} width={150} height={150}/>
+        <Image 
+          source={{uri: item.thumbnailS3url}} 
+          style={{borderRadius:16, borderWidth: 1, borderColor: colors.pastel_point}} 
+          width={150} height={150}
+        />
       </TouchableOpacity>);
   }}
 

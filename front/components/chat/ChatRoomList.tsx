@@ -65,8 +65,20 @@ const ChatRoomList = ({navigation}: any) => {
           <View style={{ flex: 1 }}>
             {chatRoom.content === '하트를 받았습니다.' && 
             <View style={{ flexDirection: 'row' }}>
-              <View><IconButton icon='close' style={styles.rejectButtonContainer} size={24} iconColor='#FFFFFFCC'/></View>
-              <View><IconButton icon='check' style={styles.acceptButtonContainer} size={24} iconColor='#FFFFFFCC'/></View>
+              <IconButton 
+                onPress={() => {chatRoomCtx.rejectHeart(roomId)}} 
+                icon='close-thick' 
+                style={styles.rejectButtonContainer} 
+                size={20} 
+                iconColor='#FFFFFFBB'
+              />
+              <IconButton 
+                onPress={() => {chatRoomCtx.rejectHeart(roomId)}} 
+                icon='check-bold' 
+                style={styles.acceptButtonContainer} 
+                size={20} 
+                iconColor={colors.pastel_point}
+              />
             </View>}
           </View>
           <Text style={styles.elapsedTimeText}>{formatTimeDifference(chatRoom.updatedAt)}</Text>
@@ -130,21 +142,22 @@ const styles = StyleSheet.create({
     color: colors.gray6, 
     fontSize: 12, 
     textAlign: 'right',
+    padding: 5,
   },
   acceptButtonContainer: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     backgroundColor: colors.point,
-    borderRadius: 40,
+    borderRadius: 30,
     margin: 0,
     marginRight: 8,
     marginTop: 8,
   },
   rejectButtonContainer: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     backgroundColor: colors.gray5,
-    borderRadius: 40,
+    borderRadius: 30,
     margin: 0,
     marginRight: 8,
     marginTop: 8,
