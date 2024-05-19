@@ -7,6 +7,7 @@ import { ChatRoomContext } from '../../store/chat-room-context';
 import { formatTimeDifference } from '../../util/formatTime';
 import { ChatContext } from '../../store/chat-context';
 import { AuthContext } from '../../store/auth-context';
+import { IconButton } from 'react-native-paper';
 
 const ChatRoomList = () => {
   const chatRoomCtx = useContext(ChatRoomContext);
@@ -47,8 +48,15 @@ const ChatRoomList = () => {
               <Text style={styles.nickname}>{chatRoom.senderNickname}</Text>
               <Text style={styles.chatContent}>{chatRoom.content ? chatRoom.content : "대화 내용이 없습니다."}</Text>
             </View>
-            <View style={styles.elapsedTimeContainer}>
-            <Text style={styles.elapsedTimeText}>{formatTimeDifference(chatRoom.updatedAt)}</Text>
+            <View style={styles.listItemRightContainer}>
+              <View style={{ flex: 1 }}>
+                {chatRoom.content === '하트를 받았습니다.' && 
+                <View style={{ flexDirection: 'row' }}>
+                  <View><IconButton icon='close' style={styles.rejectButtonContainer} size={24} iconColor='#FFFFFFCC'/></View>
+                  <View><IconButton icon='check' style={styles.acceptButtonContainer} size={24} iconColor='#FFFFFFCC'/></View>
+                </View>}
+              </View>
+              <Text style={styles.elapsedTimeText}>{formatTimeDifference(chatRoom.updatedAt)}</Text>
             </View>
           </View>
         </Pressable>)
@@ -76,10 +84,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listItemText: {
-    color: 'black',
+    color: colors.gray9,
   },
   nickname: {
-    color: 'black',
+    color: colors.gray9,
     fontSize: 16,
   },
   chatContent:{
@@ -94,13 +102,37 @@ const styles = StyleSheet.create({
     margin: 15,
   },
   elapsedTimeContainer: { 
-    height: 80, 
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    borderWidth: 1,
   },
   elapsedTimeText: {
     color: colors.gray6, 
     fontSize: 12, 
-    marginTop: 10, 
-    marginRight: 10,
+    textAlign: 'right',
+  },
+  acceptButtonContainer: {
+    width: 40,
+    height: 40,
+    backgroundColor: colors.point,
+    borderRadius: 40,
+    margin: 0,
+    marginRight: 8,
+    marginTop: 8,
+  },
+  rejectButtonContainer: {
+    width: 40,
+    height: 40,
+    backgroundColor: colors.gray5,
+    borderRadius: 40,
+    margin: 0,
+    marginRight: 8,
+    marginTop: 8,
+  },
+  heartButtonText: {
+    color: '#FFFFFF80',
+    fontSize: 12,
+  },
+  listItemRightContainer: {
   }
 })

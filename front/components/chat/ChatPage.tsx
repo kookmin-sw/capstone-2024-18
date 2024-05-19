@@ -125,7 +125,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대가 하트를 보냈습니다.</Text>
       <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
       <ScrollView contentContainerStyle={{ flex: 1 }}>
-        {/* <OtherUserSelfProduceChat resumeId={}/> */}
+        <OtherUserSelfProduceChat senderId={chatRoomCtx.chatRooms[roomId].senderId}/>
 
         <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingTop: 30}}>
             <View style={{width: "50%" }}>

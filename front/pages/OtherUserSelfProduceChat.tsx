@@ -7,7 +7,7 @@ import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import CarouselSlider from '../components/CarouselSlider.tsx';
 import SelectableTag from '../components/SelectableTag.tsx';
 
-import { getOtherResume, isErrorResponse, isResumeResponse } from '../util/auth.tsx';
+import { getOtherResumeBySenderId, isErrorResponse, isResumeResponse } from '../util/auth.tsx';
 import { AuthContext } from "../store/auth-context.tsx";
 
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
@@ -17,10 +17,10 @@ import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import { ChatRoomContext } from '../store/chat-room-context.tsx';
 
 interface Props {
-  resumeId: number,
+  senderId: number,
 }
 
-const OtherUserSelfProduce = ({ resumeId }: Props) => {
+const OtherUserSelfProduceChat = ({ senderId }: Props) => {
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
 
@@ -77,9 +77,9 @@ const OtherUserSelfProduce = ({ resumeId }: Props) => {
 
   const tryGetResume = async () => {
     if (authCtx.accessToken) {
-      console.log(resumeId);
-      const response = await getOtherResume(
-        authCtx.accessToken, resumeId
+      console.log(senderId);
+      const response = await getOtherResumeBySenderId(
+        authCtx.accessToken, senderId
       );
       if (isResumeResponse(response)) {
         // 기본 정보 설정
@@ -92,7 +92,7 @@ const OtherUserSelfProduce = ({ resumeId }: Props) => {
           return {id: index, text: _basic}
         }));
         // setNickname(response.basicInfo.nickname);
-        setNickname(response.basicInfo.nickname ? response.basicInfo.nickname : `nickname${resumeId}`);
+        setNickname(response.basicInfo.nickname ? response.basicInfo.nickname : `nickname${senderId}`);
 
 
         // 이미지 설정
@@ -133,7 +133,7 @@ const OtherUserSelfProduce = ({ resumeId }: Props) => {
 
   useEffect(() => {
     tryGetResume();
-  }, [])
+  }, [senderId])
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: colors.white, paddingTop: 50 }}>
@@ -256,13 +256,14 @@ const OtherUserSelfProduce = ({ resumeId }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: "6%",
+    paddingHorizontal: 32,
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.white
   },
   profileName: {
     fontSize: 20, 
-    color: '#000000', 
+    fontFamily: 'Pretendard-SemiBold',
+    color: colors.gray7, 
     alignSelf: 'center'
   },
 
@@ -280,6 +281,8 @@ const styles = StyleSheet.create({
   },
   uneditableText: {
     color: colors.gray7, 
+    fontFamily: 'Pretendard-Medium',
+    letterSpacing: -14* 0.02,
     fontSize: 14,
     marginLeft: 9,
     marginRight: 9
@@ -296,6 +299,7 @@ const styles = StyleSheet.create({
   }, 
   sectionText: {
     fontSize: 14,
+    fontFamily: 'Pretendard-SemiBold',
     color: colors.gray9,
     paddingRight: 7
   }, 
@@ -314,6 +318,12 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     height: undefined
   },
+
+  bottomContainer: {
+    alignItems: "center",
+    marginBottom: 23,
+    paddingHorizontal: 8,
+  },
 });
 
-export default OtherUserSelfProduce;
+export default OtherUserSelfProduceChat;

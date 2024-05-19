@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   nicknameContainer: {
-    height: 20
+    height: 25,
   },
   timestampContainer: {
     justifyContent: "flex-end",

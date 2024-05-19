@@ -661,6 +661,38 @@ export const getOtherResume = async (accessToken: string, resumeId: number): Pro
   }
 }
 
+// 2.
+export const getOtherResumeBySenderId = async (accessToken: string, senderId: number): Promise<resumeResponse | errorResponse> => {
+  const method = "getOtherResumeBySenderId";
+  const endpoint = `${LOCALHOST}/sender-resume?senderId=${senderId}`;
+  const config = { 
+    headers: { Authorization: 'Bearer ' + accessToken }
+  };
+
+  try {
+    const response = await axios.get(endpoint, config);
+    const { resumeId, resumeImageS3urls, faceInfo, basicInfo, analysisInfo, categories, content, isMine } = response.data;
+    const responseInfo = {
+      method,
+      status: response.status,
+      message: "타유저의 자기소개서를 로딩했습니다.",
+      resumeId,
+      resumeImageS3urls,
+      faceInfo, 
+      basicInfo, 
+      analysisInfo, 
+      categories, 
+      content,
+      isMine
+    }
+    // console.log(responseInfo);
+    return responseInfo;
+  }
+  catch (error) {
+    return handleError(error, method);
+  }
+}
+
 // 3.
 export const getMyResume = async (accessToken: string): Promise<resumeResponse | errorResponse> => {
   const method = "getMyResume";
