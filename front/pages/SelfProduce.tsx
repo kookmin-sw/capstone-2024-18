@@ -469,13 +469,13 @@ const SelfProduce = ({navigation, route}: any) => {
           </View>
 
           <View style={[styles.section, {flexDirection: 'row'}, styles.bottomContainer]}>
-            {/* <View style={{width: "50%", display: edit ? 'none' : 'flex'}}>
+            <View style={{width: "50%", display: edit ? 'none' : 'flex'}}>
               <CustomButton 
                 containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 5, elevation: 4}} onPress={deleteAlert}
                 textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}>삭제하기
               </CustomButton>
-            </View> */}
-            <View style={{flex: 1}}>
+            </View>
+            <View style={{width: edit ? "100%" : "50%"}}>
               <CustomButton 
                 containerStyle={{backgroundColor: colors.point, marginHorizontal: 5, elevation: 4}} onPress={handleEditButton}
                 textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}>
