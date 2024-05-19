@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import static capstone.facefriend.chat.exception.ChatExceptionType.NOT_FOUND_CHAT_ROOM_MEMBER;
 import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
@@ -77,10 +78,10 @@ public class ChatAop {
         Long receiveId = -1L;
         for (int i = 0; i < method.getParameters().length; i++) {
             String paramName = method.getParameters()[i].getName();
-            if (paramName.equals("senderId")) {
+            if (paramName.equals("arg0")) {
                 senderId = (Long) params[i];
             }
-            if (paramName.equals("receiveId")) {
+            if (paramName.equals("arg1")) {
                 receiveId = (Long) params[i];
             }
         }
@@ -130,7 +131,7 @@ public class ChatAop {
         ChatMessage chatMessage = null;
         for (int i = 0; i < method.getParameters().length; i++) {
             String paramName = method.getParameters()[i].getName();
-            if (paramName.equals("chatMessage")) {
+            if (paramName.equals("arg0")) {
                 chatMessage = (ChatMessage) params[i];
             }
         }
@@ -209,10 +210,10 @@ public class ChatAop {
         Long memberId = null;
         for (int i = 0; i < method.getParameters().length; i++) {
             String paramName = method.getParameters()[i].getName();
-            if (paramName.equals("roomId")) {
+            if (paramName.equals("arg0")) {
                 roomId = (Long) params[i];
             }
-            if (paramName.equals("memberId")) {
+            if (paramName.equals("arg1")) {
                 memberId = (Long) params[i];
             }
         }
