@@ -93,7 +93,7 @@ const ChatRoomList = ({navigation}: any) => {
     {!roomId && <>
       <HeaderBar onPress={() => {}}>다이렉트 메세지</HeaderBar>
       <Text style={{color:'black'}}>myUserId: {authCtx.userId}</Text>
-      {chatRoomCtx.chatRooms ? chatRoomList : defaultContent}
+      {Object.keys(chatRoomCtx.chatRooms).length ? chatRoomList : defaultContent}
     </>}
     {!!roomId && <ChatPage onBack={handleOnBack} roomId={roomId}/>}
     </View>
