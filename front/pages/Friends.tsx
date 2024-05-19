@@ -46,18 +46,18 @@ const Friends = ({navigation}: any) => {
   const [ images, setImages ] = useState([
     {
       id: 1,
-      type: 'image',
-      source: require('../assets/images/banner1.png')
+      source: require('../assets/images/banner1.png'),
+      onPress: () => {navigation.navigate('Banner1')}
     },
     {
       id: 2,
-      type: 'image',
-      source: require('../assets/images/banner2.png')
+      source: require('../assets/images/banner2.png'),
+      onPress: () => {navigation.navigate('Banner2')}
     },
     {
       id: 3,
-      type: 'image',
-      source: require('../assets/images/banner3.png')
+      source: require('../assets/images/banner3.png'),
+      onPress: () => {navigation.navigate('Banner3')}
     },
   ]);
 
@@ -72,12 +72,14 @@ const Friends = ({navigation}: any) => {
    * @param containerStyle :이미지 슬라이더가 gap, offset 등을 설정할 수 있게, style을 파라미터로 받아서, 알맞은 ReactNode에 적용
    * @returns React.ReactNode
    */
-  function renderItem({id, type, source}: any,
+  function renderItem({id, source, onPress}: any,
   containerStyle: StyleProp<ViewStyle>) {
     return (
-      <ImageWithIconOverlay
-        source={source} borderRadius={0} key={id}
-        containerStyle={containerStyle}/>
+      <TouchableOpacity onPress={onPress}>
+        <ImageWithIconOverlay
+          source={source} borderRadius={0} key={id}
+          containerStyle={containerStyle}/>
+      </TouchableOpacity>
     );
   }
 
