@@ -92,9 +92,8 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     try{
       if (refreshing) return;
       setRefreshing(true);
-      // const sendTime = chats.length ? chats[0].sendTime : new Date();
-      // await chatRoomCtx.fetchChat(roomId, sendTime, page);
-      // setPage(prevPage => prevPage + 1);
+      const sendTime = (chats && chats[roomId]) ? chats[roomId].sendTime : new Date()
+      chatRoomCtx.fetchChat(roomId, sendTime);
       setRefreshing(false);
     } catch (error) {
       console.log("handleOnRefresh:", error);
