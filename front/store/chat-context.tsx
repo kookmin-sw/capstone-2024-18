@@ -64,9 +64,18 @@ const ChatContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
         return { ...chat, isDailyInitial, isInitial, isFinal };
       });
 
+      if (annotatedChats.length === 0) {
+        return prevChats;
+      }
+
       const safePrevChats = prevChats ?? [];
       const currChats = roomId in safePrevChats ? safePrevChats[roomId] : [];
-      return { ...safePrevChats, [roomId]: [ ...annotatedChats, ...currChats ]};
+      const currFirstChat: ChatProps = { 
+        ...currChats[0], 
+        isDailyInitial: getIsDailyInitial(annotatedChats[annotatedChats.length - 1], currChats[0]),
+        isInitial: getIsInitial(annotatedChats[annotatedChats.length - 1], currChats[0]),
+      }
+      return { ...safePrevChats, [roomId]: [ ...annotatedChats, currFirstChat, ...currChats.slice(1) ]};
     });
   }
 
