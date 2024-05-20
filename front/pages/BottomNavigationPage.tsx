@@ -43,7 +43,7 @@ const Test1 = ({navigation}: any) => {
           screenOptions={{
             tabBarColor: colors.white,
           }}
-          barStyle={{borderTopWidth: 1.5, borderTopColor: '#FFECEB', height: 60}}
+          barStyle={{borderTopWidth: 1.5, borderTopColor: '#FFECEB', height: 80}}
           screenListeners={({route, navigation}) => {
             return ({
               tabPress: e => {
