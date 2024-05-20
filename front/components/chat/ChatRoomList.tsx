@@ -25,7 +25,6 @@ const ChatRoomList = ({navigation}: any) => {
 
   useEffect(() => {
     if (roomId) return;
-    console.log(roomId);
     chatRoomCtx.getChatRoomList();
   }, [roomId])
 
@@ -66,14 +65,14 @@ const ChatRoomList = ({navigation}: any) => {
             {chatRoom.content === '하트를 받았습니다.' && 
             <View style={{ flexDirection: 'row' }}>
               <IconButton 
-                onPress={() => {chatRoomCtx.rejectHeart(roomId)}} 
+                onPress={() => {chatRoomCtx.rejectHeart(chatRoom.roomId)}} 
                 icon='close-thick' 
                 style={styles.rejectButtonContainer} 
                 size={20} 
                 iconColor='#FFFFFFBB'
               />
               <IconButton 
-                onPress={() => {chatRoomCtx.rejectHeart(roomId)}} 
+                onPress={() => {chatRoomCtx.acceptHeart(chatRoom.roomId)}} 
                 icon='check-bold' 
                 style={styles.acceptButtonContainer} 
                 size={20} 
