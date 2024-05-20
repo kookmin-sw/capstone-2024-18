@@ -179,7 +179,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
   // })
 
   useEffect(() => {
-    console.log(chatRoom);
+    console.log("chatRoom:", chatRoom);
   }, [chatRoom])
 
   useEffect(() => {

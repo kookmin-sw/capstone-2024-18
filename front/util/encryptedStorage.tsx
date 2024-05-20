@@ -40,8 +40,13 @@ export const removeToken = async (tokenType: "accessToken" | "refreshToken") => 
 export const saveChatHistory = async (chats: {[roomid: number]: ChatProps[]}, userId: number) => {
     try {
         const JSONChatHistory = JSON.stringify(chats);
+        if (JSONChatHistory === '{}') return;
         await EncryptedStorage.setItem(`chats-${userId}`, JSONChatHistory);
-        console.log("채팅 내역 저장 성공:", chats);
+
+        console.log("채팅 내역 저장 성공:");
+        Object.entries(chats).map((room) => {
+            console.log(`roomId ${room[0]}: ${room[1].length}개`)
+        })
     } catch (error) {
         console.log("채팅 내역 저장 실패", error);
     }
@@ -50,9 +55,12 @@ export const saveChatHistory = async (chats: {[roomid: number]: ChatProps[]}, us
 export const loadChatHistory = async (userId: number) => {
     try {
         const JSONChatHistory = await EncryptedStorage.getItem(`chats-${userId}`);
-        const chatHistory = JSONChatHistory ? JSON.parse(JSONChatHistory) : [];
+        const chatHistory: {[roomid: number]: ChatProps[]} = JSONChatHistory ? JSON.parse(JSONChatHistory) : [];
         if (chatHistory) {
-            console.log("채팅 내역 로딩 성공:", chatHistory);
+            console.log("채팅 내역 로딩 성공:");
+            Object.entries(chatHistory).map((room) => {
+                console.log(`roomId ${room[0]}: ${room[1].length}개`)
+            })
         }
         else {
             console.log("채팅 내역 로딩 실패");

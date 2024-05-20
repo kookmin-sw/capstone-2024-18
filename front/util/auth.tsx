@@ -284,7 +284,7 @@ export const getBasicInfo = async (accessToken: string): Promise<basicInfoRespon
       heightGroup,
       region,
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
@@ -526,7 +526,7 @@ export const getAnalysisInfoFull = async (accessToken: string): Promise<analysis
       message: "관상 분석을 로드했습니다.",
       analysisFull
     }
-    console.log(responseInfo);
+    // console.log(responseInfo);
     return responseInfo;
   }
   catch (error) {
