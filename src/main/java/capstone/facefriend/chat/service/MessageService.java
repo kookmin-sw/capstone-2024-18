@@ -2,7 +2,6 @@ package capstone.facefriend.chat.service;
 
 import capstone.facefriend.chat.domain.*;
 import capstone.facefriend.chat.exception.ChatException;
-import capstone.facefriend.chat.exception.ChatExceptionType;
 import capstone.facefriend.chat.repository.*;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyResponse;
@@ -15,7 +14,6 @@ import capstone.facefriend.member.domain.faceInfo.FaceInfoByLevel;
 import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.domain.member.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
-import capstone.facefriend.member.exception.member.MemberExceptionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import static capstone.facefriend.chat.exception.ChatExceptionType.*;
-import static capstone.facefriend.member.exception.member.MemberExceptionType.*;
+import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 
 @Service
 @Slf4j
@@ -152,7 +150,7 @@ public class MessageService {
             messageResponse.setIsRead(chatMessage.isRead());
         }
 
-        if (chatRoomMember.getReceiver().equals(receiver)) {
+        if (chatRoomMember.getReceiver().equals(sender)) {
             messageResponse.setMethod("receiveChat");
             messageResponse.setRoomId(chatMessage.getChatRoom().getId());
             messageResponse.setSenderId(senderId);
