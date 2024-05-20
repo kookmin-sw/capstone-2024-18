@@ -2,7 +2,6 @@ package capstone.facefriend.chat.service;
 
 import capstone.facefriend.chat.domain.*;
 import capstone.facefriend.chat.exception.ChatException;
-import capstone.facefriend.chat.exception.ChatExceptionType;
 import capstone.facefriend.chat.repository.*;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyRequest;
 import capstone.facefriend.chat.service.dto.heart.HeartReplyResponse;
@@ -15,7 +14,6 @@ import capstone.facefriend.member.domain.faceInfo.FaceInfoByLevel;
 import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.domain.member.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
-import capstone.facefriend.member.exception.member.MemberExceptionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import static capstone.facefriend.chat.exception.ChatExceptionType.*;
-import static capstone.facefriend.member.exception.member.MemberExceptionType.*;
+import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 
 @Service
 @Slf4j
@@ -253,13 +251,13 @@ public class MessageService {
             chatRoomMemberRepository.save(chatRoomMember);
 
             // 대화 수락
-            simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 수락");
+            simpMessagingTemplate.convertAndSend(exceptionDestination, heartReplyRequest);
 
         } else if (heartReplyRequest.intention().equals("negative")) {
             chatRoomMemberRepository.delete(chatRoomMember);
             chatRoomRepository.delete(chatRoom);
             // 대화 거절
-            simpMessagingTemplate.convertAndSend(exceptionDestination, "대화 거절");
+            simpMessagingTemplate.convertAndSend(exceptionDestination, heartReplyRequest);
 
         } else {
             simpMessagingTemplate.convertAndSend(exceptionDestination, ALREADY_CHATROOM);
