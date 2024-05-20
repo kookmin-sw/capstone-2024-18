@@ -60,6 +60,17 @@ const OtherUserSelfProduce = ({navigation}: any) => {
 
   const [ memberId, setMemberId ] = useState(0);  
   const chatRoomCtx = useContext(ChatRoomContext);
+
+  const [roomType, setRoomType] = useState('DEFAULT');
+
+  useEffect(() => {
+    Object.values(chatRoomCtx.chatRooms).map((room) => {
+      if (room.senderId === memberId) {
+        setRoomType(room.type)
+      }
+    });
+  }, [memberId])
+  
   /**
    * 이미지 슬라이더에 들어갈 컨텐츠 내용물 데이터를 React.ReactNode로 바꿔주는 함수
    * @param param0 :any
@@ -142,7 +153,22 @@ const OtherUserSelfProduce = ({navigation}: any) => {
 
   useEffect(() => {
     tryGetResume();
-  }, [])
+    chatRoomCtx.getChatRoomList();
+  }, []);
+
+  const isDisabled = roomType !== 'DEFALUT';
+
+  const sendHeartButton = 
+    <CustomButton 
+      containerStyle={{backgroundColor: isDisabled ? colors.pastel_point : colors.point, marginHorizontal: 5, elevation: 4}}
+      textStyle={{color: colors.white, fontSize:18, letterSpacing: -18 * 0.02, fontFamily: "Pretendard-SemiBold"}} 
+      disabled={isDisabled}
+      onPress={handleHeart}>
+      {roomType === 'DEFALUT' ? "하트 보내기" 
+      : roomType === 'SENT_HEART' ? "하트를 보냈습니다" 
+      : roomType === 'RECEIVED_HEART' ? "하트를 받았습니다" 
+      : roomType === 'OPENED' || roomType === 'CLOSED' ? "이미 채팅방이 존재합니다" : ""}
+    </CustomButton>
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{backgroundColor: colors.white}}>
@@ -262,11 +288,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
         </View>
 
         <View style={[styles.section, styles.bottomContainer]}>
-          <CustomButton 
-            containerStyle={{backgroundColor: colors.point, marginHorizontal: 5, elevation: 4}}
-            textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}} onPress={handleHeart}>
-            {"하트 보내기"}
-          </CustomButton>
+          {sendHeartButton}
         </View>
       </View>
     </ScrollView>
