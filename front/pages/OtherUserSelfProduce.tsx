@@ -156,7 +156,11 @@ const OtherUserSelfProduce = ({navigation}: any) => {
     chatRoomCtx.getChatRoomList();
   }, []);
 
-  const isDisabled = roomType !== 'DEFALUT';
+  useEffect(() => {
+    console.log('roomType', roomType)
+  }, [roomType])
+
+  const isDisabled = roomType !== 'DEFAULT' || roomType === undefined;
 
   const sendHeartButton = 
     <CustomButton 
@@ -164,7 +168,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
       textStyle={{color: colors.white, fontSize:18, letterSpacing: -18 * 0.02, fontFamily: "Pretendard-SemiBold"}} 
       disabled={isDisabled}
       onPress={handleHeart}>
-      {roomType === 'DEFALUT' ? "하트 보내기" 
+      {roomType === 'DEFAULT' || roomType === undefined ? "하트 보내기" 
       : roomType === 'SENT_HEART' ? "하트를 보냈습니다" 
       : roomType === 'RECEIVED_HEART' ? "하트를 받았습니다" 
       : roomType === 'OPENED' || roomType === 'CLOSED' ? "이미 채팅방이 존재합니다" : ""}
