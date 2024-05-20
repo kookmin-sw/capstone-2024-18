@@ -72,7 +72,7 @@ const ChatRoomList = ({navigation}: any) => {
                 iconColor='#FFFFFFBB'
               />
               <IconButton 
-                onPress={() => {chatRoomCtx.acceptHeart(chatRoom.roomId)}} 
+                onPress={() => {chatRoomCtx.acceptHeart(chatRoom.roomId); setRoomId(chatRoom.roomId)}} 
                 icon='check-bold' 
                 style={styles.acceptButtonContainer} 
                 size={20} 
