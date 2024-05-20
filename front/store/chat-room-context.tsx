@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useMemo, useContext, useRef} from 'react';
+import React, { createContext, useState, useEffect, useMemo, useContext, useRef } from 'react';
 import axios from 'axios';
 import Config from 'react-native-config';
 
@@ -12,7 +12,8 @@ import { UserContext } from './user-context';
 import { createAlertMessage } from '../util/alert';
 import { parseDateString } from '../util/parseTime';
 import { AppState, AppStateStatus } from 'react-native';
-import { loadCache, saveCache, saveData } from '../util/encryptedStorage';
+import { loadCache, saveCache } from '../util/encryptedStorage';
+import { formatISOStringNoMillis } from '../util/formatTime';
 
 const LOCALHOST = Config.LOCALHOST;
 const SOCKET_URL = Config.SOCKET_URL;
@@ -20,6 +21,7 @@ const SOCKET_URL = Config.SOCKET_URL;
 interface ChatRoomContextType {
   websocket: StompJs.Client | null,
   sentHeartIds: number[],
+  receivedHeartIds: number[],
   chatRooms: { [roomId: number]: ChatRoom },
   status: string,
   getChatRoomList: () => void;
@@ -27,13 +29,14 @@ interface ChatRoomContextType {
   acceptHeart: (roomId: number) => void,
   rejectHeart: (roomId: number) => void,
   leftRoom: (roomId: number) => void,
-  fetchChat: (roomId: number, sendTime: Date, pageNo: number) => void,
+  fetchChat: (roomId: number, sendTime: Date) => void,
   sendChat: (roomId: number, message: string) => void,
 }
 
 export const ChatRoomContext = createContext<ChatRoomContextType>({
   websocket: null,
   sentHeartIds: [],
+  receivedHeartIds: [],
   chatRooms: {},
   status: '',
   getChatRoomList: () => {},
@@ -41,7 +44,7 @@ export const ChatRoomContext = createContext<ChatRoomContextType>({
   acceptHeart: (roomId: number) => {},
   rejectHeart: (roomId: number) => {},
   leftRoom: (roomId: number) => {},
-  fetchChat: (roomId: number, sendTime: Date, pageNo: number) => {},
+  fetchChat: (roomId: number, sendTime: Date) => {},
   sendChat: (roomId: number, message: string) => {},
 });
 
@@ -114,11 +117,22 @@ interface ReceiveHeartResponse {
   intention: "positive" | "negative",
 }
 
+interface FetchedChat {
+  content: string,
+  sendTime: string,
+  senderId: number,
+  senderNickname: string,
+  senderOriginS3Url: string,
+  senderGeneratedS3Url: string;
+}
+
 const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) => {
 
   const [websocket, setWebsocket] = useState<StompJs.Client | null>(null);
   const [chatRooms, setChatRooms] = useState<{ [roomId: number]: ChatRoom }>({});
   const [sentHeartIds, setSentHeartIds] = useState<number[]>([]);
+  const [receivedHeartIds, setReceivedHeartIds] = useState<number[]>([]);
+
   const [subscription, setSubscription] = useState<StompJs.StompSubscription | null>(null);
   const [status, setStatus] = useState('');
 
@@ -136,89 +150,96 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       const response = await axios.get(endpoint, config);
       const { chatRoomHeartList, chatRoomOpenList, chatRoomMessageList, chatRoomCloseList }: ChatRoomResponse = response.data;
       
-      chatRoomHeartList.map(chatRoomListItem => {
-        if (chatRoomListItem.isSender) {
-          setSentHeartIds(prevIds => [...prevIds, chatRoomListItem.senderId ?? 0]);
-        } 
-        const newChatRoom: ChatRoom = {
-          createdAt: chatRoomListItem.chatRoom.createdAt,
-          updatedAt: chatRoomListItem.chatRoom.updatedAt,
-          roomId: chatRoomListItem.chatRoom.id,
-          status: chatRoomListItem.chatRoom.status,
-          public: chatRoomListItem.chatRoom.public,
-          senderId: chatRoomListItem.senderId,
-          senderNickname: chatRoomListItem.senderNickname,
-          senderGeneratedS3url: chatRoomListItem.senderGeneratedFaceS3url,
-          senderOriginS3url: chatRoomListItem.senderOriginFaceS3url,
-          type: `${chatRoomListItem.isSender ? 'SENT' : 'RECEIVED'}_HEART`,
-          content: chatRoomListItem.isSender ? '하트를 보냈습니다.' : '하트를 받았습니다.',
-        }
-        setChatRooms(prevChatRooms => ({
-          ...prevChatRooms,
-          [newChatRoom.roomId]: newChatRoom,
-        }));
-      });
+      if (chatRoomHeartList) {
+        chatRoomHeartList.map(chatRoomListItem => {
+          if (chatRoomListItem.isSender) {
+            setSentHeartIds(prevIds => [...prevIds, chatRoomListItem.senderId ?? 0]);
+          } 
+          const newChatRoom: ChatRoom = {
+            createdAt: chatRoomListItem.chatRoom.createdAt,
+            updatedAt: chatRoomListItem.chatRoom.updatedAt,
+            roomId: chatRoomListItem.chatRoom.id,
+            status: chatRoomListItem.chatRoom.status,
+            public: chatRoomListItem.chatRoom.public,
+            senderId: chatRoomListItem.senderId,
+            senderNickname: chatRoomListItem.senderNickname,
+            senderGeneratedS3url: chatRoomListItem.senderGeneratedFaceS3url,
+            senderOriginS3url: chatRoomListItem.senderOriginFaceS3url,
+            type: `${chatRoomListItem.isSender ? 'SENT' : 'RECEIVED'}_HEART`,
+            content: chatRoomListItem.isSender ? '하트를 보냈습니다.' : '하트를 받았습니다.',
+          }
+          setChatRooms(prevChatRooms => ({
+            ...prevChatRooms,
+            [newChatRoom.roomId]: newChatRoom,
+          }));
+        });
+      }
+      
+      if (chatRoomOpenList) {
+        chatRoomOpenList.map(chatRoomListItem => {
+          const newChatRoom: ChatRoom = {
+            createdAt: chatRoomListItem.chatRoom.createdAt,
+            updatedAt: chatRoomListItem.chatRoom.updatedAt,
+            roomId: chatRoomListItem.chatRoom.id,
+            status: chatRoomListItem.chatRoom.status,
+            public: chatRoomListItem.chatRoom.public,
+            senderId: chatRoomListItem.senderId,
+            senderNickname: chatRoomListItem.senderNickname,
+            senderGeneratedS3url: chatRoomListItem.senderGeneratedFaceS3url,
+            senderOriginS3url: chatRoomListItem.senderOriginFaceS3url,
+            type: 'OPENED',
+            content: '',
+          }
+          setChatRooms(prevChatRooms => ({
+            ...prevChatRooms,
+            [newChatRoom.roomId]: newChatRoom,
+          }));
+        });
+      }
 
-      chatRoomOpenList.map(chatRoomListItem => {
-        const newChatRoom: ChatRoom = {
-          createdAt: chatRoomListItem.chatRoom.createdAt,
-          updatedAt: chatRoomListItem.chatRoom.updatedAt,
-          roomId: chatRoomListItem.chatRoom.id,
-          status: chatRoomListItem.chatRoom.status,
-          public: chatRoomListItem.chatRoom.public,
-          senderId: chatRoomListItem.senderId,
-          senderNickname: chatRoomListItem.senderNickname,
-          senderGeneratedS3url: chatRoomListItem.senderGeneratedFaceS3url,
-          senderOriginS3url: chatRoomListItem.senderOriginFaceS3url,
-          type: 'OPENED',
-          content: '',
-        }
-        setChatRooms(prevChatRooms => ({
-          ...prevChatRooms,
-          [newChatRoom.roomId]: newChatRoom,
-        }));
-      });
+      if (chatRoomMessageList) {
+        chatRoomMessageList.map(chatRoomListItem => {
+          const newChatRoom: ChatRoom = {
+            createdAt: chatRoomListItem.chatRoom.createdAt,
+            updatedAt: chatRoomListItem.chatRoom.updatedAt,
+            roomId: chatRoomListItem.chatRoom.id,
+            status: chatRoomListItem.chatRoom.status,
+            public: chatRoomListItem.chatRoom.public,
+            senderId: chatRoomListItem.senderId,
+            senderNickname: chatRoomListItem.senderNickname,
+            senderGeneratedS3url: chatRoomListItem.senderGeneratedFaceS3url,
+            senderOriginS3url: chatRoomListItem.senderOriginFaceS3url,
+            type: 'OPENED',
+            content: chatRoomListItem.content ?? '',
+          };
+          setChatRooms(prevChatRooms => ({
+            ...prevChatRooms,
+            [newChatRoom.roomId]: newChatRoom,
+          }));
+        });
+      }
 
-      chatRoomMessageList.map(chatRoomListItem => {
-        const newChatRoom: ChatRoom = {
-          createdAt: chatRoomListItem.chatRoom.createdAt,
-          updatedAt: chatRoomListItem.chatRoom.updatedAt,
-          roomId: chatRoomListItem.chatRoom.id,
-          status: chatRoomListItem.chatRoom.status,
-          public: chatRoomListItem.chatRoom.public,
-          senderId: chatRoomListItem.senderId,
-          senderNickname: chatRoomListItem.senderNickname,
-          senderGeneratedS3url: chatRoomListItem.senderGeneratedFaceS3url,
-          senderOriginS3url: chatRoomListItem.senderOriginFaceS3url,
-          type: 'OPENED',
-          content: chatRoomListItem.content ?? '',
-        };
-        setChatRooms(prevChatRooms => ({
-          ...prevChatRooms,
-          [newChatRoom.roomId]: newChatRoom,
-        }));
-      });
-
-      chatRoomCloseList.map(chatRoomListItem => {
-        const newChatRoom: ChatRoom = {
-          createdAt: chatRoomListItem.chatRoom.createdAt,
-          updatedAt: chatRoomListItem.chatRoom.updatedAt,
-          roomId: chatRoomListItem.chatRoom.id,
-          status: chatRoomListItem.chatRoom.status,
-          public: chatRoomListItem.chatRoom.public,
-          senderId: 0,
-          senderNickname: '(알 수 없음)',
-          senderGeneratedS3url: '',
-          senderOriginS3url: '',
-          type: 'CLOSED',
-          content: '',
-        };
-        setChatRooms(prevChatRooms => ({
-          ...prevChatRooms,
-          [newChatRoom.roomId]: newChatRoom,
-        }));
-      });
-
+      if (chatRoomCloseList) {
+        chatRoomCloseList.map(chatRoomListItem => {
+          const newChatRoom: ChatRoom = {
+            createdAt: chatRoomListItem.chatRoom.createdAt,
+            updatedAt: chatRoomListItem.chatRoom.updatedAt,
+            roomId: chatRoomListItem.chatRoom.id,
+            status: chatRoomListItem.chatRoom.status,
+            public: chatRoomListItem.chatRoom.public,
+            senderId: 0,
+            senderNickname: '(알 수 없음)',
+            senderGeneratedS3url: '',
+            senderOriginS3url: '',
+            type: 'CLOSED',
+            content: '',
+          };
+          setChatRooms(prevChatRooms => ({
+            ...prevChatRooms,
+            [newChatRoom.roomId]: newChatRoom,
+          }));
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -241,19 +262,27 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   const fetchChat = async (roomId: number, sendTime: Date) => {
     const method = "fetchChat";
     const endpoint = `${LOCALHOST}/chat/${roomId}/messages`;
-    const body = { sendTime: "2024-05-15T13:57:56" };
+    const body = { sendTime: formatISOStringNoMillis(sendTime) };
     const config = { 
       headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
     };
-    console.log(body);
     try {
       const response = await axios.post(endpoint, body, config);
       if (response.status === 200) {
-        console.log(response.data);
-        // TODO
-        // chatCtx.prependChats()    
-        createAlertMessage(response.data);
-        return response;
+        console.log('fetchChat:', response.data);
+        const newChats = response.data.map((chat: FetchedChat) => {
+          const newChat: ChatProps = {
+            id: uuidv4(),
+            senderId: chat.senderId,
+            sendTime: new Date(chat.sendTime),
+            senderNickname: chat.senderNickname,
+            senderGeneratedFaceS3url: chat.senderGeneratedS3Url,
+            senderOriginFaceS3url: chat.senderOriginS3Url,
+            content: chat.content,
+          }
+          return newChat;
+        })
+        chatCtx.prependChats(roomId, newChats);
       } 
       else {
         throw new Error(response.statusText);
@@ -274,21 +303,21 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
         content: message 
       })
     });
-    const newChat: ChatProps = {
-      id: uuidv4(),
-      senderId: authCtx.userId,
-      senderNickname: userCtx.basicinfo.nickname,
-      senderGeneratedFaceS3url: userCtx.faceinfo.generatedS3url,
-      senderOriginFaceS3url: userCtx.faceinfo.originS3url,
-      content: message,
-      sendTime: new Date(),
-    }
-    chatCtx.addChat(roomId, newChat);
-    const newChatRoom: ChatRoom = { ...chatRooms[roomId], updatedAt: new Date() };
-    setChatRooms(prevChatRooms => ({
-      ...prevChatRooms,
-      [roomId]: newChatRoom,
-    }));
+    // const newChat: ChatProps = {
+    //   id: uuidv4(),
+    //   senderId: authCtx.userId,
+    //   senderNickname: userCtx.basicinfo.nickname,
+    //   senderGeneratedFaceS3url: userCtx.faceinfo.generatedS3url,
+    //   senderOriginFaceS3url: userCtx.faceinfo.originS3url,
+    //   content: message,
+    //   sendTime: new Date(),
+    // }
+    // chatCtx.addChat(roomId, newChat);
+    // const newChatRoom: ChatRoom = { ...chatRooms[roomId], updatedAt: new Date() };
+    // setChatRooms(prevChatRooms => ({
+    //   ...prevChatRooms,
+    //   [roomId]: newChatRoom,
+    // }));
   }
 
   const sendHeart = (receiveId: number) => {
@@ -298,7 +327,6 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       body: JSON.stringify({ receiveId: receiveId.toString() })
     });
     setSentHeartIds(prevIds => [...prevIds, receiveId]);
-    
   }
 
   const receiveHeart = (chatRoomListItem: ReceiveHeart) => {
@@ -316,6 +344,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       type: 'RECEIVED_HEART',
       content: '하트를 받았습니다.',
     }
+    setReceivedHeartIds(prevIds => [...prevIds, chatRoomListItem.senderId]);
     setChatRooms(prevChatRooms => ({
       ...prevChatRooms,
       [newChatRoom.roomId]: newChatRoom,
@@ -352,6 +381,9 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }
 
   const rejectHeart = (roomId: number) => {
+    console.log("roomId:", roomId);
+    console.log(chatRooms[roomId].senderId);
+
     websocket?.publish({
       destination: '/pub/chat/heart-reply',
       headers: { Authorization: "Bearer " + authCtx.accessToken },
@@ -437,24 +469,49 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       brokerURL: SOCKET_URL, 
       reconnectDelay: 5000,
       connectHeaders: { Authorization: "Bearer " + authCtx.accessToken },
-      debug: (msg) => { 
-        if (msg.includes('CONNECTED')) {
-          setStatus('INITIALIZED');
-        }
+      debug: (msg) => {
         console.log('debug:', msg) 
       },
       forceBinaryWSFrames: true,
       appendMissingNULLonIncoming: true,
+      onConnect: async () => {
+        console.log('onConnect');
+        setStatus('INITIALIZED');
+        
+        const userId = await loadCache('userId');
+        authCtx.setUserId(userId);
+        
+        const subscriptionPromise = new Promise((resolve, reject) => {
+          const subscription = subscribe(stompClient);
+          // 구독 성공 시 resolve 호출
+          if (subscription) {
+            resolve(subscription);
+          } else {
+            reject(new Error('Subscription failed'));
+          }
+        });
+      
+        // 구독 성공 후 메시지 전송
+        subscriptionPromise.then(() => {
+          sendConnect(stompClient);
+        }).catch((error) => {
+          console.error('Subscription error:', error);
+        });
+      },
+      onDisconnect: () => {
+        unsubscribe(stompClient, subscription?.id ?? '0');
+        postDisconnect();
+      }
     });
-    stompClient.activate();
+
     setWebsocket(stompClient);
+    stompClient.activate();
   }
 
   const handleSocketResponse = (message: StompJs.IMessage) => {
     const { binaryBody, ...response } = message;
     // console.log("\n\n\n\n\n", JSON.stringify(response));
     console.log("\nbinarybody:", binaryBodyToString(binaryBody));
-    createAlertMessage(binaryBodyToString(binaryBody));
 
     if (binaryBodyToString(binaryBody) === "저장 성공") {
       console.log("connectResponse");
@@ -469,9 +526,13 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     }
     if (binaryBodyToString(binaryBody) === "대화 요청 성공") {
       console.log("sendHeartResponse");
+      createAlertMessage('sendHeartResponse');
       sendHeartResponse();
       return;
     }
+
+    createAlertMessage(binaryBodyToString(binaryBody));
+
     const responseData = JSON.parse(binaryBodyToString(binaryBody));
     if (responseData.method === "receiveHeart") {
       console.log("receiveHeart");
@@ -493,28 +554,22 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     // receiveLeft
   }
 
-  const subscribe = () => {
-    if (websocket === null || authCtx.userId === 0 || subscription !== null) {
-      if (websocket === null) console.log('websocket === null');
-      if (authCtx.userId === 0) console.log('authCtx.userId === 0');
-      if (subscription !== null) console.log('subscription !== null');
-      return;
-    }
+  const subscribe = (stompClient: StompJs.Client) => {
     const path = `/sub/chat/${authCtx.userId}`;
 
-    const newSubscription = websocket.subscribe(path, (message) => {
+    const newSubscription = stompClient.subscribe(path, (message) => {
       handleSocketResponse(message);
     });
 
     setStatus('SUBSCRIBED')
     createAlertMessage('subscribed at ' + path);
     setSubscription(newSubscription);
+    return newSubscription;
   }
 
-  const sendConnect = () => {
-    if (authCtx.status !== 'INITIALIZED') return;
+  const sendConnect = (stompClient: StompJs.Client) => {
     setStatus('CONNECT')
-    websocket?.publish({
+    stompClient?.publish({
       destination: '/pub/stomp/connect',
       headers: { Authorization: "Bearer " + authCtx.accessToken },
     })
@@ -537,9 +592,8 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     }
   }
 
-  const unsubscribe = () => {
-    if (subscription === null) return;
-    subscription.unsubscribe();
+  const unsubscribe = (stompClient: StompJs.Client, id: string) => {
+    stompClient.unsubscribe(id);
     setSubscription(null);
     setStatus('UNSUBSCRIBED');
   }
@@ -550,18 +604,15 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => { 
       console.log('handleAppStateChange:', prevAppState.current, '->', nextAppState, status);
+      if (websocket === null) {
+        console.log('websocket === null');
+        return;
+      }
       if (nextAppState === 'active') {
-        const handleConnect = async () => {
-          const userId = await loadCache('userId');
-          authCtx.setUserId(Number(userId));
-          subscribe();
-          sendConnect();
-        }
-        handleConnect();
+        websocket.activate();
       }
       if (nextAppState === 'background') {
-        unsubscribe();
-        postDisconnect();
+        websocket.deactivate();
       }
       prevAppState.current = nextAppState;
       setAppState(nextAppState); 
@@ -573,8 +624,13 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }, []);
 
   useEffect(() => {
+    if (authCtx.userId === 0) return;
     saveCache('userId', authCtx.userId);
   }, [authCtx.userId]);
+
+  useEffect(() => {
+    saveCache(`${authCtx.userId}-sentHeartIds`, JSON.stringify(sentHeartIds));
+  }, [sentHeartIds])
 
   useEffect(() => {
     if (authCtx.status === 'INITIALIZED') {
@@ -582,15 +638,6 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       getChatRoomList();
     }
   }, [authCtx.status]);
-
-  useEffect(() => {
-    if (status === 'INITIALIZED') {
-      subscribe();
-    }
-    if (status === 'SUBSCRIBED') {
-      sendConnect();
-    }
-  }, [status])
 
   useEffect(() => {
     return (() => {
@@ -614,6 +661,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   const value = useMemo(() => ({
     websocket,
     sentHeartIds,
+    receivedHeartIds,
     chatRooms,
     status,
     getChatRoomList,
@@ -629,3 +677,4 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
 };
 
 export default ChatRoomContextProvider;
+
