@@ -19,6 +19,9 @@ import ChatContextProvider from './store/chat-context.tsx';
 import ChatRoomContextProvider from './store/chat-room-context.tsx';
 import UserContextProvider from './store/user-context.tsx';
 import TotalRecommend from './pages/TotalRecommend.tsx';
+import Banner1 from './pages/banner/Banner1.tsx';
+import Banner2 from './pages/banner/Banner2.tsx';
+import Banner3 from './pages/banner/Banner3.tsx';
 
 const Stack = createStackNavigator();
 function App() {
@@ -36,6 +39,9 @@ function App() {
                   <Stack.Screen name="Signup" component={Signup}/>
                   <Stack.Screen name='Main' component={BottomNavigationPage}/>
                   <Stack.Screen name='Home' component={Home}/>
+                  <Stack.Screen name='Banner1' component={Banner1}/>
+                  <Stack.Screen name='Banner2' component={Banner2}/>
+                  <Stack.Screen name='Banner3' component={Banner3}/>
                   <Stack.Screen name='BasicInfo' component={BasicInfoPage}/>
                   <Stack.Screen name='FaceInfo' component={FaceInfoPage}/>
                   <Stack.Screen name='FaceFeature' component={FaceFeaturePage}/>
