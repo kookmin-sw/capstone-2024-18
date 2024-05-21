@@ -77,25 +77,13 @@ public class RedisSubscriber implements MessageListener {
 
 
     private void saveUnReadMessage(String destination, MessageResponse messageResponse) {
-        Boolean isUnRead = redisTemplate.hasKey(destination);
-        log.info(isUnRead.toString());
-        if (isUnRead) {
-            messageResponse.setMethod("connectChat");
-            redisTemplate.opsForList().rightPush(destination, messageResponse);
-        } else {
-            messageResponse.setMethod("connectChat");
-            redisTemplate.opsForList().rightPush(destination, messageResponse);
-        }
+        messageResponse.setMethod("connectChat");
+        redisTemplate.opsForList().rightPush(destination, messageResponse);
+
     }
 
     private void saveUnReadHeart(String destination, SendHeartResponse sendHeartResponse) {
-        Boolean isUnRead = redisTemplate.hasKey(destination);
-        if (isUnRead) {
             sendHeartResponse.setMethod("connectHeart");
             redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
-        } else {
-            sendHeartResponse.setMethod("connectHeart");
-            redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
-        }
     }
 }
