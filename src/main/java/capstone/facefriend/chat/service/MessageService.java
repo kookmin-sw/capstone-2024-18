@@ -152,7 +152,7 @@ public class MessageService {
             messageResponse.setIsRead(chatMessage.isRead());
         }
 
-        if (chatRoomMember.getReceiver().equals(receiver)) {
+        if (chatRoomMember.getReceiver().equals(sender)) {
             messageResponse.setMethod("receiveChat");
             messageResponse.setRoomId(chatMessage.getChatRoom().getId());
             messageResponse.setSenderId(senderId);
