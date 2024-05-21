@@ -24,23 +24,6 @@ public class ChatRoomController {
         return ResponseEntity.ok(chatRoomService.getChatRoomList(memberId));
     }
 
-    @PostMapping("/room/{roomId}/enter")
-    public ResponseEntity<ChatRoomEnterResponse> enterChatRoom(
-            @PathVariable("roomId") Long roomId,
-            @AuthMember Long memberId,
-            @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo
-    ){
-        return ResponseEntity.ok(chatRoomService.enterRoom(roomId, memberId));
-    }
-
-    @PostMapping("/room/{roomId}/exit")
-    public ResponseEntity<ChatRoomExitResponse> exitChatRoom(
-            @PathVariable("roomId") Long roomId,
-            @AuthMember Long memberId
-    ){
-        return ResponseEntity.ok(chatRoomService.exitRoom(roomId, memberId));
-    }
-
     @PostMapping("/room/{roomId}/left")
     public ResponseEntity<String> leftChatRoom(
             @PathVariable("roomId") Long roomId,

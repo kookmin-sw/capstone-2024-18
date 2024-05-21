@@ -16,7 +16,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -26,7 +26,6 @@ public class RedisConfig {
     private String redisHost;
     @Value("${spring.data.redis.port}")
     private int redisPort;
-
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -43,7 +42,6 @@ public class RedisConfig {
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        // RedisMessageListenerContainer 에 Bean 으로 등록한 listenerAdapter, channelTopic 추가
         container.addMessageListener(listenerAdapter, channelTopic);
         return container;
     }
@@ -53,12 +51,8 @@ public class RedisConfig {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 
-        // Jackson2JsonRedisSerializer를 사용하여 RedisTemplate 설정
-        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // Java 8 시간 모듈 등록
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // 날짜를 타임스탬프로 변환하지 않도록 설정
-        serializer.setObjectMapper(objectMapper);
+        // GenericJackson2JsonRedisSerializer를 사용하여 RedisTemplate 설정
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper());
 
         // 문자열 직렬화 설정
         redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -81,6 +75,15 @@ public class RedisConfig {
     }
 
     @Bean
-    public ChannelTopic channelTopic() {return new ChannelTopic("chatroom");}
+    public ChannelTopic channelTopic() {
+        return new ChannelTopic("chatroom");
+    }
 
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return objectMapper;
+    }
 }

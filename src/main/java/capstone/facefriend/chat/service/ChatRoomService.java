@@ -166,23 +166,6 @@ public class ChatRoomService {
         return chatRooms;
     }
 
-    public ChatRoomEnterResponse enterRoom(Long roomId, Long memberId) {
-        String chatRoomInfoId = roomId + "/member/" + memberId;
-        ChatRoomInfo chatRoomInfo = new ChatRoomInfo();
-        chatRoomInfo.setChatRoomInfoId(chatRoomInfoId);
-        chatRoomInfo.setEnterTime(LocalDateTime.now());
-        chatRoomInfoRedisRepository.save(chatRoomInfo);
-        return ChatRoomEnterResponse.of(roomId, memberId, chatRoomInfo);
-    }
-
-    public ChatRoomExitResponse exitRoom(Long roomId, Long memberId) {
-        String chatRoomInfoId = roomId + "/member/" + memberId;
-        ChatRoomInfo chatRoomInfo = findChatRoomInfo(chatRoomInfoId);
-        chatRoomInfoRedisRepository.delete(chatRoomInfo);
-        LocalDateTime exitChatRoomTime = LocalDateTime.now();
-        return ChatRoomExitResponse.of(roomId, memberId, exitChatRoomTime);
-    }
-
     @Transactional
     public String leftRoom(Long roomId, Long memberId) {
         ChatRoom chatRoom = findRoomById(roomId);
