@@ -126,7 +126,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
       <ScrollView contentContainerStyle={{ flex: 1 }}>
         <OtherUserSelfProduceChat senderId={chatRoomCtx.chatRooms[roomId].senderId}/>
 
-        <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingTop: 30}}>
+        <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingVertical: 30}}>
             <View style={{width: "50%" }}>
               <CustomButton 
                 containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 10, elevation: 4}} onPress={() => { chatRoomCtx.rejectHeart(roomId); onBack(); }}
@@ -189,7 +189,7 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
     <View style={styles.container}>
       <HeaderBar onPress={onBack}>
         <Text style={{ color: 'black', fontSize: 24 }}>{chatRoom?.senderNickname}</Text>
-        <Text style={{ color: 'black', fontSize: 12 }}>roomId: {roomId} senderId: {chatRoom.senderId}</Text>
+        {/* <Text style={{ color: 'black', fontSize: 12 }}>roomId: {roomId} senderId: {chatRoom.senderId}</Text> */}
       </HeaderBar>
       {(chatRoom?.type === 'OPENED' || chatRoom?.type === 'CLOSED') && <ChatList 
         chats={chats} 

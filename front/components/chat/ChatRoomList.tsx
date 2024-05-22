@@ -49,7 +49,7 @@ const ChatRoomList = ({navigation}: any) => {
   <ScrollView style={{ padding: 20 }}>
     {Object.values(chatRoomCtx.chatRooms).map((chatRoom) => (
     <Pressable key={chatRoom.roomId} onPress={handleOnPress.bind(this, chatRoom.roomId)}>
-      <Text style={{color:'black'}}>roomId: {chatRoom.roomId} senderId:{chatRoom.senderId}</Text>
+      {/* <Text style={{color:'black'}}>roomId: {chatRoom.roomId} senderId:{chatRoom.senderId}</Text> */}
       <View style={styles.listItemContainer}>
         {!chatRoom.senderGeneratedS3url && <View style={styles.profile}/>}
         {chatRoom.senderGeneratedS3url && <Image
@@ -91,7 +91,7 @@ const ChatRoomList = ({navigation}: any) => {
     <View style={styles.container}>
     {!roomId && <>
       <HeaderBar onPress={() => {}}>다이렉트 메세지</HeaderBar>
-      <Text style={{color:'black'}}>myUserId: {authCtx.userId}</Text>
+      {/* <Text style={{color:'black'}}>myUserId: {authCtx.userId}</Text> */}
       {Object.keys(chatRoomCtx.chatRooms).length ? chatRoomList : defaultContent}
     </>}
     {!!roomId && <ChatPage onBack={handleOnBack} roomId={roomId}/>}
