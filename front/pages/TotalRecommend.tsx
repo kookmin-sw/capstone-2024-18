@@ -22,6 +22,8 @@ const TotalRecommend = ({navigation}: any) => {
 
   const route = useRoute();
   const type = (route.params as { type: string })?.type;
+  const title = (route.params as { title: string })?.title;
+  const text = (route.params as { text: string })?.text;
 
   const getResumesNum = 20;
   const [data, setData] = useState<Faces>({
@@ -59,12 +61,8 @@ const TotalRecommend = ({navigation}: any) => {
 
   const renderCardItem = ({item}: {item: Content}) => {{
     return (
-      <TouchableOpacity key={item.resumeId} style={{margin: 10}} onPress={() => navigation.navigate("OtherSelfProduce", {resumeId: item.resumeId})}>
-        <Image 
-          source={{uri: item.thumbnailS3url}} 
-          style={{borderRadius:16, borderWidth: 1, borderColor: colors.pastel_point}} 
-          width={150} height={150}
-        />
+      <TouchableOpacity key={item.resumeId} style={{margin: 10, borderWidth: 1, borderRadius: 16, borderColor: colors.pastel_point, overflow: 'hidden'}} onPress={() => navigation.navigate("OtherSelfProduce", {resumeId: item.resumeId})}>
+        <Image source={{uri: item.thumbnailS3url}} width={(width-104) / 2} height={(width-104) / 2}/>
       </TouchableOpacity>);
   }}
 
@@ -78,12 +76,18 @@ const TotalRecommend = ({navigation}: any) => {
     <View style={{flex: 1, backgroundColor: colors.white}}>
       <HeaderBar onPress={navigation.goBack}>상세보기</HeaderBar>
       <CustomBackHandler onBack={navigation.goBack}/>
-      <FlatList 
-        data={data.content} numColumns={2}
-        renderItem={renderCardItem}
-        style={{flex: 1, marginBottom: 30, backgroundColor: colors.white}}
-        contentContainerStyle={{alignItems: 'center', paddingBottom: 26, paddingHorizontal: 16}}
-        onEndReached={() => {fetchNewData();}}/>
+      <View style={{paddingHorizontal: 32, paddingVertical: 30}}>
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.inputLabel}>{text}</Text>
+      </View>
+      <View style={{flex: 1, backgroundColor: colors.base, paddingTop: 20}}>
+        <FlatList 
+          data={data.content} numColumns={2}
+          renderItem={renderCardItem}
+          style={{flex: 1, marginBottom: 30}}
+          contentContainerStyle={{alignSelf: 'center', paddingBottom: 26, paddingHorizontal: 16}}
+          onEndReached={() => {fetchNewData();}}/>
+      </View>
     </View>
   )
 }
@@ -97,18 +101,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white
   },
   title: {
-    color: colors.gray7,
-    fontSize: 24,
+    color: colors.point,
+    fontSize: 20,
     fontFamily: "Pretendard-SemiBold",
-    alignSelf: "center",
-    marginBottom: 50,
   },
   textContainer: {
     flexDirection: "row", 
   },
   inputLabel: {
     fontSize: 14, 
-    color: colors.point, 
+    color: colors.gray7, 
     letterSpacing: -14 * 0.04,
     fontFamily: "Pretendard-SemiBold",
   },

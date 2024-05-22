@@ -189,9 +189,9 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     };
   }, [authCtx.status, status])
 
-  // useEffect(() => {
-  //   setResumeState();
-  // }, [basicinfo, faceinfo, analysisinfo])
+  useEffect(() => {
+    setResumeState();
+  }, [basicinfo, faceinfo, analysisinfo])
 
   const value = useMemo(() => ({
     basicinfo,

@@ -37,11 +37,9 @@ const FaceInfoPage = ({navigation}: any) => {
 
   const manStyleIdData = [
     {id: 17, source: require('../assets/images/cartoon-image/man/17.jpg')}, 
-    {id: 30, source: require('../assets/images/cartoon-image/man/30.jpg')}, 
     {id: 32, source: require('../assets/images/cartoon-image/man/32.jpg')}, 
     {id: 43, source: require('../assets/images/cartoon-image/man/43.jpg')}, 
     {id: 72, source: require('../assets/images/cartoon-image/man/72.jpg')}, 
-    {id: 209, source: require('../assets/images/cartoon-image/man/209.jpg')}, 
     {id: 237, source: require('../assets/images/cartoon-image/man/237.jpg')}, 
     {id: 255, source: require('../assets/images/cartoon-image/man/255.jpg')}, 
     {id: 302, source: require('../assets/images/cartoon-image/man/302.jpg')}, 
@@ -52,10 +50,8 @@ const FaceInfoPage = ({navigation}: any) => {
     {id: 53, source: require('../assets/images/cartoon-image/woman/53.jpg')}, 
     {id: 135, source: require('../assets/images/cartoon-image/woman/135.jpg')}, 
     {id: 156, source: require('../assets/images/cartoon-image/woman/156.jpg')}, 
-    {id: 158, source: require('../assets/images/cartoon-image/woman/158.jpg')}, 
     {id: 208, source: require('../assets/images/cartoon-image/woman/208.jpg')}, 
     {id: 234, source: require('../assets/images/cartoon-image/woman/234.jpg')}, 
-    {id: 243, source: require('../assets/images/cartoon-image/woman/243.jpg')}, 
     {id: 256, source: require('../assets/images/cartoon-image/woman/256.jpg')}, 
     {id: 299, source: require('../assets/images/cartoon-image/woman/299.jpg')}
   ];

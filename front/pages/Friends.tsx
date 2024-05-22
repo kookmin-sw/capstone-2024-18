@@ -210,7 +210,7 @@ const Friends = ({navigation}: any) => {
             <View style={styles.sectionTitleContainer}>
               <Text style={styles.sectionTitle}>나와 잘 맞는 관상</Text>
               <View style={{flex: 1}}/>
-              <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: "FIT"})}}>
+              <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: "FIT", title: "나와 잘 맞는 관상", text: `AI가 분석한 ${userCtx.basicinfo.nickname}님의 베스트 매치 관상 추천`})}}>
                 <Text style={[styles.sectionText, { color: colors.gray6 }]}>전체 보러가기{">"}</Text>
               </TouchableOpacity>
             </View>
@@ -234,7 +234,7 @@ const Friends = ({navigation}: any) => {
                       <SelectableTag height={27} textStyle={{fontSize: 16, color: colors.white, fontFamily: 'Pretendard-Medium', letterSpacing: -16*0.02}} containerStyle={{backgroundColor: colors.point, borderColor: colors.point}}>{categoryForm[tag as keyof Category]}</SelectableTag>
                       {/* <Text style={[{paddingLeft: 8}, styles.sectionText]}>{text}</Text> */}
                       <View style={{flex: 1}}/>
-                      <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: tag})}}>
+                      <TouchableOpacity onPress={() => {navigation.navigate("TotalRecommend", {type: tag, title: categoryForm[tag as keyof Category], text: '카테고리별 맞춤 추천'})}}>
                         <Text style={[styles.sectionText, { color: colors.gray6 }]}>전체 보러가기{">"}</Text>
                       </TouchableOpacity>
                     </View>
