@@ -128,7 +128,7 @@ interface FetchedChat {
 
 const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) => {
 
-  const websocketRef = useRef<StompJs.Client | null>(null);
+  const [websocket, setWebsocket] = useState<StompJs.Client | null>(null);
   const [chatRooms, setChatRooms] = useState<{ [roomId: number]: ChatRoom }>({});
   const [sentHeartIds, setSentHeartIds] = useState<number[]>([]);
   const [receivedHeartIds, setReceivedHeartIds] = useState<number[]>([]);
@@ -293,8 +293,8 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }
 
   const sendChat = (roomId: number, message: string) => {
-    if (websocketRef.current?.connected) return;
-    websocketRef.current?.publish({
+    if (!websocket?.connected) return;
+    websocket?.publish({
       destination: '/pub/chat/messages',
       headers: { Authorization: "Bearer " + authCtx.accessToken },
       body: JSON.stringify({ 
@@ -321,7 +321,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }
 
   const sendHeart = (receiveId: number) => {
-    websocketRef.current?.publish({
+    websocket?.publish({
       destination: '/pub/chat/send-heart',
       headers: { Authorization: "Bearer " + authCtx.accessToken },
       body: JSON.stringify({ receiveId: receiveId.toString() })
@@ -368,7 +368,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
 
   const acceptHeart = (roomId: number) => {
     console.log("accecptHeart", roomId);
-    websocketRef.current?.publish({
+    websocket?.publish({
       destination: '/pub/chat/heart-reply',
       headers: { Authorization: "Bearer " + authCtx.accessToken },
       body: JSON.stringify({ senderId: chatRooms[roomId].senderId.toString(), intention: "positive" })
@@ -384,7 +384,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     console.log("roomId:", roomId);
     console.log(chatRooms[roomId].senderId);
 
-    websocketRef.current?.publish({
+    websocket?.publish({
       destination: '/pub/chat/heart-reply',
       headers: { Authorization: "Bearer " + authCtx.accessToken },
       body: JSON.stringify({ senderId: chatRooms[roomId].senderId.toString(), intention: "negative" })
@@ -504,7 +504,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       }
     });
 
-    websocketRef.current = stompClient;
+    setWebsocket(stompClient);
     stompClient.activate();
   }
 
@@ -604,15 +604,15 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => { 
       console.log('handleAppStateChange:', prevAppState.current, '->', nextAppState, status);
-      if (websocketRef.current === null) {
-        console.log('websocketRef.current === null');
+      if (websocket === null) {
+        console.log('websocket === null');
         return;
       }
       if (nextAppState === 'active') {
-        websocketRef.current.activate();
+        websocket.activate();
       }
       if (nextAppState === 'background') {
-        websocketRef.current.deactivate();
+        websocket.deactivate();
       }
       prevAppState.current = nextAppState;
       setAppState(nextAppState); 
@@ -641,7 +641,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
 
   useEffect(() => {
     return (() => {
-      websocketRef.current?.deactivate();
+      websocket?.deactivate();
       postDisconnect();
     })
   }, [])
@@ -659,7 +659,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }, [status]);
 
   const value = useMemo(() => ({
-    websocket: websocketRef.current,
+    websocket,
     sentHeartIds,
     receivedHeartIds,
     chatRooms,
@@ -671,7 +671,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     leftRoom,
     fetchChat,
     sendChat,
-  }), [websocketRef.current, chatRooms, sentHeartIds, status]);
+  }), [websocket, chatRooms, sentHeartIds, status]);
 
   return <ChatRoomContext.Provider value={value}>{children}</ChatRoomContext.Provider>;
 };
