@@ -34,7 +34,7 @@
         }
 
         table {
-            width: 60%;
+            width: 50%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
@@ -61,79 +61,172 @@
             cursor: pointer;
             border-radius: 5px;
         }
-    
+
         .button:hover {
             background-color: #FF7269;
         }
 
+        .highlightText {
+            color: #FF7269;
+            font-weight: bold;
+        }
 
+        .my-hr {
+            border: 0;
+            height: 3px;
+            background: #ccc;
+        }
+
+        .gif-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .gif-item {
+            display: flex;
+            justify-content: center;
+        }
+
+        p {
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
-    <div id="container">
-        <h1 style="font-size: 70px;">Face Friend</h1>
-        <br>
+<div id="container">
+    <p align="center">
+        <img src="./src/main/resources/docs/poster_jpg.jpg" style="border-color: #525463" border="2" width="60%" height="60%"/>
+    </p>
+    <br>
 
-        <h1>프로젝트 소개</h1>
-        <p style="font-size: 20px;">Face Friend은 사용자의 얼굴을 기반으로 AI 가상 이미지를 생성하고, 얼굴 이미지를 분석하여 관상에 대한 정보를 제공합니다.</p>
-        <p style="font-size: 20px;">사용자는 얼굴 노출에 대한 부담을 느끼지 않고, 상대방에 대한 전반적인 분위기와 성격을 유추해보는 즐거움을 느낄 수 있습니다.</p>
-        <p style="font-size: 20px;">AI 가상 이미지를 사용하여 자기소개서를 작성할 수 있으며, 마음에 드는 자기소개서를 읽고 상대방에게 DM을 보낼 수 있습니다.</p>
-        <p style="font-size: 20px;">채팅을 하며 상대방과 친밀해졌다고 판단될 때 사용자는 서로 얼굴을 공개 여부를 결정할 수 있습니다.</p>
-        <p style="font-size: 20px;">얼굴 노출의 부담은 줄이고, 인간관계에서 얻는 즐거움은 챙긴 Face Friend의 출시를 기대해주세요!</p>
-        <br>
-        <br>
-        <br>
+    <h1> 프로젝트 소개 </h1>
+    <hr class="my-hr">
 
-        <h1>소개 영상</h1>
-        <img src="https://github.com/kookmin-sw/capstone-2024-18/assets/102044895/11968e87-d9ea-4de9-983d-f22ef14e75f1" alt="Face Friend" width="300" height="600">
-        <br>
-        <br>
-        <br>
-        
-        <h1>중간 발표 자료 - 구글 드라이브</h1>
-        <a href="https://drive.google.com/drive/u/0/folders/1oI_0K9fKBadYxrruWakE9qfYq0Cbonal" class="button">링크로 이동하기</a>
-        <br>
-        <br>
-        <br>
+    <h2> Face Friend </h2>
+    <p>
+        Face Friend 는 <span class="highlightText">관상 이미지 생성, 관상 분석, 관상 궁합 추천</span> 등의 기능을 통해 얼굴 노출의 부담을 덜고,
+        <br>새로운 인연을 만나는 <span class="highlightText">색다른 즐거움</span>을 제공하는 데이팅 앱 서비스입니다.
+    </p>
+    <br>
 
-        <h1>팀 소개</h1>
-        <table>
-            <tr>
-                <th>파트</th>
-                <th>이름</th>
-                <th>역할</th>
-            </tr>
-            <tr>
-                <td>AI</td>
-                <td>이시현</td>
-                <td>관상 이미지 생성</td>
-            </tr>
-            <tr>
-                <td>AI</td>
-                <td>박민희</td>
-                <td>관상 분석 및 정보 제공</td>
-            </tr>
-            <tr>
-                <td>FrontEnd</td>
-                <td>고명섭</td>
-                <td>API 연동, 퍼블리싱</td>
-            </tr>
-            <tr>
-                <td>FrontEnd</td>
-                <td>윤민지</td>
-                <td>API 연동, 퍼블리싱</td>
-            </tr>
-            <tr>
-                <td>BackEnd</td>
-                <td>임장혁</td>
-                <td>인프라 구축, API 개발</td>
-            </tr>
-            <tr>
-                <td>BackEnd</td>
-                <td>김찬진</td>
-                <td>API 개발</td>
-            </tr>
-        </table>
+    <h2> AI 관상 이미지 생성 </h2>
+    <p>
+        <span class="highlightText">자신의 얼굴 특징과 분위기를 고스란히 담아낸</span> 관상 이미지를 생성합니다.
+    </p>
+    <br>
+
+    <h2> AI 관상 분석 </h2>
+    <p>
+        <span class="highlightText">눈썹, 눈, 코, 입, 얼굴형</span>에 대해 관상을 분석합니다. 성격, 가치관 등에 대한 관상 분석 정보를 제공합니다.
+    </p>
+    <br>
+
+    <h2> AI 관상 궁합 추천 </h2>
+    <p>
+        AI 관상 분석의 결과에 따라 사용자의 오행형(五行形)를 분류하고, <span class="highlightText">오행형(화/수/목/금/토)</span>간의 궁합이 좋은 사용자를 추천합니다.
+    </p>
+    <br>
+
+    <h2> 친밀도에 따른 관상 이미지 변경 </h2>
+    <p>
+        <span class="highlightText">상대와 친밀해질수록 실제 얼굴과 가깝게</span> 관상 이미지가 변경됩니다.
+    </p>
+    <br>
+
+    <br>
+    <br>
+
+    <h1> 구글 드라이브 링크 (발표 자료, 포스터, 수행 결과 보고서) </h1>
+    <hr class="my-hr">
+    <br>
+    <a href="https://drive.google.com/drive/u/0/folders/1oI_0K9fKBadYxrruWakE9qfYq0Cbonal" class="button">링크로 이동하기</a>
+    <br><br><br><br><br>
+
+
+    <h1> 주요 기능 </h1>
+    <hr class="my-hr">
+
+    <div class="gif-grid">
+        <div class="gif-item">
+            <div>
+                <h2> 회원가입 및 로그인 </h2>
+                <img src="src/main/resources/docs/signup.gif" width="365" height="890">
+            </div>
+        </div>
+        <div class="gif-item">
+            <div>
+                <h2> 기본 정보 </h2>
+                <img src="src/main/resources/docs/basicInfo.gif" width="365" height="890">
+            </div>
+        </div>
+        <div class="gif-item">
+            <div>
+                <h2> AI 관상 이미지 생성 </h2>
+                <img src="src/main/resources/docs/faceInfo.gif" width="365" height="890">
+            </div>
+        </div>
+        <div class="gif-item">
+            <div>
+                <h2> AI 관상 분석 </h2>
+                <img src="src/main/resources/docs/analysisInfo.gif" width="365" height="890">
+            </div>
+        </div>
+        <div class="gif-item">
+            <div>
+                <h2> 자기소개서 </h2>
+                <img src="src/main/resources/docs/resume.gif" width="365" height="890">
+            </div>
+        </div>
+        <div class="gif-item">
+            <div>
+                <h2> 채팅 </h2>
+                <img src="src/main/resources/docs/chat.gif" width="365" height="890">
+            </div>
+        </div>
     </div>
+
+    <br>
+    <br>
+    <h1> 팀원 소개 </h1>
+    <table>
+        <tr>
+            <th>파트</th>
+            <th>이름</th>
+            <th>역할</th>
+        </tr>
+        <tr>
+            <td>AI</td>
+            <td>이시현</td>
+            <td>AI 관상 이미지 생성, AI 관상 분석(눈,입), AWS 배포</td>
+        </tr>
+        <tr>
+            <td>AI</td>
+            <td>박민희</td>
+            <td>Landmark 모델 통합, AI 관상 분석(얼굴형, 눈썹, 코)</td>
+        </tr>
+        <tr>
+            <td>FrontEnd</td>
+            <td>고명섭</td>
+            <td>인증/인가, 기본정보, 웹소켓 및 채팅</td>
+        </tr>
+        <tr>
+            <td>FrontEnd</td>
+            <td>윤민지</td>
+            <td>AI 관상 이미지, AI 관상 분석, 자기소개서와 유저 추천</td>
+        </tr>
+        <tr>
+            <td>BackEnd</td>
+            <td>임장혁</td>
+            <td>웹소켓 및 채팅, 통합 테스트 환경 구축, AWS 배포</td>
+        </tr>
+        <tr>
+            <td>BackEnd</td>
+            <td>김찬진</td>
+            <td>인증/인가, 기본정보, AI 관상 이미지, AI 관상 분석, 자기소개서,
+                <br>친밀도에 따른 AI 관상 이미지 변화, AWS S3</td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>
