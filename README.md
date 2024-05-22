@@ -36,16 +36,24 @@ AI 관상 분석의 결과에 따라 사용자의 오행형(五行形)를 분류
       <h2> 기본 정보 </h2>
       <img src="./basic2.gif" width="300">
     </td>
+  </tr>
+  <tr>
+    <td colspan="2" style="padding: 40px;"></td> <!-- Adds space between rows -->
+  </tr>
+  <tr>
     <td>
       <h2> AI 관상 이미지 생성 </h2>
       <img src="./face2.gif" width="300">
     </td>
-  </tr>
-  <tr>
     <td>
       <h2> AI 관상 분석 </h2>
       <img src="./analyze2.gif" width="300">
     </td>
+  </tr>
+  <tr>
+    <td colspan="2" style="padding: 40px;"></td> <!-- Adds space between rows -->
+  </tr>
+  <tr>
     <td>
       <h2> 자기소개서 </h2>
       <img src="./resume2.gif" width="300">
@@ -54,6 +62,9 @@ AI 관상 분석의 결과에 따라 사용자의 오행형(五行形)를 분류
       <h2> 채팅 </h2>
       <img src="./chat2.gif" width="300">
     </td>
+  </tr>
+  <tr>
+    <td colspan="2" style="padding: 40px;"></td> <!-- Adds space between rows -->
   </tr>
 </table>
 
