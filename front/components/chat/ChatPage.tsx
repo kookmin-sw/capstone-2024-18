@@ -115,14 +115,12 @@ const ChatPage = ({ onBack, roomId }: Prop) => {
 
   const sentHeartContent = 
     <View>
-      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대에게 하트를 보냈습니다.</Text>
-      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
+      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center', textAlign: 'center' }}>상대에게 하트를 보냈습니다.{'\n'}하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
     </View>
 
   const receiveHeartContent =
     <View style={{ flex: 1 }}>
-      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>상대가 하트를 보냈습니다.</Text>
-      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center' }}>하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
+      <Text style={{ color: colors.gray6, fontSize: 15, alignSelf: 'center', textAlign: 'center', marginBottom: 30 }}>상대가 하트를 보냈습니다.{'\n'}하트를 수락하면 채팅을 시작할 수 있습니다.</Text>
       <ScrollView contentContainerStyle={{ flex: 1 }}>
         <OtherUserSelfProduceChat senderId={chatRoomCtx.chatRooms[roomId].senderId}/>
 

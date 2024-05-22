@@ -16,6 +16,7 @@ import { useRoute } from '@react-navigation/native';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import { ChatRoomContext } from '../store/chat-room-context.tsx';
 import HeaderBar from '../components/HeaderBar.tsx';
+import { Icon } from 'react-native-paper';
 
 
 const OtherUserSelfProduce = ({navigation}: any) => {
@@ -57,6 +58,8 @@ const OtherUserSelfProduce = ({navigation}: any) => {
     return {id: index, text: key as keyof Category, selected: false}
   }))
   const [ essay, setEssay ] = useState('DEFAULT');
+  const [ isLoading, setIsLoading ] = useState('LOADING');
+  const [ errorMessage, seterrorMessage ] = useState('로딩 중입니다...');
 
   const [ memberId, setMemberId ] = useState(0);  
   const chatRoomCtx = useContext(ChatRoomContext);
@@ -141,8 +144,10 @@ const OtherUserSelfProduce = ({navigation}: any) => {
         }))
         console.log('response:', response);
         setMemberId(response.basicInfo.id);
+        setIsLoading('LOADED');
       } 
       if (isErrorResponse(response)) {
+        setIsLoading('ERROR');
         navigation.goBack();
       } 
     }
@@ -160,6 +165,7 @@ const OtherUserSelfProduce = ({navigation}: any) => {
     console.log('roomType', roomType)
   }, [roomType])
 
+  
   const isDisabled = roomType !== 'DEFAULT' || roomType === undefined;
 
   const sendHeartButton = 
@@ -174,130 +180,146 @@ const OtherUserSelfProduce = ({navigation}: any) => {
       : roomType === 'OPENED' || roomType === 'CLOSED' ? "이미 채팅방이 존재합니다" : ""}
     </CustomButton>
 
-  return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{backgroundColor: colors.white}}>
-      {/* 이미지 슬라이더 */}
-      <CustomBackHandler onBack={() => navigation.goBack()}/>
-      <HeaderBar onPress={navigation.goBack}>자기소개서</HeaderBar>
-      <CarouselSlider
-        pageWidth={pageWidth}
-        pageHeight={pageWidth}
-        offset={offset}
-        gap={gap}
-        data={images}
-        onPageChange={setPage}
-        initialScrollIndex={0}
-        renderItem={renderItem}/>
+  const resumeContent = <>
+    {/* 이미지 슬라이더 */}
+    <CarouselSlider
+      pageWidth={pageWidth}
+      pageHeight={pageWidth}
+      offset={offset}
+      gap={gap}
+      data={images}
+      onPageChange={setPage}
+      initialScrollIndex={0}
+      renderItem={renderItem}/>
 
-      <View style={{flexDirection: 'row', alignSelf: 'center', paddingTop: 10}}>
-      {
-        images.map((item, idx) => {
-          return (
-            <View 
-              key={idx}
-              style={{marginHorizontal: 4, width: 8, height: 8, borderRadius: 50,
-              backgroundColor: (idx == page) ? colors.pastel_point : colors.gray2}}/>
-          );
-        })
-      }
+    <View style={{flexDirection: 'row', alignSelf: 'center', paddingTop: 10}}>
+    {
+      images.map((item, idx) => {
+        return (
+          <View 
+            key={idx}
+            style={{marginHorizontal: 4, width: 8, height: 8, borderRadius: 50,
+            backgroundColor: (idx == page) ? colors.pastel_point : colors.gray2}}/>
+        );
+      })
+    }
+    </View>
+
+    <View style={styles.container} >
+      {/* 프로필 사진, 이름 섹션 */}
+      {/* 아직 정확한 디자인 안나와서 일단 보류 */}
+      <View style={styles.sectionTop}>
+        <Text style={styles.profileName}>{nickname}</Text>
       </View>
 
-      <View style={styles.container} >
-        {/* 프로필 사진, 이름 섹션 */}
-        {/* 아직 정확한 디자인 안나와서 일단 보류 */}
+      {/* 기본 정보 섹션 */}
+      <View style={styles.section}>
         <View style={styles.sectionTop}>
-          <Text style={styles.profileName}>{nickname}</Text>
+          <Text style={styles.sectionText}>기본 정보</Text>
         </View>
-
-        {/* 기본 정보 섹션 */}
-        <View style={styles.section}>
-          <View style={styles.sectionTop}>
-            <Text style={styles.sectionText}>기본 정보</Text>
-          </View>
-          <View style={styles.tagContainer}>
-          {
-            basic.map((item) => {
-              return (
-                <SelectableTag 
-                  key={item.id}
-                  touchAreaStyle={{marginRight: 6, marginBottom: 6}}
-                  containerStyle={styles.uneditableTag} 
-                  textStyle={styles.uneditableText} children={item.text}/>
-              );
-            })
-          }
-          </View>
+        <View style={styles.tagContainer}>
+        {
+          basic.map((item) => {
+            return (
+              <SelectableTag 
+                key={item.id}
+                touchAreaStyle={{marginRight: 6, marginBottom: 6}}
+                containerStyle={styles.uneditableTag} 
+                textStyle={styles.uneditableText} children={item.text}/>
+            );
+          })
+        }
         </View>
+      </View>
 
-        {/* 관상 정보 섹션 */}
-        <View style={styles.section}>
-          <View style={styles.sectionTop}>
-            <Text style={styles.sectionText}>관상 정보</Text>
-          </View>
-          <View style={styles.tagContainer}>
-          {
-            analysis.map((item) => {
-              return (
-                <SelectableTag 
-                  key={item.id}
-                  touchAreaStyle={{marginRight: 6, marginBottom: 6}}
-                  height={25}
-                  containerStyle={styles.uneditableTag} 
-                  textStyle={styles.uneditableText} children={item.text}/>
-              );
-            })
-          }
-          </View>
+      {/* 관상 정보 섹션 */}
+      <View style={styles.section}>
+        <View style={styles.sectionTop}>
+          <Text style={styles.sectionText}>관상 정보</Text>
         </View>
-
-        {/* 카테고리 섹션 */}
-        <View style={{paddingTop: 20}}>
-          <View style={styles.sectionTop}>
-            <Text style={styles.sectionText}>카테고리</Text>
-          </View>
-          <View style={styles.tagContainer}>
-          {
-            categories.map((item) => {
-              return (
-                <SelectableTag 
-                  key={item.id}
-                  touchAreaStyle={{marginRight: 6, marginBottom: 6}}
-                  height={25}
-                  selectable={{
-                    select: item.selected, showSelectedOnly: true,
-                    selectedStyle: {backgroundColor: colors.point, borderColor: colors.point},
-                    unselectedStyle: {backgroundColor: colors.gray5, borderColor: colors.gray5},
-                    selectedTextStyle: {color: colors.white},
-                    unselectedTextStyle: {color: colors.white}
-                  }}
-                  containerStyle={styles.uneditableTag} 
-                  textStyle={styles.uneditableText} children={category[item.text]}/>
-              );
-            })
-          }
-          </View>
+        <View style={styles.tagContainer}>
+        {
+          analysis.map((item) => {
+            return (
+              <SelectableTag 
+                key={item.id}
+                touchAreaStyle={{marginRight: 6, marginBottom: 6}}
+                height={25}
+                containerStyle={styles.uneditableTag} 
+                textStyle={styles.uneditableText} children={item.text}/>
+            );
+          })
+        }
         </View>
+      </View>
 
-        {/* 자기소개서 내용 섹션 */}
-        <View style={styles.section}>
-          <View style={styles.sectionTop}>
-            <Text style={styles.sectionText}>소개</Text>
-          </View>
-          <CustomTextInput 
-            containerStyle={styles.inputContainer} 
-            style={{flex: 1, color: colors.gray9}} multiline={true}
-            editable={false}
-            onChangeText={(text) => {setEssay(text)}}
-            children={essay}/>
+      {/* 카테고리 섹션 */}
+      <View style={{paddingTop: 20}}>
+        <View style={styles.sectionTop}>
+          <Text style={styles.sectionText}>카테고리</Text>
         </View>
+        <View style={styles.tagContainer}>
+        {
+          categories.map((item) => {
+            return (
+              <SelectableTag 
+                key={item.id}
+                touchAreaStyle={{marginRight: 6, marginBottom: 6}}
+                height={25}
+                selectable={{
+                  select: item.selected, showSelectedOnly: true,
+                  selectedStyle: {backgroundColor: colors.point, borderColor: colors.point},
+                  unselectedStyle: {backgroundColor: colors.gray5, borderColor: colors.gray5},
+                  selectedTextStyle: {color: colors.white},
+                  unselectedTextStyle: {color: colors.white}
+                }}
+                containerStyle={styles.uneditableTag} 
+                textStyle={styles.uneditableText} children={category[item.text]}/>
+            );
+          })
+        }
+        </View>
+      </View>
 
-        <View style={[styles.section, styles.bottomContainer]}>
+      {/* 자기소개서 내용 섹션 */}
+      <View style={styles.section}>
+        <View style={styles.sectionTop}>
+          <Text style={styles.sectionText}>소개</Text>
+        </View>
+        <CustomTextInput 
+          containerStyle={styles.inputContainer} 
+          style={{flex: 1, color: colors.gray9}} multiline={true}
+          editable={false}
+          onChangeText={(text) => {setEssay(text)}}
+          children={essay}/>
+      </View>
+      <View style={[styles.section, styles.bottomContainer]}>
           {sendHeartButton}
         </View>
+    </View>
+  </>
+
+  const errorContent = 
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Icon size={150} source={require('../assets/images/surprise.png')}/>
+      <View style={{marginTop: 20, alignItems: 'center'}}>
+        <Text style={styles.hintText}>{errorMessage}</Text>
       </View>
+    </View>
+
+  return (
+    <ScrollView 
+      showsVerticalScrollIndicator={false} 
+      style={{backgroundColor: colors.white}} 
+      contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', flex: isLoading === 'LOADING' ? 1 : 0}}>
+      <CustomBackHandler onBack={() => navigation.goBack()}/>
+      <HeaderBar onPress={navigation.goBack}>자기소개서</HeaderBar>
+      {isLoading !== 'LOADED' && errorContent}
+      {isLoading === 'LOADED' && resumeContent}
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -368,6 +390,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 23,
     paddingHorizontal: 8,
+  },
+  
+  hintText: {
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 16,
+    letterSpacing: -16* 0.02,
+    textAlign: 'center',
+    color: colors.gray7
   },
 });
 
