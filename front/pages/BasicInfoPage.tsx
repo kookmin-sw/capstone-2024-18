@@ -246,7 +246,7 @@ const BasicInfoPage = ({navigation}: any) => {
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleText}>키</Text>
       </View>
-      <CustomSlider index={sliderIndex.height} onChange={handleChangeHeightSliderIndex} labels={["150대\n이하", "160대", "170대", "180대", "190대\n이상"]}/>
+      <CustomSlider index={sliderIndex.height} onChange={handleChangeHeightSliderIndex} labels={["160대\n이하", "160대", "170대", "180대", "190대\n이상"]}/>
     </>
   )
 
