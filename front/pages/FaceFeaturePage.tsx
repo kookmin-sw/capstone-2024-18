@@ -6,7 +6,7 @@ import { colors } from '../assets/colors.tsx';
 import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
-import { getFaceInfo, isAnalysisFullResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
+import { getAnalysisInfo, getFaceInfo, isAnalysisFullResponse, isAnalysisInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
 import { createAlertMessage } from '../util/alert.tsx';
 import { Card, IconButton } from 'react-native-paper';
@@ -33,6 +33,9 @@ const FaceFeaturePage = ({navigation}: any) => {
 
   // 이미지 추가하는 방식 모달 가시성 설정
   const [ modalVisible, setModalVisible ] = useState(false);
+
+  // 얼굴 분석
+  const [results, setResults] = useState<Record<string, string>>({});
 
   function setPhoto(uri: string) {
     setUri(uri);
@@ -65,22 +68,19 @@ const FaceFeaturePage = ({navigation}: any) => {
     }
   }
 
-  const [results, setResults] = useState<Record<string, string>>({});
-
   const tryPostFaceFeature = async () => {
     if (authCtx.accessToken) {
       const analysisResponse = await putAnalysisInfo(
         authCtx.accessToken, uri
       );
       
-      if (!isAnalysisFullResponse(analysisResponse)) {
-        createAlertMessage(analysisResponse.message);
-        return;
-      } else {
+      if (isAnalysisInfoResponse(analysisResponse)) {
         setResults(analysisResponse.analysisFull);
+        userCtx.setAnalysisinfo(analysisResponse);
+        setPageIndex(1);
+      } else {
+        createAlertMessage(analysisResponse.message);
       }
-
-      setPageIndex(1);
     } else { // 실제에서는 절대 없는 예외 상황
       console.log("로그인 정보가 없습니다.");
     }
@@ -100,7 +100,7 @@ const FaceFeaturePage = ({navigation}: any) => {
         "알림",
         "해당 이미지로 AI 관상 이미지를 생성할까요?",
         [
-          { text: "확인", style: "default", onPress: () => tryPostFaceFeature()},
+          { text: "확인", style: "default", onPress: tryPostFaceFeature},
           { text: "취소", style: "cancel"},
         ],
         { cancelable: true },
@@ -146,10 +146,10 @@ const FaceFeaturePage = ({navigation}: any) => {
       <View style={styles.resultContainer}>
         {
           Object.entries(results).map(([key, value]) => (
-            <>
+            <View key={key}>
               <Text style={styles.resultTitle}>{key}</Text>
               <Text style={styles.resultContent}>{value}</Text>
-            </>
+            </View>
           ))
         }
       </View>

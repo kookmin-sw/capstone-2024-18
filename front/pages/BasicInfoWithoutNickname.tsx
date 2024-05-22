@@ -324,7 +324,7 @@ const BasicInfoWithoutNickname = ({navigation}: any) => {
           </View>
           {contents[pageIndex]}
         </View>
-        <CustomProgressBar progress={(pageIndex + 1) / 6}/>
+        <CustomProgressBar progress={(pageIndex + 1) / 5}/>
         <View style={{ height: 27 }}/>
         <View style={styles.bottomContainer}>
           <CustomButton 

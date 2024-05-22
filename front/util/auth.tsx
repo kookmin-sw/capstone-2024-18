@@ -495,12 +495,13 @@ export const putAnalysisInfo = async (accessToken: string, fileUri: string): Pro
   };
   try {
     const response = await axios.put(endpoint, formData, config);
-    const { analysisFull } = response.data;
+    const { analysisFull, analysisShort } = response.data;
     const responseInfo = {
       method,
       status: response.status,
       message: "관상 정보를 생성했습니다.",
-      analysisFull
+      analysisFull,
+      analysisShort
     }
     console.log(responseInfo);
     return responseInfo;
