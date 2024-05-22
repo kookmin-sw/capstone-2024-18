@@ -32,14 +32,16 @@ const FindEmail = ({navigation}: any) => {
       setEmail({...email, status: ""});
       return;
     }
-    
+  }
+
+  useEffect(() => {
     const emaliRegex = /^[\w.-]+@[\w.-]+\.\w+$/;
     if (emaliRegex.test(email.value)) {
       setEmail({...email, status: "VALID", message: "올바른 이메일 형식입니다."});
     } else {
       setEmail({...email, status: "INVALID", message: "이메일 형식이 아닙니다."});
     }
-  }
+  }, [email.value])
 
   const emailHintText = 
     <View style={styles.hintContainer}>{
