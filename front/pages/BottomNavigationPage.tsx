@@ -5,12 +5,13 @@ import SelfProduce from "./SelfProduce.tsx";
 import Friends from "./Friends.tsx";
 import Profile from "./Profile.tsx";
 import CustomBackHandler from "../components/CustomBackHandler.tsx";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { UserContext } from "../store/user-context.tsx";
 import ChatRoomList from "../components/chat/ChatRoomList.tsx";
 import { deleteMyResume } from "../util/auth.tsx";
 import { AuthContext } from "../store/auth-context.tsx";
 import { colors } from "../assets/colors.tsx";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -23,11 +24,15 @@ const Test1 = ({navigation}: any) => {
 
   const selfUrl = userCtx.faceinfo.generatedS3url;
 
-  useEffect(() => {
-    if (authCtx.status === 'LOGGED_OUT') {
-      navigation.navigate('Home');
-    }
-  }, [authCtx.status]);
+  useFocusEffect(
+    useCallback(() => {
+      console.log("authCtx.status:", authCtx.status)
+      if (authCtx.status === 'LOGGED_OUT') {
+        console.log('here')
+        navigation.navigate('Login');
+      }
+    }, [authCtx.status, navigation])
+  )
 
   return (
     <View style={{height: "100%"}}>

@@ -14,17 +14,18 @@ const Home = ({ navigation }: any) => {
 
   useFocusEffect(
     useCallback(() => {
+      console.log("authCtx.status:", authCtx.status)
       if (!authCtx.status) return;
       if (authCtx.status === 'LOADED') return
-      if (authCtx.status === 'NOT_EXIST' || authCtx.status === 'LOGGED_OUT') {
+      if (authCtx.status === 'NOT_EXIST') {
         navigation.navigate('Login');
       }
-    }, [authCtx.status])
+    }, [authCtx.status, navigation])
   );
 
   useFocusEffect(
     useCallback(() => {
-    console.log("userCtx.status:", userCtx.status)
+      console.log("userCtx.status:", userCtx.status, chatRoomCtx.status)
       if (userCtx.status === 'BASIC_INFO_NOT_EXIST') {
         navigation.navigate('BasicInfo');
       }
@@ -38,7 +39,7 @@ const Home = ({ navigation }: any) => {
         navigation.navigate('Main');
       }
       
-    }, [userCtx.status, chatRoomCtx.status])
+    }, [userCtx.status, chatRoomCtx.status, navigation])
   );
 
   return (
