@@ -174,7 +174,7 @@ public class ChatRoomService {
         Member member = findMemberById(memberId);
         Member sender = identifySender(chatRoomMember, memberId);
         Member leftMember = identifyLeftMember(memberId, chatRoomMember);
-        if (status== ChatRoom.Status.close) {
+        if (status == ChatRoom.Status.close) {
             if (member != leftMember) {
                 chatRoomMemberRepository.delete(chatRoomMember);
                 chatRoomRepository.delete(chatRoom);
@@ -188,9 +188,9 @@ public class ChatRoomService {
         if(!chatMessages.isEmpty()){
             chatMessageRepository.deleteAll(chatMessages);
         }
-        if (chatRoomMember.getSender() == member) {
+        if (chatRoomMember.getSender().equals(member)) {
             chatRoomMember.setSenderExist(false);
-        } else if (chatRoomMember.getReceiver() == member){
+        } else if (chatRoomMember.getReceiver().equals(member)){
             chatRoomMember.setReceiverExist(false);
         } else {
             return "속해있지 않은 채팅방입니다.";
