@@ -50,7 +50,7 @@ public class AnalysisInfoService {
 
 
     @Transactional
-    public AnalysisInfoFullResponse analyze(MultipartFile origin, Long memberId) throws IOException {
+    public AnalysisInfoFullShortResponse analyze(MultipartFile origin, Long memberId) throws IOException {
         // convert MultipartFile into ByteArrayResource
         ByteArrayResource resource = new ByteArrayResource(origin.getBytes()) {
             @Override
@@ -88,10 +88,10 @@ public class AnalysisInfoService {
 
         Member member = findMemberById(memberId); // 영속 상태
         member.getAnalysisInfo().setAnalysisFull(analysisFull); // dirty
-        member.getAnalysisInfo().setAnalysisShort(analysisShort);
-        member.getAnalysisInfo().setFaceShapeIdNum(faceShapeIdNum);
+        member.getAnalysisInfo().setAnalysisShort(analysisShort); // dirty
+        member.getAnalysisInfo().setFaceShapeIdNum(faceShapeIdNum); // dirty
 
-        return new AnalysisInfoFullResponse(analysisFull);
+        return new AnalysisInfoFullShortResponse(analysisFull, analysisShort);
     }
 
     private Map<String, String> extractAnalysisInfoFull(AnalysisInfoTotal total) {

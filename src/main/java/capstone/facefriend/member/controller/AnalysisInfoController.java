@@ -25,7 +25,7 @@ public class AnalysisInfoController {
 
     // 관상 분석할 때 사용
     @PutMapping("/analysis-info")
-    public ResponseEntity<AnalysisInfoFullResponse> analyze(
+    public ResponseEntity<AnalysisInfoFullShortResponse> analyze(
             @RequestPart("origin") MultipartFile origin,
             @AuthMember Long memberId
     ) throws IOException {
