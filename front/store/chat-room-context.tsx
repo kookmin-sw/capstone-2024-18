@@ -252,7 +252,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
       headers: { Authorization: 'Bearer ' + authCtx.accessToken } 
     };
     try {
-      const response = await axios.get(endpoint, config);
+      const response = await axios.post(endpoint, config);
       console.log(response.data);
     } catch (error) {
       console.log(method, error);
@@ -330,7 +330,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }
 
   const receiveHeart = (chatRoomListItem: ReceiveHeart) => {
-    createAlertMessage("receiveHeart");
+    // createAlertMessage("receiveHeart");
     const newChatRoom: ChatRoom = {
       createdAt: chatRoomListItem.chatRoom.createdAt,
       updatedAt: chatRoomListItem.chatRoom.updatedAt,
@@ -352,12 +352,12 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
   }
 
   const sendHeartResponse = () => {
-    createAlertMessage("sendHeartResponse");
+    // createAlertMessage("sendHeartResponse");
     getChatRoomList();
   }
 
   const receiveHeartResponse = (receiveHeartResponse: ReceiveHeartResponse) => {
-    createAlertMessage(JSON.stringify(receiveHeartResponse));
+    // createAlertMessage(JSON.stringify(receiveHeartResponse));
     if (receiveHeartResponse.intention === 'negative') {
       sentHeartIds.filter(id => id !== receiveHeartResponse.senderId);
     }
@@ -516,22 +516,22 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     if (binaryBodyToString(binaryBody) === "저장 성공") {
       console.log("connectResponse");
       setStatus('CONNECTED')
-      createAlertMessage('CONNECTED');
+      // createAlertMessage('CONNECTED');
       return;
     }
     if (binaryBodyToString(binaryBody) === "성공") {
       setStatus('DISCONNECTED');
-      createAlertMessage('DISCONNECTED');
+      // createAlertMessage('DISCONNECTED');
       return;
     }
     if (binaryBodyToString(binaryBody) === "대화 요청 성공") {
       console.log("sendHeartResponse");
-      createAlertMessage('sendHeartResponse');
+      // createAlertMessage('sendHeartResponse');
       sendHeartResponse();
       return;
     }
 
-    createAlertMessage(binaryBodyToString(binaryBody));
+    // createAlertMessage(binaryBodyToString(binaryBody));
 
     const responseData = JSON.parse(binaryBodyToString(binaryBody));
     if (responseData.method === "receiveHeart") {
@@ -562,7 +562,7 @@ const ChatRoomContextProvider: React.FC<ChatRoomProviderProps> = ({ children }) 
     });
 
     setStatus('SUBSCRIBED')
-    createAlertMessage('subscribed at ' + path);
+    // createAlertMessage('subscribed at ' + path);
     setSubscription(newSubscription);
     return newSubscription;
   }
