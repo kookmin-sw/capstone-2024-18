@@ -9,7 +9,7 @@
 *.yml
 
 #querydsl
-/src/main/generated
+/back/src/main/generated
 
 # User-specific stuff
 .idea/**/workspace.xml
@@ -178,7 +178,7 @@ fabric.properties
 # Ignore everything but code style settings and run configurations
 # that are supposed to be shared within teams.
 
-.idea/*
+../.idea/vcs.xml
 
 !.idea/codeStyles
 !.idea/runConfigurations
@@ -271,7 +271,7 @@ $RECYCLE.BIN/
 ### Gradle ###
 .gradle
 **/build/
-!src/**/build/
+!back/src/**/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting

@@ -3,7 +3,7 @@
 프로젝트 소개
 ---
 
-<img src="./poster.png" width="600">
+<img src="images/poster.png" width="600">
 
 ### Face Friend
 Face Friend 는 **관상 이미지 생성, 관상 분석, 관상 궁합 추천** 등의 기능을 통해 얼굴 노출의 부담을 덜고, 새로운 인연을 만나는 **색다른 즐거움**을 제공하는 데이팅 앱 서비스입니다.
@@ -30,11 +30,11 @@ AI 관상 분석의 결과에 따라 사용자의 오행형(五行形)를 분류
   <tr>
     <td>
       <h2> 회원가입 및 로그인 </h2>
-      <img src="./signup2.gif" width="300">
+      <img src="images/signup2.gif" width="300">
     </td>
     <td>
       <h2> 기본 정보 </h2>
-      <img src="./basic2.gif" width="300">
+      <img src="images/basic2.gif" width="300">
     </td>
   </tr>
   <tr>
@@ -43,11 +43,11 @@ AI 관상 분석의 결과에 따라 사용자의 오행형(五行形)를 분류
   <tr>
     <td>
       <h2> AI 관상 이미지 생성 </h2>
-      <img src="./face2.gif" width="300">
+      <img src="images/face2.gif" width="300">
     </td>
     <td>
       <h2> AI 관상 분석 </h2>
-      <img src="./analyze2.gif" width="300">
+      <img src="images/analyze2.gif" width="300">
     </td>
   </tr>
   <tr>
@@ -56,11 +56,11 @@ AI 관상 분석의 결과에 따라 사용자의 오행형(五行形)를 분류
   <tr>
     <td>
       <h2> 자기소개서 </h2>
-      <img src="./resume2.gif" width="300">
+      <img src="images/resume2.gif" width="300">
     </td>
     <td>
       <h2> 채팅 </h2>
-      <img src="./chat2.gif" width="300">
+      <img src="images/chat2.gif" width="300">
     </td>
   </tr>
   <tr>
