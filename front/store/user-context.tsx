@@ -30,6 +30,7 @@ interface UserContextType {
   setAnalysisinfo: (analysisInfo: analysisResponse | undefined) => void,
   setResumeinfo: (resumeInfo: resumeResponse | undefined) => void,
   setStatus: (status: string) => void,
+  clearInfo: () => void,
 }
 
 const defaultBasicInfo = {ageDegree: '', ageGroup: '', gender: '', heightGroup:'', nickname: '', region: ''};
@@ -46,6 +47,7 @@ export const UserContext = createContext<UserContextType>({
   setAnalysisinfo: (analysisInfo: analysisResponse | undefined) => {},
   setResumeinfo: (resumeInfo: resumeResponse | undefined) => {},
   setStatus: (status: string) => {},
+  clearInfo: () => {},
 });
 
 interface ChatProviderProps {
@@ -171,6 +173,15 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     }
   }
 
+
+  const clearInfo = () => {
+    setBasicinfo(defaultBasicInfo);
+    setFaceinfo(defaultFaceInfo);
+    setAnalysisinfo(undefined);
+    setResumeinfo(undefined);
+    setStatus('');
+  }
+
   useEffect(() => {
     if (authCtx.status === 'INITIALIZED') {
       setBasicInfoState();
@@ -204,6 +215,7 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
     setAnalysisinfo,
     setResumeinfo,
     setStatus,
+    clearInfo,
   }), [basicinfo, faceinfo, analysisinfo, resumeinfo, status]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

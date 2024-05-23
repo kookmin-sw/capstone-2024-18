@@ -91,6 +91,11 @@ const Profile = ({navigation}: any) => {
     return <Pressable onPress={onPress} style={styles.icon}><Icon source={'pencil-outline'} size={19} color={colors.point}/></Pressable>
   }
 
+  const handleSignout = () => {
+    authCtx.signout();
+    userCtx.clearInfo();
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Card style={styles.card}>
@@ -137,7 +142,7 @@ const Profile = ({navigation}: any) => {
         <CustomButton 
           containerStyle={{backgroundColor: colors.gray4, marginHorizontal: 5, elevation: 4}}
           textStyle={{color: colors.white, fontSize:18, letterSpacing: -18* 0.02, fontFamily: "Pretendard-SemiBold"}}
-          onPress={() => {authCtx.signout()}}>로그아웃</CustomButton>
+          onPress={handleSignout}>로그아웃</CustomButton>
       </View>
       <View style={{flex: 1}}/>
     </ScrollView>
