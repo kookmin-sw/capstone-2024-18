@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useContext } from "react";
 import { View, StyleSheet, Text, Pressable, ScrollView, TextInput, useWindowDimensions } from "react-native";
-import { Icon } from 'react-native-paper';
+import { Icon, Modal } from 'react-native-paper';
 
 import IconText from "../components/IconText.tsx";
 import CustomTextInput from "../components/CustomTextInput.tsx";
@@ -13,12 +13,14 @@ import VerifyEmailModal from "./VerifyEmailModal.tsx";
 import CustomBackHandler from "../components/CustomBackHandler.tsx";
 import HeaderBar from "../components/HeaderBar.tsx";
 import { AlertContext } from "../store/alert-context.tsx";
+import TermsOfService from "./TermsModal.tsx";
 
 const Signup = ({navigation}: any) => {
   const { createAlertMessage } = useContext(AlertContext);
 
   const {height} = useWindowDimensions();
   const [modalVisible, setModalVisible] = useState(false);
+  const [termsModalVisible, setTermsModalVisible] = useState(false);
 
   const [email, setEmail] = useState({
     value: "",
@@ -52,6 +54,14 @@ const Signup = ({navigation}: any) => {
       setModalVisible(true);
     }
   }
+
+  const handleTermsModalOpen = () => {
+    setTermsModalVisible(true);
+  }
+
+  useEffect(() => {
+    console.log('handleTermsModalOpen', termsModalVisible)
+  }, [termsModalVisible])
 
   const handleEmailInputChange = (value: string) => {
     setEmail({...email, value, status: "DEFALUT"});
@@ -124,6 +134,17 @@ const Signup = ({navigation}: any) => {
       navigation.goBack();
     };
   }
+
+  const handleOnBack = () => {
+    if (termsModalVisible) {
+      setTermsModalVisible(false)
+    }
+    else {
+      navigation.goBack()
+    }
+  }
+
+  const title = termsModalVisible ? "이용약관" : "SIGN UP";
   
   useEffect(() => {
     if (password.value[0] === "" || password.value[1] === "") {
@@ -172,115 +193,120 @@ const Signup = ({navigation}: any) => {
       </IconText>
     }</View>
   
+  const content = <View style={styles.container}>
+  <View style={[styles.sectionContainer, { borderTopWidth: 0 }]}>
+    <View style={styles.textContainer}>
+      <Text style={styles.inputLabel}>이메일 주소</Text>
+      <Text style={styles.inputLabelStar}> *</Text>
+    </View>
+    <View style={styles.textInputContainer}>
+      <CustomTextInput 
+        placeholder="예) facefriend@gmail.com" 
+        onChangeText= {handleEmailInputChange} 
+        returnKeyType="next"
+        onSubmitEditing={() => passwordInputRef.current?.focus()}
+        blurOnSubmit={false}
+        onBlur={handleEmailInputOnBlur}
+        isValid={email.status === "VALID" || email.status === "VERIFIED" || email.status === "LOADING" || email.status === "DEFALUT"}
+      />
+    </View>
+    <View style={styles.grayButtonContainer}>
+      <CustomButton onPress={handleModalOpen} 
+        containerStyle={styles.grayButton}
+        textStyle={styles.grayButtonText}>본인인증
+      </CustomButton>
+      {emailHintText}
+    </View>
+  </View>
+  <View style={styles.sectionContainer}>
+    <View style={styles.textContainer}>
+      <Text style={styles.inputLabel}>비밀번호 설정</Text>
+      <Text style={styles.inputLabelStar}> *</Text>
+    </View>
+    <View style={styles.textInputContainer}>
+      <CustomTextInput 
+        placeholder='비밀번호를 입력해주세요'
+        secureTextEntry={!password.visible[0]} 
+        onChangeText={(newText) => handlePwInputChage(newText, 0)}
+        rightIcon={{ source: !password.visible[0] ? "eye-off-outline" : "eye-outline" }} 
+        rightPressable={{ onPress: togglePwVisibility.bind(this, 0) }}
+        ref={passwordInputRef}
+        returnKeyType="next"
+        onSubmitEditing={() => passwordConfirmInputRef.current?.focus()}
+        blurOnSubmit={false}
+        isValid={password.status === "DEFALUT" || password.status === "VALID" || password.isFocused}
+        onFocus={handleOnFocus}
+        onBlur={handleOnBlur}
+      />
+    </View>
+    <IconText icon={{source: "information"}} containerStyle={styles.hintContainer}>영문 숫자 특수문자 혼합 8-16자</IconText>
+    <View style={styles.textContainer}>
+      <Text style={styles.inputLabel}>비밀번호 확인</Text>
+      <Text style={styles.inputLabelStar}> *</Text>
+    </View>
+    <View style={styles.textInputContainer}>
+      <CustomTextInput 
+        placeholder='비밀번호를 입력해주세요'
+        secureTextEntry={!password.visible[1]} 
+        onChangeText={(newText) => handlePwInputChage(newText, 1)}
+        rightIcon={{ source: !password.visible[1] ? "eye-off-outline" : "eye-outline" }} 
+        rightPressable={{ onPress: togglePwVisibility.bind(this, 1) }}
+        ref={passwordConfirmInputRef}
+        returnKeyType="done"
+        isValid={password.status === "DEFALUT" || password.status === "VALID" || password.isFocused}
+        onFocus={handleOnFocus}
+        onBlur={handleOnBlur}
+      />
+    </View>
+    {passwordHintText}
+  </View>
+  <View style={[styles.sectionContainer, { borderBottomWidth: 0, marginTop: 'auto' }]}>
+    <View style={styles.agreementContainer}>
+      <Pressable onPress={handleCheckAll}>
+        <Icon source={isCheckedAll ? "checkbox-marked" : "checkbox-outline"} color={colors.gray6} size={18} /> 
+      </Pressable>
+      <Text style={styles.agreementText}>이용약관 전체 동의</Text>
+      <View style={styles.toggleIconContainer}>
+        <Pressable onPress={handleAgreementToggle}>
+          <Icon source={agreementToggle ? "chevron-up" : "chevron-down"} color={colors.gray6} size={24} /> 
+        </Pressable>
+      </View>
+    </View>
+    {agreementToggle && 
+    <>
+      <View style={styles.subagreementContainer}>
+        <Pressable onPress={handleCheck.bind(this, 0)}>
+          <Icon source={isChecked[0] ? "checkbox-marked" : "checkbox-outline"} color={colors.gray6} size={18} /> 
+        </Pressable>
+        <Text style={styles.subagreementText}>[필수] 만 14세 이상이며 모두 동의합니다.</Text>
+        <Pressable onPress={handleTermsModalOpen}><Text style={styles.subagreementToggleText}>전체</Text></Pressable>
+      </View>
+      <View style={styles.subagreementContainer}>
+        <Pressable onPress={handleCheck.bind(this, 1)}>
+          <Icon source={isChecked[1] ? "checkbox-marked" : "checkbox-outline"} color={colors.gray6} size={18} /> 
+        </Pressable>
+        <Text style={styles.subagreementText}>[필수] 만 14세 이상이며 모두 동의합니다.</Text>
+        <Pressable onPress={handleTermsModalOpen}><Text style={styles.subagreementToggleText}>전체</Text></Pressable>
+      </View>
+    </>}
+    <View style={styles.bottomContainer}>
+      <CustomButton onPress={handleSubmit} 
+        containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
+        textStyle={styles.pointButtonText}>회원가입하기
+      </CustomButton>
+    </View>
+  </View>
+</View>
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ height: height}}>
-      <CustomBackHandler onBack={() => navigation.goBack()}/>
-      <HeaderBar onPress={navigation.goBack}>SIGN UP</HeaderBar>
+      <Modal visible={termsModalVisible} contentContainerStyle={{ height: height, paddingTop: 80 }}>
+        <TermsOfService setModalVisible={setTermsModalVisible} />
+      </Modal>
+      <CustomBackHandler onBack={handleOnBack}/>
+      <HeaderBar onPress={handleOnBack}>{title}</HeaderBar>
       {modalVisible && <VerifyEmailModal setModalVisible={setModalVisible} email={email} setEmail={setEmail}/>}
-      <View style={styles.container}>
-        <View style={[styles.sectionContainer, { borderTopWidth: 0 }]}>
-          <View style={styles.textContainer}>
-            <Text style={styles.inputLabel}>이메일 주소</Text>
-            <Text style={styles.inputLabelStar}> *</Text>
-          </View>
-          <View style={styles.textInputContainer}>
-            <CustomTextInput 
-              placeholder="예) facefriend@gmail.com" 
-              onChangeText= {handleEmailInputChange} 
-              returnKeyType="next"
-              onSubmitEditing={() => passwordInputRef.current?.focus()}
-              blurOnSubmit={false}
-              onBlur={handleEmailInputOnBlur}
-              isValid={email.status === "VALID" || email.status === "VERIFIED" || email.status === "LOADING" || email.status === "DEFALUT"}
-            />
-          </View>
-          <View style={styles.grayButtonContainer}>
-            <CustomButton onPress={handleModalOpen} 
-              containerStyle={styles.grayButton}
-              textStyle={styles.grayButtonText}>본인인증
-            </CustomButton>
-            {emailHintText}
-          </View>
-        </View>
-        <View style={styles.sectionContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.inputLabel}>비밀번호 설정</Text>
-            <Text style={styles.inputLabelStar}> *</Text>
-          </View>
-          <View style={styles.textInputContainer}>
-            <CustomTextInput 
-              placeholder='비밀번호를 입력해주세요'
-              secureTextEntry={!password.visible[0]} 
-              onChangeText={(newText) => handlePwInputChage(newText, 0)}
-              rightIcon={{ source: !password.visible[0] ? "eye-off-outline" : "eye-outline" }} 
-              rightPressable={{ onPress: togglePwVisibility.bind(this, 0) }}
-              ref={passwordInputRef}
-              returnKeyType="next"
-              onSubmitEditing={() => passwordConfirmInputRef.current?.focus()}
-              blurOnSubmit={false}
-              isValid={password.status === "DEFALUT" || password.status === "VALID" || password.isFocused}
-              onFocus={handleOnFocus}
-              onBlur={handleOnBlur}
-            />
-          </View>
-          <IconText icon={{source: "information"}} containerStyle={styles.hintContainer}>영문 숫자 특수문자 혼합 8-16자</IconText>
-          <View style={styles.textContainer}>
-            <Text style={styles.inputLabel}>비밀번호 확인</Text>
-            <Text style={styles.inputLabelStar}> *</Text>
-          </View>
-          <View style={styles.textInputContainer}>
-            <CustomTextInput 
-              placeholder='비밀번호를 입력해주세요'
-              secureTextEntry={!password.visible[1]} 
-              onChangeText={(newText) => handlePwInputChage(newText, 1)}
-              rightIcon={{ source: !password.visible[1] ? "eye-off-outline" : "eye-outline" }} 
-              rightPressable={{ onPress: togglePwVisibility.bind(this, 1) }}
-              ref={passwordConfirmInputRef}
-              returnKeyType="done"
-              isValid={password.status === "DEFALUT" || password.status === "VALID" || password.isFocused}
-              onFocus={handleOnFocus}
-              onBlur={handleOnBlur}
-            />
-          </View>
-          {passwordHintText}
-        </View>
-        <View style={[styles.sectionContainer, { borderBottomWidth: 0, marginTop: 'auto' }]}>
-          <View style={styles.agreementContainer}>
-            <Pressable onPress={handleCheckAll}>
-              <Icon source={isCheckedAll ? "checkbox-marked" : "checkbox-outline"} color={colors.gray6} size={18} /> 
-            </Pressable>
-            <Text style={styles.agreementText}>이용약관 전체 동의</Text>
-            <View style={styles.toggleIconContainer}>
-              <Pressable onPress={handleAgreementToggle}>
-                <Icon source={agreementToggle ? "chevron-up" : "chevron-down"} color={colors.gray6} size={24} /> 
-              </Pressable>
-            </View>
-          </View>
-          {agreementToggle && 
-          <>
-            <View style={styles.subagreementContainer}>
-              <Pressable onPress={handleCheck.bind(this, 0)}>
-                <Icon source={isChecked[0] ? "checkbox-marked" : "checkbox-outline"} color={colors.gray6} size={18} /> 
-              </Pressable>
-              <Text style={styles.subagreementText}>[필수] 만 14세 이상이며 모두 동의합니다.</Text>
-              <Text style={styles.subagreementToggleText}>전체</Text>
-            </View>
-            <View style={styles.subagreementContainer}>
-              <Pressable onPress={handleCheck.bind(this, 1)}>
-                <Icon source={isChecked[1] ? "checkbox-marked" : "checkbox-outline"} color={colors.gray6} size={18} /> 
-              </Pressable>
-              <Text style={styles.subagreementText}>[필수] 만 14세 이상이며 모두 동의합니다.</Text>
-              <Text style={styles.subagreementToggleText}>전체</Text>
-            </View>
-          </>}
-          <View style={styles.bottomContainer}>
-            <CustomButton onPress={handleSubmit} 
-              containerStyle={[styles.pointButton, { backgroundColor: isFormValid ? colors.point : colors.pastel_point }]}
-              textStyle={styles.pointButtonText}>회원가입하기
-            </CustomButton>
-          </View>
-        </View>
-      </View>
+      {!termsModalVisible && content}
     </ScrollView>
   )
 }
