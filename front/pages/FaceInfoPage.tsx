@@ -8,13 +8,13 @@ import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
 import { getBasicInfo, isBasicInfoResponse, putFaceInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
-import { createAlertMessage } from '../util/alert.tsx';
 import AutoHeightImage from 'react-native-auto-height-image';
 import { Gender } from '../util/basicInfoFormat.tsx';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import { UserContext } from '../store/user-context.tsx';
 import HeaderBar from '../components/HeaderBar.tsx';
 import { Card } from 'react-native-paper';
+import { AlertContext } from '../store/alert-context.tsx';
 
 const FaceInfoPage = ({navigation}: any) => {
   // 이미지 uri path
@@ -25,6 +25,7 @@ const FaceInfoPage = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+  const { createAlertMessage } = useContext(AlertContext);
 
   const [ isImageSetting, setIsImageSetting ] = useState(false);
   const [ isButtonClickable, setIsButtonClickable ] = useState(false);

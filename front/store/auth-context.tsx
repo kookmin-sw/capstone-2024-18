@@ -1,11 +1,11 @@
-import React, { createContext, useState, useEffect, useMemo} from 'react';
+import React, { createContext, useState, useEffect, useMemo, useContext} from 'react';
 import { removeToken, saveToken, loadToken, loadCache, saveCache } from '../util/encryptedStorage';
 import axios from 'axios';
 import Config from 'react-native-config';
 
 import { validResponse, errorResponse, handleError, isValidResponse, isErrorResponse } from '../util/auth';
-import { createAlertMessage } from '../util/alert';
 import { AppState, AppStateStatus } from 'react-native';
+import { AlertContext } from './alert-context';
 
 const LOCALHOST = Config.LOCALHOST;
 
@@ -46,6 +46,8 @@ interface AuthProviderProps {
 }
 
 const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const { createAlertMessage } = useContext(AlertContext);
+
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [status, setStatus] = useState('');

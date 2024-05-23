@@ -10,11 +10,13 @@ import { SvgUri } from 'react-native-svg';
 
 import { colors } from '../assets/colors.tsx';
 import { isErrorResponse, isValidResponse } from '../util/auth.tsx';
-import { createAlertMessage } from '../util/alert.tsx';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
+import { AlertContext } from '../store/alert-context.tsx';
 
 const Login = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
+  const { createAlertMessage } = useContext(AlertContext);
+
   const [ email, setEmail ] = useState('');
   const [ pw, setPw ] = useState('');
 

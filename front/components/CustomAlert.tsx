@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 import { colors } from '../assets/colors';
 
-interface CustomAlertProps {
+export interface CustomAlertProps {
   isVisible: boolean;
   message: string;
   onClose: () => void;

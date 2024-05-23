@@ -8,16 +8,17 @@ import { showModal } from '../components/CameraComponent.tsx';
 import IconText from '../components/IconText.tsx';
 import { getAnalysisInfo, getFaceInfo, isAnalysisFullResponse, isAnalysisInfoResponse, isErrorResponse, isFaceInfoDefaultResponse, isFaceInfoResponse, putAnalysisInfo } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
-import { createAlertMessage } from '../util/alert.tsx';
 import { Card, IconButton } from 'react-native-paper';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
 import { UserContext } from '../store/user-context.tsx';
 import HeaderBar from '../components/HeaderBar.tsx';
+import { AlertContext } from '../store/alert-context.tsx';
 
 const FaceFeaturePage = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+  const { createAlertMessage } = useContext(AlertContext);
 
   const {height} = useWindowDimensions();
 
@@ -95,16 +96,7 @@ const FaceFeaturePage = ({navigation}: any) => {
       })
     } else {
       // ai 관상 이미지 생성
-      
-      Alert.alert(
-        "알림",
-        "해당 이미지로 AI 관상 이미지를 생성할까요?",
-        [
-          { text: "확인", style: "default", onPress: tryPostFaceFeature},
-          { text: "취소", style: "cancel"},
-        ],
-        { cancelable: true },
-      );
+      createAlertMessage("해당 이미지로 AI 관상 이미지를 생성할까요?", tryPostFaceFeature)
     }
   }
 
