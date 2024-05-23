@@ -22,7 +22,7 @@ AI 관상 분석의 결과에 따라 사용자의 오행형(五行形)를 분류
 
 ## 구글 드라이브 링크 (발표 자료, 포스터, 수행 결과 보고서)
 
-[링크로 이동하기](https://drive.google.com/drive/u/0/folders/1oI_0K9fKBadYxrruWakE9qfYq0Cbonal)
+[링크로 이동하기](https://drive.google.com/drive/u/0/folders/15CNdGg8UGcZfr9XU2z3XRlWpkxXgrowY)
 
 ## 주요 기능
 
