@@ -121,7 +121,7 @@ const BasicInfoWithoutNickname = ({navigation}: any) => {
           basicInfo.region,
         );  
         if (isValidResponse(response)) {
-          createAlertMessage("기본 정보 입력이 완료되었습니다.");
+          createAlertMessage("기본 정보 수정이 완료되었습니다.");
           userCtx.setBasicinfo({
             nickname: getBasicInfoRespose.nickname,
             gender: basicInfo.gender,

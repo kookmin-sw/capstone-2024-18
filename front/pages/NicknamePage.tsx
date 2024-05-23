@@ -72,7 +72,7 @@ const NicknamePage = ({navigation}: any) => {
             nickname,
             region: userCtx.basicinfo.region,
           })
-          createAlertMessage("기본 정보 입력이 완료되었습니다.");
+          createAlertMessage("기본 정보 수정이 완료되었습니다.");
           navigation.goBack();
         }
         if (isErrorResponse(response)) {
