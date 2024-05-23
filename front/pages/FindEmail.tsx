@@ -1,17 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 
 import { colors } from '../assets/colors.tsx';
 import CustomTextInput from '../components/CustomTextInput.tsx';
 import CustomButton from '../components/CustomButton.tsx';
-import { createAlertMessage } from '../util/alert.tsx';
 import { findEmail, isErrorResponse, isFindEmailResponse } from "../util/auth.tsx";
 import IconText from '../components/IconText.tsx';
 import HeaderBar from '../components/HeaderBar.tsx';
 import CustomBackHandler from '../components/CustomBackHandler.tsx';
+import { AlertContext } from '../store/alert-context.tsx';
 
 
 const FindEmail = ({navigation}: any) => {
+  const { createAlertMessage } = useContext(AlertContext);
+  
   const {height} = useWindowDimensions();
   
   // email state 관리와 

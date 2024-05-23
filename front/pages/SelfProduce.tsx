@@ -15,11 +15,11 @@ import { AuthContext } from "../store/auth-context";
 // 이미지들의 고유 key를 임시로 주기 위한 라이브러리
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
-import { createAlertMessage } from '../util/alert.tsx';
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
 import { Category, category } from '../util/categoryFormat.tsx';
 import { UserContext } from '../store/user-context.tsx';
 import { useFocusEffect } from '@react-navigation/native';
+import { AlertContext } from '../store/alert-context.tsx';
 
 
 const SelfProduce = ({navigation, route}: any) => {
@@ -32,6 +32,7 @@ const SelfProduce = ({navigation, route}: any) => {
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+  const { createAlertMessage } = useContext(AlertContext);
 
   // 자기소개서가 있는지 확인 (현재는 auth 연결 아직 안함)
   const [ haveSelfProduce, setHaveSelfProduce ] = useState(userCtx.resumeinfo ? true : false);

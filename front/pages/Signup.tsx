@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { View, StyleSheet, Text, Pressable, ScrollView, TextInput, useWindowDimensions } from "react-native";
 import { Icon } from 'react-native-paper';
 
@@ -8,13 +8,15 @@ import CustomButton from "../components/CustomButton.tsx";
 
 import { colors } from '../assets/colors.tsx'
 import { isValidResponse, signup, verifyDuplicationEmail } from "../util/auth.tsx";
-import { createAlertMessage } from "../util/alert.tsx";
 
 import VerifyEmailModal from "./VerifyEmailModal.tsx";
 import CustomBackHandler from "../components/CustomBackHandler.tsx";
 import HeaderBar from "../components/HeaderBar.tsx";
+import { AlertContext } from "../store/alert-context.tsx";
 
 const Signup = ({navigation}: any) => {
+  const { createAlertMessage } = useContext(AlertContext);
+
   const {height} = useWindowDimensions();
   const [modalVisible, setModalVisible] = useState(false);
 

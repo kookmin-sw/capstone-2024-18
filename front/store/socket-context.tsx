@@ -4,9 +4,9 @@ import { AppState, AppStateStatus } from "react-native";
 import { AuthContext } from "./auth-context";
 import Config from "react-native-config";
 import axios from "axios";
-import { createAlertMessage } from "../util/alert";
 import { binaryBodyToString } from "../util/binaryBodyToString";
 import { connect } from "react-redux";
+import { AlertContext } from "./alert-context";
 
 const LOCALHOST = Config.LOCALHOST;
 const SOCKET_URL = Config.SOCKET_URL;

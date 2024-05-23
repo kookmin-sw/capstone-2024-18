@@ -9,15 +9,16 @@ import { AuthContext } from "../store/auth-context";
 
 import { colors } from "../assets/colors";
 import { getFaceInfo, isErrorResponse, isFaceInfoResponse, isValidResponse, putBasicInfo } from "../util/auth";
-import { createAlertMessage } from "../util/alert";
 import ImageWithIconOverlay from "../components/ImageWithIconOverlay";
 import CustomBackHandler from "../components/CustomBackHandler";
 import HeaderBar from "../components/HeaderBar";
 import { UserContext } from "../store/user-context";
+import { AlertContext } from "../store/alert-context";
 
 const NicknamePage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+  const { createAlertMessage } = useContext(AlertContext);
 
   const height = Dimensions.get('window').height;
 

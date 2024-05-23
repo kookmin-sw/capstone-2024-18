@@ -6,18 +6,19 @@ import ImageWithIconOverlay from '../components/ImageWithIconOverlay.tsx';
 import IconText from '../components/IconText.tsx';
 import { getAnalysisInfoShort, getBasicInfo, getFaceInfo, isAnalysisShortResponse, isBasicInfoResponse, isErrorResponse, isFaceInfoResponse } from '../util/auth.tsx';
 import { AuthContext } from '../store/auth-context.tsx';
-import { createAlertMessage } from '../util/alert.tsx';
 import { Card, Icon } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { AgeDegree, AgeGroup, Gender, HeightGroup, Region, ageDegree, ageGroup, gender, heightGroup, region } from '../util/basicInfoFormat.tsx';
 import { UserContext } from '../store/user-context.tsx';
 import CustomButton from '../components/CustomButton.tsx';
+import { AlertContext } from '../store/alert-context.tsx';
 
 
 const Profile = ({navigation}: any) => {
   // auth와 페이지 전환을 위한 method
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+  const { createAlertMessage } = useContext(AlertContext);
 
   // 이미지 uri path
   const [ generatedS3url, setGeneratedS3url ] = useState('');

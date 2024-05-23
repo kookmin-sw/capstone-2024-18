@@ -14,13 +14,14 @@ import { colors } from "../assets/colors";
 import { ageDegree, ageGroup, heightGroup, region, gender, HeightGroup, Gender, AgeGroup, AgeDegree, Region } from "../util/basicInfoFormat";
 import { isBasicInfoResponse, isErrorResponse, isValidResponse, putBasicInfo } from "../util/auth";
 import SelectableTag from "../components/SelectableTag";
-import { createAlertMessage } from "../util/alert";
 import CustomBackHandler from "../components/CustomBackHandler";
 import { UserContext } from "../store/user-context";
+import { AlertContext } from "../store/alert-context";
 
 const BasicInfoPage = ({navigation}: any) => {
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+  const { createAlertMessage } = useContext(AlertContext);
 
   const {height} = useWindowDimensions();
   

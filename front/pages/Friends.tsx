@@ -14,11 +14,11 @@ import { FlatList } from 'react-native-gesture-handler';
 import { Category, category as categoryForm } from '../util/categoryFormat.tsx';
 import Config from 'react-native-config';
 import axios from 'axios';
-import { createAlertMessage } from '../util/alert.tsx';
 import { StompClientContext } from '../store/socket-context.tsx';
 import { UserContext } from '../store/user-context.tsx';
 import { useFocusEffect } from '@react-navigation/native';
 import CustomButton from '../components/CustomButton.tsx';
+import { AlertContext } from '../store/alert-context.tsx';
 
 
 const Friends = ({navigation}: any) => {
@@ -33,6 +33,7 @@ const Friends = ({navigation}: any) => {
   // auth를 위한 method
   const authCtx = useContext(AuthContext);
   const userCtx = useContext(UserContext);
+  const { createAlertMessage } = useContext(AlertContext);
 
   // CarouselSlider의 필수 파라미터, pageWidth, offset, gap 설정
   const pageWidth = Dimensions.get('window').width;
