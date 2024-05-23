@@ -58,7 +58,7 @@ const Test1 = ({navigation}: any) => {
 
                     if (userCtx.status === 'RESUME_EDIT') {
                       e.preventDefault();
-                      Alert.alert("경고", "자기소개서 저장을 하지 않으실 경우, 수정사항이 삭제될 수 있습니다. \n그래도 다른 탭으로 이동하시겠습니가?", [
+                      Alert.alert("경고", "자기소개서 저장을 하지 않으실 경우, 수정사항이 삭제될 수 있습니다. \n그래도 다른 화면으로 이동하시겠습니가?", [
                         {
                           text: "확인", onPress: () => {
                             navigation.navigate(route.name);
@@ -74,7 +74,7 @@ const Test1 = ({navigation}: any) => {
                       ]);
                     } else if (userCtx.status === 'RESUME_CREATE') {
                       e.preventDefault();
-                      Alert.alert("경고", "자기소개서 저장을 하지 않으실 경우, 수정사항이 삭제될 수 있습니다. \n그래도 다른 탭으로 이동하시겠습니가?", [
+                      Alert.alert("경고", "자기소개서 저장을 하지 않으실 경우, 수정사항이 삭제될 수 있습니다. \n그래도 다른 화면으로 이동하시겠습니가?", [
                         {
                           text: "확인", onPress: () => {
                             if (authCtx.accessToken) {
@@ -94,7 +94,6 @@ const Test1 = ({navigation}: any) => {
                     }
                   }
                 } else {
-                  console.log("다른 페이지로 전환합니다.");
                   setPreviousRoute(route.name);
                 }
               },

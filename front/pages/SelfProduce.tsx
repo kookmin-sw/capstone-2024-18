@@ -79,11 +79,11 @@ const SelfProduce = ({navigation, route}: any) => {
       "삭제하면, 해당 자기소개서를 복구할 수 없습니다",
       [
         {
-          text: "네",
+          text: "확인",
           onPress: deleteSelfProduce
         },
         {
-          text: "아니요",
+          text: "취소",
           style: 'cancel'
         }
       ]
