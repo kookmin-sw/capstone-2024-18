@@ -1,14 +1,13 @@
-import logo from './logo.svg';
-import './App.css';
-import Header from './component/Header.tsx';
-import Contents from './component/Contents.tsx';
+import useMediaQuery from "./Hooks/useMediaQuery";
+
+import DesktopPage from "./Pages/DesktopPage";
+import MobilePage from "./Pages/MoblePage";
 
 function App() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   return (
-    <>
-      <Header/>
-      <Contents/>
-    </>
+    <div className="App">{isMobile ? <MobilePage /> : <DesktopPage />}</div>
   );
 }
 

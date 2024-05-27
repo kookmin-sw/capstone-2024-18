@@ -6,3 +6,7 @@ yarn-error.log
 
 .gradle
 .DS_Store
+
+bin/
+build/
+*.yml

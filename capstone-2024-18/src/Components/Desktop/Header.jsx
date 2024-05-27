@@ -1,12 +1,12 @@
-import React from 'react';
+import classes from './Header.module.css';
 
 function Header() {
   return (
-    <div id="header">
+    <div id={classes.header}>
       <div style={{flexDirection: "row", display: 'flex'}}>
-        <p id="title"> capstone-2024-18 </p>
+        <p id={classes.title}> capstone-2024-18 </p>
         <div style={{flex: 1}}></div>
-        <a id="githubBtn" href="https://github.com/kookmin-sw/capstone-2024-18" style={{textDecoration: 'none'}}>
+        <a id={classes.githubBtn} href="https://github.com/kookmin-sw/capstone-2024-18" style={{textDecoration: 'none'}}>
           <text style={{color: "#FF7269", margin: 0, fontWeight:"bold", fontSize: "20px", lineHeight: "20px", paddingRight: 5}}>Visit Github</text>
           <svg width="20px" height="20px" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="66" cy="65" r="60" fill="white"/>
@@ -15,7 +15,7 @@ function Header() {
           </svg>
         </a>
       </div>
-      <p id="subtitle"> 관상 기반 데이팅 앱, FaceFriend </p>
+      <p id={classes.subtitle}> 관상 기반 데이팅 앱, FaceFriend </p>
     </div>
   );
 }

@@ -1,0 +1,39 @@
+#header {
+  top: 0;
+  padding: 20px;
+  height: 'fit-content';
+  background-color: #FF7269;
+}
+
+#container {
+  /* width: 80%; */
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#title {
+  font-size: 24px; 
+  font-weight: bold;
+  color: #fff;
+  margin: 0;
+}
+
+#subtitle {
+  font-size: 16px; 
+  color: #fff;
+  margin: 0;
+}
+
+#githubBtn {
+  height: 20px;
+  padding: 8px;
+  border-radius: 20px; 
+  border-width: 1px; 
+  border-color: #FF7269; 
+  background-color: #fff;
+  flex-direction: row;
+  display: flex;
+}
