@@ -1,0 +1,16 @@
+version: '3'
+services:
+  ai:
+    container_name: ai-container
+    image: lsh9034/ai-env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: ai_container
+    ports:
+      - '5000:5000'
+      - '5001:5001'
+    volumes:
+      - .:/root
+    stdin_open: true
+    tty: true

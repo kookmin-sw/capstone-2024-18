@@ -1,0 +1,9 @@
+/landmark_model/*.jpg
+/landmark_model/__pycache__
+/venv
+requirements.txt
+_config.yml
+*.jpg
+*.pyc
+index.md
+face_maker/DualStyleGAN/checkpoint
