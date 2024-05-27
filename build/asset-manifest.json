@@ -1,0 +1,32 @@
+{
+  "files": {
+    "main.css": "/static/css/main.a824911d.css",
+    "main.js": "/static/js/main.ceb26a7b.js",
+    "static/js/453.7428bf32.chunk.js": "/static/js/453.7428bf32.chunk.js",
+    "static/media/resume2.gif": "/static/media/resume2.edca1c66ceb517c2512b.gif",
+    "static/media/face2.gif": "/static/media/face2.f8921b360c4592f2965a.gif",
+    "static/media/basic2.gif": "/static/media/basic2.50d31b35c829279e903f.gif",
+    "static/media/analyze2.gif": "/static/media/analyze2.daaef6479114df388f0a.gif",
+    "static/media/signup2.gif": "/static/media/signup2.e0b665d32140868952e7.gif",
+    "static/media/chat2.gif": "/static/media/chat2.2a91bb6950a481e0d722.gif",
+    "static/media/appproduce.png": "/static/media/appproduce.9a53c3478fad7d776812.png",
+    "static/media/face.png": "/static/media/face.75c898e3efe355451941.png",
+    "static/media/structure.png": "/static/media/structure.17ee8302757d38ece686.png",
+    "static/media/김찬진.png": "/static/media/김찬진.84db4cb9575610901fb9.png",
+    "static/media/고명섭.png": "/static/media/고명섭.40a7ba45462035845646.png",
+    "static/media/박민희.png": "/static/media/박민희.9f858c7b87f438e1738c.png",
+    "static/media/이시현.png": "/static/media/이시현.648d3ec80426d6720f9f.png",
+    "static/media/윤민지.png": "/static/media/윤민지.3c19ebf7035bbe63a9fa.png",
+    "static/media/임장혁.png": "/static/media/임장혁.a7e69db89ea8627f82f1.png",
+    "static/media/logo.png": "/static/media/logo.479b94c37ebdf26505b6.png",
+    "static/media/halfCircle.png": "/static/media/halfCircle.8734f951d2e5c54e7554.png",
+    "index.html": "/index.html",
+    "main.a824911d.css.map": "/static/css/main.a824911d.css.map",
+    "main.ceb26a7b.js.map": "/static/js/main.ceb26a7b.js.map",
+    "453.7428bf32.chunk.js.map": "/static/js/453.7428bf32.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a824911d.css",
+    "static/js/main.ceb26a7b.js"
+  ]
+}
