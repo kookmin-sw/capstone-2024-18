@@ -10,8 +10,7 @@ function Contents() {
         <img src={require('../../images/appproduce.png')} width={"20%"} style={{position: 'relative', margin: 0}}/>
         <div style={{paddingTop: 50, paddingLeft: 20, paddingRight: 20}}>
           <text style={{display: 'block'}}>1. 프로젝트 소개</text>
-          <text style={{display: 'block'}}>페이스 프렌드(FaceFriend)는 기존의 데이팅 앱에서 사용자가 느꼈던 불편한 점들을 해결하기 위한 관상 기반 앱 서비스입니다.</text>
-          <text>얼굴 노출의 부담, 얼굴 이미지에 대한 의존과 같은 문제를 해결하기 위해 페이스 프렌드는 5가지 기능을 제공합니다.</text>
+          <div dangerouslySetInnerHTML={{__html: `<span style='color: ${point_color};'>페이스 프렌드(FaceFriend)</span>는 기존의 데이팅 앱에서 사용자가 느꼈던 불편한 점들을 해결하기 위한 관상 기반 앱 서비스입니다. <br><br><span style='color: ${point_color};'>얼굴 노출의 부담, 얼굴 이미지에 대한 의존</span>과 같은 문제를 해결하기 위해 페이스 프렌드는 <span style='color: ${point_color};'>5가지 기능</span>을 제공합니다.`}}/>
         </div>
       </div>
       

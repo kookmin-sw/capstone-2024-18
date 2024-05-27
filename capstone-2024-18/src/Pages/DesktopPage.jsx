@@ -24,6 +24,10 @@ const DesktopPage = () => {
         </div>
         <Container height={height}/>
       </div>
+      <div style={{textAlign: 'center', padding: 20, backgroundColor: '#FF7871'}}>
+        <img src={require('../images/logo.png')} width={"20%"} style={{position: 'relative', margin: 0}}/>
+        <text style={{display: 'block', textAlign: 'right'}}>Copyright @ 2024 국민대학교 캡스톤 18팀</text>
+      </div>
     </>
   );
 }
