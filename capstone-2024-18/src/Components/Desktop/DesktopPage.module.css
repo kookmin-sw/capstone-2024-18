@@ -2,12 +2,12 @@
   top: 0;
   padding: 20px;
   height: 'fit-content';
-  background-color: #FF7269;
+  background-color: #FF847D;
 }
 
 #container {
   /* width: 80%; */
-  width: 100%;
+  flex: 1;
   margin: auto;
   padding: 20px;
   border-radius: 5px;
@@ -31,7 +31,7 @@
   padding: 8px;
   border-radius: 20px; 
   border-width: 1px; 
-  border-color: #FF7269; 
+  border-color: #FF847D; 
   background-color: #fff;
   flex-direction: row;
   display: flex;
