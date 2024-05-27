@@ -66,13 +66,10 @@ def generate_image():
 @app.route('/generate_image_by_level', methods = ['POST'])
 def generate_image_by_level():
 
-    print('----------------------------------------\n')
-    print(type(request.files['image']))
-    print(request.values.keys())
-    print('----------------------------------------\n')
-
     # 파일 저장 위치 만들기
     file_path = request.values['user_id'] + '_level' + '.png'
+
+    sys.stdout = open(request.values['user_id']+'.txt','w')
 
     # 파일 저장
     #request.files['image'].save(file_path)

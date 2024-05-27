@@ -23,12 +23,9 @@ def home():
 def generate_image():
 
     file_path = request.values['user_id'] + '.jpeg'
-    print(request.values['user_id'])
-    print(type(request.files['image']))
+    
     # # 파일 저장
     request.files['image'].save(file_path)
-    print(type(request.files['image']))
-    print(request.values.keys())
     
     result = getType(file_path)
     
