@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "proxy": "http://127.0.0.1:8080",
+  "homepage": "https://kookmin-sw.github.io/capstone-2024-18",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
