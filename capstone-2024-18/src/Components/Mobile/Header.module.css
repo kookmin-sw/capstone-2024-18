@@ -1,0 +1,31 @@
+header {
+  height: max-content;
+  background-color: #FF7871;
+  text-align: left;
+  padding: 3rem;
+}
+
+h1 {
+  color: white;
+  font-size: 4rem;
+  font-family: 'Pretendard';
+  font-weight: bold;
+  height: max-content;
+  margin: 0;
+  margin-bottom: 0.7rem;
+}
+
+h2 {
+  color: white;
+  font-size: 2.5rem;
+  font-family: 'Pretendard';
+  font-weight: normal;
+  margin: 0;
+}
+
+img {
+  position: absolute;
+  margin: 4.5rem;
+  right: 0;
+  top: 0;
+}

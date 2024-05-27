@@ -9,17 +9,50 @@
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
+            width: 100%;
             padding: 0;
             background-color: #f4f4f4;
+            flex-direction: column;
+            display: flex;
+        }
+
+        #header {
+            top: 0;
+            padding: 20px;
+            background-color: #FF7269;
         }
 
         #container {
-            width: 80%;
+            /* width: 80%; */
             margin: auto;
             padding: 20px;
             background: #fff;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #title {
+            font-size: 24px; 
+            font-weight: bold;
+            color: #fff;
+            margin: 0;
+        }
+
+        #subtitle {
+            font-size: 16px; 
+            color: #fff;
+            margin: 0;
+        }
+
+        #githubBtn {
+            height: 20px;
+            padding: 8px;
+            border-radius: 20px; 
+            border-width: 1px; 
+            border-color: #FF7269; 
+            background-color: #fff;
+            flex-direction: row;
+            display: flex;
         }
 
         h1, h2, h3 {
@@ -98,12 +131,18 @@
     </style>
 </head>
 <body>
+<div id="header">
+    <div style="flex-direction: row; display: flex;">
+        <p id="title"> capstone-2024-18 </p>
+        <div style="flex: 1;"></div>
+        <a id="githubBtn" href="https://github.com/kookmin-sw/capstone-2024-18" class="button btnFade">
+            <p style="color: #FF7269; margin: 0; font-weight: bold;font-size: 20px; line-height: 20px; padding-right: 5px;">Visit Github</p>
+            <img src="images/githubWhite.svg" width="20px" height="20px" style="margin: 0;"/>
+        </a>
+    </div>
+    <p id="subtitle"> 관상 기반 데이팅 앱, FaceFriend </p>
+</div>
 <div id="container">
-    <p align="center">
-        <img src="images/poster.png" style="border-color: #525463" border="2" width="60%" height="60%"/>
-    </p>
-    <br>
-
     <h1> 프로젝트 소개 </h1>
     <hr class="my-hr">
 
@@ -231,6 +270,10 @@
                 <br>친밀도에 따른 AI 관상 이미지 변화, AWS S3</td>
         </tr>
     </table>
+    <p align="center">
+        <img src="images/poster.png" style="border-color: #525463" border="2" width="60%" height="60%"/>
+    </p>
+    <br>
 </div>
 </body>
 </html>
