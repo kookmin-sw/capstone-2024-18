@@ -1,11 +1,21 @@
-import Header from "../Components/Desktop/Header"
-import Contents from "../Components/Desktop/Contents"
+import Header from "../Components/Desktop/Header.jsx"
+import Contents from "../Components/Desktop/Contents.jsx"
+import Container from "../Components/Desktop/Container.jsx";
+import AppProduce from "../Components/Desktop/AppProduce.jsx";
 
 const DesktopPage = () => {
-  return <>
-    <Header/>
-    <Contents/>
-  </>
+  return (
+    <>
+      <Header/>
+      <AppProduce/>
+      <div style={{position: 'relative', flex: 1}}>
+        <div style={{position: 'absolute', width: '100%'}}> 
+          <Contents/>
+        </div>
+        <Container/>
+      </div>
+    </>
+  );
 }
 
 export default DesktopPage;
