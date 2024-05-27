@@ -6,7 +6,7 @@
     <title>Face Friend</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Pretendard, sans-serif;
             line-height: 1.6;
             margin: 0;
             width: 100%;
@@ -17,39 +17,50 @@
         }
 
         #header {
-            top: 0;
-            padding: 20px;
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+            padding-top: 20px;
             background-color: #FF7269;
         }
 
-        #container {
-            /* width: 80%; */
-            margin: auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        #header img {
+            width: 185px;
+            height: 128px;
+            margin-right: 50px; /* 로고와 문자열 사이의 간격 */
+        }
+
+        .header-text {
+            text-align: left;
+            color: #fff;
         }
 
         #title {
-            font-size: 24px; 
+            font-size: 36px;
             font-weight: bold;
-            color: #fff;
             margin: 0;
         }
 
         #subtitle {
-            font-size: 16px; 
-            color: #fff;
+            font-size: 20px;
             margin: 0;
+            padding-bottom: 20px;
+        }
+
+
+        #container {
+            padding-left: 20px;
+            padding-right: 20px;
+            background: #fff;
+            color: #525463; /* 텍스트 색상 변경 */
         }
 
         #githubBtn {
             height: 20px;
             padding: 8px;
-            border-radius: 20px; 
-            border-width: 1px; 
-            border-color: #FF7269; 
+            border-radius: 20px;
+            border-width: 1px;
+            border-color: #FF7269;
             background-color: #fff;
             flex-direction: row;
             display: flex;
@@ -128,50 +139,62 @@
         p {
             font-size: 20px;
         }
+
+        h1, h2, h3 {
+            color: #525463;
+        }
     </style>
 </head>
 <body>
 <div id="header">
-    <div style="flex-direction: row; display: flex;">
-        <p id="title"> capstone-2024-18 </p>
-        <div style="flex: 1;"></div>
-        <a id="githubBtn" href="https://github.com/kookmin-sw/capstone-2024-18" class="button btnFade">
-            <p style="color: #FF7269; margin: 0; font-weight: bold;font-size: 20px; line-height: 20px; padding-left: 8px; padding-right: 5px;">Visit Github</p>
-            <img src="images/githubWhite.svg" width="30px" height="25px" style="margin: 0;"/>
-        </a>
+    <img src="images/logo.png"/>
+    <div class="header-text">
+        <p id="title">capstone-2024-18</p>
+        <p id="subtitle">관상 기반 데이팅 앱, FaceFriend</p>
     </div>
-    <p id="subtitle"> 관상 기반 데이팅 앱, FaceFriend </p>
 </div>
+<!--<div id="header">-->
+<!--    <div style="flex-direction: row; display: flex;">-->
+<!--        <p id="title"> capstone-2024-18 </p>-->
+<!--        <div style="flex: 1;"></div>-->
+<!--        <a id="githubBtn" href="https://github.com/kookmin-sw/capstone-2024-18" class="button btnFade">-->
+<!--            <p style="color: #FF7269; margin: 0; font-weight: bold;font-size: 20px; line-height: 20px; padding-left: 8px; padding-right: 5px;">Visit Github</p>-->
+<!--            <img src="images/githubWhite.svg" width="30px" height="25px" style="margin: 0;"/>-->
+<!--        </a>-->
+<!--    </div>-->
+<!--    <p id="subtitle"> 관상 기반 데이팅 앱, FaceFriend </p>-->
+<!--</div>-->
 <div id="container">
-    <h1> 프로젝트 소개 </h1>
+    <h2> 프로젝트 소개 </h2>
     <hr class="my-hr">
 
-    <h2> Face Friend </h2>
+    <h3> Face Friend </h3>
     <p>
-        Face Friend 는 <span class="highlightText">관상 이미지 생성, 관상 분석, 관상 궁합 추천</span> 등의 기능을 통해 얼굴 노출의 부담을 덜고,
-        <br>새로운 인연을 만나는 <span class="highlightText">색다른 즐거움</span>을 제공하는 데이팅 앱 서비스입니다.
+        Face Friend 는 <span class="highlightText">관상 이미지 생성, 관상 분석, 관상 궁합 추천</span> 등의 기능을 통해 <br>
+        기존의 데이팅 앱이 가지고 있었던 <span class="highlightText">얼굴 노출의 부담</span>과 <span class="highlightText">얼굴 이미지에 대한 절대적인 의존성</span>을 해결하기 위한 앱 서비스입니다.<br>
+        Face Friend 를 통해 새로운 인연을 만나는 색다른 즐거움을 느껴보세요!
     </p>
     <br>
 
-    <h2> AI 관상 이미지 생성 </h2>
+    <h3> AI 관상 이미지 생성 </h3>
     <p>
         <span class="highlightText">자신의 얼굴 특징과 분위기를 고스란히 담아낸</span> 관상 이미지를 생성합니다.
     </p>
     <br>
 
-    <h2> AI 관상 분석 </h2>
+    <h3> AI 관상 분석 </h3>
     <p>
         <span class="highlightText">눈썹, 눈, 코, 입, 얼굴형</span>에 대해 관상을 분석합니다. 성격, 가치관 등에 대한 관상 분석 정보를 제공합니다.
     </p>
     <br>
 
-    <h2> AI 관상 궁합 추천 </h2>
+    <h3> AI 관상 궁합 추천 </h3>
     <p>
         AI 관상 분석의 결과에 따라 사용자의 오행형(五行形)를 분류하고, <span class="highlightText">오행형(화/수/목/금/토)간의 궁합이 좋은 사용자를 추천합니다.</span>
     </p>
     <br>
 
-    <h2> 친밀도에 따른 관상 이미지 변경 </h2>
+    <h3> 친밀도에 따른 관상 이미지 변경 </h3>
     <p>
         <span class="highlightText">상대와 친밀해질수록 실제 얼굴과 가깝게</span> 관상 이미지가 변경됩니다.
     </p>
@@ -180,14 +203,14 @@
     <br>
     <br>
 
-    <h1> 구글 드라이브 링크 (발표 자료, 포스터, 수행 결과 보고서) </h1>
+    <h2> 문서 및 APK 실행파일 </h2>
     <hr class="my-hr">
     <br>
     <a href="https://drive.google.com/drive/u/0/folders/15CNdGg8UGcZfr9XU2z3XRlWpkxXgrowY" class="button">링크로 이동하기</a>
     <br><br><br><br><br>
 
 
-    <h1> 주요 기능 </h1>
+    <h2> 시연 영상 </h2>
     <hr class="my-hr">
 
     <div class="gif-grid">
@@ -223,7 +246,7 @@
         </div>
         <div class="gif-item">
             <div class="gif-row">
-                <h2> 채팅, 친밀도에 따른 관상 이미지 변화</h2>
+                <h2> 채팅, 친밀도 관상 이미지 변화</h2>
                 <img src="images/chat2.gif" width="365" height="890">
             </div>
         </div>
@@ -231,7 +254,7 @@
 
     <br>
     <br>
-    <h1> 팀원 소개 </h1>
+    <h2> 팀원 소개 </h2>
     <table>
         <tr>
             <th>파트</th>
