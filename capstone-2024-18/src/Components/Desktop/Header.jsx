@@ -1,4 +1,4 @@
-import classes from './Header.module.css';
+import classes from './DesktopPage.module.css';
 
 function Header() {
   return (
