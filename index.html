@@ -143,6 +143,16 @@
         h1, h2, h3 {
             color: #525463;
         }
+
+        /* 미디어 쿼리 */
+        @media only screen and (max-width: 600px) {
+            #header img {
+                display: none; /* 로고 숨기기 */
+            }
+            .header-text {
+                padding-left: 20px; /* 로고가 없으므로 왼쪽 패딩 추가 */
+            }
+        }
     </style>
 </head>
 <body>
