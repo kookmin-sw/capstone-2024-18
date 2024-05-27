@@ -11,6 +11,7 @@ const DesktopPage = () => {
   useEffect(() => {
     if (backgroundRef.current) {
       setHeight(backgroundRef.current.offsetHeight);
+      console.log(backgroundRef.current.offsetHeight);
     }
   }, [])
 
@@ -18,11 +19,11 @@ const DesktopPage = () => {
     <>
       <Header/>
       <AppProduce/>
-      <div style={{position: 'relative', height: height}}>
+      <div style={{position: 'relative', height: height, display: 'flex'}}>
         <div ref={backgroundRef} style={{position: 'absolute', width: '100%'}}> 
           <Contents/>
         </div>
-        <Container height={height}/>
+        <Container/>
       </div>
       <div style={{textAlign: 'center', padding: 20, backgroundColor: '#FF7871'}}>
         <img src={require('../images/logo.png')} width={"20%"} style={{position: 'relative', margin: 0}}/>
