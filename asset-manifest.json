@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/capstone-2024-18/static/css/main.288a6be0.css",
-    "main.js": "/capstone-2024-18/static/js/main.7cecc5ae.js",
+    "main.js": "/capstone-2024-18/static/js/main.64638cee.js",
     "static/js/453.7428bf32.chunk.js": "/capstone-2024-18/static/js/453.7428bf32.chunk.js",
     "static/media/Pretendard-Medium.otf": "/capstone-2024-18/static/media/Pretendard-Medium.902a118c9bf50b588451.otf",
     "index.html": "/capstone-2024-18/index.html",
     "main.288a6be0.css.map": "/capstone-2024-18/static/css/main.288a6be0.css.map",
-    "main.7cecc5ae.js.map": "/capstone-2024-18/static/js/main.7cecc5ae.js.map",
+    "main.64638cee.js.map": "/capstone-2024-18/static/js/main.64638cee.js.map",
     "453.7428bf32.chunk.js.map": "/capstone-2024-18/static/js/453.7428bf32.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.288a6be0.css",
-    "static/js/main.7cecc5ae.js"
+    "static/js/main.64638cee.js"
   ]
 }
