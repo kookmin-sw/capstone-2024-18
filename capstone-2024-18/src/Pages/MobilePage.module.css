@@ -1,7 +1,7 @@
 
 .oval {
   width: 100vw; 
-  height: calc(100vw * 16 / 9); 
+  height: calc(100vw * 9 / 16); 
   background-color: #FFECEB; 
   border-radius: 50%;
   display: flex;
@@ -9,7 +9,7 @@
   align-items: center;
   position: absolute;
   z-index: -1;
-  margin-top: 20rem;
+  margin-top: 32rem;
 }
 
 .rectangle {
@@ -21,5 +21,5 @@
   align-items: center;
   position: absolute;
   z-index: -1;
-  margin-top: calc(100vw * 8 / 9 + 20rem);
+  margin-top: calc(100vw * 9 / 32 + 32rem);
 }

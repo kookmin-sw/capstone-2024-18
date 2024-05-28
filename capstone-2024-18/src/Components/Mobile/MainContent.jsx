@@ -9,7 +9,7 @@ const MainContent = () => {
 
       <section className={classes["section-outer-container"]}>
         <div className={classes["section-image-container"]}>
-          <img className={classes["section-image"]} src={`${process.env.PUBLIC_URL}/section1.png`} alt="screen example 1" />
+          <img className={classes["section-image"]} src={`${process.env.PUBLIC_URL}/screen1.png`} alt="screen example 1" />
         </div>
         <div className={classes["section-text-container"]}>
           <h2 className={classes["section-first-title"]}>1. 프로젝트 소개</h2>
@@ -35,7 +35,7 @@ const MainContent = () => {
           <div className={classes["section-image-container"]}>
             <img 
               className={classes["section-image"]} 
-              src={`${process.env.PUBLIC_URL}/section1.png`} 
+              src={`${process.env.PUBLIC_URL}/screen2.png`} 
               alt="screen example 1" 
             />
           </div>
@@ -47,7 +47,7 @@ const MainContent = () => {
           <div className={classes["section-image-container"]}>
             <img 
               className={classes["section-image"]} 
-              src={`${process.env.PUBLIC_URL}/section1.png`} 
+              src={`${process.env.PUBLIC_URL}/screen3.png`} 
               alt="screen example 1" 
             />
           </div>
@@ -76,7 +76,7 @@ const MainContent = () => {
           <div className={classes["section-image-container"]}>
             <img 
               className={classes["section-image"]} 
-              src={`${process.env.PUBLIC_URL}/section1.png`} 
+              src={`${process.env.PUBLIC_URL}/screen4.png`} 
               alt="screen example 1" 
             />
           </div>
@@ -88,7 +88,7 @@ const MainContent = () => {
           <div className={classes["section-image-container"]}>
             <img 
               className={classes["section-image"]} 
-              src={`${process.env.PUBLIC_URL}/section1.png`} 
+              src={`${process.env.PUBLIC_URL}/screen5.png`} 
               alt="screen example 1" 
             />
           </div>
@@ -113,7 +113,7 @@ const MainContent = () => {
           <div className={classes["section-image-container"]}>
             <img 
               className={classes["section-image"]} 
-              src={`${process.env.PUBLIC_URL}/section1.png`} 
+              src={`${process.env.PUBLIC_URL}/screen6.png`} 
               alt="screen example 1" 
             />
           </div>
@@ -198,7 +198,7 @@ const MainContent = () => {
         </div>
       <h2 className={`${classes["section-title"]} background`}><br/><br/>6. 문서<br/><br/></h2>
       <div className={`${classes["button-container"]} background`}>
-        <a href='https://drive.google.com/drive/u/0/folders/15CNdGg8UGcZfr9XU2z3XRlWpkxXgrowY'>
+        <a href='https://drive.google.com/drive/u/0/folders/15CNdGg8UGcZfr9XU2z3XRlWpkxXgrowY' style={{ textDecoration: 'none' }}>
           <Button>구글 드라이브 링크</Button>
         </a>
       </div>
