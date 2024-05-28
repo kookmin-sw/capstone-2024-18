@@ -385,3 +385,4 @@ application.yml
 docker-compose.yml
 Dockerfile
 !AndroidManifest.xml
+/capstone-2024-18
