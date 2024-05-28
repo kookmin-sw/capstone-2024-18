@@ -1,0 +1,38 @@
+#header {
+  top: 0;
+  padding: 20px;
+  height: 'fit-content';
+  background-color: #FF847D;
+}
+
+#container {
+  /* width: 80%; */
+  flex: 1;
+  margin: auto;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+#title {
+  font-size: 24px; 
+  font-weight: bold;
+  color: #fff;
+  margin: 0;
+}
+
+#subtitle {
+  font-size: 16px; 
+  color: #fff;
+  margin: 0;
+}
+
+#githubBtn {
+  height: 20px;
+  padding: 8px;
+  border-radius: 20px; 
+  border-width: 1px; 
+  border-color: #FF847D; 
+  background-color: #fff;
+  flex-direction: row;
+  display: flex;
+}
