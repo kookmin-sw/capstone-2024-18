@@ -1,0 +1,29 @@
+.container {
+  flex: 1;
+  background-color: white;
+}
+
+.innerContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  text-align: center;
+  
+}
+
+.logo {
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  margin: 1.125rem;
+  width: 7.5rem;
+}
+
+.intro {
+  font-family: 'Pretendard';
+  font-size: 1rem;
+  line-height: 1.5;
+}

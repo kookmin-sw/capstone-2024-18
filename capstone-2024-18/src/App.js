@@ -1,7 +1,7 @@
 import useMediaQuery from "./Hooks/useMediaQuery";
 
 import DesktopPage from "./Pages/DesktopPage";
-import MobilePage from "./Pages/MoblePage";
+import MobilePage from "./Pages/MobilePage";
 
 function App() {
   const isMobile = useMediaQuery("(max-width: 768px)");

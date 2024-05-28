@@ -1,0 +1,31 @@
+html {
+  font-size: 10px;
+}
+
+body {
+  font-family: 'Pretendard';
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #525463;
+}
+
+h2 {
+  margin: 0;
+}
+
+.primary {
+  color: #FF7871
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.background {
+  background-color: #FFECEB;
+}

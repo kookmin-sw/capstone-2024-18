@@ -1,0 +1,23 @@
+.container {
+  background-color: #FFF8F7;
+  border-radius: 0.75rem;
+  border-width: 1px;
+  border-color: #C6302B;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  width: calc(100% - 3rem);
+  margin: 0.5rem 1rem 0.5rem 1rem;
+}
+
+.image {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.text-container {
+  color: #525463;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-left: 1rem;
+}
