@@ -6,6 +6,7 @@ import { AuthContext } from '../store/auth-context.tsx';
 import { useFocusEffect } from "@react-navigation/native";
 import { UserContext } from "../store/user-context.tsx";
 import { ChatRoomContext } from "../store/chat-room-context.tsx";
+import CustomBackHandler from "../components/CustomBackHandler.tsx";
 
 const Home = ({ navigation }: any) => {
   const authCtx = useContext(AuthContext);
@@ -44,6 +45,7 @@ const Home = ({ navigation }: any) => {
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <CustomBackHandler haveExit/>
       <AutoHeightImage
         width={200}
         style={{alignSelf:"center", marginHorizontal: 80}}

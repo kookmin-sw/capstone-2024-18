@@ -37,7 +37,7 @@ const FaceInfoPage = ({navigation}: any) => {
   const [ gender, setGender ] = useState<keyof Gender>();
 
   const manStyleIdData = [
-    {id: 17, source: require('../assets/images/cartoon-image/man/17.jpg')}, 
+    {id: 315, source: require('../assets/images/cartoon-image/man/315.jpg')}, 
     {id: 32, source: require('../assets/images/cartoon-image/man/32.jpg')}, 
     {id: 43, source: require('../assets/images/cartoon-image/man/43.jpg')}, 
     {id: 72, source: require('../assets/images/cartoon-image/man/72.jpg')}, 
@@ -149,10 +149,10 @@ const FaceInfoPage = ({navigation}: any) => {
       {
         (gender === 'FEMALE' ? womanStyleIdData : manStyleIdData).map(({id, source}: any) => {
           return (
-            <Pressable key={id} onPress={() => handleSelectedId(id)}>
+            <Pressable key={id} onPress={() => handleSelectedId(id)} style={{margin: 5}}>
               <Image
                 blurRadius={(id === selectedStyleId || selectedStyleId === -1) ? 0 : 20}
-                style={[styles.styleImage, {width: (width-84)/2, height: (width-84)/2}]} source={source}/>
+                style={[id===315 || id===53 ? {borderWidth: 7, borderRadius: 10, borderColor: colors.point} : {}, {width: (width-84)/2-2, height: (width-84)/2}]} source={source}/>
             </Pressable>
           );
         })
