@@ -1,5 +1,3 @@
-import classes from './DesktopPage.module.css';
-
 function Container() {
   const { innerWidth: width } = window;
 

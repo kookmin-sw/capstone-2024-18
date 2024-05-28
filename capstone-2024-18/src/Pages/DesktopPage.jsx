@@ -2,7 +2,7 @@ import Header from "../Components/Desktop/Header.jsx"
 import Contents from "../Components/Desktop/Contents.jsx"
 import Container from "../Components/Desktop/Container.jsx";
 import AppProduce from "../Components/Desktop/AppProduce.jsx";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 const DesktopPage = () => {
   const [height, setHeight] = useState(0);
