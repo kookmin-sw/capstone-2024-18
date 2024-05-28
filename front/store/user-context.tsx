@@ -201,7 +201,9 @@ const UserContextProvider: React.FC<ChatProviderProps> = ({ children }) => {
   }, [authCtx.status, status])
 
   useEffect(() => {
-    setResumeState();
+    if (status.split('_')[0] === 'RESUME') {
+      setResumeState();
+    }
   }, [basicinfo, faceinfo, analysisinfo])
 
   const value = useMemo(() => ({
