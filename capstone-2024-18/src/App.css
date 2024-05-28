@@ -1,5 +1,19 @@
-html {
-  font-size: 10px;
+@media (max-width: 600px) {
+  html {
+      font-size: 10px;
+  }
+}
+
+@media (min-width: 600px) {
+  html {
+      font-size: 16px;
+  }
+}
+
+@font-face {
+  font-family: "Pretendard";
+  font-weight: normal;
+  src: url("./Fonts/Pretendard-Medium.otf") format('opentype'),
 }
 
 body {
