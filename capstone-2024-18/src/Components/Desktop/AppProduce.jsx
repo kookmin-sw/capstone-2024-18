@@ -9,7 +9,7 @@ function AppProduce() {
           <text id={classes.contentTitle}>인간관계를 맺는 색다른 즐거움, </text>
           <text id={classes.contentTitle} style={{color: '#FF7871'}}>FaceFrined</text>
       </div>
-      <a id={classes.contentSubTitle} style={{textDecoration: 'none'}} href='https://drive.google.com/file/d/1kkJTefS8EY83Nda040PhReRYd5413jDo/view?usp=drive_link'>
+      <a id={classes.contentSubTitle} style={{textDecoration: 'none'}} href='https://drive.google.com/file/d/1VuFRnFYh9nLRFrohUMbWwr6bjLkoaPlZ/view?usp=drive_link'>
           Android APK 파일 다운로드 링크 😎
       </a>
     </div>
