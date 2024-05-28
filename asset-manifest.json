@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/capstone-2024-18/static/css/main.6dab7a1b.css",
-    "main.js": "/capstone-2024-18/static/js/main.c457e4c1.js",
+    "main.css": "/capstone-2024-18/static/css/main.2be86713.css",
+    "main.js": "/capstone-2024-18/static/js/main.90eed03b.js",
     "static/js/453.7428bf32.chunk.js": "/capstone-2024-18/static/js/453.7428bf32.chunk.js",
     "static/media/resume2.gif": "/capstone-2024-18/static/media/resume2.edca1c66ceb517c2512b.gif",
     "static/media/face2.gif": "/capstone-2024-18/static/media/face2.f8921b360c4592f2965a.gif",
@@ -21,12 +21,12 @@
     "static/media/logo.png": "/capstone-2024-18/static/media/logo.479b94c37ebdf26505b6.png",
     "static/media/halfCircle.png": "/capstone-2024-18/static/media/halfCircle.8734f951d2e5c54e7554.png",
     "index.html": "/capstone-2024-18/index.html",
-    "main.6dab7a1b.css.map": "/capstone-2024-18/static/css/main.6dab7a1b.css.map",
-    "main.c457e4c1.js.map": "/capstone-2024-18/static/js/main.c457e4c1.js.map",
+    "main.2be86713.css.map": "/capstone-2024-18/static/css/main.2be86713.css.map",
+    "main.90eed03b.js.map": "/capstone-2024-18/static/js/main.90eed03b.js.map",
     "453.7428bf32.chunk.js.map": "/capstone-2024-18/static/js/453.7428bf32.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.6dab7a1b.css",
-    "static/js/main.c457e4c1.js"
+    "static/css/main.2be86713.css",
+    "static/js/main.90eed03b.js"
   ]
 }
