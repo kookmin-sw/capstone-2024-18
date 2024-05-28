@@ -36,7 +36,7 @@ function Contents({onHeightChange}) {
   const point_color = '#FF7871';
   return (
     <div ref={childRef} id={classes.container}>
-      <div style={{flexDirection: 'row', display: 'flex'}}>
+      <div style={{flexDirection: 'row', display: 'flex', marginBottom: 90}}>
         <img src={`${process.env.PUBLIC_URL}/screen1.png`} width={"25%"} style={{position: 'relative', margin: 0}}/>
         <div style={{paddingTop: 50, paddingLeft: '6%', paddingRight: '6%'}}>
           <text id={classes.contentTitle} style={{display: 'block', marginBottom: 50}}>1. 프로젝트 소개</text>

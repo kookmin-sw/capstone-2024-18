@@ -10,6 +10,12 @@
   }
 }
 
+@font-face {
+  font-family: "Pretendard";
+  font-weight: normal;
+  src: url("./Fonts/Pretendard-Medium.otf") format('opentype'),
+}
+
 body {
   font-family: 'Pretendard';
   margin: 0;
