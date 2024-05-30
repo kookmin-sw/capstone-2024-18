@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,12 +51,12 @@ public class ChatAop {
     @Value("${spring.cloud.aws.s3.bucket}")
     private String BUCKET_NAME;
 
-    private static final int LEVEL_TWO = 5;
-    private static final int LEVEL_THREE = 10;
-    private static final int LEVEL_FOUR = 15;
-    private static final int LEVEL_FIVE = 20;
-    private static final int LEVEL_SIX = 25;
-    private static final int LEVEL_SEVEN = 30;
+    private static final int LEVEL_TWO = 100;
+    private static final int LEVEL_THREE = 200;
+    private static final int LEVEL_FOUR = 300;
+    private static final int LEVEL_FIVE = 400;
+    private static final int LEVEL_SIX = 500;
+    private static final int LEVEL_SEVEN = 600;
 
     @Pointcut("execution(* capstone.facefriend.chat.service.MessageService.sendHeart(..))")
     private void sendHeart() {
