@@ -361,8 +361,10 @@ const SelfProduce = ({navigation, route}: any) => {
           })
         }
         </View>
-
         <View style={styles.container} >
+          <Text style={[styles.sectionHintText, {display: edit ? 'flex' : 'none'}]}>선택한 이미지는 다른 사람들에게 보여지는 본인의 이미지입니다. </Text>
+          <Text style={[styles.sectionHintText, {display: edit ? 'flex' : 'none'}]}>얼굴이 아닌 이미지를 올려 다른 유저들에게 자신의 개성을 뽐내보세요!</Text>
+
           {/* 프로필 사진, 이름 섹션 */}
           <View style={styles.sectionTop}>
             <Text style={styles.profileName}>{nickname}</Text>

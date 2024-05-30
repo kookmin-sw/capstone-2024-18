@@ -307,12 +307,8 @@ const BasicInfoWithoutNickname = ({navigation}: any) => {
     confirmContent,
   ]
 
-  useEffect(() => {
-    // console.log("basicInfo:", basicInfo);
-  }, [basicInfo])
-
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ height: height }}>
+    <View style={{ height: height }}>
       <CustomBackHandler onBack={handlePrevPage}/>
       <HeaderBar onPress={handlePrevPage}>기본 정보</HeaderBar>
       <View style={styles.container}>
@@ -335,7 +331,7 @@ const BasicInfoWithoutNickname = ({navigation}: any) => {
           >{pageIndex === contents.length - 1 ? "완료" : "다음"}</CustomButton>
         </View>
       </View>
-    </ScrollView>
+    </View>
   )
 }
 

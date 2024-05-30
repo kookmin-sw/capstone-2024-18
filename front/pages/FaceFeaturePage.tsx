@@ -96,7 +96,7 @@ const FaceFeaturePage = ({navigation}: any) => {
       })
     } else {
       // ai 관상 이미지 생성
-      createAlertMessage("해당 이미지로 AI 관상 이미지를 생성할까요?", tryPostFaceFeature)
+      createAlertMessage("해당 이미지로 AI 관상 분석을 생성할까요?", tryPostFaceFeature)
     }
   }
 
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
 
   // 결과 회색 상자의 text style
   resultTitle: {
-    fontFamily: "Pretendard-Semibold",
+    fontFamily: "Pretendard-SemiBold",
     paddingTop: 12,
     fontSize: 16,
     letterSpacing: -16* 0.02,

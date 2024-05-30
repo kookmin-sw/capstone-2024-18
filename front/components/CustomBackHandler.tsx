@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { Alert, BackHandler, BackHandlerStatic } from 'react-native';
-import { createAlertMessage } from '../util/alert';
+import React, { useContext, useEffect } from 'react';
+import { BackHandler } from 'react-native';
+import { AlertContext } from '../store/alert-context.tsx';
 
 interface BackHandlerProps {
   onBack?: () => void;
@@ -9,6 +9,7 @@ interface BackHandlerProps {
 
 const CustomBackHandler: React.FC<BackHandlerProps> = ({ onBack, haveExit=false }) => {
   let lastBackPressTime = 0;
+  const { createAlertMessage } = useContext(AlertContext);
 
   useEffect(() => {
     const backAction = () => {

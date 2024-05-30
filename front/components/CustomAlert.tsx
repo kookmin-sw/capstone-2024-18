@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 16,
+    fontFamily: 'Pretendard-Regular', 
     marginVertical: 40,
     textAlign: 'center',
     color: colors.gray7,

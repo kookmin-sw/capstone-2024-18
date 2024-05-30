@@ -271,7 +271,7 @@ const BasicInfoPage = ({navigation}: any) => {
         </View>}
       </View>
       <View style={{ borderColor: colors.gray3, borderTopWidth: 1, width: "100%", marginBottom: 12 }}/>
-      <ScrollView>
+      <ScrollView nestedScrollEnabled>
         <View style={styles.innerContainer}>
           <View style={styles.tagContainer}>
             {Object.entries(region.SEOUL).map(([key, value]) => {
