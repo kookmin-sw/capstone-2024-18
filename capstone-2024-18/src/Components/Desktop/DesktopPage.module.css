@@ -1,13 +1,13 @@
 #header {
   top: 0;
   padding: 20px;
-  height: 'fit-content';
   background-color: #FF847D;
 }
 
 #container {
-  /* width: 80%; */
-  flex: 1;
+  width: 70%;
+  min-width: 691px;
+  /* flex: 1; */
   margin: auto;
   padding: 5%;
   border-radius: 5px;
