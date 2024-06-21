@@ -2,8 +2,6 @@ package capstone.facefriend.chat.controller;
 
 import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.chat.service.ChatRoomService;
-import capstone.facefriend.chat.service.dto.chatroom.ChatRoomEnterResponse;
-import capstone.facefriend.chat.service.dto.chatroom.ChatRoomExitResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

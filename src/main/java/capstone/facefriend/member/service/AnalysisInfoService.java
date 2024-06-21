@@ -2,13 +2,13 @@ package capstone.facefriend.member.service;
 
 
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.exception.analysis.AnalysisException;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.service.deserializer.StringListDeserializer;
-import capstone.facefriend.member.service.dto.analysisInfo.AnalysisInfoFullResponse;
-import capstone.facefriend.member.service.dto.analysisInfo.AnalysisInfoFullShortResponse;
-import capstone.facefriend.member.service.dto.analysisInfo.AnalysisInfoShortResponse;
+import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoFullResponse;
+import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoFullShortResponse;
+import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoShortResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

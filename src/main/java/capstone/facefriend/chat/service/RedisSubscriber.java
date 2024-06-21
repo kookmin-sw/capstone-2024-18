@@ -1,23 +1,19 @@
 package capstone.facefriend.chat.service;
 
-import capstone.facefriend.chat.domain.SocketInfo;
-import capstone.facefriend.chat.service.dto.heart.GetSendHeartResponse;
-import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
-import capstone.facefriend.chat.service.dto.message.GetMessageResponse;
-import capstone.facefriend.chat.service.dto.message.MessageResponse;
+import capstone.facefriend.chat.dto.heart.GetSendHeartResponse;
+import capstone.facefriend.chat.dto.heart.SendHeartResponse;
+import capstone.facefriend.chat.dto.message.GetMessageResponse;
+import capstone.facefriend.chat.dto.message.MessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor

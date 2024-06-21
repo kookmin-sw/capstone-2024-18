@@ -1,7 +1,7 @@
 package capstone.facefriend.auth.infrastructure;
 
 
-import capstone.facefriend.auth.controller.dto.TokenResponse;
+import capstone.facefriend.auth.dto.TokenResponse;
 import capstone.facefriend.auth.domain.token.AccessToken;
 import capstone.facefriend.auth.domain.token.RefreshToken;
 import capstone.facefriend.auth.domain.token.TokenProvider;

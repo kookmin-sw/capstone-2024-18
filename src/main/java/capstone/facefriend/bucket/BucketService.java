@@ -4,12 +4,11 @@ package capstone.facefriend.bucket;
 import capstone.facefriend.chat.domain.ChatRoom;
 import capstone.facefriend.chat.domain.ChatRoomMember;
 import capstone.facefriend.chat.exception.ChatException;
-import capstone.facefriend.chat.exception.ChatExceptionType;
 import capstone.facefriend.chat.repository.ChatMessageRepository;
 import capstone.facefriend.chat.repository.ChatRoomMemberRepository;
 import capstone.facefriend.chat.repository.ChatRoomRepository;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.exception.member.MemberExceptionType;
 import capstone.facefriend.member.multipartFile.ByteArrayMultipartFile;
@@ -42,7 +41,7 @@ public class BucketService {
     @Value("${spring.cloud.aws.s3.bucket}")
     private String BUCKET_NAME;
 
-    @Value("${spring.cloud.aws.s3.default-faceInfo-s3url}")
+    @Value("${spring.cloud.aws.s3.default-profile}")
     private String DEFAULT_FACE_INFO_S3_URL;
     @Value("${spring.cloud.aws.s3.origin-postfix}")
     private String ORIGIN_POSTFIX;

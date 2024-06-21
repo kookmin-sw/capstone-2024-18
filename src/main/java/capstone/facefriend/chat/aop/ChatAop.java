@@ -8,7 +8,7 @@ import capstone.facefriend.chat.repository.ChatMessageRepository;
 import capstone.facefriend.chat.repository.ChatRoomMemberRepository;
 import capstone.facefriend.member.domain.faceInfo.FaceInfoByLevel;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.multipartFile.ByteArrayMultipartFile;
 import capstone.facefriend.member.service.FaceInfoService;

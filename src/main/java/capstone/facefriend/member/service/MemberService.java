@@ -1,24 +1,23 @@
 package capstone.facefriend.member.service;
 
-import capstone.facefriend.auth.controller.dto.TokenResponse;
-import capstone.facefriend.auth.domain.TokenProvider;
-import capstone.facefriend.email.controller.dto.EmailVerificationResponse;
+import capstone.facefriend.auth.dto.TokenResponse;
+import capstone.facefriend.auth.domain.token.TokenProvider;
+import capstone.facefriend.email.dto.EmailVerificationResponse;
 import capstone.facefriend.email.service.EmailService;
 import capstone.facefriend.member.domain.analysisInfo.AnalysisInfo;
-import capstone.facefriend.member.domain.analysisInfo.AnalysisInfoRepository;
+import capstone.facefriend.member.repository.AnalysisInfoRepository;
 import capstone.facefriend.member.domain.basicInfo.BasicInfo;
-import capstone.facefriend.member.domain.basicInfo.BasicInfoRepository;
+import capstone.facefriend.member.repository.BasicInfoRepository;
 import capstone.facefriend.member.domain.faceInfo.FaceInfo;
-import capstone.facefriend.member.domain.faceInfo.FaceInfoByLevel;
-import capstone.facefriend.member.domain.faceInfo.FaceInfoByLevelRepository;
-import capstone.facefriend.member.domain.faceInfo.FaceInfoRepository;
+import capstone.facefriend.member.repository.FaceInfoByLevelRepository;
+import capstone.facefriend.member.repository.FaceInfoRepository;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
-import capstone.facefriend.member.service.dto.member.FindEmailResponse;
-import capstone.facefriend.member.service.dto.member.SignInRequest;
-import capstone.facefriend.member.service.dto.member.SignUpRequest;
-import capstone.facefriend.member.service.dto.member.SignupResponse;
+import capstone.facefriend.member.dto.member.FindEmailResponse;
+import capstone.facefriend.member.dto.member.SignInRequest;
+import capstone.facefriend.member.dto.member.SignUpRequest;
+import capstone.facefriend.member.dto.member.SignupResponse;
 import capstone.facefriend.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +66,7 @@ public class MemberService {
 
     private static final Long BLACKLIST_REMAIN_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
 
-    @Value("${spring.cloud.aws.s3.default-faceInfo-s3url}")
+    @Value("${spring.cloud.aws.s3.default-profile}")
     private String defaultFaceInfoS3url;
 
     @Transactional
