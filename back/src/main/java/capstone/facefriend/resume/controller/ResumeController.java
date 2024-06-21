@@ -3,7 +3,6 @@ package capstone.facefriend.resume.controller;
 import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.resume.dto.*;
 import capstone.facefriend.resume.service.ResumeService;
-import capstone.facefriend.resume.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
