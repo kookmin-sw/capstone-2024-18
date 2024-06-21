@@ -1,4 +1,4 @@
-package capstone.facefriend.auth.domain;
+package capstone.facefriend.auth.domain.oauth;
 
 import capstone.facefriend.auth.exception.AuthException;
 import capstone.facefriend.auth.exception.AuthExceptionType;

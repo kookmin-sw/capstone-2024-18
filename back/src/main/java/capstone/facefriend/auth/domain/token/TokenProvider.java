@@ -1,6 +1,6 @@
-package capstone.facefriend.auth.domain;
+package capstone.facefriend.auth.domain.token;
 
-import capstone.facefriend.auth.controller.dto.TokenResponse;
+import capstone.facefriend.auth.dto.TokenResponse;
 
 public interface TokenProvider {
 

@@ -1,4 +1,4 @@
-package capstone.facefriend.auth.infrastructure.dto;
+package capstone.facefriend.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

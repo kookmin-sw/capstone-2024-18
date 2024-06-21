@@ -1,4 +1,4 @@
-package capstone.facefriend.auth.service.dto;
+package capstone.facefriend.auth.dto;
 
 public record OAuthLoginRequest(
         String redirectUri,

@@ -1,7 +1,7 @@
 package capstone.facefriend.member.service;
 
-import capstone.facefriend.auth.controller.dto.TokenResponse;
-import capstone.facefriend.auth.domain.TokenProvider;
+import capstone.facefriend.auth.dto.TokenResponse;
+import capstone.facefriend.auth.domain.token.TokenProvider;
 import capstone.facefriend.email.controller.dto.EmailVerificationResponse;
 import capstone.facefriend.email.service.EmailService;
 import capstone.facefriend.member.domain.analysisInfo.AnalysisInfo;

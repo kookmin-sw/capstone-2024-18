@@ -1,6 +1,6 @@
 package capstone.facefriend.auth.service;
 
-import capstone.facefriend.auth.domain.Provider;
+import capstone.facefriend.auth.domain.oauth.Provider;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
