@@ -1,14 +1,14 @@
 package capstone.facefriend.auth.infrastructure;
 
-import capstone.facefriend.auth.domain.OAuthMember;
-import capstone.facefriend.auth.domain.Provider;
+import capstone.facefriend.auth.domain.oauth.OAuthMember;
+import capstone.facefriend.auth.domain.oauth.Provider;
 import capstone.facefriend.auth.exception.AuthException;
 import capstone.facefriend.auth.exception.AuthExceptionType;
-import capstone.facefriend.auth.infrastructure.dto.OAuthTokenResponse;
+import capstone.facefriend.auth.dto.OAuthTokenResponse;
 import capstone.facefriend.auth.service.OAuthProviderProperties;
 import capstone.facefriend.auth.service.OAuthProviderProperties.OAuthProviderProperty;
 import capstone.facefriend.auth.service.OAuthRequester;
-import capstone.facefriend.auth.service.dto.OAuthLoginRequest;
+import capstone.facefriend.auth.dto.OAuthLoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;

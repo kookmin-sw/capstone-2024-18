@@ -3,12 +3,12 @@ package capstone.facefriend.resume.service;
 
 import capstone.facefriend.bucket.BucketService;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.resume.domain.Resume;
-import capstone.facefriend.resume.domain.ResumeRepository;
+import capstone.facefriend.resume.dto.*;
 import capstone.facefriend.resume.exception.ResumeException;
-import capstone.facefriend.resume.service.dto.*;
+import capstone.facefriend.resume.repository.ResumeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -202,7 +202,7 @@ public class ResumeService {
         }
     }
 
-    private Member validateMemberHasResume(Long memberId){
+    private Member validateMemberHasResume(Long memberId) {
         Member member = findMemberById(memberId);
         if (resumeRepository.findResumeByMember(member).isPresent()) {
             throw new ResumeException(ALREADY_HAS_RESUME);

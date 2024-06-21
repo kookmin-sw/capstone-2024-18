@@ -13,6 +13,7 @@ public enum AuthExceptionType implements ExceptionType {
     INVALID_TOKEN(Status.BAD_REQUEST, 2006, "토큰이 유효하지 않습니다."),
     BAD_REQUEST_TO_PROVIDER(Status.BAD_REQUEST, 2007, "토큰이 유효하지 않습니다."),
     UNAUTHORIZED(Status.UNAUTHORIZED, 2008, "로그인한 정보가 없습니다. 로그인하시기 바랍니다."),
+    NOT_ACCESS_TOKEN(Status.BAD_REQUEST, 2009, "액세스 토큰이 아닙니다."),
     ;
 
     private final Status status;

@@ -1,12 +1,12 @@
 package capstone.facefriend.auth.controller;
 
 
-import capstone.facefriend.auth.controller.dto.LoginUriResponse;
-import capstone.facefriend.auth.controller.dto.TokenResponse;
-import capstone.facefriend.auth.domain.OAuthMember;
+import capstone.facefriend.auth.dto.LoginUriResponse;
+import capstone.facefriend.auth.dto.TokenResponse;
+import capstone.facefriend.auth.domain.oauth.OAuthMember;
 import capstone.facefriend.auth.service.AuthService;
 import capstone.facefriend.auth.service.OAuthRequester;
-import capstone.facefriend.auth.service.dto.OAuthLoginRequest;
+import capstone.facefriend.auth.dto.OAuthLoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

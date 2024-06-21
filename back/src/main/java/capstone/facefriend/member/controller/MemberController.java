@@ -1,13 +1,13 @@
 package capstone.facefriend.member.controller;
 
 
-import capstone.facefriend.auth.controller.dto.TokenResponse;
+import capstone.facefriend.auth.dto.TokenResponse;
 import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.auth.controller.support.AuthenticationExtractor;
 import capstone.facefriend.email.controller.dto.EmailVerificationResponse;
+import capstone.facefriend.member.dto.member.*;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.service.MemberService;
-import capstone.facefriend.member.service.dto.member.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

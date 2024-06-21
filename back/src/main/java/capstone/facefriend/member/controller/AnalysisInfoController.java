@@ -2,9 +2,9 @@ package capstone.facefriend.member.controller;
 
 import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.member.service.AnalysisInfoService;
-import capstone.facefriend.member.service.dto.analysisInfo.AnalysisInfoFullResponse;
-import capstone.facefriend.member.service.dto.analysisInfo.AnalysisInfoFullShortResponse;
-import capstone.facefriend.member.service.dto.analysisInfo.AnalysisInfoShortResponse;
+import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoFullResponse;
+import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoFullShortResponse;
+import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoShortResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

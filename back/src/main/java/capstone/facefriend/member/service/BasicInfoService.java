@@ -3,10 +3,10 @@ package capstone.facefriend.member.service;
 
 import capstone.facefriend.member.domain.basicInfo.BasicInfo;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
-import capstone.facefriend.member.service.dto.basicInfo.BasicInfoRequest;
-import capstone.facefriend.member.service.dto.basicInfo.BasicInfoResponse;
+import capstone.facefriend.member.dto.basicInfo.BasicInfoRequest;
+import capstone.facefriend.member.dto.basicInfo.BasicInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

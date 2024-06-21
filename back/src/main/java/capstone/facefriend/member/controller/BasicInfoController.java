@@ -3,8 +3,8 @@ package capstone.facefriend.member.controller;
 
 import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.member.service.BasicInfoService;
-import capstone.facefriend.member.service.dto.basicInfo.BasicInfoRequest;
-import capstone.facefriend.member.service.dto.basicInfo.BasicInfoResponse;
+import capstone.facefriend.member.dto.basicInfo.BasicInfoRequest;
+import capstone.facefriend.member.dto.basicInfo.BasicInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

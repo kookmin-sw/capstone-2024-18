@@ -1,12 +1,14 @@
 package capstone.facefriend.auth.service;
 
 
-import capstone.facefriend.auth.controller.dto.TokenResponse;
-import capstone.facefriend.auth.domain.OAuthMember;
-import capstone.facefriend.auth.domain.Provider;
-import capstone.facefriend.auth.domain.TokenProvider;
+import capstone.facefriend.auth.domain.token.AccessToken;
+import capstone.facefriend.auth.domain.token.RefreshToken;
+import capstone.facefriend.auth.dto.TokenResponse;
+import capstone.facefriend.auth.domain.oauth.OAuthMember;
+import capstone.facefriend.auth.domain.oauth.Provider;
+import capstone.facefriend.auth.domain.token.TokenProvider;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,15 +41,19 @@ public class AuthService {
                 .orElseGet(() -> memberRepository.save(newMember));
 
         Long memberId = member.getId();
-        return new TokenResponse(getAccessToken(memberId), getRefreshToken(memberId), memberId);
+
+        AccessToken accessToken = AccessToken.from(createAccessToken(memberId));
+        RefreshToken refreshToken = RefreshToken.from(createRefreshToken(memberId));
+
+        return new TokenResponse(accessToken, refreshToken, memberId);
     }
 
-    private String getAccessToken(Long memberId) {
+    private String createAccessToken(Long memberId) {
         String accessToken = tokenProvider.createAccessToken(memberId);
         return accessToken;
     }
 
-    private String getRefreshToken(Long memberId) {
+    private String createRefreshToken(Long memberId) {
         String refreshToken = tokenProvider.createRefreshToken(memberId);
         return refreshToken;
     }

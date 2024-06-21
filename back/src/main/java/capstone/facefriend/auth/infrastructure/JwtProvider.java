@@ -1,8 +1,10 @@
 package capstone.facefriend.auth.infrastructure;
 
 
-import capstone.facefriend.auth.controller.dto.TokenResponse;
-import capstone.facefriend.auth.domain.TokenProvider;
+import capstone.facefriend.auth.domain.token.AccessToken;
+import capstone.facefriend.auth.domain.token.RefreshToken;
+import capstone.facefriend.auth.dto.TokenResponse;
+import capstone.facefriend.auth.domain.token.TokenProvider;
 import capstone.facefriend.auth.exception.AuthException;
 import capstone.facefriend.redis.RedisDao;
 import io.jsonwebtoken.*;
@@ -21,6 +23,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 import static capstone.facefriend.auth.exception.AuthExceptionType.*;
+import static capstone.facefriend.auth.exception.AuthExceptionType.NOT_ACCESS_TOKEN;
 
 @Getter
 @Component
@@ -30,6 +33,8 @@ public class JwtProvider implements TokenProvider {
 
     @Value("${jwt.secret}")
     private String secret;
+    @Value("${jwt.accessKey-identifier}")
+    private String ACCESS_KEY_IDENTIFIER;
     private Key key;
 
     private final RedisDao redisDao;
@@ -43,8 +48,8 @@ public class JwtProvider implements TokenProvider {
     }
 
     public TokenResponse createTokens(Long memberId) {
-        String accessToken = createAccessToken(memberId);
-        String refreshToken = createRefreshToken(memberId);
+        AccessToken accessToken = AccessToken.from(createAccessToken(memberId));
+        RefreshToken refreshToken = RefreshToken.from(createRefreshToken(memberId));
         return new TokenResponse(accessToken, refreshToken, memberId);
     }
 
@@ -52,6 +57,7 @@ public class JwtProvider implements TokenProvider {
     public String createAccessToken(Long id) {
         Claims claims = Jwts.claims();
         claims.put("id", id);
+        claims.put("identifier", ACCESS_KEY_IDENTIFIER);
         return accessToken(claims);
     }
 
@@ -107,6 +113,11 @@ public class JwtProvider implements TokenProvider {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
+
+            if (!claims.get("identifier", String.class).equals(ACCESS_KEY_IDENTIFIER)) {
+                throw new AuthException(NOT_ACCESS_TOKEN);
+            }
+
             return claims.get("id", Long.class);
         } catch (ExpiredJwtException e) {
             throw new AuthException(EXPIRED_TOKEN);
@@ -130,6 +141,11 @@ public class JwtProvider implements TokenProvider {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
+
+            if (!claims.get("identifier", String.class).equals(ACCESS_KEY_IDENTIFIER)) {
+                throw new AuthException(NOT_ACCESS_TOKEN);
+            }
+
             return claims.get("id", Long.class);
         } catch (ExpiredJwtException e) {
             Claims expiredClaims = e.getClaims(); // catch 후 id 를 반환하고 이를 사용해 액세스 토큰을 추출할 수 있습니다.
