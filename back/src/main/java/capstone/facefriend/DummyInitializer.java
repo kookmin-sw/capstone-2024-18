@@ -1,14 +1,14 @@
 //package capstone.facefriend;
 //
 //import capstone.facefriend.member.domain.analysisInfo.AnalysisInfo;
-//import capstone.facefriend.member.domain.analysisInfo.AnalysisInfoRepository;
+//import capstone.facefriend.member.repository.AnalysisInfoRepository;
 //import capstone.facefriend.member.domain.member.Member;
-//import capstone.facefriend.member.domain.member.MemberRepository;
+//import capstone.facefriend.member.repository.MemberRepository;
 //import capstone.facefriend.member.service.AnalysisInfoService;
 //import capstone.facefriend.member.service.MemberService;
 //import capstone.facefriend.member.service.dto.member.SignUpRequest;
 //import capstone.facefriend.resume.domain.Resume;
-//import capstone.facefriend.resume.domain.ResumeRepository;
+//import capstone.facefriend.resume.repository.ResumeRepository;
 //import capstone.facefriend.resume.service.ResumeService;
 //import jakarta.annotation.PostConstruct;
 //import lombok.RequiredArgsConstructor;

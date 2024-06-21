@@ -6,7 +6,7 @@ import capstone.facefriend.auth.domain.OAuthMember;
 import capstone.facefriend.auth.domain.Provider;
 import capstone.facefriend.auth.domain.TokenProvider;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -11,7 +11,7 @@ import capstone.facefriend.chat.repository.ChatRoomMemberRepository;
 import capstone.facefriend.chat.repository.ChatRoomRepository;
 import capstone.facefriend.chat.service.dto.chatroom.*;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.domain.member.MemberRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.exception.member.MemberExceptionType;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ package capstone.facefriend.member.controller;
 
 import capstone.facefriend.auth.controller.support.AuthMember;
 import capstone.facefriend.member.service.FaceInfoService;
-import capstone.facefriend.member.service.dto.faceInfo.FaceInfoResponse;
+import capstone.facefriend.member.dto.faceInfo.FaceInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
