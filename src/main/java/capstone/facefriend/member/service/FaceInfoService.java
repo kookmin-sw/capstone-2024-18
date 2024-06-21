@@ -1,14 +1,16 @@
 package capstone.facefriend.member.service;
 
 import capstone.facefriend.bucket.BucketService;
+import capstone.facefriend.common.aop.TimeTrace;
 import capstone.facefriend.member.domain.faceInfo.FaceInfo;
-import capstone.facefriend.member.repository.FaceInfoRepository;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.repository.MemberRepository;
+import capstone.facefriend.member.dto.faceInfo.FaceInfoResponse;
+import capstone.facefriend.member.exception.faceInfo.FaceInfoException;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.exception.member.MemberExceptionType;
 import capstone.facefriend.member.multipartFile.ByteArrayMultipartFile;
-import capstone.facefriend.member.dto.faceInfo.FaceInfoResponse;
+import capstone.facefriend.member.repository.FaceInfoRepository;
+import capstone.facefriend.member.repository.MemberRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -33,6 +36,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+import static capstone.facefriend.member.exception.faceInfo.FaceInfoExceptionType.FAIL_TO_GENERATE;
 
 
 @Slf4j
@@ -51,17 +55,18 @@ public class FaceInfoService {
     private final FaceInfoRepository faceInfoRepository;
 
     @Transactional // origin 삭제 & generated 삭제 -> origin 업로드 & generated 업로드
-    public FaceInfoResponse updateOrigin(MultipartFile origin, Integer styleId, Long memberId) throws IOException {
-        // bucket update
+    @TimeTrace
+    public FaceInfoResponse updateOriginAndGenerated(MultipartFile origin, Integer styleId, Long memberId) {
+
         ByteArrayMultipartFile generated = generate(origin, styleId, memberId);
-        List<String> s3urls = bucketService.updateOriginAndGenerated(origin, generated, memberId);
+        List<String> s3Urls = bucketService.updateOriginAndGenerated(origin, generated, memberId);
 
         // entity update
         Member member = findMemberById(memberId); // 영속
         FaceInfo faceInfo = faceInfoRepository.findFaceInfoById(member.getFaceInfo().getId()); // 영속
 
-        String originS3url = s3urls.get(0);
-        String generatedS3url = s3urls.get(1);
+        String originS3url = s3Urls.get(0);
+        String generatedS3url = s3Urls.get(1);
 
         faceInfo.setOriginS3url(originS3url); // dirty check
         faceInfo.setGeneratedS3url(generatedS3url); // dirty check
@@ -99,14 +104,20 @@ public class FaceInfoService {
         return new FaceInfoResponse(defaultFaceInfoS3url, defaultFaceInfoS3url);
     }
 
-    private ByteArrayMultipartFile generate(MultipartFile origin, Integer styleId, Long memberId) throws IOException {
+    @TimeTrace
+    public ByteArrayMultipartFile generate(MultipartFile origin, Integer styleId, Long memberId) {
         // convert MultipartFile into ByteArrayResource
-        ByteArrayResource resource = new ByteArrayResource(origin.getBytes()) {
-            @Override
-            public String getFilename() {
-                return URLEncoder.encode(origin.getOriginalFilename(), StandardCharsets.UTF_8);
-            }
-        };
+        ByteArrayResource resource = null;
+        try {
+            resource = new ByteArrayResource(origin.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return URLEncoder.encode(origin.getOriginalFilename(), StandardCharsets.UTF_8);
+                }
+            };
+        } catch (IOException e) {
+            throw new FaceInfoException(FAIL_TO_GENERATE);
+        }
 
         // body
         LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -162,7 +173,8 @@ public class FaceInfoService {
 
         // convert JSON into Map
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> result = objectMapper.convertValue(responseEntity.getBody(), new TypeReference<>() {});
+        Map<String, Object> result = objectMapper.convertValue(responseEntity.getBody(), new TypeReference<>() {
+        });
 
         byte[] imageBinary = Base64.getDecoder().decode((String) result.get("image_binary"));
 

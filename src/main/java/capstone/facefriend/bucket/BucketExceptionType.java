@@ -1,19 +1,19 @@
-package capstone.facefriend.member.exception.faceInfo;
+package capstone.facefriend.bucket;
 
 import capstone.facefriend.common.exception.ExceptionType;
 import capstone.facefriend.common.exception.Status;
 
-public enum FaceExceptionType implements ExceptionType {
+public enum BucketExceptionType implements ExceptionType {
 
-    CANNOT_GET_BYTE(Status.SERVER_ERROR, 8001, "바이트를 추출할 수 없습니다."),
-    CANNOT_GET_INPUT_STREAM(Status.SERVER_ERROR, 8002, "인풋 스트림을 추출할 수 없습니다.");
+    FAIL_TO_UPLOAD(Status.SERVER_ERROR, 9001, "S3 업로드에 실패했습니다."),
+    FAIL_TO_GET_INPUT_STREAM(Status.SERVER_ERROR, 9002, "Input Stream 추출에 실패했습니다."),
     ;
 
     private final Status status;
     private final int exceptionCode;
     private final String message;
 
-    FaceExceptionType(Status status, int exceptionCode, String message) {
+    BucketExceptionType(Status status, int exceptionCode, String message) {
         this.status = status;
         this.exceptionCode = exceptionCode;
         this.message = message;

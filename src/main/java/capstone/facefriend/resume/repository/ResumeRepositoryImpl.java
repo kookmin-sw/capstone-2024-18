@@ -5,7 +5,8 @@ import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.domain.member.QMember;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.resume.domain.Resume;
-import capstone.facefriend.resume.service.dto.QResumeHomeDetailResponse;
+
+import capstone.facefriend.resume.dto.QResumeHomeDetailResponse;
 import capstone.facefriend.resume.dto.ResumeHomeDetailResponse;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;

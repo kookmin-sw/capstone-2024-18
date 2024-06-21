@@ -7,6 +7,7 @@ import capstone.facefriend.chat.exception.ChatException;
 import capstone.facefriend.chat.repository.ChatMessageRepository;
 import capstone.facefriend.chat.repository.ChatRoomMemberRepository;
 import capstone.facefriend.chat.repository.ChatRoomRepository;
+import capstone.facefriend.common.aop.TimeTrace;
 import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
@@ -26,10 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static capstone.facefriend.bucket.BucketExceptionType.*;
 import static capstone.facefriend.chat.exception.ChatExceptionType.*;
 
 @Transactional
@@ -62,51 +65,69 @@ public class BucketService {
     public List<String> uploadOriginAndGenerated(
             MultipartFile origin,
             ByteArrayMultipartFile generated
-    ) throws IOException {
-        /** upload origin to s3 */
-        // set metadata
-        ObjectMetadata originMetadata = new ObjectMetadata();
-        originMetadata.setContentLength(origin.getInputStream().available());
-        originMetadata.setContentType(origin.getContentType());
+    ) {
+        String originS3url = getOriginS3Url(origin);
+        String generatedS3url = getGeneratedS3url(generated);
+
+        return List.of(originS3url, generatedS3url);
+    }
+
+    private String getOriginS3Url(MultipartFile origin) {
+        ObjectMetadata originMetadata = null;
+        InputStream originInputStream = null;
+
+        try {
+            originMetadata = new ObjectMetadata();
+            originInputStream = origin.getInputStream();
+            originMetadata.setContentLength(originInputStream.available());
+            originMetadata.setContentType(origin.getContentType());
+        } catch (IOException e) {
+            throw new BucketException(FAIL_TO_GET_INPUT_STREAM);
+        }
 
         String originObjectName = UUID.randomUUID() + ORIGIN_POSTFIX;
         amazonS3.putObject(
                 new PutObjectRequest(
                         BUCKET_NAME,
                         originObjectName,
-                        origin.getInputStream(), // origin
+                        originInputStream,
                         originMetadata
                 ).withCannedAcl(CannedAccessControlList.PublicRead)
         );
-        String originS3url = amazonS3.getUrl(BUCKET_NAME, originObjectName).toString();
+        return amazonS3.getUrl(BUCKET_NAME, originObjectName).toString();
+    }
 
-        /** upload generated to s3 */
-        // set metadata
-        ObjectMetadata generatedMetadata = new ObjectMetadata();
-        generatedMetadata.setContentLength(generated.getInputStream().available());
-        generatedMetadata.setContentType(generatedMetadata.getContentType());
+    private String getGeneratedS3url(MultipartFile generated) {
+        ObjectMetadata generatedMetadata = null;
+        InputStream generatedInputStream = null;
+        try {
+            generatedMetadata = new ObjectMetadata();
+            generatedInputStream = generated.getInputStream();
+            generatedMetadata.setContentLength(generatedInputStream.available());
+            generatedMetadata.setContentType(generatedMetadata.getContentType());
+        } catch (IOException e) {
+            throw new BucketException(FAIL_TO_GET_INPUT_STREAM);
+        }
 
         String generatedObjectName = UUID.randomUUID() + GENERATED_POSTFIX;
         amazonS3.putObject(
                 new PutObjectRequest(
                         BUCKET_NAME,
                         generatedObjectName,
-                        generated.getInputStream(), // generated
+                        generatedInputStream,
                         generatedMetadata
                 ).withCannedAcl(CannedAccessControlList.PublicRead)
         );
-        String generatedS3url = amazonS3.getUrl(BUCKET_NAME, generatedObjectName).toString();
-
-        return List.of(originS3url, generatedS3url);
+        return amazonS3.getUrl(BUCKET_NAME, generatedObjectName).toString();
     }
 
-
     // FaceInfo : origin 수정 -> generated 수정
+    @TimeTrace
     public List<String> updateOriginAndGenerated(
             MultipartFile origin,
             ByteArrayMultipartFile generated,
             Long memberId
-    ) throws IOException {
+    ) {
         Member member = findMemberById(memberId);
 
         String originS3url = member.getFaceInfo().getOriginS3url();
