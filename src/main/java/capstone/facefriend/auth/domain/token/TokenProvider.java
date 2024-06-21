@@ -1,4 +1,4 @@
-package capstone.facefriend.auth.domain;
+package capstone.facefriend.auth.domain.token;
 
 import capstone.facefriend.auth.controller.dto.TokenResponse;
 
