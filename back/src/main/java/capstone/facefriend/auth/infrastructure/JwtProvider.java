@@ -119,6 +119,8 @@ public class JwtProvider implements TokenProvider {
             }
 
             return claims.get("id", Long.class);
+        } catch (NullPointerException e) { // identifier 키값이 존재하지 않을 경우
+            throw new AuthException(NOT_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
             throw new AuthException(EXPIRED_TOKEN);
         } catch (SecurityException e) {
@@ -147,6 +149,8 @@ public class JwtProvider implements TokenProvider {
             }
 
             return claims.get("id", Long.class);
+        } catch (NullPointerException e) { // identifier 키값이 존재하지 않을 경우
+            throw new AuthException(NOT_ACCESS_TOKEN);
         } catch (ExpiredJwtException e) {
             Claims expiredClaims = e.getClaims(); // catch 후 id 를 반환하고 이를 사용해 액세스 토큰을 추출할 수 있습니다.
             return expiredClaims.get("id", Long.class);
