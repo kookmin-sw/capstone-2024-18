@@ -62,6 +62,7 @@ public class BucketService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
     // FaceInfo : origin 업로드 & generated 업로드
+    @TimeTrace
     public List<String> uploadOriginAndGenerated(
             MultipartFile origin,
             ByteArrayMultipartFile generated
@@ -120,7 +121,6 @@ public class BucketService {
         return amazonS3.getUrl(BUCKET_NAME, generatedObjectName).toString();
     }
 
-    // FaceInfo : origin 수정 -> generated 수정
     @TimeTrace
     public List<String> updateOriginAndGenerated(
             MultipartFile origin,
@@ -140,7 +140,6 @@ public class BucketService {
         return uploadOriginAndGenerated(origin, generated);
     }
 
-    // FaceInfo : origin 삭제 -> generated 삭제
     public String deleteOriginAndGenerated(
             Long memberId
     ) {
@@ -157,8 +156,6 @@ public class BucketService {
         return DEFAULT_FACE_INFO_S3_URL;
     }
 
-
-    // Resume : images 업로드
     public List<String> uploadResumeImages(
             List<MultipartFile> images
     ) throws IOException {
@@ -187,7 +184,6 @@ public class BucketService {
         return resumeImageS3urls;
     }
 
-    // Resume : images 삭제 -> images 업로드
     public List<String> updateResumeImages(
             List<MultipartFile> images,
             Resume resume
@@ -196,7 +192,6 @@ public class BucketService {
         return uploadResumeImages(images);
     }
 
-    // Resume : images 삭제
     public void deleteResumeImages(
             Resume resume
     ) {
