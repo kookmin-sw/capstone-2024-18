@@ -39,7 +39,7 @@ public class JwtProvider implements TokenProvider {
 
     private final RedisDao redisDao;
 
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 3L; // 3시간
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7L; // 7일 // 60 * 60 * 3L; // 3시간
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7L; // 7일
 
     @PostConstruct

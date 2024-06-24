@@ -11,6 +11,7 @@ import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.multipartFile.ByteArrayMultipartFile;
+import capstone.facefriend.member.service.FaceInfoRequestor;
 import capstone.facefriend.member.service.FaceInfoService;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -43,6 +44,7 @@ public class ChatAop {
 
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final FaceInfoService faceInfoService;
+    private final FaceInfoRequestor faceInfoRequestor;
     private final MemberRepository memberRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final AmazonS3 amazonS3;
@@ -160,32 +162,32 @@ public class ChatAop {
 
         switch (chatMessageCount) {
             case LEVEL_TWO: // 5
-                ByteArrayMultipartFile senderGeneratedByLevelTwo = faceInfoService.generateByLevel(senderOrigin, senderId, senderStyleId, 2);
+                ByteArrayMultipartFile senderGeneratedByLevelTwo = faceInfoRequestor.generateByLevel(senderOrigin, senderId, senderStyleId, 2);
                 String senderGeneratedByLevelTwoS3url = bucketService.updateGeneratedByLevel(senderGeneratedByLevelTwo, roomId);
                 senderFaceInfoByLevel.setGeneratedByLevelS3url(senderGeneratedByLevelTwoS3url); // dirty check
                 break;
             case LEVEL_THREE: // 10
-                ByteArrayMultipartFile receiverGeneratedByLevelTwo = faceInfoService.generateByLevel(receiverOrigin, receiverId, receiverStyleId, 2);
+                ByteArrayMultipartFile receiverGeneratedByLevelTwo = faceInfoRequestor.generateByLevel(receiverOrigin, receiverId, receiverStyleId, 2);
                 String receiverGeneratedByLevelTwoS3url = bucketService.updateGeneratedByLevel(receiverGeneratedByLevelTwo, roomId);
                 receiverFaceInfoByLevel.setGeneratedByLevelS3url(receiverGeneratedByLevelTwoS3url); // dirty check
                 break;
             case LEVEL_FOUR: // 15
-                ByteArrayMultipartFile senderGeneratedByLevelThree = faceInfoService.generateByLevel(senderOrigin, senderId, senderStyleId, 3);
+                ByteArrayMultipartFile senderGeneratedByLevelThree = faceInfoRequestor.generateByLevel(senderOrigin, senderId, senderStyleId, 3);
                 String senderGeneratedByLevelThreeS3url = bucketService.updateGeneratedByLevel(senderGeneratedByLevelThree, roomId);
                 senderFaceInfoByLevel.setGeneratedByLevelS3url(senderGeneratedByLevelThreeS3url); // dirty check
                 break;
             case LEVEL_FIVE: // 20
-                ByteArrayMultipartFile receiverGeneratedByLevelThree = faceInfoService.generateByLevel(receiverOrigin, receiverId, receiverStyleId, 3);
+                ByteArrayMultipartFile receiverGeneratedByLevelThree = faceInfoRequestor.generateByLevel(receiverOrigin, receiverId, receiverStyleId, 3);
                 String receiverGeneratedByLevelThreeS3url = bucketService.updateGeneratedByLevel(receiverGeneratedByLevelThree, roomId);
                 receiverFaceInfoByLevel.setGeneratedByLevelS3url(receiverGeneratedByLevelThreeS3url); // dirty check
                 break;
             case LEVEL_SIX: // 25
-                ByteArrayMultipartFile senderGeneratedByLevelFour = faceInfoService.generateByLevel(senderOrigin, senderId, senderStyleId, 4);
+                ByteArrayMultipartFile senderGeneratedByLevelFour = faceInfoRequestor.generateByLevel(senderOrigin, senderId, senderStyleId, 4);
                 String senderGeneratedByLevelFourS3url = bucketService.updateGeneratedByLevel(senderGeneratedByLevelFour, roomId);
                 senderFaceInfoByLevel.setGeneratedByLevelS3url(senderGeneratedByLevelFourS3url); // dirty check
                 break;
             case LEVEL_SEVEN: // 30
-                ByteArrayMultipartFile receiverGeneratedByLevelFour = faceInfoService.generateByLevel(receiverOrigin, receiverId, receiverStyleId, 4);
+                ByteArrayMultipartFile receiverGeneratedByLevelFour = faceInfoRequestor.generateByLevel(receiverOrigin, receiverId, receiverStyleId, 4);
                 String receiverGeneratedByLevelFourS3url = bucketService.updateGeneratedByLevel(receiverGeneratedByLevelFour, roomId);
                 receiverFaceInfoByLevel.setGeneratedByLevelS3url(receiverGeneratedByLevelFourS3url); // dirty check
                 break;

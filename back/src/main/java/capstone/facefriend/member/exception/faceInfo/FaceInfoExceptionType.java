@@ -5,7 +5,8 @@ import capstone.facefriend.common.exception.Status;
 
 public enum FaceInfoExceptionType implements ExceptionType {
 
-    FAIL_TO_GENERATE(Status.SERVER_ERROR, 8001, "바이트를 추출할 수 없습니다."),
+    FAIL_TO_GENERATE(Status.SERVER_ERROR, 8001, "관상 이미지 생성에 실패했습니다."),
+    FAIL_TO_GET_BYTES(Status.SERVER_ERROR, 8002, "바이트를 추출할 수 없습니다.")
     ;
 
     private final Status status;
