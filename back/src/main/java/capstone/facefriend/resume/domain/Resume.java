@@ -35,19 +35,12 @@ public class Resume {
     private List<String> resumeImageS3urls;
 
     @Builder.Default
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "CATEGORIES", joinColumns = @JoinColumn(name = "RESUME_ID"))
     @Enumerated(EnumType.STRING)
     private Set<Category> categories = new HashSet<>();
 
     private String content;
-
-    @Builder.Default
-    @ElementCollection
-    @CollectionTable(name = "OPEN_MEMBER", joinColumns = @JoinColumn(name = "RESUME_ID"))
-    @MapKeyColumn(name = "MEMBER_ID") // key
-    @Column(name = "IS_OPEN") // value
-    private Map<Long, Boolean> friends = new HashMap<>(); // 타멤버id : 공개여부
 
     public enum Category {
         FOOD("음식"),

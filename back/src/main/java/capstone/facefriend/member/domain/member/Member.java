@@ -40,15 +40,15 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BASIC_INFO_ID", nullable = false)
     private BasicInfo basicInfo;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FACE_INFO_ID", nullable = false)
     private FaceInfo faceInfo;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ANALYSIS_INFO_ID", nullable = false)
     private AnalysisInfo analysisInfo;
 
