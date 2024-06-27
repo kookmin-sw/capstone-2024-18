@@ -71,7 +71,7 @@ public class MessageController {
         String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
         String token = authorizationHeader.substring(BEARER_PREFIX.length());
         Long senderId = jwtProvider.extractId(token);
-        messageService.sendHeart(senderId, sendHeartRequest.getReceiveId());
+        messageService.sendHeart(senderId, sendHeartRequest.receiveId());
     }
 
     @MessageMapping("/chat/reply-heart")
