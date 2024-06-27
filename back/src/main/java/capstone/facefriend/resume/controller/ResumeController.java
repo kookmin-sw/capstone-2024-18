@@ -20,7 +20,6 @@ public class ResumeController {
 
     private final ResumeService resumeService;
 
-    // 정적 쿼리
     @PostMapping(value = "/my-resume")
     public ResponseEntity<ResumePostPutResponse> postMyResume(
             @AuthMember Long memberId,
@@ -56,7 +55,7 @@ public class ResumeController {
     public ResponseEntity<ResumePostPutResponse> putMyResume(
             @AuthMember Long memberId,
             @ModelAttribute ResumePostPutRequest request
-    ) throws IOException {
+    ) {
         return ResponseEntity.ok(resumeService.putMyResume(memberId, request));
     }
 
@@ -67,7 +66,6 @@ public class ResumeController {
         return ResponseEntity.ok(resumeService.deleteMyResume(memberId));
     }
 
-    // 동적 쿼리
     @GetMapping("/resume-by-good-combi")
     public Page<ResumeHomeDetailResponse> getResumesByGoodCombi(
             @AuthMember Long memberId,

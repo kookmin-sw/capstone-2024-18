@@ -59,6 +59,4 @@ public class ChatRoomMember extends BaseEntity {
     public boolean isReceiverExist() {return this.isReceiverExist == true;}
     public boolean isSenderPublic() {return this.isSenderPublic == true;}
     public boolean isReceiverPublic() {return this.isReceiverPublic == true;}
-
-
 }

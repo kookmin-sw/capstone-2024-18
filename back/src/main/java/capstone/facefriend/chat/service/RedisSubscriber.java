@@ -1,6 +1,5 @@
 package capstone.facefriend.chat.service;
 
-import capstone.facefriend.chat.domain.SocketInfo;
 import capstone.facefriend.chat.service.dto.heart.GetSendHeartResponse;
 import capstone.facefriend.chat.service.dto.heart.SendHeartResponse;
 import capstone.facefriend.chat.service.dto.message.GetMessageResponse;
@@ -10,14 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,12 +29,10 @@ public class RedisSubscriber implements MessageListener {
         try {
             // redis에서 발행된 데이터를 받아 역직렬화
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
+
             if (publishMessage.contains("message")) {
-                log.info(publishMessage);
                 MessageResponse messageResponse = objectMapper.readValue(publishMessage, MessageResponse.class);
-                log.info(messageResponse.toString());
                 GetMessageResponse chatMessageResponse = new GetMessageResponse(messageResponse);
-                log.info(chatMessageResponse.toString());
 
                 if (isExistSubscriber(messageResponse.getReceiveId())) {
                     messagingTemplate.convertAndSend("/sub/chat/" + messageResponse.getReceiveId(), chatMessageResponse);
@@ -66,24 +60,16 @@ public class RedisSubscriber implements MessageListener {
     }
 
     private Boolean isExistSubscriber(Long memberId) {
-        log.info("isExistSubscriber 호출");
-        Boolean isMember = redisTemplate.opsForSet().isMember("SocketInfo", memberId);
-        log.info("Socket: " + memberId);
-        log.info("SocketInfo: " + isMember);
-
-        return isMember;
+        return redisTemplate.opsForSet().isMember("SocketInfo", memberId);
     }
-
-
 
     private void saveUnReadMessage(String destination, MessageResponse messageResponse) {
         messageResponse.setMethod("connectChat");
         redisTemplate.opsForList().rightPush(destination, messageResponse);
-
     }
 
     private void saveUnReadHeart(String destination, SendHeartResponse sendHeartResponse) {
-            sendHeartResponse.setMethod("connectHeart");
-            redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
+        sendHeartResponse.setMethod("connectHeart");
+        redisTemplate.opsForList().rightPush(destination, sendHeartResponse);
     }
 }

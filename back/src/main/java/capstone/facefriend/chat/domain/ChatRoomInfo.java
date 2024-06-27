@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 @RedisHash("ChatRoom")
 @Slf4j
 public class ChatRoomInfo {
+
     @Id
     private String chatRoomInfoId;
 
     @Column(name = "enterTime", nullable = false)
     private LocalDateTime enterTime;
-
 }

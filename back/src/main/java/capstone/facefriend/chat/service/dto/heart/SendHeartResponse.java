@@ -29,7 +29,7 @@ public class SendHeartResponse implements Serializable {
         this.method = (String) map.get("method");
         this.memberId = ((Number) map.get("memberId")).longValue();
         this.senderName = (String) map.get("senderName");
-        this.senderId = ((Number) map.get("senderId")).longValue(); // Fix this line
+        this.senderId = ((Number) map.get("senderId")).longValue();
         this.type = (String) map.get("type");
         this.senderGeneratedS3url = (String) map.get("senderGeneratedS3url");
         this.senderOriginS3url = (String) map.get("senderOriginS3url");

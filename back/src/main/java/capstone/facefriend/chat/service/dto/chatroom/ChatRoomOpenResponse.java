@@ -15,7 +15,14 @@ public record ChatRoomOpenResponse (
         ChatRoom chatRoom,
         String message
 ) {
-    public static ChatRoomOpenResponse of(Member member, Member sender, ChatRoom chatRoom, String senderFaceInfo, String memberFaceInfo, String openMessage) {
+    public static ChatRoomOpenResponse of(
+            Member member,
+            Member sender,
+            ChatRoom chatRoom,
+            String senderFaceInfo,
+            String memberFaceInfo,
+            String openMessage
+    ) {
         return new ChatRoomOpenResponse(
                 member.getId(),
                 member.getBasicInfo().getNickname(),

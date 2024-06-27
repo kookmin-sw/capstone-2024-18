@@ -34,8 +34,6 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
     private static final List<Integer> GOOD_COMBI_IN_CASE_3 = List.of(1, 4); // 금
     private static final List<Integer> GOOD_COMBI_IN_CASE_4 = List.of(0, 3); // 토
 
-    // 좋은 궁합 동적 쿼리
-    @TimeTrace
     public Page<ResumeHomeDetailResponse> getResumesByGoodCombi(Long memberId, Pageable pageable) {
         Member me = findMemberById(memberId);
         Integer faceShapeIdNum = me.getAnalysisInfo().getFaceShapeIdNum();
@@ -64,8 +62,8 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
                         resume.id.as("resumeId"),
                         resume.member.faceInfo.generatedS3url.as("thumbnailS3url")))
                 .from(resume)
-                .innerJoin(resume.member, QMember.member) // left join
-                .where(builder) // boolean builder
+                .innerJoin(resume.member, QMember.member)
+                .where(builder)
                 .where(resume.member.ne(me))
                 .orderBy(resume.id.desc())
                 .offset(pageable.getOffset())
@@ -75,7 +73,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
         int total = queryFactory
                 .select(resume)
                 .from(resume)
-                .innerJoin(resume.member, QMember.member) // left join
+                .innerJoin(resume.member, QMember.member)
                 .where(builder) // boolean builder
                 .fetch()
                 .size();
@@ -83,8 +81,6 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
-    // 카테고리별 동적 쿼리
-    @TimeTrace
     public Page<ResumeHomeDetailResponse> getResumesByCategory(Long memberId, String category, Pageable pageable) {
         Member me = findMemberById(memberId);
 
@@ -93,7 +89,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
                         resume.id.as("resumeId"),
                         resume.member.faceInfo.generatedS3url.as("thumbnailS3url")))
                 .from(resume)
-                .innerJoin(resume.member, QMember.member) // left join
+                .innerJoin(resume.member, QMember.member)
                 .where(resume.categories.contains(Resume.Category.valueOf(category)))
                 .where(resume.member.ne(me))
                 .orderBy(resume.id.desc())
@@ -104,7 +100,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
         int total = queryFactory
                 .select(resume)
                 .from(resume)
-                .innerJoin(resume.member, QMember.member) // left join
+                .innerJoin(resume.member, QMember.member)
                 .where(resume.categories.contains(Resume.Category.valueOf(category)))
                 .fetch()
                 .size();

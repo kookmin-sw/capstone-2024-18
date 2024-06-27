@@ -24,18 +24,18 @@ public class ChatRoom extends BaseEntity {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column
-    private Status status = Status.set;
+    private Status status = Status.SET;
 
     @Column
     private boolean isPublic;
 
     public enum Status {
-        set("Set"),
-        open("Open"),
+        SET("SET"),
+        OPEN("OPEN"),
+        PROGRESS("PROGRESS"),
+        CLOSE("CLOSE"),
+        DELETE("DELETE");
 
-        progress("Progres"),
-        close("Close"),
-        delete("Delete");
         private final String value;
 
         Status(String value) {
@@ -46,6 +46,4 @@ public class ChatRoom extends BaseEntity {
             return value;
         }
     }
-
-
 }

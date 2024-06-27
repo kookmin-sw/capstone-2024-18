@@ -15,6 +15,7 @@ import java.util.LinkedList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageResponse implements Serializable {
+
     private String method;
     private Long roomId;
     private Long receiveId;
