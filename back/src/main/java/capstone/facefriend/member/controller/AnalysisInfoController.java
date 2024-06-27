@@ -1,14 +1,12 @@
 package capstone.facefriend.member.controller;
 
 import capstone.facefriend.auth.controller.support.AuthMember;
-import capstone.facefriend.member.exception.analysis.AnalysisInfoException;
-import capstone.facefriend.member.exception.analysis.AnalysisInfoExceptionType;
-import capstone.facefriend.member.exception.faceInfo.FaceInfoException;
-import capstone.facefriend.member.service.AnalysisInfoRequestor;
-import capstone.facefriend.member.service.AnalysisInfoService;
 import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoFullResponse;
 import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoFullShortResponse;
 import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoShortResponse;
+import capstone.facefriend.member.exception.analysis.AnalysisInfoException;
+import capstone.facefriend.member.service.AnalysisInfoRequestor;
+import capstone.facefriend.member.service.AnalysisInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +16,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static capstone.facefriend.member.exception.analysis.AnalysisInfoExceptionType.*;
-import static capstone.facefriend.member.exception.faceInfo.FaceInfoExceptionType.FAIL_TO_GENERATE;
-import static capstone.facefriend.member.service.AnalysisInfoService.*;
+import static capstone.facefriend.member.exception.analysis.AnalysisInfoExceptionType.FAIL_TO_ANALYSIS;
+import static capstone.facefriend.member.service.AnalysisInfoService.AnalysisInfoTotal;
 
 @Slf4j
 @RestController

@@ -31,7 +31,6 @@ public class MemberController {
         return ResponseEntity.ok(memberService.findEmail(email));
     }
 
-    // 비로그인 상태에서 비밀번호 변경하기 위해 임시 비밀번호 발송
     @PostMapping("/auth/send-temporary-password")
     public ResponseEntity<String> sendTemporaryPassword(
             @RequestParam("email") String email
@@ -39,7 +38,6 @@ public class MemberController {
         return ResponseEntity.ok(memberService.sendTemporaryPassword(email));
     }
 
-    // 비로그인 상태에서 비밀번호 변경
     @PostMapping("/auth/verify-temporary-password")
     public ResponseEntity<String> verifyTemporaryPassword(
             @RequestParam("email") String email,
@@ -55,7 +53,6 @@ public class MemberController {
         return ResponseEntity.ok(memberService.verifyTemporaryPassword(email, temporaryPassword, newPassword));
     }
 
-    // 로그인 상태에서 비밀번호 변경
     @PostMapping("/auth/reset-password")
     public ResponseEntity<String> resetPassword(
             @AuthMember Long memberId,

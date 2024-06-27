@@ -1,6 +1,8 @@
 package capstone.facefriend.resume.service;
 
 
+import capstone.facefriend.bucket.BucketException;
+import capstone.facefriend.bucket.BucketExceptionType;
 import capstone.facefriend.bucket.BucketService;
 import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.repository.MemberRepository;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static capstone.facefriend.bucket.BucketExceptionType.*;
 import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 import static capstone.facefriend.resume.domain.Resume.Category;
 import static capstone.facefriend.resume.exception.ResumeExceptionType.*;
@@ -35,7 +38,6 @@ public class ResumeService {
 
     private static final String DELETE_SUCCESS_MESSAGE = "자기소개서 삭제 완료!";
 
-    // 정적 쿼리
     public ResumePostPutResponse postMyResume(
             Long memberId,
             ResumePostPutRequest request
@@ -134,22 +136,25 @@ public class ResumeService {
     public ResumePostPutResponse putMyResume(
             Long memberId,
             ResumePostPutRequest request
-    ) throws IOException {
+    ) {
 
         validateCategories(request.categories());
 
         Member me = findMemberById(memberId);
-        Resume mine = findResumeByMember(me); // 영속 상태
+        Resume mine = findResumeByMember(me);
 
-        if (request.images().size() == 0 || request.images() == null) {
-            throw new ResumeException(MUST_UPLOAD_ONE_IMAGE);
+        validateImages(request);
+
+        List<String> resumeImageS3urls;
+        try {
+            resumeImageS3urls = bucketService.updateResumeImages(request.images(), mine);
+        } catch (IOException e) {
+            throw new BucketException(FAIL_TO_UPLOAD);
         }
 
-        List<String> resumeImageS3urls = bucketService.updateResumeImages(request.images(), mine);
-
-        mine.setResumeImageS3urls(resumeImageS3urls); // dirty check
-        mine.setCategories(request.categories().stream().map(str -> Category.valueOf(str)).collect(Collectors.toSet())); // dirty check
-        mine.setContent(request.content()); // dirty check
+        mine.setResumeImageS3urls(resumeImageS3urls);
+        mine.setCategories(request.categories().stream().map(str -> Category.valueOf(str)).collect(Collectors.toSet()));
+        mine.setContent(request.content());
 
         return new ResumePostPutResponse(
                 mine.getId(),
@@ -176,7 +181,6 @@ public class ResumeService {
         return new ResumeDeleteResponse(DELETE_SUCCESS_MESSAGE);
     }
 
-    // 동적 쿼리
     public Page<ResumeHomeDetailResponse> getResumesByGoodCombi(Long memberId, Pageable pageable) {
         return resumeRepository.getResumesByGoodCombi(memberId, pageable);
     }
@@ -185,7 +189,6 @@ public class ResumeService {
         return resumeRepository.getResumesByCategory(memberId, category, pageable);
     }
 
-    // 내부 로직용
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
@@ -197,8 +200,14 @@ public class ResumeService {
     }
 
     private void validateCategories(List<String> categories) {
-        if (categories == null || categories.size() == 0 || categories.isEmpty()) { // null validation 먼저
+        if (categories == null || categories.size() == 0 || categories.isEmpty()) {
             throw new ResumeException(MUST_SELECT_ONE_CATEGORY);
+        }
+    }
+
+    private void validateImages(ResumePostPutRequest request) {
+        if (request.images().size() == 0 || request.images() == null) {
+            throw new ResumeException(MUST_UPLOAD_ONE_IMAGE);
         }
     }
 

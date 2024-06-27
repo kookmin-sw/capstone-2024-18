@@ -22,14 +22,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MessageController {
 
-    private static final String BEARER_PREFIX = "Bearer ";
     private final MessageService messageService;
     private final JwtProvider jwtProvider;
+
+    private static final String BEARER_PREFIX = "Bearer ";
 
     @MessageMapping("/stomp/connect")
     public void enterApp(
             StompHeaderAccessor headerAccessor
-    ){
+    ) {
         String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
         String token = authorizationHeader.substring(BEARER_PREFIX.length());
         Long memberId = jwtProvider.extractId(token);
@@ -37,20 +38,16 @@ public class MessageController {
     }
 
     @PostMapping("/stomp/disconnect")
-    public String exitApp(
-            @AuthMember Long memberId
-    ){
-        String msg =  messageService.exitApplication(memberId);
-        return msg;
+    public String exitApp(@AuthMember Long memberId) {
+        return messageService.exitApplication(memberId);
     }
 
     @PostMapping("/chat/{roomId}/messages")
     public ResponseEntity<List<MessageListResponse>> getMessagesPage(
             @PathVariable("roomId") Long roomId,
-//            @AuthMember Long memberId,
             @RequestParam(required = false, defaultValue = "1", value = "page") int pageNo,
             @RequestBody MessageListRequest messageListRequest
-    ){
+    ) {
         return ResponseEntity.ok(messageService.getMessagePage(roomId, pageNo, messageListRequest));
     }
 
@@ -67,18 +64,18 @@ public class MessageController {
     }
 
     @MessageMapping("/chat/send-heart")
-    public void sendheart(
+    public void sendHeart(
             StompHeaderAccessor headerAccessor,
             @RequestBody SendHeartRequest sendHeartRequest
-    ){
+    ) {
         String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
         String token = authorizationHeader.substring(BEARER_PREFIX.length());
         Long senderId = jwtProvider.extractId(token);
         messageService.sendHeart(senderId, sendHeartRequest.getReceiveId());
     }
 
-    @MessageMapping("/chat/heart-reply")
-    public void heartreply(
+    @MessageMapping("/chat/reply-heart")
+    public void replyHeart(
             StompHeaderAccessor headerAccessor,
             HeartReplyRequest heartReplyRequest
     ) {

@@ -28,7 +28,7 @@ public class Resume {
 
     @OneToOne
     @JoinColumn(name = "MEMBER_ID", nullable = false)
-    private Member member; // 본인
+    private Member member;
 
     @ElementCollection
     @CollectionTable(name = "RESUME_IMAGE_S3_URLS", joinColumns = @JoinColumn(name = "RESUME_ID"))

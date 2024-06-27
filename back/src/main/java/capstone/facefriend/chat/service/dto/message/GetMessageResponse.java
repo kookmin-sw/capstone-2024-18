@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-
 @Data
 @NoArgsConstructor
 public class GetMessageResponse {
+
     private String method;
     private Long roomId;
     private Long senderId;

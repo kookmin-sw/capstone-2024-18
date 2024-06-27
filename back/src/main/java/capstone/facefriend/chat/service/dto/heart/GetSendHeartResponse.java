@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class GetSendHeartResponse {
+
     private String method;
     private String senderName;
     private Long senderId;
@@ -22,7 +23,6 @@ public class GetSendHeartResponse {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime sendTime;
     private Boolean isSender;
-
 
     public GetSendHeartResponse(SendHeartResponse sendHeartResponse) {
         this.method = sendHeartResponse.getMethod();

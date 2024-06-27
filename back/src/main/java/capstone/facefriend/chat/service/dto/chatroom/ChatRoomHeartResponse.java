@@ -16,7 +16,14 @@ public record ChatRoomHeartResponse (
         Boolean isSender
 
 ) {
-    public static ChatRoomHeartResponse of(Member member, Member sender, ChatRoom chatRoom, String senderFaceInfo, String memberFaceInfo, Boolean isSender) {
+    public static ChatRoomHeartResponse of(
+            Member member,
+            Member sender,
+            ChatRoom chatRoom,
+            String senderFaceInfo,
+            String memberFaceInfo,
+            Boolean isSender
+    ) {
         return new ChatRoomHeartResponse(
                 member.getId(),
                 member.getBasicInfo().getNickname(),

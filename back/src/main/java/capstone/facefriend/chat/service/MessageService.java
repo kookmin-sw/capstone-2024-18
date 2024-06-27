@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static capstone.facefriend.chat.domain.ChatRoom.Status.*;
 import static capstone.facefriend.chat.exception.ChatExceptionType.*;
 import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 
@@ -37,6 +38,7 @@ import static capstone.facefriend.member.exception.member.MemberExceptionType.NO
 @Slf4j
 @RequiredArgsConstructor
 public class MessageService {
+
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final MemberRepository memberRepository;
@@ -48,8 +50,8 @@ public class MessageService {
     private final ChatRoomInfoRedisRepository chatRoomInfoRedisRepository;
 
     private Member findMemberById(String destination, Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElse(null);
+        Member member = memberRepository.findById(memberId).orElse(null);
+
         if (member == null) {
             simpMessagingTemplate.convertAndSend(destination, NOT_FOUND.message());
             throw new MemberException(NOT_FOUND);
@@ -59,66 +61,72 @@ public class MessageService {
     }
 
     private ChatRoom findRoomById(String destination, Long roomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElse(null);
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElse(null);
+
         if (chatRoom == null) {
             simpMessagingTemplate.convertAndSend(destination, NOT_FOUND_CHAT_ROOM.message());
             throw new ChatException(NOT_FOUND_CHAT_ROOM);
         }
+
         return chatRoom;
     }
 
     private ChatRoomMember findSenderReceiver(String destination, Long senderId, Long receiveId) {
-        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId)
-                .orElse(null);
+        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId).orElse(null);
+
         if (chatRoomMember == null) {
             simpMessagingTemplate.convertAndSend(destination, NOT_FOUND_CHAT_ROOM_MEMBER.message());
             throw new ChatException(NOT_FOUND_CHAT_ROOM_MEMBER);
         }
+
         return chatRoomMember;
     }
 
     private ChatRoomMember findChatRoomMemberByChatRoomId(String destination, Long roomId) {
-        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomId(roomId)
-                .orElse(null);
+        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomId(roomId).orElse(null);
+
         if (chatRoomMember == null) {
             simpMessagingTemplate.convertAndSend(destination, NOT_FOUND_CHAT_ROOM_MEMBER.message());
             throw new ChatException(NOT_FOUND_CHAT_ROOM_MEMBER);
         }
+
         return chatRoomMember;
     }
 
     private SocketInfo findSocketInfo(Long memberId) {
+
         SocketInfo socketInfo = socketInfoRedisRepository.findById(memberId)
                 .orElseThrow(()-> new ChatException(FAIL_TO_SOCKET_INFO));
-        return socketInfo;
-    }
 
-    private ChatRoomInfo findChatRoomInfo(String chatRoomInfoId) {
-        ChatRoomInfo chatRoomInfo = chatRoomInfoRedisRepository.findById(chatRoomInfoId)
-                .orElseThrow(()-> new ChatException(NOT_FOUND_CHAT_ROOM));
-        return chatRoomInfo;
+        return socketInfo;
     }
 
     @Transactional
     public void sendMessage(MessageRequest messageRequest, Long senderId) {
+
         String exceptionDestination = "/sub/chat/" + senderId;
         Member sender = findMemberById(exceptionDestination, senderId);
         Member receiver = findMemberById(exceptionDestination, messageRequest.getReceiveId());
         ChatRoom chatRoom = findRoomById(exceptionDestination, messageRequest.getRoomId());
 
-        if (chatRoom.getStatus() == ChatRoom.Status.open) {
-            chatRoom.setStatus(ChatRoom.Status.progress);
+        if (chatRoom.getStatus() == OPEN) {
+            chatRoom.setStatus(PROGRESS);
             ChatRoomMember chatRoomMember = findChatRoomMemberByChatRoomId(exceptionDestination, chatRoom.getId());
             chatRoomRepository.save(chatRoom);
             chatRoomMemberRepository.save(chatRoomMember);
-        } else if ((chatRoom.getStatus() == ChatRoom.Status.close)) {
+        }
+
+        if ((chatRoom.getStatus() == CLOSE)) {
             simpMessagingTemplate.convertAndSend(exceptionDestination, INVALIDED_CHATROOM.message());
             throw new ChatException(INVALIDED_CHATROOM);
-        } else if ((chatRoom.getStatus() == ChatRoom.Status.set)) {
+        }
+
+        if ((chatRoom.getStatus() == SET)) {
             simpMessagingTemplate.convertAndSend(exceptionDestination, INVALIDED_CHATROOM.message());
             throw new ChatException(INVALIDED_CHATROOM);
-        } else if ((chatRoom.getStatus() == ChatRoom.Status.delete)) {
+        }
+
+        if ((chatRoom.getStatus() == DELETE)) {
             simpMessagingTemplate.convertAndSend(exceptionDestination, INVALIDED_CHATROOM.message());
             throw new ChatException(INVALIDED_CHATROOM);
         }
@@ -132,49 +140,70 @@ public class MessageService {
                 .build();
         chatMessageRepository.save(chatMessage);
 
-        ChatRoomMember chatRoomMember = findChatRoomMember(chatRoom); // 영속
+        ChatRoomMember chatRoomMember = findChatRoomMember(chatRoom);
 
-        // getSender() 는 하트틀 보내는 사람(방 개설자)을 의미
-        // senderId() 는 메세지를 보내는 사람을 의미
         MessageResponse messageResponse = new MessageResponse();
+
         if (chatRoomMember.getSender().equals(sender)) {
-            messageResponse.setMethod("receiveChat");
-            messageResponse.setRoomId(chatMessage.getChatRoom().getId());
-            messageResponse.setSenderId(senderId);
-            messageResponse.setReceiveId(receiver.getId());
-            messageResponse.setSenderNickname(sender.getBasicInfo().getNickname());
-            messageResponse.setSenderFaceInfoS3Url(chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url()); // 수정한 부분
-            messageResponse.setContent(chatMessage.getContent());
-            messageResponse.setType("message");
-            messageResponse.setCreatedAt(chatMessage.getSendTime());
-            messageResponse.setIsRead(chatMessage.isRead());
+            createMessageResponseForSender(senderId, sender, receiver, chatMessage, chatRoomMember, messageResponse);
         }
 
         if (chatRoomMember.getReceiver().equals(sender)) {
-            messageResponse.setMethod("receiveChat");
-            messageResponse.setRoomId(chatMessage.getChatRoom().getId());
-            messageResponse.setSenderId(senderId);
-            messageResponse.setReceiveId(receiver.getId());
-            messageResponse.setSenderNickname(sender.getBasicInfo().getNickname());
-            messageResponse.setSenderFaceInfoS3Url(chatRoomMember.getReceiverFaceInfoByLevel().getGeneratedByLevelS3url()); // 수정한 부분
-            messageResponse.setContent(chatMessage.getContent());
-            messageResponse.setType("message");
-            messageResponse.setCreatedAt(chatMessage.getSendTime());
-            messageResponse.setIsRead(chatMessage.isRead());
+            createMessageResponseForReceiver(senderId, sender, receiver, chatMessage, chatRoomMember, messageResponse);
         }
 
         String topic = channelTopic.getTopic();
-
         redisTemplate.convertAndSend(topic, messageResponse);
+    }
 
+    private void createMessageResponseForReceiver(
+            Long senderId,
+            Member sender,
+            Member receiver,
+            ChatMessage chatMessage,
+            ChatRoomMember chatRoomMember,
+            MessageResponse messageResponse
+    ) {
+        messageResponse.setMethod("receiveChat");
+        messageResponse.setRoomId(chatMessage.getChatRoom().getId());
+        messageResponse.setSenderId(senderId);
+        messageResponse.setReceiveId(receiver.getId());
+        messageResponse.setSenderNickname(sender.getBasicInfo().getNickname());
+        messageResponse.setSenderFaceInfoS3Url(chatRoomMember.getReceiverFaceInfoByLevel().getGeneratedByLevelS3url()); // 수정한 부분
+        messageResponse.setContent(chatMessage.getContent());
+        messageResponse.setType("message");
+        messageResponse.setCreatedAt(chatMessage.getSendTime());
+        messageResponse.setIsRead(chatMessage.isRead());
+    }
+
+    private void createMessageResponseForSender(
+            Long senderId,
+            Member sender,
+            Member receiver,
+            ChatMessage chatMessage,
+            ChatRoomMember chatRoomMember,
+            MessageResponse messageResponse
+    ) {
+        messageResponse.setMethod("receiveChat");
+        messageResponse.setRoomId(chatMessage.getChatRoom().getId());
+        messageResponse.setSenderId(senderId);
+        messageResponse.setReceiveId(receiver.getId());
+        messageResponse.setSenderNickname(sender.getBasicInfo().getNickname());
+        messageResponse.setSenderFaceInfoS3Url(chatRoomMember.getSenderFaceInfoByLevel().getGeneratedByLevelS3url()); // 수정한 부분
+        messageResponse.setContent(chatMessage.getContent());
+        messageResponse.setType("message");
+        messageResponse.setCreatedAt(chatMessage.getSendTime());
+        messageResponse.setIsRead(chatMessage.isRead());
     }
 
     private ChatRoomMember findChatRoomMember(ChatRoom chatRoom) {
-        return chatRoomMemberRepository.findByChatRoomId(chatRoom.getId()).orElseThrow(() -> new ChatException(NOT_FOUND_CHAT_ROOM_MEMBER));
+        return chatRoomMemberRepository.findByChatRoomId(chatRoom.getId())
+                .orElseThrow(() -> new ChatException(NOT_FOUND_CHAT_ROOM_MEMBER));
     }
 
     @Transactional
     public void sendHeart(Long senderId, Long receiveId) {
+
         String exceptionDestination = "/sub/chat/" + senderId;
 
         if (chatRoomMemberRepository.findBySenderAndReceiver(senderId, receiveId).isPresent()){
@@ -184,7 +213,7 @@ public class MessageService {
         }
 
         ChatRoom chatRoom = ChatRoom.builder()
-                .status(ChatRoom.Status.set)
+                .status(SET)
                 .isPublic(false)
                 .build();
         chatRoomRepository.save(chatRoom);
@@ -231,10 +260,6 @@ public class MessageService {
         redisTemplate.convertAndSend(topic, sendHeartResponse);
     }
 
-    private ChatRoomMember findChatRoomMemberBySenderAndReceiver(Member sender, Member receiver) {
-        return chatRoomMemberRepository.findChatRoomMemberBySenderAndReceiver(sender, receiver).orElseThrow(() -> new ChatException(NOT_FOUND_CHAT_ROOM_MEMBER));
-    }
-
     @Transactional
     public void heartReply(HeartReplyRequest heartReplyRequest, Long receiveId) {
         String exceptionDestination = "/sub/chat/" + receiveId;
@@ -246,7 +271,7 @@ public class MessageService {
         ChatRoom chatRoom = findRoomById(exceptionDestination, chatRoomMember.getChatRoom().getId());
 
         if (heartReplyRequest.intention().equals("positive")) {
-            chatRoom.setStatus(ChatRoom.Status.open);
+            chatRoom.setStatus(OPEN);
             chatRoomRepository.save(chatRoom);
             chatRoomMemberRepository.save(chatRoomMember);
 
@@ -341,7 +366,6 @@ public class MessageService {
             for (Object messageObj : messages) {
                 LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) messageObj;
                 MessageResponse messageResponse = new MessageResponse(map);
-                log.info("UnReadMessageResponse: {}", messageResponse.toString());
                 redisTemplate.convertAndSend(topic, messageResponse);
             }
             // 리스트 비우기
@@ -351,10 +375,6 @@ public class MessageService {
             log.warn("Message list is empty.");
         }
     }
-
-
-
-
 
 
     private void sendSentHeart(String exceptionDestination, Long receiveId) {

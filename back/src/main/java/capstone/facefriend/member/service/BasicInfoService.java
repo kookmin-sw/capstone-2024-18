@@ -33,15 +33,15 @@ public class BasicInfoService {
 
     @Transactional
     public BasicInfoResponse putBasicInfo(Long memberId, BasicInfoRequest request) {
-        Member member = findMemberById(memberId); // 영속
-        BasicInfo oldBasicInfo = member.getBasicInfo(); // 영속
+        Member member = findMemberById(memberId);
+        BasicInfo oldBasicInfo = member.getBasicInfo();
 
-        oldBasicInfo.setNickname(request.nickname()); // dirty check
-        oldBasicInfo.setGender(Gender.valueOf(request.gender())); // dirty check
-        oldBasicInfo.setAgeGroup(AgeGroup.valueOf(request.ageGroup())); // dirty check
-        oldBasicInfo.setAgeDegree(AgeDegree.valueOf(request.ageDegree())); // dirty check
-        oldBasicInfo.setHeightGroup(HeightGroup.valueOf(request.heightGroup())); // dirty check
-        oldBasicInfo.setRegion(Region.valueOf(request.region())); // dirty check
+        oldBasicInfo.setNickname(request.nickname());
+        oldBasicInfo.setGender(Gender.valueOf(request.gender()));
+        oldBasicInfo.setAgeGroup(AgeGroup.valueOf(request.ageGroup()));
+        oldBasicInfo.setAgeDegree(AgeDegree.valueOf(request.ageDegree()));
+        oldBasicInfo.setHeightGroup(HeightGroup.valueOf(request.heightGroup()));
+        oldBasicInfo.setRegion(Region.valueOf(request.region()));
 
         member.setBasicInfo(oldBasicInfo);
 

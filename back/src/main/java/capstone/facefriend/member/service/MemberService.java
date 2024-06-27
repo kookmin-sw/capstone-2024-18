@@ -55,16 +55,16 @@ public class MemberService {
     private static final String RESET_PASSWORD_SUCCESS_MESSAGE = "비밀번호 재설정 성공";
     private static final String EXIT_SUCCESS_MESSAGE = "회원탈퇴 성공";
 
-    private static final String INITIAL_ANALYSIS_NAME_EYE = "눈";
-    private static final String INITIAL_ANALYSIS_NAME_FACE_SHAPE = "얼굴형";
-    private static final String INITIAL_ANALYSIS_NAME_LIPS = "입술";
-    private static final String INITIAL_ANALYSIS_NAME_NOSE = "코";
-    private static final String INITIAL_ANALYSIS_NAME_EYEBROW = "눈썹";
-    private static final String INITIAL_ANALYSIS_DESCRIPTION = "관상 분석 설명이 없습니다!";
-    private static final String INITIAL_ANALYSIS_TAG = "관상 분석 태그가 없습니다!";
-    private static final Integer INITIAL_ANALYSIS_FACE_SHAPE_NUM = -1;
+    private static final String EYE = "눈";
+    private static final String FACE_SHAPE = "얼굴형";
+    private static final String LIPS = "입술";
+    private static final String NOSE = "코";
+    private static final String EYEBROW = "눈썹";
+    private static final String DESCRIPTION = "관상 분석 설명이 없습니다!";
+    private static final String TAG = "관상 분석 태그가 없습니다!";
+    private static final Integer FACE_SHAPE_ID_NUM = -1;
 
-    private static final Long BLACKLIST_REMAIN_MINUTE = 1000 * 60 * 60 * 12L; // 12 시간
+    private static final Long BLACKLIST_REMAIN_MINUTE = 1000 * 60 * 60 * 12L;
 
     @Value("${spring.cloud.aws.s3.default-profile}")
     private String defaultFaceInfoS3url;
@@ -99,7 +99,16 @@ public class MemberService {
     public SignupResponse signUp(SignUpRequest request) {
         String encodedPassword = passwordEncoder.encode(request.password());
 
-        // 기본정보 초기값
+        BasicInfo basicInfo = initBasicInfo();
+        FaceInfo faceInfo = initFaceInfo();
+        AnalysisInfo analysisInfo = initAnalysisInfo();
+
+        Member member = initMember(request, encodedPassword, basicInfo, faceInfo, analysisInfo);
+
+        return new SignupResponse(member.getId());
+    }
+
+    private BasicInfo initBasicInfo() {
         BasicInfo basicInfo = BasicInfo.builder()
                 .nickname("")
                 .gender(Gender.DEFAULT)
@@ -109,33 +118,39 @@ public class MemberService {
                 .region(Region.DEFAULT)
                 .build();
         basicInfoRepository.save(basicInfo);
+        return basicInfo;
+    }
 
-        // 관상 이미지 초기값
+    private FaceInfo initFaceInfo() {
         FaceInfo faceInfo = FaceInfo.builder()
                 .originS3url(defaultFaceInfoS3url)
                 .generatedS3url(defaultFaceInfoS3url)
                 .build();
         faceInfoRepository.save(faceInfo);
-//
-//        FaceInfoByLevel faceInfoByLevel = FaceInfoByLevel.builder()
-//                .generatedByLevelS3url(defaultFaceInfoS3url)
-//                .build();
-//        faceInfoByLevelRepository.save(faceInfoByLevel);
+        return faceInfo;
+    }
 
-        // 관상 분석 초기값
+    private AnalysisInfo initAnalysisInfo() {
         AnalysisInfo analysisInfo = AnalysisInfo.builder()
-                .analysisFull(Map.of(
-                        INITIAL_ANALYSIS_NAME_EYE, INITIAL_ANALYSIS_DESCRIPTION,
-                        INITIAL_ANALYSIS_NAME_FACE_SHAPE, INITIAL_ANALYSIS_DESCRIPTION,
-                        INITIAL_ANALYSIS_NAME_LIPS, INITIAL_ANALYSIS_DESCRIPTION,
-                        INITIAL_ANALYSIS_NAME_NOSE, INITIAL_ANALYSIS_DESCRIPTION,
-                        INITIAL_ANALYSIS_NAME_EYEBROW, INITIAL_ANALYSIS_DESCRIPTION))
-                .analysisShort(List.of(INITIAL_ANALYSIS_TAG))
-                .faceShapeIdNum(INITIAL_ANALYSIS_FACE_SHAPE_NUM)
+                .analysisFull(Map.of(EYE, DESCRIPTION,
+                                FACE_SHAPE, DESCRIPTION,
+                                LIPS, DESCRIPTION,
+                                NOSE, DESCRIPTION,
+                                EYEBROW, DESCRIPTION))
+                .analysisShort(List.of(TAG))
+                .faceShapeIdNum(FACE_SHAPE_ID_NUM)
                 .build();
         analysisInfoRepository.save(analysisInfo);
+        return analysisInfo;
+    }
 
-        // 저장
+    private Member initMember(
+            SignUpRequest request,
+            String encodedPassword,
+            BasicInfo basicInfo,
+            FaceInfo faceInfo,
+            AnalysisInfo analysisInfo
+    ) {
         Member member = Member.builder()
                 .email(request.email())
                 .password(encodedPassword)
@@ -145,9 +160,12 @@ public class MemberService {
                 .analysisInfo(analysisInfo) // 관상 분석
                 .build();
         memberRepository.save(member);
-
-        return new SignupResponse(member.getId());
+        return member;
     }
+
+
+
+
 
     @Transactional
     public TokenResponse signIn(SignInRequest request) {
@@ -162,7 +180,6 @@ public class MemberService {
         }
         return tokenProvider.createTokens(member.getId());
     }
-
 
     @Transactional
     public String signOut(Long memberId, String accessToken) {
