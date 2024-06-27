@@ -27,15 +27,8 @@ public class FaceInfoController {
     private final BucketService bucketService;
     private final FaceInfoRequestor faceInfoRequestor;
 
-    @GetMapping("/face-info")
-    public ResponseEntity<FaceInfoResponse> getOriginAndGenerated(
-            @AuthMember Long memberId
-    ) {
-        return ResponseEntity.ok(faceInfoService.getOriginAndGenerated(memberId));
-    }
-
     @PutMapping("/face-info")
-    public ResponseEntity<FaceInfoResponse> updateOriginAndGenerated(
+    public ResponseEntity<FaceInfoResponse> generate(
             @RequestPart("origin") MultipartFile origin,
             @RequestParam("styleId") Integer styleId,
             @AuthMember Long memberId
@@ -44,14 +37,16 @@ public class FaceInfoController {
                 .supplyAsync(() -> faceInfoRequestor.generate(origin, styleId, memberId))
                 .thenApply(generated -> bucketService.updateOriginAndGenerated(origin, generated, memberId));
 
-        List<String> s3Urls = null;
-        try {
-            s3Urls = futureS3Urls.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new FaceInfoException(FAIL_TO_GENERATE);
-        }
+        List<String> s3Urls = fetchS3Urls(futureS3Urls);
 
         return ResponseEntity.ok(faceInfoService.updateOriginAndGenerated(s3Urls, memberId));
+    }
+
+    @GetMapping("/face-info")
+    public ResponseEntity<FaceInfoResponse> getOriginAndGenerated(
+            @AuthMember Long memberId
+    ) {
+        return ResponseEntity.ok(faceInfoService.getOriginAndGenerated(memberId));
     }
 
     @DeleteMapping("/face-info")
@@ -59,5 +54,15 @@ public class FaceInfoController {
             @AuthMember Long memberId
     ) {
         return ResponseEntity.ok(faceInfoService.deleteOriginAndGenerated(memberId));
+    }
+
+    private List<String> fetchS3Urls(CompletableFuture<List<String>> futureS3Urls) {
+        List<String> s3Urls;
+        try {
+            s3Urls = futureS3Urls.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new FaceInfoException(FAIL_TO_GENERATE);
+        }
+        return s3Urls;
     }
 }

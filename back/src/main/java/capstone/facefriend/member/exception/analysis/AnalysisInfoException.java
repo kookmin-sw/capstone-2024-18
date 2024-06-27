@@ -3,9 +3,9 @@ package capstone.facefriend.member.exception.analysis;
 import capstone.facefriend.common.exception.BaseException;
 import capstone.facefriend.common.exception.ExceptionType;
 
-public class AnalysisException extends BaseException {
+public class AnalysisInfoException extends BaseException {
 
-    public AnalysisException(ExceptionType exceptionType) {
+    public AnalysisInfoException(ExceptionType exceptionType) {
         super(exceptionType);
     }
 }
