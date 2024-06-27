@@ -1,38 +1,29 @@
 package capstone.facefriend.member.service;
 
 
+import capstone.facefriend.common.aop.TimeTrace;
 import capstone.facefriend.member.domain.member.Member;
-import capstone.facefriend.member.repository.MemberRepository;
-import capstone.facefriend.member.exception.analysis.AnalysisException;
-import capstone.facefriend.member.exception.member.MemberException;
-import capstone.facefriend.member.service.deserializer.StringListDeserializer;
 import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoFullResponse;
 import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoFullShortResponse;
 import capstone.facefriend.member.dto.analysisInfo.AnalysisInfoShortResponse;
+import capstone.facefriend.member.exception.analysis.AnalysisInfoException;
+import capstone.facefriend.member.exception.member.MemberException;
+import capstone.facefriend.member.repository.MemberRepository;
+import capstone.facefriend.member.service.deserializer.StringListDeserializer;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static capstone.facefriend.member.exception.analysis.AnalysisExceptionType.FAIL_TO_EXTRACT_FACE_SHAPE_ID_NUM;
+import static capstone.facefriend.member.exception.analysis.AnalysisInfoExceptionType.FAIL_TO_EXTRACT_FACE_SHAPE_ID_NUM;
 import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
 
 
@@ -41,61 +32,28 @@ import static capstone.facefriend.member.exception.member.MemberExceptionType.NO
 @RequiredArgsConstructor
 public class AnalysisInfoService {
 
-    @Value("${flask.analyze-url}")
-    private String requestUrl;
-
-    private final RestTemplate restTemplate;
-
     private final MemberRepository memberRepository;
 
-
+    @TimeTrace
     @Transactional
-    public AnalysisInfoFullShortResponse analyze(MultipartFile origin, Long memberId) throws IOException {
-        // convert MultipartFile into ByteArrayResource
-        ByteArrayResource resource = new ByteArrayResource(origin.getBytes()) {
-            @Override
-            public String getFilename() {
-                return URLEncoder.encode(origin.getOriginalFilename(), StandardCharsets.UTF_8);
-            }
-        };
-
-        // body
-        LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("image", resource);
-        body.add("user_id", memberId);
-
-        // header
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        // request entity
-        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        // response entity
-        ResponseEntity<String> responseEntity = restTemplate.exchange(
-                requestUrl,
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-        );
-
-        // convert JSON into Map
-        ObjectMapper objectMapper = new ObjectMapper();
-        AnalysisInfoTotal total = objectMapper.readValue(responseEntity.getBody(), AnalysisInfoTotal.class);
+    public AnalysisInfoFullShortResponse bindAnalysisInfoTotal(AnalysisInfoTotal total, Long memberId) {
 
         Map<String, String> analysisFull = extractAnalysisInfoFull(total);
         List<String> analysisShort = extractAnalysisInfoShort(total);
         Integer faceShapeIdNum = extractFaceShapeIdNum(total);
 
-        Member member = findMemberById(memberId); // 영속 상태
-        member.getAnalysisInfo().setAnalysisFull(analysisFull); // dirty
-        member.getAnalysisInfo().setAnalysisShort(analysisShort); // dirty
-        member.getAnalysisInfo().setFaceShapeIdNum(faceShapeIdNum); // dirty
+        Member member = findMemberById(memberId);
+        member.getAnalysisInfo().setAnalysisFull(analysisFull);
+        member.getAnalysisInfo().setAnalysisShort(analysisShort);
+        member.getAnalysisInfo().setFaceShapeIdNum(faceShapeIdNum);
 
         return new AnalysisInfoFullShortResponse(analysisFull, analysisShort);
     }
 
     private Map<String, String> extractAnalysisInfoFull(AnalysisInfoTotal total) {
+
         Map<String, String> analysisFull = new HashMap<>();
+
         analysisFull.put(total.getEye().getName(), total.getEye().getDescription());
         analysisFull.put(total.getFaceShape().getName(), total.getFaceShape().getDescription());
         analysisFull.put(total.getLips().getName(), total.getLips().getDescription());
@@ -106,12 +64,14 @@ public class AnalysisInfoService {
     }
 
     private Integer extractFaceShapeIdNum(AnalysisInfoTotal total) {
+
         String idNum = total.getFaceShape().getIdNum();
+
         if (idNum == null) {
-            throw new AnalysisException(FAIL_TO_EXTRACT_FACE_SHAPE_ID_NUM);
-        } else {
-            return Integer.parseInt(idNum);
+            throw new AnalysisInfoException(FAIL_TO_EXTRACT_FACE_SHAPE_ID_NUM);
         }
+
+        return Integer.parseInt(idNum);
     }
 
     private List<String> extractAnalysisInfoShort(AnalysisInfoTotal total) {
@@ -126,9 +86,12 @@ public class AnalysisInfoService {
     }
 
     public AnalysisInfoFullShortResponse getAnalysisInfoFullShort(Long memberId) {
+
         Member member = findMemberById(memberId);
+
         Map<String, String> analysisInfoFull = member.getAnalysisInfo().getAnalysisFull();
         List<String> analysisInfoShort = member.getAnalysisInfo().getAnalysisShort();
+
         return new AnalysisInfoFullShortResponse(analysisInfoFull, analysisInfoShort);
     }
 
@@ -143,12 +106,11 @@ public class AnalysisInfoService {
     }
 
     private Member findMemberById(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(NOT_FOUND));
-        return member;
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND));
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class AnalysisInfoTotal {
@@ -161,10 +123,9 @@ public class AnalysisInfoService {
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class FaceShape {
+    private static class FaceShape {
         private String name;
         private String description;
         @JsonDeserialize(using = StringListDeserializer.class)
@@ -174,10 +135,9 @@ public class AnalysisInfoService {
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Eye {
+    private static class Eye {
         private String name;
         private String description;
         @JsonDeserialize(using = StringListDeserializer.class)
@@ -187,10 +147,9 @@ public class AnalysisInfoService {
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Lips {
+    private static class Lips {
         private String name;
         private String description;
         @JsonDeserialize(using = StringListDeserializer.class)
@@ -200,10 +159,9 @@ public class AnalysisInfoService {
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Nose {
+    private static class Nose {
         private String name;
         private String description;
         @JsonDeserialize(using = StringListDeserializer.class)
@@ -213,10 +171,9 @@ public class AnalysisInfoService {
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Eyebrow {
+    private static class Eyebrow {
         private String name;
         private String description;
         @JsonDeserialize(using = StringListDeserializer.class)
