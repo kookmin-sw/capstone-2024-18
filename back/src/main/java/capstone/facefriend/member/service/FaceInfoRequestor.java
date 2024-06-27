@@ -41,7 +41,8 @@ public class FaceInfoRequestor {
 
     @TimeTrace
     public ByteArrayMultipartFile generate(MultipartFile origin, Integer styleId, Long memberId) {
-        ByteArrayResource resource = null;
+        // convert MultipartFile into ByteArrayResource
+        ByteArrayResource resource;
         try {
             resource = new ByteArrayResource(origin.getBytes()) {
                 @Override
@@ -80,7 +81,8 @@ public class FaceInfoRequestor {
     }
 
     public ByteArrayMultipartFile generateByLevel(MultipartFile origin, Long memberId, int styleId, int level) {
-        ByteArrayResource resource = null;
+        // convert MultipartFile into ByteArrayResource
+        ByteArrayResource resource;
         try {
             resource = new ByteArrayResource(origin.getBytes()) {
                 @Override

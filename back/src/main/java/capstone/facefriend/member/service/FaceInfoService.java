@@ -1,6 +1,7 @@
 package capstone.facefriend.member.service;
 
 import capstone.facefriend.bucket.BucketService;
+import capstone.facefriend.common.aop.TimeTrace;
 import capstone.facefriend.member.domain.faceInfo.FaceInfo;
 import capstone.facefriend.member.domain.member.Member;
 import capstone.facefriend.member.dto.faceInfo.FaceInfoResponse;
@@ -31,6 +32,7 @@ public class FaceInfoService {
         return new FaceInfoResponse(faceInfo.getOriginS3url(), faceInfo.getGeneratedS3url());
     }
 
+    @TimeTrace
     @Transactional
     public FaceInfoResponse updateOriginAndGenerated(List<String> s3Urls, Long memberId) {
 
