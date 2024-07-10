@@ -3,7 +3,9 @@
 프로젝트 소개
 ---
 
-<img src="images/poster.png" width="600">
+<div align='center'>
+  <img src="images/poster.png" width="600">
+</div>
 <br><br>
 
 ### Face Friend
