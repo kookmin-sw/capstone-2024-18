@@ -1,41 +1,67 @@
-# Face Friend
-
-프로젝트 소개
----
+<br>
+<br>
 
 <div align='center'>
-  <img src="images/poster.png" width="600">
+  <img src="images/logo.png" width="400">
+
+  <h3> 인간관계를 맺는 색다른 즐거움! </h3>
+  <a href="https://kookmin-sw.github.io/capstone-2024-18/index.html" target='_blank'> 🌈 소개 페이지</a>
 </div>
-<br><br>
 
-### Face Friend
-- Face Friend 는 <code>**관상 이미지 생성**</code>, <code>**관상 분석**</code>, <code>**관상 궁합 추천**</code> 등의 기능을 통해 얼굴 노출의 부담을 덜고,<br>
-새로운 인연을 만나는 색다른 즐거움을 제공하는 데이팅 앱 서비스입니다.
-<br><br>
+<br>
+<br>
+<br>
 
-### AI 관상 이미지 생성
-- 자신의 얼굴 특징과 분위기를 고스란히 담아낸 <code>**관상 이미지**</code>를 생성합니다.
-<br><br>
+## 🤔  Overview
 
-### AI 관상 분석
-- <code>**눈썹, 눈, 코, 입, 얼굴형**</code>에 대해 관상을 분석합니다. <code>**성격, 가치관**</code> 등에 대한 관상 분석 정보를 제공합니다.
-<br><br>
+<br>
 
-### AI 관상 궁합 추천
-- AI 관상 분석의 결과에 따라 사용자의 <code>**오행형(五行形)**</code>를 분류하고, <br>
-오행형(화/수/목/금/토)간의 궁합이 좋은 사용자를 추천합니다.
-<br><br>
+**Face Friend** 는 <br><br>
+<code>**관상 이미지 생성**</code>, <code>**관상 분석**</code>, <code>**관상 궁합 추천**</code> 등의 기능을 통해 얼굴 노출의 부담을 덜고,<br><br>
+새로운 인연을 만나는 색다른 즐거움을 제공하는 <code>**데이팅 앱 서비스**</code>입니다.
 
-### 친밀도에 따른 관상 이미지 변경
-- <code>**상대와 친밀해질수록**</code> 실제 얼굴과 가깝게 관상 이미지가 변경됩니다.
-<br><br><br><br>
+<br>
+<br>
+<br>
 
-## 구글 드라이브 링크 (발표 자료, 포스터, 수행 결과 보고서)
+## 🖍️  Usage
+
+<br>
+
+**1. 관상 이미지 생성**  
+> 얼굴 이미지를 업로드하여 얼굴 특징과 분위기를 고스란히 담아낸 <code>**관상 이미지**</code>를 생성합니다.
+
+<br>
+
+**2. 관상 분석**  
+> <code>**눈썹, 눈, 코, 입, 얼굴형**</code>에 대해 관상을 분석합니다. <code>**성격, 가치관**</code> 등에 대한 관상 분석 정보를 제공합니다.
+
+<br>
+
+**3. 관상 궁합 추천**
+> AI 관상 분석의 결과에 따라 사용자의 <code>**오행형(五行形)**</code>를 분류하고, <code>**오행형 궁합**</code>이 좋은 사용자를 추천합니다.
+
+<br>
+
+**4. 친밀도에 따른 관상 이미지 변경**
+> 채팅을 나누며 <code>**상대와 친밀해질수록**</code> 관상 이미지가 실제 얼굴 이미지와 근접해집니다.
+
+<br>
+<br>
+<br>
+
+## 🔖 구글 드라이브 링크 (발표 자료, 포스터, 수행 결과 보고서)
 [링크로 이동하기](https://drive.google.com/drive/u/0/folders/15CNdGg8UGcZfr9XU2z3XRlWpkxXgrowY)
-<br><br><br><br>
 
-## 주요 기능
+<br>
+<br>
+<br>
 
+## 📱  시연영상
+
+<br>
+
+<div align='center'>
 <table>
   <tr>
     <td>
@@ -48,7 +74,7 @@
     </td>
   </tr>
   <tr>
-    <td colspan="2" style="padding: 40px;"></td> <!-- Adds space between rows -->
+    <td colspan="2" style="padding: 40px;"></td>
   </tr>
   <tr>
     <td>
@@ -61,7 +87,7 @@
     </td>
   </tr>
   <tr>
-    <td colspan="2" style="padding: 40px;"></td> <!-- Adds space between rows -->
+    <td colspan="2" style="padding: 40px;"></td>
   </tr>
   <tr>
     <td>
@@ -74,10 +100,14 @@
     </td>
   </tr>
   <tr>
-    <td colspan="2" style="padding: 40px;"></td> <!-- Adds space between rows -->
+    <td colspan="2" style="padding: 40px;"></td>
   </tr>
 </table>
-<br><br><br><br>
+</div>
+
+<br>
+<br>
+<br>
 
 ## 팀원 소개
 
