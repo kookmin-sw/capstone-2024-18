@@ -2,9 +2,9 @@
 <br>
 
 <div align='center'>
-  <img src="images/logo.png" width="400">
+  <img src="images/slide.png" width="1024">
 
-  <h3> 인간관계를 맺는 색다른 즐거움! </h3>
+  <h3> 인간관계를 맺는 색다른 즐거움! Face Friend ! </h3>
   <a href="https://kookmin-sw.github.io/capstone-2024-18/index.html" target='_blank'> 🌈 소개 페이지</a>
 </div>
 
@@ -51,24 +51,79 @@
 <br>
 
 ## 🔖 구글 드라이브 링크 (발표 자료, 포스터, 수행 결과 보고서)
+
+<br>
+
 [링크로 이동하기](https://drive.google.com/drive/u/0/folders/15CNdGg8UGcZfr9XU2z3XRlWpkxXgrowY)
 
 <br>
 <br>
 <br>
 
-## 📱  시연영상
+## 백엔드 파트
+
+<br>
+
+<table>
+    <tbody>
+        <tr>
+          <tr>
+            <td align='center'>아키텍처</td>
+          </tr>
+          <tr>
+            <td align='center'><img src="images/be-preview1.png"></td>
+          </tr>
+          <tr>
+            <td align='center'>관상 이미지 생성 로직</td>
+          </tr>
+          <tr>
+            <td align='center'><img src="images/be-preview2.png"></td>
+          </tr>
+          <tr>
+            <td align='center'>관상 분석 로직</td>
+          </tr>
+          <tr>
+            <td align='center'><img src="images/be-preview3.png" width='955'></td>
+          </tr>
+    </tbody>
+</table>
+
+<br>
+<br>
+<br>
+
+## 🤖 인공지능 파트
+
+<br>
+
+<table>
+    <tbody>
+        <tr>
+          <tr>
+            <td align='center'>관상 이미지 생성, 관상 분석</td>
+          </tr>
+          <tr>
+            <td align='center'><img src="images/ai-preview.png"></td>
+          </tr>
+    </tbody>
+</table>
+
+<br>
+<br>
+<br>
+
+## 📱  프론트엔드 파트
 
 <br>
 
 <div align='center'>
 <table>
   <tr>
-    <td>
+    <td align='center'>
       <h2> 회원가입 및 로그인 </h2>
       <img src="images/signup2.gif" width="300">
     </td>
-    <td>
+    <td align='center'>
       <h2> 기본 정보 </h2>
       <img src="images/basic2.gif" width="300">
     </td>
@@ -77,11 +132,11 @@
     <td colspan="2" style="padding: 40px;"></td>
   </tr>
   <tr>
-    <td>
+    <td align='center'>
       <h2> AI 관상 이미지 생성 </h2>
       <img src="images/face2.gif" width="300">
     </td>
-    <td>
+    <td align='center'>
       <h2> AI 관상 분석 </h2>
       <img src="images/analyze2.gif" width="300">
     </td>
@@ -90,11 +145,11 @@
     <td colspan="2" style="padding: 40px;"></td>
   </tr>
   <tr>
-    <td>
+    <td align='center'>
       <h2> 자기소개서 </h2>
       <img src="images/resume2.gif" width="300">
     </td>
-    <td>
+    <td align='center'>
       <h2> 채팅 </h2>
       <img src="images/chat2.gif" width="300">
     </td>
@@ -109,13 +164,15 @@
 <br>
 <br>
 
-## 팀원 소개
+## 🚀 팀원 소개
 
-| 파트      | 이름   | 역할                                                                                                                                   |
-|-----------|--------|-------------------------------------------------------------------------------------------------------------------------------------|
-| AI        | 이시현 | AI 관상 이미지 생성, AI 관상 분석(눈,입), AWS 배포                                                                                      |
-| AI        | 박민희 | Landmark 모델 통합, AI 관상 분석(얼굴형, 눈썹, 코)                                                                                       |
-| FrontEnd  | 고명섭 | 인증/인가, 기본정보, 웹소켓 및 채팅                                                                                                    |
-| FrontEnd  | 윤민지 | AI 관상 이미지, AI 관상 분석, 자기소개서와 유저 추천                                                                                    |
-| BackEnd   | 임장혁 | 웹소켓 및 채팅, 통합 테스트 환경 구축, AWS 배포                                                                                        |
-| BackEnd   | 김찬진<br>(팀장) | 인증/인가, 기본정보, AI 관상 이미지, AI 관상 분석, 자기소개서,<br>친밀도에 따른 AI 관상 이미지 변화, AI 관상 궁합 추천, AWS S3                              |
+<br>
+
+| **파트**      | **이름**   | **역할**                                                                                                                       |
+|--------------|--------|-------------------------------------------------------------------------------------------------------------------------------------|
+| 🤖 AI        | 이시현 | 관상 이미지 생성, 관상 분석(눈,입), AWS 배포                                                                                         |
+| 🤖 AI        | 박민희 | Landmark 모델 통합, 관상 분석(얼굴형, 눈썹, 코)                                                                                         |
+| 🎨 FrontEnd  | 고명섭 | 인증/인가, 기본정보, 웹소켓 및 채팅                                                                                                        |
+| 🎨 FrontEnd  | 윤민지 | 관상 이미지, 관상 분석, 자기소개서와 유저 추천                                                                                          |
+| ⚙️ BackEnd   | 임장혁 | 웹소켓 및 채팅, 통합 테스트 환경 구축, AWS 배포                                                                                               |
+| ⚙️ BackEnd   | 김찬진(팀장) | 인증/인가, 기본정보, 관상 이미지, 관상 분석, 자기소개서,<br>친밀도에 따른 관상 이미지 변화, 관상 궁합 추천, AWS S3                         |
