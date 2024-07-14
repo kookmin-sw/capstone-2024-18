@@ -1,0 +1,101 @@
+server:
+  port: 8080
+  shutdown: graceful
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 500
+
+spring:
+  profiles:
+    active: local
+  config:
+    import: 'aws-secretmanager:facefriend/aws/be'
+
+jwt:
+  header: ${JWT_HEADER}
+  secret: ${JWT_SECRET}
+  access-token-identifier: ${JWT_ACCESS_TOKEN_IDENTIFIER}
+  access-token-exp-time: ${JWT_ACCESS_TOKEN_EXP_TIME}
+  refresh-token-exp-time: ${JWT_REFRESH_TOKEN_EXP_TIME}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}
+      default-profile: ${AWS_S3_DEFAULT_PROFILE}
+      origin-postfix: ${AWS_S3_ORIGIN_POSTFIX}
+      generated-postfix: ${AWS_S3_GENERATED_POSTFIX}
+      resume-postfix: ${AWS_S3_RESUME_POSTFIX}
+      generated-by-level-postfix: ${AWS_S3_GENERATED_BY_LEVEL_POSTFIX}
+    region:
+      static: ${AWS_S3_REGION}
+      auto: false
+    stack:
+      auto: false
+
+redis:
+  token:
+    sign-out: ${REDIS_TOKEN_SIGN_OUT_VALUE}
+
+oauth2:
+  provider:
+    google-android:
+      id: ${OAUTH_GOOGLE_ANDROID_CLIENT_ID}
+      secret: ${OAUTH_GOOGLE_SECRET}
+      token-url: ${OAUTH_GOOGLE_TOKEN_URL}
+      info-url: ${OAUTH_GOOGLE_INFO_URL}
+      login-url: ${OAUTH_GOOGLE_LOGIN_URL}
+      scope: ${OAUTH_GOOGLE_SCOPE}
+    google-ios:
+      id: ${OAUTH_GOOGLE_IOS_CLIENT_ID}
+      secret: ${OAUTH_GOOGLE_SECRET}
+      token-url: ${OAUTH_GOOGLE_TOKEN_URL}
+      info-url: ${OAUTH_GOOGLE_INFO_URL}
+      login-url: ${OAUTH_GOOGLE_LOGIN_URL}
+      scope: ${OAUTH_GOOGLE_SCOPE}
+    kakao:
+      id: ${OAUTH_KAKAO_CLIENT_ID}
+      secret: ${OAUTH_KAKAO_SECRET}
+      token-url: ${OAUTH_KAKAO_TOKEN_URL}
+      info-url: ${OAUTH_KAKAO_INFO_URL}
+      login-url: ${OAUTH_KAKAO_LOGIN_URL}
+      scope: ${OAUTH_KAKAO_SCOPE}
+    naver:
+      id: ${OAUTH_NAVER_CLIENT_ID}
+      secret: ${OAUTH_NAVER_SECRET}
+      token-url: ${OAUTH_NAVER_TOKEN_URL}
+      info-url: ${OAUTH_NAVER_INFO_URL}
+      login-url: ${OAUTH_NAVER_LOGIN_URL}
+      scope: ${OAUTH_NAVER_SCOPE}
+
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+          required: true
+        connectiontimeout: 5000
+        timeout: 5000
+        writetimeout: 5000
+  auth-code-expiration-millis: 100000
+
+flask:
+  generate-url: ${FLASK_GENERATE_ENDPOINT}
+  analyze-url: ${FLASK_ANALYZE_ENDPOINT}
+  generate-by-level-url: ${FLASK_GENERATE_BY_LEVEL_ENDPOINT}
+
+
+
+
+
+

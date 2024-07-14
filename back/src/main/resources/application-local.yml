@@ -1,0 +1,20 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+    database: postgresql
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/facefriend
+    driver-class-name: org.postgresql.Driver
+    username: facefriend
+    password: facefriend
+  data:
+    redis:
+      host: localhost
+      port: 6379
