@@ -46,14 +46,32 @@ public class BucketService {
 
     public List<String> putOriginAndGenerated(
             MultipartFile origin,
+            ByteArrayMultipartFile generated,
+            Long memberId
+    ) {
+        Member member = findMemberById(memberId);
+
+        String originS3url = member.getFaceInfo().getOriginS3url();
+        String generatedS3url = member.getFaceInfo().getGeneratedS3url();
+
+        if (originS3url.equals(DEFAULT_FACE_INFO_S3_URL) || generatedS3url.equals(DEFAULT_FACE_INFO_S3_URL)) {
+            return putOriginAndGenerated(origin, generated);
+        }
+
+        deleteOriginAndGenerated(memberId);
+        return putOriginAndGenerated(origin, generated);
+    }
+
+    private List<String> putOriginAndGenerated(
+            MultipartFile origin,
             ByteArrayMultipartFile generated
     ) {
-        String originS3url = getOriginS3Url(origin);
-        String generatedS3url = getGeneratedS3url(generated);
+        String originS3url = putOriginS3Url(origin);
+        String generatedS3url = putGeneratedS3url(generated);
         return List.of(originS3url, generatedS3url);
     }
 
-    private String getOriginS3Url(MultipartFile origin) {
+    private String putOriginS3Url(MultipartFile origin) {
         ObjectMetadata originMetadata;
         InputStream originInputStream;
 
@@ -77,7 +95,7 @@ public class BucketService {
         return amazonS3.getUrl(BUCKET_NAME, originObjectName).toString();
     }
 
-    private String getGeneratedS3url(MultipartFile generated) {
+    private String putGeneratedS3url(MultipartFile generated) {
         ObjectMetadata generatedMetadata;
         InputStream generatedInputStream;
         try {
@@ -100,24 +118,6 @@ public class BucketService {
         );
 
         return amazonS3.getUrl(BUCKET_NAME, generatedObjectName).toString();
-    }
-
-    public List<String> putOriginAndGenerated(
-            MultipartFile origin,
-            ByteArrayMultipartFile generated,
-            Long memberId
-    ) {
-        Member member = findMemberById(memberId);
-
-        String originS3url = member.getFaceInfo().getOriginS3url();
-        String generatedS3url = member.getFaceInfo().getGeneratedS3url();
-
-        if (originS3url.equals(DEFAULT_FACE_INFO_S3_URL) || generatedS3url.equals(DEFAULT_FACE_INFO_S3_URL)) {
-            return putOriginAndGenerated(origin, generated);
-        }
-
-        deleteOriginAndGenerated(memberId);
-        return putOriginAndGenerated(origin, generated);
     }
 
     public String deleteOriginAndGenerated(
