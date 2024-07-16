@@ -41,6 +41,9 @@ redis:
   token:
     sign-out: ${REDIS_TOKEN_SIGN_OUT_VALUE}
 
+blacklist:
+  remain-time: ${BLACKLIST_REMAIN_TIME}
+
 oauth2:
   provider:
     google-android:
