@@ -3,7 +3,7 @@ package capstone.facefriend.resume.controller;
 import capstone.facefriend.auth.support.AuthMember;
 import capstone.facefriend.resume.dto.ResumeDeleteResponse;
 import capstone.facefriend.resume.dto.ResumeGetResponse;
-import capstone.facefriend.resume.dto.ResumeHomeDetailResponse;
+import capstone.facefriend.resume.dto.ResumePreviewResponse;
 import capstone.facefriend.resume.dto.ResumePostPutRequest;
 import capstone.facefriend.resume.dto.ResumePostPutResponse;
 import capstone.facefriend.resume.service.ResumeService;
@@ -73,7 +73,7 @@ public class ResumeController {
     }
 
     @GetMapping("/resume/good-combi")
-    public Page<ResumeHomeDetailResponse> getResumesByGoodCombi(
+    public Page<ResumePreviewResponse> getResumesByGoodCombi(
             @AuthMember Long memberId,
             Pageable pageable
     ) {
@@ -81,7 +81,7 @@ public class ResumeController {
     }
 
     @GetMapping("/resume/category")
-    public Page<ResumeHomeDetailResponse> getResumesByCategory(
+    public Page<ResumePreviewResponse> getResumesByCategory(
             @AuthMember Long memberId,
             @RequestParam("category") String category,
             Pageable pageable

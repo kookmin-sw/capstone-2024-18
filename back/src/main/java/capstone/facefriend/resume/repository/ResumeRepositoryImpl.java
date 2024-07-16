@@ -10,8 +10,9 @@ import capstone.facefriend.member.exception.member.MemberException;
 import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.resume.domain.Resume;
 
-import capstone.facefriend.resume.dto.QResumeHomeDetailResponse;
-import capstone.facefriend.resume.dto.ResumeHomeDetailResponse;
+
+import capstone.facefriend.resume.dto.QResumePreviewResponse;
+import capstone.facefriend.resume.dto.ResumePreviewResponse;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -34,7 +35,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
     private static final List<Integer> GOOD_COMBI_IN_CASE_3 = List.of(1, 4); // 금
     private static final List<Integer> GOOD_COMBI_IN_CASE_4 = List.of(0, 3); // 토
 
-    public Page<ResumeHomeDetailResponse> getResumesByGoodCombi(Long memberId, Pageable pageable) {
+    public Page<ResumePreviewResponse> getResumesByGoodCombi(Long memberId, Pageable pageable) {
         Member me = findMemberById(memberId);
         Integer faceShapeIdNum = me.getAnalysisInfo().getFaceShapeIdNum();
 
@@ -57,10 +58,10 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
                 break;
         }
 
-        List<ResumeHomeDetailResponse> content = queryFactory
-                .select(new QResumeHomeDetailResponse(
-                        resume.id.as("resumeId"),
-                        resume.member.faceInfo.generatedS3url.as("thumbnailS3url")))
+        List<ResumePreviewResponse> content = queryFactory
+                .select(new QResumePreviewResponse(
+                        resume.id,
+                        resume.member.faceInfo.generatedS3url))
                 .from(resume)
                 .innerJoin(resume.member, QMember.member)
                 .where(builder)
@@ -73,21 +74,21 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
         int total = queryFactory
                 .select(resume)
                 .from(resume)
-                .innerJoin(resume.member, QMember.member)
-                .where(builder) // boolean builder
+                .join(resume.member).fetchJoin()
+                .where(builder)
                 .fetch()
                 .size();
 
         return new PageImpl<>(content, pageable, total);
     }
 
-    public Page<ResumeHomeDetailResponse> getResumesByCategory(Long memberId, String category, Pageable pageable) {
+    public Page<ResumePreviewResponse> getResumesByCategory(Long memberId, String category, Pageable pageable) {
         Member me = findMemberById(memberId);
 
-        List<ResumeHomeDetailResponse> content = queryFactory
-                .select(new QResumeHomeDetailResponse(
-                        resume.id.as("resumeId"),
-                        resume.member.faceInfo.generatedS3url.as("thumbnailS3url")))
+        List<ResumePreviewResponse> content = queryFactory
+                .select(new QResumePreviewResponse(
+                        resume.id,
+                        resume.member.faceInfo.generatedS3url))
                 .from(resume)
                 .innerJoin(resume.member, QMember.member)
                 .where(resume.categories.contains(Resume.Category.valueOf(category)))
@@ -100,7 +101,8 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
         int total = queryFactory
                 .select(resume)
                 .from(resume)
-                .innerJoin(resume.member, QMember.member)
+                .join(resume.member).fetchJoin()
+                .join(resume.categories).fetchJoin()
                 .where(resume.categories.contains(Resume.Category.valueOf(category)))
                 .fetch()
                 .size();

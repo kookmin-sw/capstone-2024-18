@@ -17,7 +17,7 @@ import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.resume.domain.Resume;
 import capstone.facefriend.resume.dto.ResumeDeleteResponse;
 import capstone.facefriend.resume.dto.ResumeGetResponse;
-import capstone.facefriend.resume.dto.ResumeHomeDetailResponse;
+import capstone.facefriend.resume.dto.ResumePreviewResponse;
 import capstone.facefriend.resume.dto.ResumePostPutRequest;
 import capstone.facefriend.resume.dto.ResumePostPutResponse;
 import capstone.facefriend.resume.exception.ResumeException;
@@ -184,11 +184,11 @@ public class ResumeService {
         return new ResumeDeleteResponse(DELETE_SUCCESS_MESSAGE);
     }
 
-    public Page<ResumeHomeDetailResponse> getResumesByGoodCombi(Long memberId, Pageable pageable) {
+    public Page<ResumePreviewResponse> getResumesByGoodCombi(Long memberId, Pageable pageable) {
         return resumeRepository.getResumesByGoodCombi(memberId, pageable);
     }
 
-    public Page<ResumeHomeDetailResponse> getResumesByCategory(Long memberId, String category, Pageable pageable) {
+    public Page<ResumePreviewResponse> getResumesByCategory(Long memberId, String category, Pageable pageable) {
         return resumeRepository.getResumesByCategory(memberId, category, pageable);
     }
 
