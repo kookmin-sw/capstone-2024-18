@@ -1,11 +1,5 @@
 package capstone.facefriend.member.service;
 
-import static capstone.facefriend.member.domain.basicInfo.BasicInfo.AgeDegree;
-import static capstone.facefriend.member.domain.basicInfo.BasicInfo.AgeGroup;
-import static capstone.facefriend.member.domain.basicInfo.BasicInfo.Gender;
-import static capstone.facefriend.member.domain.basicInfo.BasicInfo.HeightGroup;
-import static capstone.facefriend.member.domain.basicInfo.BasicInfo.Region;
-import static capstone.facefriend.member.domain.member.Role.USER;
 import static capstone.facefriend.member.exception.member.MemberExceptionType.DUPLICATED_EMAIL;
 import static capstone.facefriend.member.exception.member.MemberExceptionType.INVALID_REFRESH_TOKEN;
 import static capstone.facefriend.member.exception.member.MemberExceptionType.NOT_FOUND;
@@ -25,13 +19,8 @@ import capstone.facefriend.member.dto.member.SignInRequest;
 import capstone.facefriend.member.dto.member.SignUpRequest;
 import capstone.facefriend.member.dto.member.SignupResponse;
 import capstone.facefriend.member.exception.member.MemberException;
-import capstone.facefriend.member.repository.AnalysisInfoRepository;
-import capstone.facefriend.member.repository.BasicInfoRepository;
-import capstone.facefriend.member.repository.FaceInfoRepository;
 import capstone.facefriend.member.repository.MemberRepository;
 import capstone.facefriend.redis.RedisTokenService;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,14 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final JwtProvider jwtProvider;
-    private final MemberRepository memberRepository;
-    private final BasicInfoRepository basicInfoRepository;
-    private final FaceInfoRepository faceInfoRepository;
-    private final AnalysisInfoRepository analysisInfoRepository;
-
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
 
+    private final MemberRepository memberRepository;
+    private final MemberInitService memberInitService;
+    private final EmailService emailService;
     private final RedisTokenService redisTokenService;
 
     private static final String SIGN_UP_VALID_EMAIL = "사용 가능한 이메일입니다.";
@@ -58,19 +44,8 @@ public class MemberService {
     private static final String RESET_PASSWORD_SUCCESS_MESSAGE = "비밀번호 재설정 성공";
     private static final String EXIT_SUCCESS_MESSAGE = "회원탈퇴 성공";
 
-    private static final String EYE = "눈";
-    private static final String FACE_SHAPE = "얼굴형";
-    private static final String LIPS = "입술";
-    private static final String NOSE = "코";
-    private static final String EYEBROW = "눈썹";
-    private static final String DESCRIPTION = "관상 분석 설명이 없습니다!";
-    private static final String TAG = "관상 분석 태그가 없습니다!";
-    private static final Integer FACE_SHAPE_ID_NUM = -1;
-
-    private static final Long BLACKLIST_REMAIN_MINUTE = 1000 * 60 * 60 * 12L;
-
-    @Value("${cloud.aws.s3.default-profile}")
-    private String defaultFaceInfoS3url;
+    @Value("${blacklist.remain-time}")
+    private Long blackListRemainTime;
 
     @Transactional
     public String verifyDuplication(String email) {
@@ -102,68 +77,12 @@ public class MemberService {
     public SignupResponse signUp(SignUpRequest request) {
         String encodedPassword = passwordEncoder.encode(request.password());
 
-        BasicInfo basicInfo = initBasicInfo();
-        FaceInfo faceInfo = initFaceInfo();
-        AnalysisInfo analysisInfo = initAnalysisInfo();
-
-        Member member = initMember(request, encodedPassword, basicInfo, faceInfo, analysisInfo);
+        BasicInfo basicInfo = memberInitService.initBasicInfo();
+        FaceInfo faceInfo = memberInitService.initFaceInfo();
+        AnalysisInfo analysisInfo = memberInitService.initAnalysisInfo();
+        Member member = memberInitService.initMember(request, encodedPassword, basicInfo, faceInfo, analysisInfo);
 
         return new SignupResponse(member.getId());
-    }
-
-    private BasicInfo initBasicInfo() {
-        BasicInfo basicInfo = BasicInfo.builder()
-                .nickname("")
-                .gender(Gender.DEFAULT)
-                .ageGroup(AgeGroup.DEFAULT)
-                .ageDegree(AgeDegree.DEFAULT)
-                .heightGroup(HeightGroup.DEFAULT)
-                .region(Region.DEFAULT)
-                .build();
-        basicInfoRepository.save(basicInfo);
-        return basicInfo;
-    }
-
-    private FaceInfo initFaceInfo() {
-        FaceInfo faceInfo = FaceInfo.builder()
-                .originS3url(defaultFaceInfoS3url)
-                .generatedS3url(defaultFaceInfoS3url)
-                .build();
-        faceInfoRepository.save(faceInfo);
-        return faceInfo;
-    }
-
-    private AnalysisInfo initAnalysisInfo() {
-        AnalysisInfo analysisInfo = AnalysisInfo.builder()
-                .analysisFull(Map.of(EYE, DESCRIPTION,
-                        FACE_SHAPE, DESCRIPTION,
-                        LIPS, DESCRIPTION,
-                        NOSE, DESCRIPTION,
-                        EYEBROW, DESCRIPTION))
-                .analysisShort(List.of(TAG))
-                .faceShapeIdNum(FACE_SHAPE_ID_NUM)
-                .build();
-        analysisInfoRepository.save(analysisInfo);
-        return analysisInfo;
-    }
-
-    private Member initMember(
-            SignUpRequest request,
-            String encodedPassword,
-            BasicInfo basicInfo,
-            FaceInfo faceInfo,
-            AnalysisInfo analysisInfo
-    ) {
-        Member member = Member.builder()
-                .email(request.email())
-                .password(encodedPassword)
-                .role(USER)
-                .basicInfo(basicInfo) // 기본정보
-                .faceInfo(faceInfo) // 관상 이미지
-                .analysisInfo(analysisInfo) // 관상 분석
-                .build();
-        memberRepository.save(member);
-        return member;
     }
 
     @Transactional
@@ -183,7 +102,7 @@ public class MemberService {
     @Transactional
     public String signOut(Long memberId, String accessToken) {
         redisTokenService.deleteRefreshToken(String.valueOf(memberId));
-        redisTokenService.setAccessTokenSignOut(accessToken, BLACKLIST_REMAIN_MINUTE);
+        redisTokenService.setAccessTokenSignOut(accessToken, blackListRemainTime);
         return SIGN_OUT_SUCCESS_MESSAGE;
     }
 
@@ -206,7 +125,6 @@ public class MemberService {
 
     @Transactional
     public FindEmailResponse findEmail(String emailInput) {
-
         Member member = memberRepository.findByEmail(emailInput)
                 .orElseThrow(() -> new MemberException(NOT_FOUND));
 
