@@ -151,7 +151,7 @@ public class MessageService {
         Sort sort = Sort.by(Sort.Direction.DESC, "sendTime");
         Pageable pageable = PageRequest.of(pageNo, PAGE_SIZE, sort);
         LocalDateTime time = messageListRequest.sendTime();
-        List<Message> messagePage = messageRepository.findChatMessagesByChatRoom_IdAndSendTimeBefore(roomId,
+        List<Message> messagePage = messageRepository.findMessagesByRoomIdAndSendTimeBefore(roomId,
                 time, pageable);
 
         List<MessageListResponse> messageListResponses = new ArrayList<>();
@@ -187,12 +187,12 @@ public class MessageService {
     }
 
     private RoomMember findChatRoomMember(Room room) {
-        return roomMemberRepository.findByChatRoomId(room.getId())
+        return roomMemberRepository.findByRoomId(room.getId())
                 .orElseThrow(() -> new MessageException(NOT_FOUND_ROOM_MEMBER));
     }
 
     private RoomMember findChatRoomMemberByChatRoomId(String destination, Long roomId) {
-        RoomMember roomMember = roomMemberRepository.findByChatRoomId(roomId).orElse(null);
+        RoomMember roomMember = roomMemberRepository.findByRoomId(roomId).orElse(null);
 
         if (roomMember == null) {
             simpMessagingTemplate.convertAndSend(destination, NOT_FOUND_ROOM_MEMBER.message());

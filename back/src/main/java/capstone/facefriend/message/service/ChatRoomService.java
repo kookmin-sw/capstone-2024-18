@@ -155,7 +155,7 @@ public class ChatRoomService {
         Long roomId = room.getId();
 
         Member sender = identifySender(roomMember, memberId);
-        Message message = messageRepository.findFirstByChatRoomIdOrderBySendTimeDesc(roomId);
+        Message message = messageRepository.findFirstByRoomIdOrderBySendTimeDesc(roomId);
         Boolean isSender = isSender(roomMember, memberId);
 
         if (isSender == true) {
@@ -290,11 +290,11 @@ public class ChatRoomService {
     }
 
     private RoomMember findChatRoomMemberByChatRoomId(Long roomId) {
-        return roomMemberRepository.findByChatRoomId(roomId)
+        return roomMemberRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new MessageException(NOT_FOUND_ROOM_MEMBER));
     }
 
     private List<Message> findChatRoomMessageByChatRoomId(Long roomId) {
-        return messageRepository.findChatMessagesByChatRoomId(roomId);
+        return messageRepository.findMessagesByRoomId(roomId);
     }
 }

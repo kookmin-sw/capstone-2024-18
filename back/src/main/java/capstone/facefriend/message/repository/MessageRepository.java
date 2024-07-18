@@ -8,11 +8,11 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface MessageRepository extends CrudRepository<Message, Long> {
 
-    Message findFirstByChatRoomIdOrderBySendTimeDesc(Long roomId);
+    Message findFirstByRoomIdOrderBySendTimeDesc(Long roomId);
 
     Message save(Message message);
 
-    List<Message> findChatMessagesByChatRoom_IdAndSendTimeBefore(Long roomId, LocalDateTime time, Pageable pageable);
+    List<Message> findMessagesByRoomIdAndSendTimeBefore(Long chatRoomId, LocalDateTime time, Pageable pageable);
 
-    List<Message> findChatMessagesByChatRoomId(Long roomId);
+    List<Message> findMessagesByRoomId(Long chatRoomId);
 }
