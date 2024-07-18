@@ -1,4 +1,9 @@
-FROM openjdk:17-jdk-alpine
-ARG JAR_FILE=build/libs/*.jar
-COPY ${JAR_FILE} facefriend-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","/facefriend-0.0.1-SNAPSHOT.jar"]
+FROM bellsoft/liberica-openjdk-debian:21 AS builder
+ARG JAR_FILE=workspace/build/libs/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java", \
+            "-Xms1400m", \
+            "-Xmx1400m", \
+            "-jar", \
+            "-Dspring.profiles.active=prod", \
+            "/app.jar"]

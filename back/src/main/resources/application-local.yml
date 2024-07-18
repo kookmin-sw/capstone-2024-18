@@ -3,17 +3,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-      format_sql: true
-    database: postgresql
-    show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/facefriend
-    driver-class-name: org.postgresql.Driver
-    username: facefriend
-    password: facefriend
+    url: jdbc:mysql://localhost:3306/facefriend?characterEncoding=UTF-8&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
   data:
     redis:
       host: localhost

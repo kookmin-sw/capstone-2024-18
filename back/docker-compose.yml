@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+
+  database: # RDS 연결 전 테스트 용도
+    container_name: mysql
+    image: mysql/mysql-server:latest
+    environment: # 컨테이너 안의 환경변수 설정
+      MYSQL_DATABASE: facefriend
+      MYSQL_USER: facefriend
+      MYSQL_PASSWORD: facefriend
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: rootpwd
+    command: # 명령어 설정
+      - --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3305:3306 # Host:Container
+    networks:
+      - db_network
+    restart: always  # 컨테이너 실행 시 재시작
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    command: redis-server --port 6379
+    hostname: redis
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 6379:6379
+    networks:
+      - db_network
+
+  facefriend:
+    build: .
+    container_name: facefriend
+    expose:
+      - 8080
+    depends_on:
+      - database
+      - redis
+
+networks:
+  db_network:
+    driver: bridge
